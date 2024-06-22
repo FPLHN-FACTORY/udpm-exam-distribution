@@ -1,0 +1,66 @@
+:root {
+    --common-button-color: #1A2035;
+    --common-button-main-color: #8681D8;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f8f9fa;
+}
+
+th {
+    height: 50px;
+    text-align: left;
+    padding: 8px;
+}
+
+td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.toastify-custom-error {
+    background-color: #990000;
+    color: #ff6666;
+}
+
+.toastify-custom-success {
+    background-color: #009900;
+    color: #66ff66;
+}
+
+#pagination {
+    margin: 0;
+}
+
+#pagination > li.page-item.disabled > a {
+    color: white;
+}
+
+#pagination > li > a {
+    color: white;
+}
+
+.pagination .page-link {
+    background-color: var(--common-button-main-color);
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--common-button-main-color);
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--common-button-main-color);
+    color: white;
+}
