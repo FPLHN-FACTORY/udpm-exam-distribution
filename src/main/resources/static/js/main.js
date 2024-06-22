@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    let currentUrl = window.location.href;
+    let currentUrl = window.location.pathname;
 
     $('.nav-item a').each(function () {
         let itemUrl = $(this).attr('href');
