@@ -1,9 +1,12 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.infrastructure.constant.BlockName;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -27,7 +30,8 @@ public class Block extends PrimaryEntity implements Serializable {
 
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private BlockName name;
 
     @Column(name = "start_time")
     private Long startTime;
