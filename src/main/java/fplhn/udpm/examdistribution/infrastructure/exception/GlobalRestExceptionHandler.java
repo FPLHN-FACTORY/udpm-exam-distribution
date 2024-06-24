@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.infrastructure.exception;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
@@ -31,6 +33,8 @@ public class GlobalRestExceptionHandler {
             ApiError apiError = new ApiError(ex.getMessage());
             return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
         } else {
+            ex.printStackTrace(System.out);
+            log.warn(ex.getMessage());
             return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
