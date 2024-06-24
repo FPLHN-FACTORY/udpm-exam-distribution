@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <title>HO - Quản lý chức vụ</title>
+    <!--    <script src="../../../static/js/manage-role/role.js"></script>-->
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-office :: sidebar-head-office}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý chức vụ</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="roleName">Tên chức vụ</label>
+                                    <input type="text" id="roleName" name="roleName" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="idFacility">Cơ sở</label>
+                                    <select id="idFacility" name="idFacility" class="form-select"
+                                            style="height: 60%;">
+                                        <option value="">Chọn cơ sở</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddRole()"
+                            >
+                                Thêm chức vụ
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên chức vụ</td>
+                                    <td>Tên cơ sở</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="roleTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start modal add role  -->
+    <div class="modal fade" id="modifyRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modifyRoleForm">
+                        <input type="hidden" id="roleId">
+                        <div class="mb-3">
+                            <label for="modifyRoleName" class="form-label">Tên chức vụ</label>
+                            <input type="text" class="form-control" id="modifyRoleName" required>
+                            <div class="text-danger" id="modifyRoleNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyFacility" class="form-label">Cơ sở</label>
+                            <select class="form-select" id="modifyFacility" required>
+                                <option value="">Chọn cơ sở</option>
+                            </select>
+                            <div class="text-danger" id="modifyFacilityError"> </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyRoleButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start modal add role -->
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/manage-staff/staff.js}"></script>
+</body>
+</html>
