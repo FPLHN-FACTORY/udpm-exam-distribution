@@ -2,63 +2,71 @@ package fplhn.udpm.examdistribution.core.headoffice.department.department.reposi
 
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.request.FindDepartmentsRequest;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.response.DepartmentResponse;
+import fplhn.udpm.examdistribution.core.headoffice.department.department.model.response.DetailDepartmentResponse;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.response.ListDepartmentResponse;
+import fplhn.udpm.examdistribution.repository.DepartmentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface DepartmentRepository {
+@Repository
+public interface DepartmentExtendRepository extends DepartmentRepository {
 
     @Query(value = """
             SELECT
             	ROW_NUMBER() OVER(
-            	ORDER BY bm.id DESC) AS stt,
-            	bm.id as idBoMon,
-            	bm.ten as tenBoMon,
-            	bm.xoa_mem as xoaMemBoMon
+            	ORDER BY d.id DESC) AS orderNumber,
+            	d.id AS id,
+            	d.name AS departmentName,
+            	d.code AS departmentCode,
+            	d.status AS departmentStatus,
+            	d.created_date AS createdDate
             FROM
-            	bo_mon bm
+            	department d
             WHERE
-            	:#{#req.arrayField} IS NULL
-            	OR :#{#req.arrayField} LIKE ''
-            	OR bm.id IN :#{#req.arrayField}
+                :#{#req.departmentName} IS NULL OR
+                d.name LIKE :#{"%" + #req.departmentName + "%"}
             """, countQuery = """
-            SELECT 
-                COUNT(bm.id) FROM bo_mon bm 
-            WHERE 
-                :#{#req.arrayField} IS NULL
-            	OR :#{#req.arrayField} LIKE ''
-            	OR bm.id IN :#{#req.arrayField}
+            SELECT
+                COUNT(d.id) FROM department d
+            WHERE
+                :#{#req.departmentName} IS NULL OR
+                d.name LIKE :#{"%" + #req.departmentName + "%"}
             """, nativeQuery = true)
-    Page<DepartmentResponse> getAllBoMonByFilter(Pageable pageable, @Param("req") FindDepartmentsRequest req);
+    Page<DepartmentResponse> getAllDepartmentByFilter(Pageable pageable, @Param("req") FindDepartmentsRequest req);
 
     @Query(value = """
             SELECT
-            	ROW_NUMBER() OVER(
-            	ORDER BY bm.id DESC) AS stt,
-            	bm.id as idBoMon,
-            	bm.ten as tenBoMon,
-            	bm.xoa_mem as xoaMemBoMon
+            	d.id AS id,
+            	d.code AS departmentCode,
+            	d.name AS departmentName
             FROM
-            	bo_mon bm
+            	department d
+            WHERE
+                d.id = :id
             """, countQuery = """
-            SELECT 
-                COUNT(bm.id) FROM bo_mon bm 
+            SELECT
+            	COUNT(d.id)
+            FROM
+            	department d
+            WHERE
+                d.id = :id
             """, nativeQuery = true)
-    Page<DepartmentResponse> getAllBoMon(Pageable pageable);
+    DetailDepartmentResponse getDetailDepartment(String id);
 
-    Boolean existsByTen(String ten);
+    Boolean existsByName(String name);
+
+    Boolean existsByCode(String code);
 
     @Query(value = """
-            SELECT 
-                id as idBoMon,
-                ten as tenBoMon
-            FROM
-                bo_mon bm
+            SELECT  d.id AS id,
+                    d.name AS departmentName
+            FROM department d
             """, nativeQuery = true)
-    List<ListDepartmentResponse> getListBoMon();
+    List<ListDepartmentResponse> getListDepartment();
 
 }

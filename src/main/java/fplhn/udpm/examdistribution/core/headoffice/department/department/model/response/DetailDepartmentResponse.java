@@ -1,19 +1,14 @@
 package fplhn.udpm.examdistribution.core.headoffice.department.department.model.response;
 
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
+import org.springframework.beans.factory.annotation.Value;
 
 public interface DetailDepartmentResponse extends IsIdentify {
 
-    String getSubjectCode();
+    @Value("#{target.departmentCode}")
+    String getDepartmentCode();
 
-    String getSubjectName();
-
-    String getDepartmentId();
-
-    String getSubjectType();
-
-    String getSubjectStatus();
-
-    Long getCreatedDate();
+    @Value("#{target.departmentName}")
+    String getDepartmentName();
 
 }
