@@ -25,4 +25,7 @@ public class Department extends PrimaryEntity implements Serializable {
     @Nationalized
     private String name;
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    private String code;
+
 }
