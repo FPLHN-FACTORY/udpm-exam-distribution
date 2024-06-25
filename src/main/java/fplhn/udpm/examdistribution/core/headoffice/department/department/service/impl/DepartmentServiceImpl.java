@@ -10,6 +10,7 @@ import fplhn.udpm.examdistribution.core.headoffice.department.department.reposit
 import fplhn.udpm.examdistribution.core.headoffice.department.department.service.DepartmentService;
 import fplhn.udpm.examdistribution.entity.Department;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,10 +31,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentExtendRepository departmentExtendRepository;
 
     @Override
-    public PageableObject<DepartmentResponse> getAllDepartment(FindDepartmentsRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
-        Page<DepartmentResponse> res = departmentExtendRepository.getAllDepartmentByFilter(pageable, request);
-        return new PageableObject<>(res);
+    public ResponseObject<?> getAllDepartment(FindDepartmentsRequest request) {
+        Pageable pageable = Helper.createPageable(request, "createdDate");
+        return new ResponseObject<>(
+                PageableObject.of(departmentExtendRepository.getAllDepartmentByFilter(pageable, request)),
+                HttpStatus.OK,
+                "Lấy thành công danh sách bộ môn"
+        );
     }
 
     @Override
@@ -115,8 +119,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<ListDepartmentResponse> getListDepartment() {
-        return departmentExtendRepository.getListDepartment();
+    public ResponseObject<?> getListDepartment() {
+        return new ResponseObject<>(departmentExtendRepository.getListDepartment(), HttpStatus.OK, "Lấy thành công danh sách bộ môn");
     }
 
 }

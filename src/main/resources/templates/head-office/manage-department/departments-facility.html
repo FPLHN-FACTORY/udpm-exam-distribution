@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <title>HO - Quản lý bộ môn</title>
+    <title>HO - Quản lý bộ môn - cơ sở</title>
 </head>
 <body>
 <div class="wrapper">
@@ -19,7 +19,9 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quản lý bộ môn</h2>
+                    <h2>Quản lý bộ môn:
+                        <span id="showCurrentDepartmentNameScreen"></span>
+                    </h2>
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
@@ -27,8 +29,8 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="departmentName">Tên bộ môn</label>
-                                    <input type="text" id="departmentName" class="form-control">
+                                    <label for="departmentFacilityName">Tên cơ sở</label>
+                                    <input type="text" id="departmentFacilityName" class="form-control">
                                 </div>
                             </div>
                             <div class="text-center">
@@ -47,28 +49,28 @@
                     <!-- Filter -->
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
-                            <h4>Danh sách bộ môn</h4>
+                            <h4>Danh sách bộ môn theo cơ sở</h4>
                             <button
                                     class="btn btn-secondary"
                                     data-bs-toggle="modal"
-                                    onclick="openModalAddOrUpdateDepartment(0)"
+                                    onclick="openModalAddOrUpdateDepartmentFacility(0)"
                             >
-                                Thêm Bộ Môn
+                                Thêm Bộ Môn Theo Cơ Sở
                             </button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <td>STT</td>
-                                    <td>Tên bộ môn</td>
-                                    <td>Trạng thái</td>
+                                    <td>#</td>
+                                    <td>Tên cơ sở</td>
+                                    <td>Tên chủ nhiệm bộ môn</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
-                                <tbody id="departmentTableBody" class="table-group-divider">
+                                <tbody id="departmentFacilityTableBody" class="table-group-divider">
                                     <tr>
                                         <td colspan="6" class="text-center">Không có dữ liệu</td>
                                     </tr>
@@ -95,31 +97,38 @@
         </div>
     </div>
     <!-- Modal Modify Department -->
-    <div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel"
+    <div class="modal fade" id="departmentFacilityModal" tabindex="-1" aria-labelledby="addDepartmentFacilityModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="departmentModalLabel">Thêm bộ môn</h5>
+                    <h5 class="modal-title">
+                        <span id="departmentFacilityModalLabel">Thêm bộ môn theo cơ sở cho bộ môn:</span>
+                        <span id="showCurrentDepartmentNameModal"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="modifyDepartmentCode" class="form-label">Mã bộ môn</label>
-                        <input type="text" class="form-control" id="modifyDepartmentCode" required>
-                        <div class="invalid-feedback" id="departmentCodeError"></div>
+                        <label for="modifyFacilityId" class="form-label">Chọn cơ sở</label>
+                        <select class="form-select" id="modifyFacilityId" required>
+                            <option value="">--Cơ sở--</option>
+                        </select>
+                        <div class="invalid-feedback" id="facilityIdError"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="modifyDepartmentName" class="form-label">Tên bộ môn</label>
-                        <input type="text" class="form-control" id="modifyDepartmentName" required>
-                        <div class="invalid-feedback" id="departmentNameError"></div>
+                        <label for="modifyHeadOfDepartmentId" class="form-label">Chọn chủ nhiệm bộ môn</label>
+                        <select class="form-select" id="modifyHeadOfDepartmentId" required>
+                            <option value="">--Chủ nhiệm bộ môn--</option>
+                        </select>
+                        <div class="invalid-feedback" id="headOfDepartmentIdError"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="modifyDepartmentButton">Thêm</button>
+                    <button type="button" class="btn btn-secondary" id="modifyDepartmentFacilityButton">Thêm</button>
                 </div>
             </div>
         </div>
@@ -138,6 +147,6 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
-<script th:src="@{/js/manage-department/department/department.js}"></script>
+<script th:src="@{/js/manage-department/departmentfacility/departmentfacility.js}"></script>
 </body>
 </html>

@@ -1,3 +1,14 @@
+$(document).ready(function () {
+    getSearchDepartment();
+    onChangePageSize();
+    handleFilter();
+    handleResetFilter();
+
+    $("#modifyDepartmentButton").on("click", function () {
+        handleAddOrUpdateDepartmentConfirm();
+    });
+});
+
 //----------------------------------------------------------------------------------------------------------------------
 // START: state
 let stateAddOrUpdate = 0; // 0 -> add, 1 -> update
@@ -12,10 +23,10 @@ const getStateDepartmentId = () => stateDepartmentId;
 // START: setter
 const setStateAddOrUpdate = (state) => {
     stateAddOrUpdate = state;
-}
+};
 const setStateDepartmentId = (departmentId) => {
     stateDepartmentId = departmentId;
-}
+};
 // END: setter
 //----------------------------------------------------------------------------------------------------------------------
 const getGlobalParamsSearch = () => {
@@ -47,12 +58,12 @@ const resetFields = () => {
  * @param {string} departmentName - Giá trị của departmentName
  * @param {string} departmentCode - Giá trị của departmentCode
  */
-const setAllFields = (departmentName, departmentCode) => {
+const setValueFields = (departmentName, departmentCode) => {
     $("#modifyDepartmentCode").val(departmentCode);
     $("#modifyDepartmentName").val(departmentName);
 };
 
-const getAllFields = () => {
+const getValueFields = () => {
     return {
         departmentName: $("#modifyDepartmentName").val(),
         departmentCode: $("#modifyDepartmentCode").val(),
@@ -60,32 +71,14 @@ const getAllFields = () => {
 };
 const isFieldHasAnyError = () => {
     let isError = false;
-    for (let field in getAllFields()) {
-        if (getAllFields()[field].trim() === "") {
+    for (let field in getValueFields()) {
+        if (getValueFields()[field].trim() === "") {
             isError = true;
         }
     }
     return isError;
 };
 //----------------------------------------------------------------------------------------------------------------------
-$(document).ready(function () {
-    getSearchDepartment();
-    onChangePageSize();
-
-    $("#modifyDepartmentButton").on("click", function () {
-        handleAddOrUpdateDepartmentConfirm();
-    });
-
-    $("#buttonFilter").on("click", function () {
-        getSearchDepartment(1, $("#pageSize").val(),getGlobalParamsSearch());
-    });
-
-    $("#resetFilter").on("click", function () {
-        $("#pageSize").val("5");
-        resetGlobalParamsSearch();
-        getSearchDepartment(1, $("#pageSize").val(), getGlobalParamsSearch());
-    });
-});
 
 const getSearchDepartment = (
     page = 1,
@@ -111,11 +104,12 @@ const getSearchDepartment = (
 
     url = url.slice(0, -1);
 
+    console.log(url);
     $.ajax({
         type: "GET",
         url: url,
         success: function (responseBody) {
-            const responseData = responseBody?.data;
+            const responseData = responseBody?.data?.data;
             if (responseData.length === 0) {
                 $('#departmentTableBody').html(`
                     <tr>
@@ -135,7 +129,7 @@ const getSearchDepartment = (
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span class="fs-4" onclick="getDetailDepartment('${department.id}')">
+                                <span class="fs-4" onclick="handleRedirectDepartmentFacility('${department.id}')">
                                     <i 
                                         class="fa-solid fa-eye"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -145,14 +139,28 @@ const getSearchDepartment = (
                         </tr>`;
             });
             $('#departmentTableBody').html(departments);
-            const totalPages = responseBody?.totalPages ? responseBody?.totalPages : 1;
+            const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn');
         }
     });
-}
+};
+
+const handleResetFilter = () => {
+    $("#resetFilter").on("click", function () {
+        $("#pageSize").val("5");
+        resetGlobalParamsSearch();
+        getSearchDepartment();
+    });
+};
+
+const handleFilter = () => {
+    $("#buttonFilter").on("click", function () {
+        getSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
+    });
+};
 
 const changePage = (page) => {
     getSearchDepartment(page, $('#pageSize').val(), getGlobalParamsSearch());
@@ -163,7 +171,7 @@ const onChangePageSize = () => {
         resetGlobalParamSearch();
         getSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
     });
-}
+};
 
 const createPagination = (totalPages, currentPage) => {
     let paginationHtml = '';
@@ -212,30 +220,11 @@ const createPagination = (totalPages, currentPage) => {
     }
 
     $('#pagination').html(paginationHtml);
-}
+};
 
-const getDetailDepartment = (id) => {
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_OFFICE_DEPARTMENT + `/${id}`,
-        success: function (responseBody) {
-            if (responseBody?.data) {
-                const subject = responseBody?.data;
-                $('#modifySubjectName').val(subject.subjectName);
-                $('#modifySubjectCode').val(subject.subjectCode);
-                $('#modifyDepartmentId').val(subject.departmentId);
-                $('#modifySubjectType').val(subject.subjectType);
-                $('#modifyStartDate').val(getValueForInputDate(subject.createdDate));
-                $('#subjectId').val(subject.id);
-                $('#subjectModalLabel').text('Cập nhật môn học');
-                $('#subjectModal').modal('show');
-            }
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin môn học');
-        }
-    });
-}
+const handleRedirectDepartmentFacility = (departmentId) => {
+    window.location.href = ApiConstant.REDIRECT_HEAD_OFFICE_DEPARTMENT_FACILITY + "/" + departmentId;
+};
 
 const openModalAddOrUpdateDepartment = (status, departmentId, departmentName, departmentCode) => {
     if (status === 0) {
@@ -244,7 +233,7 @@ const openModalAddOrUpdateDepartment = (status, departmentId, departmentName, de
     } else {
         //update
         setStateDepartmentId(departmentId);
-        setAllFields(departmentName, departmentCode);
+        setValueFields(departmentName, departmentCode);
     }
     viewShowModalAddOrUpdateDepartment(status);
     resetFieldsError();
@@ -292,10 +281,10 @@ const handleAddOrUpdateDepartment = () => {
         type: getStateAddOrUpdate() === 0 ? "POST" : "PUT",
         url: finalUrl,
         dataType: 'json',
-        data: JSON.stringify(getAllFields()),
+        data: JSON.stringify(getValueFields()),
         success: function (responseBody) {
             showToastSuccess(getStateAddOrUpdate() === 0 ? "Thêm bộ môn thành công" : "Cập nhật bộ môn thành công");
-            getSearchDepartment(1, $('#pageSize').val(), {departmentName: ""});
+            getSearchDepartment();
             $('#departmentModal').modal('hide');
         },
         error: function (error) {

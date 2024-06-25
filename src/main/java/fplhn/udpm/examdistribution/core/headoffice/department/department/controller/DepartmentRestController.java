@@ -1,13 +1,11 @@
 package fplhn.udpm.examdistribution.core.headoffice.department.department.controller;
 
-import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.request.CreateUpdateDepartmentRequest;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.request.FindDepartmentsRequest;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.service.DepartmentService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,12 +24,12 @@ public class DepartmentRestController {
 
     @GetMapping("/get-all-department")
     public ResponseEntity<?> getAllDepartment(FindDepartmentsRequest request) {
-        return new ResponseEntity<>(departmentService.getAllDepartment(request), HttpStatus.OK);
+        return Helper.createResponseEntity(departmentService.getAllDepartment(request));
     }
 
     @GetMapping("/get-department/{id}")
     public ResponseEntity<?> getDetailDepartment(@PathVariable String id) {
-        return new ResponseEntity<>(departmentService.getDetailDepartment(id), HttpStatus.OK);
+        return Helper.createResponseEntity(departmentService.getDetailDepartment(id));
     }
 
     @PostMapping("/add-department")
@@ -46,12 +44,12 @@ public class DepartmentRestController {
 
     @PutMapping("/delete-department/{id}")
     public ResponseEntity<?> deleteDepartment(@PathVariable String id) {
-        return new ResponseEntity<>(departmentService.deleteDepartment(id), HttpStatus.OK);
+        return Helper.createResponseEntity(departmentService.deleteDepartment(id));
     }
 
     @GetMapping("/get-list-department")
     public ResponseEntity<?> getListDepartment() {
-        return new ResponseEntity<>(departmentService.getListDepartment(), HttpStatus.OK);
+        return Helper.createResponseEntity(departmentService.getListDepartment());
     }
 
 }
