@@ -1,8 +1,12 @@
+@view-transition {
+    navigation: auto;
+    types: slide, forwards;
+}
+
 :root {
     --common-button-color: #1A2035;
     --common-button-main-color: #8681D8;
 }
-
 
 table {
     width: 100%;
