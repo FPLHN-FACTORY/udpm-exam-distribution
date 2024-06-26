@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(MappingConstants.REDIRECT_HEAD_OFFICE_STAFF)
-public class HOStaffController {
+public class HOStaffRoleController {
 
-    @GetMapping
+    @GetMapping("/{id}")
     public String viewStaffs() {
-        return "head-office/manage-staff/staff";
+        return "head-office/manage-staff/staff-role";
     }
 
 }

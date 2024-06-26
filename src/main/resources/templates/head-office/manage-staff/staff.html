@@ -7,8 +7,7 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <title>HO - Quản lý chức vụ</title>
-    <!--    <script src="../../../static/js/manage-role/role.js"></script>-->
+    <title>HO - Quản lý nhân viên</title>
 </head>
 <body>
 <div class="wrapper">
@@ -20,7 +19,7 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quản lý chức vụ</h2>
+                    <h2>Quản lý nhân viên</h2>
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
@@ -31,15 +30,16 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="roleName">Tên chức vụ</label>
-                                    <input type="text" id="roleName" name="roleName" class="form-control">
+                                    <label for="searchStaffCode">Mã nhân viên</label>
+                                    <input type="text" id="searchStaffCode" name="searchStaffCode" class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="idFacility">Cơ sở</label>
-                                    <select id="idFacility" name="idFacility" class="form-select"
-                                            style="height: 60%;">
-                                        <option value="">Chọn cơ sở</option>
-                                    </select>
+                                    <label for="searchName">Tên nhân viên</label>
+                                    <input type="text" id="searchName" name="searchName" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="searchAccountFptOrFe">Email FPT hoặc Email FE</label>
+                                    <input type="text" id="searchAccountFptOrFe" name="searchAccountFptOrFe" class="form-control">
                                 </div>
                             </div>
                         </form>
@@ -47,13 +47,13 @@
                     <!-- Filter -->
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
-                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ</h4>
+                            <h4><i class="fa-solid fa-list"></i> Danh sách nhân viên</h4>
                             <button
                                     class="btn btn-secondary"
                                     data-bs-toggle="modal"
-                                    onclick="openModalAddRole()"
+                                    onclick="openModalAddStaff()"
                             >
-                                Thêm chức vụ
+                                Thêm nhân viên
                             </button>
                         </div>
                         <div class="table-responsive mt-4">
@@ -61,14 +61,17 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Tên chức vụ</td>
-                                    <td>Tên cơ sở</td>
+                                    <td>Mã nhân viên</td>
+                                    <td>Tên nhân viên</td>
+                                    <td>Email FPT</td>
+                                    <td>Email FE</td>
+                                    <td>Bộ môn theo cơ sở</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
-                                <tbody id="roleTableBody" class="table-group-divider">
+                                <tbody id="staffTableBody" class="table-group-divider">
                                 <tr>
                                     <td colspan="6" class="text-center">Không có dữ liệu</td>
                                 </tr>
@@ -95,28 +98,45 @@
         </div>
     </div>
     <!-- Start modal add role  -->
-    <div class="modal fade" id="modifyRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel"
+    <div class="modal fade" id="modifyStaffModal" tabindex="-1" aria-labelledby="RoleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ</h5>
+                    <h5 class="modal-title" id="staffModalLabel">Thêm nhân viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="modifyRoleForm">
-                        <input type="hidden" id="roleId">
+                    <form id="modifyStaffForm">
+                        <input type="hidden" id="modifyStaffId">
                         <div class="mb-3">
-                            <label for="modifyRoleName" class="form-label">Tên chức vụ</label>
-                            <input type="text" class="form-control" id="modifyRoleName" required>
-                            <div class="text-danger" id="modifyRoleNameError"></div>
+                            <label for="modifyStaffCode" class="form-label"><span class="text-danger"> * </span> Mã nhân viên </label>
+                            <input type="text" class="form-control" id="modifyStaffCode" required>
+                            <div class="text-danger" id="modifyStaffCodeError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifyFacility" class="form-label">Cơ sở</label>
-                            <select class="form-select" id="modifyFacility" required>
-                                <option value="">Chọn cơ sở</option>
+                            <label for="modifyName" class="form-label"><span class="text-danger"> * </span> Tên nhân viên  </label>
+                            <input type="text" class="form-control" id="modifyName" required>
+                            <div class="text-danger" id="modifyNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyAccountFPT" class="form-label"><span class="text-danger"> * </span> Email FPT </label>
+                            <input type="text" class="form-control" id="modifyAccountFPT" required>
+                            <div class="text-danger" id="modifyAccountFPTError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyAccountFE" class="form-label"><span class="text-danger"> * </span> Email FE </label>
+                            <input type="text" class="form-control" id="modifyAccountFE" required>
+                            <div class="text-danger" id="modifyAccountFEError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifydepartmentFacility" class="form-label">Bộ môn - cơ sở</label>
+                            <select class="form-select" id="modifydepartmentFacility" required>
+                                <option value="">Chọn bộ môn - cơ sở</option>
                             </select>
-                            <div class="text-danger" id="modifyFacilityError"> </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được trống!</label>
                         </div>
                     </form>
                 </div>
@@ -124,7 +144,7 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="modifyRoleButton">Lưu</button>
+                    <button type="button" class="btn btn-secondary" id="modifyStaffButton">Lưu</button>
                 </div>
             </div>
         </div>

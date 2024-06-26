@@ -1,10 +1,12 @@
 package fplhn.udpm.examdistribution.core.headoffice.role.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -14,9 +16,11 @@ public class HOSaveRoleRequest {
 
     private String roleId;
 
-    @NotBlank(message = "role name is empty")
+    @NotBlank(message = "Role name cannot be blank")
+    @Length(max = 100, message = "Role name must be less than 100 characters")
+    @Pattern(regexp = "^[^\\s\\p{M}]+$", message = "Role name cannot contain whitespace or diacritical marks")
     private String roleName;
 
-    @NotBlank(message = "facility is not found")
+    @NotBlank(message = "Facility cannot be blank")
     private String idFacility;
 }

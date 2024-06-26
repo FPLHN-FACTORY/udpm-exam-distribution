@@ -1,6 +1,6 @@
 package fplhn.udpm.examdistribution.core.headoffice.staff.model.response;
 
-public interface HOStaffResonpse {
+public interface HOStaffDetailResponse {
 
     String getId();
 
@@ -11,6 +11,8 @@ public interface HOStaffResonpse {
     String getAccountFe();
 
     String getAccountFpt();
+
+    String getDepartmentFacilityId();
 
     String getDepartmentFacilityName();
 
