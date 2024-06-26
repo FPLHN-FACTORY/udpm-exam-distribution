@@ -20,6 +20,8 @@ public class GlobalRestExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handlerException(Exception ex) {
         if (ex instanceof RestApiException) {
+            ex.printStackTrace(System.out);
+            log.warn(ex.getMessage());
             ApiError apiError = new ApiError(ex.getMessage());
             return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
         } else if (ex instanceof ConstraintViolationException) {
@@ -30,6 +32,8 @@ public class GlobalRestExceptionHandler {
                     .collect(Collectors.toList());
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         } else if (ex instanceof ForbiddenException) {
+            ex.printStackTrace(System.out);
+            log.warn(ex.getMessage());
             ApiError apiError = new ApiError(ex.getMessage());
             return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
         } else {

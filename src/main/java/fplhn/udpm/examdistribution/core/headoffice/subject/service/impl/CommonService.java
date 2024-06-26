@@ -16,7 +16,7 @@ public class CommonService {
         return new ResponseObject<>(
                 departmentSubjectRepository.getAllDepartment(),
                 HttpStatus.OK,
-                "Get all department successfully"
+                "Lấy danh sách bộ môn thành công"
         );
     }
 

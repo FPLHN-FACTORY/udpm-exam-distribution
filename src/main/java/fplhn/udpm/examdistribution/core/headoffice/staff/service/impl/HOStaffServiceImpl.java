@@ -20,9 +20,9 @@ import java.util.Optional;
 @Service
 public class HOStaffServiceImpl implements HOStaffService {
 
-    private HOStaffRepository staffRepo;
+    private final HOStaffRepository staffRepo;
 
-    private HOStaffDepartmentFacilityRepository departmentFacilityRepo;
+    private final HOStaffDepartmentFacilityRepository departmentFacilityRepo;
 
     public HOStaffServiceImpl(HOStaffRepository staffRepo, HOStaffDepartmentFacilityRepository departmentFacilityRepo) {
         this.staffRepo = staffRepo;
@@ -73,7 +73,9 @@ public class HOStaffServiceImpl implements HOStaffService {
         staff.setName(staffRequest.getName());
         List<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
         if (!checkStaff.isEmpty() && !checkStaff.get(0).getId().equalsIgnoreCase(staffRequest.getStaffCode())) {
-            return new ResponseObject<>(null, HttpStatus.OK, "staff code is conflict with other staff");
+            if (!staff.getId().equals(checkStaff.get(0).getId())) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "staff code is conflict with other staff");
+            }
         }
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());

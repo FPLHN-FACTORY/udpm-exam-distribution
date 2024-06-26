@@ -7,6 +7,8 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>HO - Quản lý bộ môn</title>
 </head>
 <body>
@@ -69,9 +71,9 @@
                                 </tr>
                                 </thead>
                                 <tbody id="departmentTableBody" class="table-group-divider">
-                                    <tr>
-                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
                                 </tbody>
                             </table>
                             <div class="d-flex justify-content-end align-items-center gap-3">
@@ -229,6 +231,7 @@
         </div>
     </div>
     <!-- Modal Modify AddMajor -->
+    <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -243,6 +246,7 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/manage-department/department/department.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/manage-department/major/major.js}"></script>
 </body>
 </html>

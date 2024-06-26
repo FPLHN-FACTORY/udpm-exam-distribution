@@ -1,9 +1,14 @@
+@view-transition {
+    navigation: auto;
+    types: slide, forwards;
+}
+
 :root {
     --common-button-color: #1A2035;
     --common-button-main-color: #8681D8;
 }
 
-
+/* Table Style */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -28,6 +33,7 @@ tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
+/* Button Style */
 .toastify-custom-error {
     background-color: #990000;
     color: #ff6666;
@@ -38,6 +44,7 @@ tr:nth-child(even) {
     color: #66ff66;
 }
 
+/* Pagination Style */
 #pagination {
     margin: 0;
 }
@@ -63,4 +70,47 @@ tr:nth-child(even) {
 .pagination .page-link:hover {
     background-color: var(--common-button-main-color);
     color: white;
+}
+
+/*Loading Style*/
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading__spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+.loading__text {
+    margin-top: 10px;
+    color: #fff;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

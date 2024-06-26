@@ -35,8 +35,6 @@ public class HOSaveStaffRequest {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@fpt\\.edu\\.vn$", message = "Must be a valid email ending with @fpt.edu.vn")
     private String accountFpt;
 
-    @NotBlank(message = "Department Facility ID cannot be blank")
-    @Length(max = 100, message = "Department Facility ID must be less than 100 characters")
     private String departmentFacilityId;
 
 }

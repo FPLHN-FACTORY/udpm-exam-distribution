@@ -37,7 +37,7 @@ public class SubjectServiceImpl implements SubjectService {
         return new ResponseObject<>(
                 PageableObject.of(subjectExtendRepository.getAllSubject(pageable, request)),
                 HttpStatus.OK,
-                "Get all subject successfully"
+                "Lấy danh sách môn học thành công"
         );
     }
 
@@ -46,12 +46,12 @@ public class SubjectServiceImpl implements SubjectService {
 
         Optional<Subject> subjectOptional = subjectExtendRepository.findBySubjectCode(request.getSubjectCode());
         if (subjectOptional.isPresent()) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Subject code already exists");
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã môn học đã tồn tại");
         }
 
         Optional<Department> department = departmentSubjectRepository.findById(request.getDepartmentId());
         if (department.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Department not found");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Bộ môn không tồn tại");
         }
 
         Subject subject = new Subject();
@@ -64,7 +64,7 @@ public class SubjectServiceImpl implements SubjectService {
         subject.setStatus(EntityStatus.ACTIVE);
         subjectExtendRepository.save(subject);
 
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Create subject successfully");
+        return new ResponseObject<>(null, HttpStatus.CREATED, "Tạo môn học thành công");
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SubjectServiceImpl implements SubjectService {
 
         Department department = departmentSubjectRepository.findById(request.getDepartmentId()).orElse(null);
         if (department == null) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Department not found");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Bộ môn không tồn tại");
         }
 
 
@@ -89,8 +89,8 @@ public class SubjectServiceImpl implements SubjectService {
                 });
 
         return subjectOptional
-                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Update subject successfully"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Subject not found"));
+                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật môn học thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Môn học không tồn tại"));
     }
 
     @Override
@@ -101,8 +101,8 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseObject<?> getSubjectById(String subjectId) {
         return subjectExtendRepository.getDetailSubjectById(subjectId)
-                .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Get subject successfully"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Subject not found"));
+                .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Lấy thông tin môn học thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Môn học không tồn tại"));
     }
 
 }

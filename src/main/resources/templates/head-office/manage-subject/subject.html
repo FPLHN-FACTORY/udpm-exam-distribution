@@ -8,8 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>HO - Quản lý môn học</title>
-    <script src="../../../static/js/manage-subject/subject.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -142,8 +142,21 @@
                             <div class="invalid-feedback" id="subjectNameError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifySubjectType" class="form-label">Loại môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectType" required>
+                            <label for="modifyDepartmentId" class="form-label">Bộ môn</label>
+                            <select class="form-select" id="modifyDepartmentId" required>
+                                <option value="">Chọn bộ môn</option>
+                            </select>
+                            <div class="invalid-feedback" id="departmentIdError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifySubjectType" class="form-label">Bộ môn</label>
+                            <select class="form-select" id="modifySubjectType" required>
+                                <option value="">Chọn hình thức môn học</option>
+                                <option value="TRADITIONAL">Traditional</option>
+                                <option value="ONLINE">Online</option>
+                                <option value="BLEND">Blend</option>
+                                <option value="TRUC_TUYEN">Trực tuyến</option>
+                            </select>
                             <div class="invalid-feedback" id="subjectTypeError"></div>
                         </div>
                         <div class="mb-3">
@@ -164,6 +177,8 @@
     </div>
     <!-- Modal Modify Subject -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
+    <!-- Loading   -->
+    <div th:insert="~{fragment/loading/loading :: loading}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
