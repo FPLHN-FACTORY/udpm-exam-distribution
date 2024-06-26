@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    getSearchDepartment();
+    fetchSearchDepartment();
     onChangePageSize();
     handleFilter();
     handleResetFilter();
@@ -80,7 +80,7 @@ const isFieldHasAnyError = () => {
 };
 //----------------------------------------------------------------------------------------------------------------------
 
-const getSearchDepartment = (
+const fetchSearchDepartment = (
     page = 1,
     size = $('#pageSize').val(),
     paramSearch = {
@@ -104,7 +104,6 @@ const getSearchDepartment = (
 
     url = url.slice(0, -1);
 
-    console.log(url);
     $.ajax({
         type: "GET",
         url: url,
@@ -124,14 +123,20 @@ const getSearchDepartment = (
                             <td>${department.departmentName + " - " + department?.departmentCode}</td>
                             <td>${department.departmentStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                                <span onclick="handleOpenModalManipulateMajor('${department.id}')" class="fs-4">
+                                    <i 
+                                        class="fa-solid fa-receipt"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
                                 <span onclick="openModalAddOrUpdateDepartment(1,'${department.id}','${department.departmentName}','${department.departmentCode}')" class="fs-4">
-                                    <i class="fa-solid fa-clipboard-list"
+                                    <i class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
                                 <span class="fs-4" onclick="handleRedirectDepartmentFacility('${department.id}')">
                                     <i 
-                                        class="fa-solid fa-eye"
+                                        class="fa-solid fa-circle-info"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
@@ -152,24 +157,24 @@ const handleResetFilter = () => {
     $("#resetFilter").on("click", function () {
         $("#pageSize").val("5");
         resetGlobalParamsSearch();
-        getSearchDepartment();
+        fetchSearchDepartment();
     });
 };
 
 const handleFilter = () => {
     $("#buttonFilter").on("click", function () {
-        getSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
+        fetchSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
     });
 };
 
 const changePage = (page) => {
-    getSearchDepartment(page, $('#pageSize').val(), getGlobalParamsSearch());
+    fetchSearchDepartment(page, $('#pageSize').val(), getGlobalParamsSearch());
 };
 
 const onChangePageSize = () => {
     $("#pageSize").on("change", function () {
         resetGlobalParamSearch();
-        getSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
+        fetchSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
     });
 };
 
@@ -242,7 +247,7 @@ const openModalAddOrUpdateDepartment = (status, departmentId, departmentName, de
 };
 
 const viewShowModalAddOrUpdateDepartment = (status) => {
-    $("#departmentModalLabel").text(status === 0 ? "Thêm môn học" : "Cập nhật môn học");
+    $("#departmentModalLabel").text(status === 0 ? "Thêm bộ môn" : "Cập nhật bộ môn");
     $("#modifyDepartmentButton").text(status === 0 ? "Thêm" : "Cập nhật");
 };
 
@@ -284,7 +289,7 @@ const handleAddOrUpdateDepartment = () => {
         data: JSON.stringify(getValueFields()),
         success: function (responseBody) {
             showToastSuccess(getStateAddOrUpdate() === 0 ? "Thêm bộ môn thành công" : "Cập nhật bộ môn thành công");
-            getSearchDepartment();
+            fetchSearchDepartment();
             $('#departmentModal').modal('hide');
         },
         error: function (error) {
