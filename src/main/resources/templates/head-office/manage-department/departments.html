@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <title>HO - Quản lý bộ môn</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-office :: sidebar-head-office}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý bộ môn</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="departmentName">Tên bộ môn</label>
+                                    <input type="text" id="departmentName" class="form-control">
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button id="buttonFilter" type="button" class="btn btn-secondary">Tìm kiếm</button>
+                                <button
+                                        type="reset"
+                                        class="btn"
+                                        id="resetFilter"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách bộ môn</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddOrUpdateDepartment(0)"
+                            >
+                                Thêm Bộ Môn
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên bộ môn</td>
+                                    <td>Trạng thái</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="departmentTableBody" class="table-group-divider">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Department -->
+    <div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="departmentModalLabel">Thêm bộ môn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modifyDepartmentCode" class="form-label">Mã bộ môn</label>
+                        <input type="text" class="form-control" id="modifyDepartmentCode" required>
+                        <div class="invalid-feedback" id="departmentCodeError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modifyDepartmentName" class="form-label">Tên bộ môn</label>
+                        <input type="text" class="form-control" id="modifyDepartmentName" required>
+                        <div class="invalid-feedback" id="departmentNameError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyDepartmentButton">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Department -->
+    <!-- Modal Modify Major -->
+    <div class="modal modal-xl fade" id="majorModal" tabindex="-1" aria-labelledby="majorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quản lý chuyên ngành</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="majorName">Tên chuyên ngành</label>
+                                <input type="text" id="majorName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="buttonFilterMajor" type="button" class="btn btn-secondary">Tìm kiếm</button>
+                            <button
+                                    type="reset"
+                                    class="btn"
+                                    id="resetFilterMajor"
+                                    style="background-color: var(--common-button-color); color: white;"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách chuyên ngành</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddOrUpdateMajor(0)"
+                            >
+                                Thêm Chuyên Ngành
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td>Tên chuyên ngành</td>
+                                    <td>Trạng thái</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="majorTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationMajor">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeMajor" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Major -->
+    <!-- Modal Modify AddMajor -->
+    <div class="modal fade" id="addMajorModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="majorModalLabel">Thêm chuyên ngành</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modifyDepartmentName" class="form-label">Tên chuyên ngành</label>
+                        <input type="text" class="form-control" id="modifyMajorName" required>
+                        <div class="invalid-feedback" id="majorNameError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="handleCloseModalAddMajor()" type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyMajorButton">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify AddMajor -->
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/manage-department/department/department.js}"></script>
+<script th:src="@{/js/manage-department/major/major.js}"></script>
+</body>
+</html>

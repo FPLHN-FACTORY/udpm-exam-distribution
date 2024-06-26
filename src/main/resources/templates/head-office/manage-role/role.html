@@ -7,9 +7,8 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
-    <title>HO - Quản lý môn học</title>
-    <script src="../../../static/js/manage-subject/subject.js"></script>
+    <title>HO - Quản lý chức vụ</title>
+    <!--    <script src="../../../static/js/manage-role/role.js"></script>-->
 </head>
 <body>
 <div class="wrapper">
@@ -21,60 +20,40 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quản lý môn học</h2>
+                    <h2>Quản lý chức vụ</h2>
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" id="subjectCode" name="subjectCode" class="form-control">
+                                    <label for="roleName">Tên chức vụ</label>
+                                    <input type="text" id="roleName" name="roleName" class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="subjectName">Tên môn học</label>
-                                    <input type="text" id="subjectName" name="subjectName" class="form-control">
-                                </div>
-                                <div class="col form-group">
-                                    <label for="departmentId">Bộ môn</label>
-                                    <select id="departmentId" name="departmentId" class="form-select"
+                                    <label for="idFacility">Cơ sở</label>
+                                    <select id="idFacility" name="idFacility" class="form-select"
                                             style="height: 60%;">
-                                        <option value="">Chọn bộ môn</option>
+                                        <option value="">Chọn cơ sở</option>
                                     </select>
                                 </div>
-                                <div class="col form-group">
-                                    <label for="subjectType">Loại môn học</label>
-                                    <input type="text" id="subjectType" name="subjectType" class="form-control">
-                                </div>
-                                <div class="col form-group">
-                                    <label for="startDate">Ngày bắt đầu</label>
-                                    <input type="date" id="startDate" name="startDate" class="form-control">
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>
                     <!-- Filter -->
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
-                            <h4>Danh sách môn học</h4>
+                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ</h4>
                             <button
                                     class="btn btn-secondary"
                                     data-bs-toggle="modal"
-                                    onclick="openModalAddSubject()"
+                                    onclick="openModalAddRole()"
                             >
-                                Thêm Môn Học
+                                Thêm chức vụ
                             </button>
                         </div>
                         <div class="table-responsive mt-4">
@@ -82,18 +61,14 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Mã môn học</td>
-                                    <td>Tên môn học</td>
-                                    <td>Bộ môn</td>
-                                    <td>Loại môn học</td>
-                                    <td>Trạng thái</td>
-                                    <td>Ngày bắt đầu</td>
+                                    <td>Tên chức vụ</td>
+                                    <td>Tên cơ sở</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
-                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tbody id="roleTableBody" class="table-group-divider">
                                 <tr>
                                     <td colspan="6" class="text-center">Không có dữ liệu</td>
                                 </tr>
@@ -119,44 +94,29 @@
             </div>
         </div>
     </div>
-    <!-- Modal Modify Subject -->
-    <div class="modal fade" id="subjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel"
+    <!-- Start modal add role  -->
+    <div class="modal fade" id="modifyRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="subjectModalLabel">Thêm môn học</h5>
+                    <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addSubjectForm">
-                        <input type="hidden" id="subjectId">
+                    <form id="modifyRoleForm">
+                        <input type="hidden" id="roleId">
                         <div class="mb-3">
-                            <label for="modifySubjectCode" class="form-label">Mã môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectCode" required>
-                            <div class="invalid-feedback" id="subjectCodeError"></div>
+                            <label for="modifyRoleName" class="form-label">Tên chức vụ</label>
+                            <input type="text" class="form-control" id="modifyRoleName" required>
+                            <div class="text-danger" id="modifyRoleNameError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifySubjectName" class="form-label">Tên môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectName" required>
-                            <div class="invalid-feedback" id="subjectNameError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyDepartmentId" class="form-label">Bộ môn</label>
-                            <select class="form-select" id="modifyDepartmentId" required>
-                                <option value="">Chọn bộ môn</option>
+                            <label for="modifyFacility" class="form-label">Cơ sở</label>
+                            <select class="form-select" id="modifyFacility" required>
+                                <option value="">Chọn cơ sở</option>
                             </select>
-                            <div class="invalid-feedback" id="departmentIdError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifySubjectType" class="form-label">Loại môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectType" required>
-                            <div class="invalid-feedback" id="subjectTypeError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyStartDate" class="form-label">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="modifyStartDate" required>
-                            <div class="invalid-feedback" id="startDateError"></div>
+                            <div class="text-danger" id="modifyFacilityError"> </div>
                         </div>
                     </form>
                 </div>
@@ -164,13 +124,12 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="modifySubjectButton">Lưu</button>
+                    <button type="button" class="btn btn-secondary" id="modifyRoleButton">Lưu</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal Modify Subject -->
-    <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
+    <!-- Start modal add role -->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -183,7 +142,7 @@
 <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
-<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
-<script th:src="@{/js/manage-subject/subject.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/manage-role/role.js}"></script>
 </body>
 </html>

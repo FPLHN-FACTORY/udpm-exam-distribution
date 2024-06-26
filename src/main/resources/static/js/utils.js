@@ -9,3 +9,11 @@ const formatFromUnixTimeToDate = (unixTime) => {
 const getValueForInputDate = (unix) => {
     return new Date(unix).toLocaleDateString('en-CA');
 }
+
+function debounce(func, timeout = 300){
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
