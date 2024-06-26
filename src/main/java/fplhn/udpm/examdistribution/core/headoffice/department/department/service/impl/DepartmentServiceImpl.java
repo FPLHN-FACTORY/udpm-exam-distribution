@@ -4,23 +4,18 @@ import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.request.CreateUpdateDepartmentRequest;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.model.request.FindDepartmentsRequest;
-import fplhn.udpm.examdistribution.core.headoffice.department.department.model.response.DepartmentResponse;
-import fplhn.udpm.examdistribution.core.headoffice.department.department.model.response.ListDepartmentResponse;
-import fplhn.udpm.examdistribution.core.headoffice.department.department.repository.DepartmentExtendRepository;
+import fplhn.udpm.examdistribution.core.headoffice.department.department.repository.DPDepartmentExtendRepository;
 import fplhn.udpm.examdistribution.core.headoffice.department.department.service.DepartmentService;
 import fplhn.udpm.examdistribution.entity.Department;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,13 +23,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentExtendRepository departmentExtendRepository;
+    private final DPDepartmentExtendRepository DPDepartmentExtendRepository;
 
     @Override
     public ResponseObject<?> getAllDepartment(FindDepartmentsRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(departmentExtendRepository.getAllDepartmentByFilter(pageable, request)),
+                PageableObject.of(DPDepartmentExtendRepository.getAllDepartmentByFilter(pageable, request)),
                 HttpStatus.OK,
                 "Lấy thành công danh sách bộ môn"
         );
@@ -42,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public ResponseObject<?> getDetailDepartment(String id) {
-        return new ResponseObject<>(departmentExtendRepository.getDetailDepartment(id), HttpStatus.OK, "Lấy thành công bộ môn");
+        return new ResponseObject<>(DPDepartmentExtendRepository.getDetailDepartment(id), HttpStatus.OK, "Lấy thành công bộ môn");
     }
 
     @Override
@@ -50,8 +45,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
         request.setDepartmentCode(request.getDepartmentCode().replaceAll("\\s+", " "));
 
-        boolean checkExistName = departmentExtendRepository.existsByName(request.getDepartmentName().trim());
-        boolean checkExistCode = departmentExtendRepository.existsByCode(request.getDepartmentCode().trim());
+        boolean checkExistName = DPDepartmentExtendRepository.existsByName(request.getDepartmentName().trim());
+        boolean checkExistCode = DPDepartmentExtendRepository.existsByCode(request.getDepartmentCode().trim());
 
         if (checkExistCode) {
             return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Mã bộ môn đã tồn tại");
@@ -65,7 +60,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setStatus(EntityStatus.ACTIVE);
         department.setCode(request.getDepartmentCode().trim());
         department.setName(request.getDepartmentName().trim());
-        this.departmentExtendRepository.save(department);
+        this.DPDepartmentExtendRepository.save(department);
         return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm thành công bộ môn");
     }
 
@@ -74,7 +69,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
         request.setDepartmentCode(request.getDepartmentCode().replaceAll("\\s+", " "));
 
-        Optional<Department> departmentOptional = departmentExtendRepository.findById(id);
+        Optional<Department> departmentOptional = DPDepartmentExtendRepository.findById(id);
 
         if (departmentOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn không tồn tại");
@@ -82,13 +77,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Department updateDepartment = departmentOptional.get();
         if (!updateDepartment.getCode().trim().equalsIgnoreCase(request.getDepartmentCode().trim())) {
-            if (departmentExtendRepository.existsByCode(request.getDepartmentCode().trim())) {
+            if (DPDepartmentExtendRepository.existsByCode(request.getDepartmentCode().trim())) {
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Mã bộ môn đã tồn tại: " +
                                                                              request.getDepartmentCode().trim());
             }
         }
         if (!updateDepartment.getName().trim().equalsIgnoreCase(request.getDepartmentName().trim())) {
-            if (departmentExtendRepository.existsByName(request.getDepartmentName().trim())) {
+            if (DPDepartmentExtendRepository.existsByName(request.getDepartmentName().trim())) {
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Tên bộ môn đã tồn tại: " +
                                                                              request.getDepartmentName().trim());
             }
@@ -96,13 +91,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         updateDepartment.setCode(request.getDepartmentCode().trim());
         updateDepartment.setName(request.getDepartmentName().trim());
-        this.departmentExtendRepository.save(updateDepartment);
+        this.DPDepartmentExtendRepository.save(updateDepartment);
         return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật bộ môn thành công");
     }
 
     @Override
     public ResponseObject<?> deleteDepartment(String id) {
-        Optional<Department> departmentOptional = departmentExtendRepository.findById(id);
+        Optional<Department> departmentOptional = DPDepartmentExtendRepository.findById(id);
 
         if (departmentOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn không tồn tại");
@@ -114,13 +109,13 @@ public class DepartmentServiceImpl implements DepartmentService {
                         ? EntityStatus.INACTIVE : EntityStatus.ACTIVE
         );
 
-        this.departmentExtendRepository.save(deleteDepartment);
+        this.DPDepartmentExtendRepository.save(deleteDepartment);
         return new ResponseObject<>(null, HttpStatus.OK, "Xóa bộ môn thành công");
     }
 
     @Override
     public ResponseObject<?> getListDepartment() {
-        return new ResponseObject<>(departmentExtendRepository.getListDepartment(), HttpStatus.OK, "Lấy thành công danh sách bộ môn");
+        return new ResponseObject<>(DPDepartmentExtendRepository.getListDepartment(), HttpStatus.OK, "Lấy thành công danh sách bộ môn");
     }
 
 }

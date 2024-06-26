@@ -125,6 +125,110 @@
         </div>
     </div>
     <!-- Modal Modify Department -->
+    <!-- Modal Modify Major -->
+    <div class="modal modal-xl fade" id="majorModal" tabindex="-1" aria-labelledby="majorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quản lý chuyên ngành</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="majorName">Tên chuyên ngành</label>
+                                <input type="text" id="majorName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="buttonFilterMajor" type="button" class="btn btn-secondary">Tìm kiếm</button>
+                            <button
+                                    type="reset"
+                                    class="btn"
+                                    id="resetFilterMajor"
+                                    style="background-color: var(--common-button-color); color: white;"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách chuyên ngành</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddOrUpdateMajor(0)"
+                            >
+                                Thêm Chuyên Ngành
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td>Tên chuyên ngành</td>
+                                    <td>Trạng thái</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="majorTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationMajor">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeMajor" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Major -->
+    <!-- Modal Modify AddMajor -->
+    <div class="modal fade" id="addMajorModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="majorModalLabel">Thêm chuyên ngành</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modifyDepartmentName" class="form-label">Tên chuyên ngành</label>
+                        <input type="text" class="form-control" id="modifyMajorName" required>
+                        <div class="invalid-feedback" id="majorNameError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyMajorButton">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify AddMajor -->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -139,5 +243,6 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/manage-department/department/department.js}"></script>
+<script th:src="@{/js/manage-department/major/major.js}"></script>
 </body>
 </html>
