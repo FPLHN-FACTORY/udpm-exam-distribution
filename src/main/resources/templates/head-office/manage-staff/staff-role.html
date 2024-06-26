@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <title>HO - Quản lý chức vụ</title>
+    <title>HO - Quản lý nhân viên</title>
 </head>
 <body>
 <div class="wrapper">
@@ -19,9 +19,85 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quản lý chức vụ</h2>
+                    <h2 >Quản lý chức vụ của nhân viên <span id="titlePage" class="text-secondary"></span></h2>
                 </div>
                 <div class="p-4">
+                    <!-- Infomation  -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fas fa-info-circle"></i> Thông tin nhân viên
+                        </h3>
+                        <div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="infoCode">Mã</label>
+                                    <span id="infoCode" name="infoCode" class="form-control text-secondary border border-secondary"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="infoName">Tên</label>
+                                    <span id="infoName" name="infoName" class="form-control text-secondary border border-secondary"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="infoDepartmentFacility">Bộ môn theo cơ sở</label>
+                                    <span id="infoDepartmentFacility" name="infoDepartmentFacility" class="form-control text-secondary border border-secondary"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="infoEmailFPT">Email FPT</label>
+                                    <span id="infoEmailFPT" name="infoEmailFPT" class="form-control text-secondary border border-secondary"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="infoEmailFE">Email FE</label>
+                                    <span id="infoEmailFE" name="infoEmailFE" class="form-control text-secondary border border-secondary"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Infomation -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ <span id="titleTable" class="text-secondary"></span></h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddRole()"
+                            >
+                                Thêm chức vụ
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên chức vụ</td>
+                                    <td>Tên cơ sở</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="staffRoleTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start modal add role  -->
+    <div class="modal fade" id="modifyRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ nhân viên <span id="titlePageModal" class="text-secondary"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
                         <h3 class="m-portlet__head-text">
@@ -47,27 +123,18 @@
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ</h4>
-                            <button
-                                    class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddRole()"
-                            >
-                                Thêm chức vụ
-                            </button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
+                                    <td>#</td>
                                     <td>STT</td>
                                     <td>Tên chức vụ</td>
                                     <td>Tên cơ sở</td>
-                                    <td
-                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
-                                    </td>
                                 </tr>
                                 </thead>
-                                <tbody id="roleTableBody" class="table-group-divider">
+                                <tbody id="roleTableBodyModal" class="table-group-divider">
                                 <tr>
                                     <td colspan="6" class="text-center">Không có dữ liệu</td>
                                 </tr>
@@ -90,43 +157,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <!-- Start modal add role  -->
-    <div class="modal fade" id="modifyRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="modifyRoleForm">
-                        <input type="hidden" id="roleId">
-                        <div class="mb-3">
-                            <label for="modifyRoleName" class="form-label"><span class="text-danger"> * </span>Tên chức vụ (VD: GIANG_VIEN)</label>
-                            <input type="text" class="form-control" id="modifyRoleName" required>
-                            <div class="text-danger" id="modifyRoleNameError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyFacility" class="form-label"><span class="text-danger"> * </span>Cơ sở </label>
-                            <select class="form-select" id="modifyFacility" required>
-                                <option value="">Chọn cơ sở</option>
-                            </select>
-                            <div class="text-danger" id="modifyFacilityError"> </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được trống!</label>
-                        </div>
-                    </form>
-                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="modifyRoleButton">Lưu</button>
                 </div>
             </div>
         </div>
@@ -145,6 +179,6 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
-<script th:src="@{/js/manage-role/role.js}"></script>
+<script th:src="@{/js/manage-staff/staff-role.js}"></script>
 </body>
 </html>

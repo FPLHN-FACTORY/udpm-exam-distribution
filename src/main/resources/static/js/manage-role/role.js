@@ -16,6 +16,58 @@ $(document).ready(function () {
         getRoles(1, $('#pageSize').val(), $('#roleName').val()?.trim(), $('#idFacility').val());
     });
 
+    $('#modifyRoleButton').on("click", () => {
+        let check = true;
+        let roleName = $('#modifyRoleName').val();
+        let idFacility = $('#modifyFacility').val();
+        if (idFacility === '' || idFacility?.length === 0) {
+            check = false;
+            $('#modifyFacilityError').text('Vui lòng chọn cơ sở!')
+        } else {
+            $('#modifyFacilityError').text('')
+        }
+        if (roleName === '' || roleName?.trim().length === 0) {
+            check = false;
+            $('#modifyRoleNameError').text('Tên chức vụ không được trống!')
+        } else if (roleName?.trim().length > 250) {
+            $('#modifyRoleNameError').text('Tên chức vụ không được lớn hơn 250 ký tự!')
+        } else if (/\s/.test(roleName)) {
+            check = false;
+            $('#modifyRoleNameError').text('Tên chức vụ không được chứa khoảng trắng!');
+        } else if (/[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơưẠ-ỹ]/.test(roleName)) {
+            check = false;
+            $('#modifyRoleNameError').text('Tên chức vụ không được chứa dấu!');
+        } else {
+            $('#modifyRoleNameError').text('')
+        }
+
+        if (check) {
+            const roleId = $('#roleId').val();
+            let mess = roleId.length !== 0 ? "sửa" : "thêm";
+            let messUp = roleId.length !== 0 ? "Sửa" : "Thêm";
+            $('#modifyRoleModal').modal('hide');
+            swal({
+                title: "Xác nhận " + mess + "?",
+                text: "Bạn chắc chắn muốn " + mess + " chức vụ " + roleName + " không?",
+                type: "warning",
+                buttons: {
+                    cancel: {
+                        visible: true,
+                        text: "Hủy",
+                        className: "btn btn-black",
+                    },
+                    confirm: {
+                        text: messUp,
+                        className: "btn btn-secondary",
+                    },
+                },
+            }).then((willDelete) => {
+                if (willDelete) {
+                    saveRole();
+                }
+            });
+        }
+    });
 });
 
 function getFacilities() {
@@ -85,7 +137,7 @@ function getRoles(
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a> 
-                                 <a onclick="comfirmDelete('${role.idRole}','${role.roleName}')">
+                                 <a onclick="handleDelete('${role.idRole}','${role.roleName}')">
                                 <i 
                                     class="fas fa-trash-alt"
                                     style="cursor: pointer; margin-left: 10px;"
@@ -110,16 +162,16 @@ const createPagination = (totalPages, currentPage) => {
     if (currentPage > 1) {
         paginationHtml += `
                      <li class="page-item">
-                        <p class="page-link" onclick="changePage(${currentPage - 1})">
+                        <a class="page-link" onclick="changePage(${currentPage - 1})">
                             Trước
-                        </p>
+                        </a>
                      </li>`;
     } else {
         paginationHtml += `
                 <li class="page-item disabled">
-                    <p class="page-link">
+                    <a class="page-link">
                         Trước
-                    </p>
+                    </a>
                 </li>
         `;
     }
@@ -135,17 +187,17 @@ const createPagination = (totalPages, currentPage) => {
     if (currentPage < totalPages) {
         paginationHtml += `
                 <li class="page-item">
-                    <p class="page-link" onclick="changePage(${currentPage + 1})">
+                    <a class="page-link" onclick="changePage(${currentPage + 1})">
                           Sau
-                    </p>
+                    </a>
                 </li>
 `;
     } else {
         paginationHtml += `
             <li class="page-item disabled">
-                <p class="page-link">
+                <a class="page-link">
                     Sau
-                </p>
+                </a>
             </li>
 `;
     }
@@ -160,14 +212,16 @@ function changePage(newCurrentPage) {
 const openModalAddRole = () => {
     $('#modifyRoleName').val('');
     $('#roleId').val('');
+    $('#modifyFacilityError').text('')
+    $('#modifyRoleNameError').text('')
     getFacilities();
     $('#roleModalLabel').text('Thêm chức vụ');
     $('#modifyRoleModal').modal('show');
 }
 
-const openModalUpdateRole =async (roleId) => {
+const openModalUpdateRole = async (roleId) => {
     await getFacilities();
-    let url = ApiConstant.API_HEAD_OFFICE_ROLE + '/'+roleId;
+    let url = ApiConstant.API_HEAD_OFFICE_ROLE + '/' + roleId;
     await $.ajax({
         type: "GET",
         url: url,
@@ -175,6 +229,8 @@ const openModalUpdateRole =async (roleId) => {
             $('#modifyRoleName').val(`${responseBody?.data?.name}`);
             $('#roleId').val(`${responseBody?.data?.id}`);
             $('#modifyFacility').val(`${responseBody?.data?.facility?.id}`);
+            $('#modifyFacilityError').text('')
+            $('#modifyRoleNameError').text('')
             $('#roleModalLabel').text('Cập nhật chức vụ');
             $('#modifyRoleModal').modal('show');
         },
@@ -187,47 +243,8 @@ const openModalUpdateRole =async (roleId) => {
 const clearFormSearch = () => {
     $('#roleName').val('');
     $('#idFacility').val('');
-    getRoles();
+    getRoles(1, $('#pageSize').val(), $('#roleName').val()?.trim(), $('#idFacility').val());
 }
-
-$('#modifyRoleButton').on("click", () => {
-    let check = true;
-    let roleName = $('#modifyRoleName').val();
-    let idFacility = $('#modifyFacility').val();
-    if (idFacility==='' || idFacility?.length===0){
-        check = false;
-        $('#modifyFacilityError').text('Vui lòng chọn cơ sở!')
-    }
-    if (roleName==='' || roleName?.trim().length===0){
-        check = false;
-        $('#modifyRoleNameError').text('Tên chức vụ không được trống!')
-    }
-    if (check) {
-        const roleId = $('#roleId').val();
-        let mess = roleId.length!==0?"sửa":"thêm";
-        $('#modifyRoleModal').modal('hide');
-        swal({
-            title: "Xác nhận "+mess+"?",
-            text: "Bạn chắn muốn "+mess+" chức vụ "+roleName+" không?",
-            type: "warning",
-            buttons: {
-                cancel: {
-                    visible: true,
-                    text: "Hủy",
-                    className: "btn btn-black",
-                },
-                confirm: {
-                    text: mess,
-                    className: "btn btn-secondary",
-                },
-            },
-        }).then((willDelete) => {
-            if (willDelete) {
-                saveRole();
-            }
-        });
-    }
-});
 
 function saveRole() {
     const roleId = $('#roleId').val();
@@ -259,7 +276,7 @@ function saveRole() {
         error: function (error) {
             if (error?.responseJSON?.status === 'CONFLICT') {
                 showToastError("Chức vụ đã tồn tại!");
-            }else{
+            } else {
                 showToastError('Có lỗi xảy ra khi lưu chức vụ!');
             }
 
@@ -267,10 +284,10 @@ function saveRole() {
     });
 }
 
-function comfirmDelete(roleId,roleName){
+function handleDelete(roleId, roleName) {
     swal({
         title: "Xác nhận xóa?",
-        text: "Bạn chắn muốn xóa chức vụ "+roleName+" không?",
+        text: "Bạn chắc chắn muốn xóa chức vụ " + roleName + " không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -285,12 +302,12 @@ function comfirmDelete(roleId,roleName){
         },
     }).then((willDelete) => {
         if (willDelete) {
-            let url = ApiConstant.API_HEAD_OFFICE_ROLE + '?id='+roleId;
+            let url = ApiConstant.API_HEAD_OFFICE_ROLE + '?id=' + roleId;
             $.ajax({
                 type: "delete",
                 url: url,
                 success: function (responseBody) {
-                    if (responseBody?.status==="OK"){
+                    if (responseBody?.status === "OK") {
                         showToastSuccess("Xóa thành công!")
                     }
                     clearFormSearch();

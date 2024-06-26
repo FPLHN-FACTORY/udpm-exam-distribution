@@ -45,9 +45,4 @@ public class Staff extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_department_facility")
     private DepartmentFacility departmentFacility;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_recently_semester")
-    @ToString.Exclude
-    private Semester semester;
-
 }
