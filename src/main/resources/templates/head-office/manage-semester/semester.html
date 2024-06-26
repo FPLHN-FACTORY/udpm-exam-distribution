@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <title>HO - Quản lý học kỳ</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-office :: sidebar-head-office}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý học kỳ</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="semesterName">Tên học kỳ</label>
+                                    <input type="text" id="semesterName" name="semesterName" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="semesterYear">Năm học</label>
+                                    <input type="text" id="semesterYear" name="semesterYear" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="startDate">Ngày bắt đầu</label>
+                                    <input type="date" id="startDate" name="startTime" class="form-control">
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
+                                <button
+                                        type="reset"
+                                        class="btn"
+                                        id="resetFilter"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách học kỳ</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddSemester()"
+                            >
+                                Thêm Học Kỳ
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên học kỳ</td>
+                                    <td>Năm học</td>
+                                    <td>Ngày bắt đầu</td>
+                                    <td>Trạng thái</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="semesterTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--     Modal Create Semester -->
+    <div class="modal fade" id="semesterModal" tabindex="-1" aria-labelledby="addSemesterModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="semesterModalLabel">Thêm học kỳ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSemesterForm">
+                        <input type="hidden" id="semesterId">
+                        <div class="mb-3">
+                            <label for="modifySemesterName" class="form-label">Tên học kỳ</label>
+                            <select class="form-select" id="modifySemesterName" required>
+                                <option value="SPRING">SPRING</option>
+                                <option value="SUMMER">SUMMER</option>
+                                <option value="FALL">FALL</option>
+                            </select>
+                            <div class="invalid-feedback" id="semesterNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifySemesterYear" class="form-label">Năm học</label>
+                            <input type="text" class="form-control" id="modifySemesterYear" required>
+                            <div class="invalid-feedback" id="semesterYearError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyStartTime" class="form-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" id="modifyStartTime" required>
+                            <div class="invalid-feedback" id="startTimeError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifySemesterButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Create Semester -->
+
+    <!--Modal Update Semester-->
+    <div class="modal fade" id="semesterUpdateModal" tabindex="-1" aria-labelledby="addSemesterModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="semesterUpdateModalLabel">Cập nhật học kỳ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateSemesterForm">
+                        <input type="hidden" id="semesterIdUpdate">
+                        <div class="mb-3">
+                            <label for="modifySemesterName" class="form-label">Tên học kỳ</label>
+                            <select class="form-select" id="modifySemesterNameUpdate" required>
+                                <option value="SPRING">SPRING</option>
+                                <option value="SUMMER">SUMMER</option>
+                                <option value="FALL">FALL</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifySemesterYear" class="form-label">Năm học</label>
+                            <input type="text" class="form-control" id="modifySemesterYearUpdate" required>
+                            <div class="invalid-feedback" id="semesterYearErrorUpdate"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyStartTime" class="form-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" id="modifyStartTimeUpdate" required>
+                            <div class="invalid-feedback" id="startTimeErrorUpdate"></div>
+                        </div>
+                    </form>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách block</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddBlock()"
+                            >
+                                Thêm Block
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên block</td>
+                                    <td>Ngày bắt đầu</td>
+                                    <td>Ngày kết thúc</td>
+                                    <td>Trạng thái</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="blockTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifySemesterButtonUpdate">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Update Semester-->
+
+    <!--     Modal Modify Block -->
+    <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="addBlockModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blockModalLabel">Thêm block</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBlockForm">
+                        <input type="hidden" id="blockId">
+                        <div class="mb-3">
+                            <label for="modifyBlockName" class="form-label">Tên block</label>
+                            <select class="form-select" id="modifyBlockName" required>
+                                <option value="BLOCK_1">BLOCK 1</option>
+                                <option value="BLOCK_2">BLOCK 2</option>
+                            </select>
+                            <div class="invalid-feedback" id="blockNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyStartTimeBlock" class="form-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" id="modifyStartTimeBlock" required>
+                            <div class="invalid-feedback" id="startTimeBlockError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyEndTimeBlock" class="form-label">Ngày kết thúc</label>
+                            <input type="date" class="form-control" id="modifyEndTimeBlock" required>
+                            <div class="invalid-feedback" id="endTimeBlockError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" id="closeBlockModal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyBlockButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Modify Block-->
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/manage-semester/semester.js}"></script>
+</body>
+</html>
