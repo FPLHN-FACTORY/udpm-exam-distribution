@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.repository;
 
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.BlockRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.response.BlockListResponse;
 import fplhn.udpm.examdistribution.repository.BlockRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +22,8 @@ public interface BlockClassSubjectRepository extends BlockRepository {
             LEFT JOIN semester s ON
             	b.id_semester = s.id
             WHERE
-            	:#{#year} IS NULL OR :#{#year} LIKE '' OR s.`year` = :#{#year}
+            	(:#{#request.year} IS NULL OR :#{#request.year} LIKE '' OR s.`year` = :#{#request.year}) AND 
+            	(:#{#request.semesterId} IS NULL OR :#{#request.semesterId} LIKE '' OR s.id = :#{#request.semesterId})
             """, nativeQuery = true)
-    List<BlockListResponse> getAllBlockByYear(Integer year);
+    List<BlockListResponse> getAllBlockByYear(BlockRequest request);
 }

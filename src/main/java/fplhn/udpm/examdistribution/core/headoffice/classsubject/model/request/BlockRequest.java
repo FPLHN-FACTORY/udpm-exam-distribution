@@ -5,12 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CountClassSubjectByStaffRequest {
+public class BlockRequest {
 
-    private String staffId;
+    Integer year;
 
-    private String subjectId;
-
-    private String blockId;
+    String semesterId;
 
 }

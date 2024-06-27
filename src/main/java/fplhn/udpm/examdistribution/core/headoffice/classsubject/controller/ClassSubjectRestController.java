@@ -1,8 +1,9 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.controller;
 
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectKeywordRequest;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.BlockRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CreateUpdateClassSubjectRequest;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.SemesterRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.service.ClassSubjectService;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.service.impl.ClassSubjectCommonService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,11 +30,6 @@ public class ClassSubjectRestController {
     @GetMapping
     public ResponseEntity<?> getAll(ClassSubjectRequest request) {
         return Helper.createResponseEntity(classSubjectService.getAllClassSubject(request));
-    }
-
-    @GetMapping("/get-all-by-keyword")
-    public ResponseEntity<?> getAllClassSubjectByKeyword(ClassSubjectKeywordRequest request) {
-        return Helper.createResponseEntity(classSubjectService.getAllClassSubjectByKeyword(request));
     }
 
     @PostMapping
@@ -57,39 +52,19 @@ public class ClassSubjectRestController {
         return Helper.createResponseEntity(classSubjectService.getClassSubjectById(classSubjectId));
     }
 
-    @GetMapping("/block")
-    public ResponseEntity<?> getAllBlock() {
-        return Helper.createResponseEntity(commonService.getAllBlock());
+    @GetMapping("/block-by-year")
+    public ResponseEntity<?> getAllBlockByYear(BlockRequest request) {
+        return Helper.createResponseEntity(commonService.getAllBlockByYear(request));
     }
 
-    @GetMapping("/block-by-year")
-    public ResponseEntity<?> getAllBlockByYear(@RequestParam Integer year) {
-        return Helper.createResponseEntity(commonService.getAllBlockByYear(year));
+    @GetMapping("/semester-by-name-year")
+    public ResponseEntity<?> findByNameAndYear(SemesterRequest request) {
+        return Helper.createResponseEntity(commonService.findBySemesterByNameAndYear(request));
     }
 
     @GetMapping("/facility-child")
     public ResponseEntity<?> getAllFacilityChild() {
         return Helper.createResponseEntity(commonService.getAllFacilityChild());
-    }
-
-    @GetMapping("/staff")
-    public ResponseEntity<?> getAllStaff() {
-        return Helper.createResponseEntity(commonService.getAllStaff());
-    }
-
-    @GetMapping("/staff/{staffCode}")
-    public ResponseEntity<?> findStaffByCode(@PathVariable String staffCode) {
-        return Helper.createResponseEntity(commonService.findStaffByCode(staffCode));
-    }
-
-    @GetMapping("/subject")
-    public ResponseEntity<?> getAllSubject() {
-        return Helper.createResponseEntity(commonService.getAllSubject());
-    }
-
-    @GetMapping("/subject/{subjectCode}")
-    public ResponseEntity<?> findSubjectByCode(@PathVariable String subjectCode) {
-        return Helper.createResponseEntity(commonService.findSubjectByCode(subjectCode));
     }
 
 }

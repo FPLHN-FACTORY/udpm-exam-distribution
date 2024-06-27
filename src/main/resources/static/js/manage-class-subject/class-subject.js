@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(() => {
 
     getClassSubjects();
 
@@ -182,24 +182,47 @@ const createPagination = (totalPages, currentPage) => {
     $('#pagination').html(paginationHtml);
 }
 
+// const getSemester
+let time;
+const debounceSemester = (fun, delay) => {
+    return (...args) => {
+        if (time) {
+            clearTimeout(time);
+            time = null;
+        }
+        time = setTimeout(() => {
+            fun(...args);
+        }, delay)
+    }
+}
+
 const change = () => {
     $('#modifySemesterId').change(() => {
         const semester = $('#modifySemesterId').val();
         const yearId = $('#modifyYearId').val();
-        if (semester !== "" && yearId !== "") {
-            $("#block").removeClass("d-none")
-        } else {
-            $("#block").addClass("d-none")
+        let semesterRequest = {
+            semesterName: semester,
+            year: yearId
         }
+        if (semester !== "" && yearId !== "") {
+            getSemester(semesterRequest);
+            return;
+        }
+        $("#block").addClass("d-none")
     })
     $('#modifyYearId').on("input", () => {
         const semester = $('#modifySemesterId').val();
         const yearId = $('#modifyYearId').val();
-        if (semester !== "" && yearId !== "") {
-            $("#block").removeClass("d-none")
-        } else {
-            $("#block").addClass("d-none")
+        let semesterRequest = {
+            semesterName: semester,
+            year: yearId
         }
+        if (semester !== "" && yearId !== "") {
+            debounceSemester(getSemester, 1000)(semesterRequest);
+            return;
+        }
+        $("#block").addClass("d-none")
+
     })
 }
 
@@ -329,17 +352,46 @@ const getDetailSubject = (id) => {
     });
 }
 
-const fetchBlocks = () => {
+const fetchBlocks = (blockRequest) => {
+    $('#modifyBlockId').empty();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/block',
+        url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/block-by-year',
+        data: blockRequest,
         success: function (responseBody) {
             if (responseBody?.data) {
                 const blocks = responseBody?.data?.map((block, index) => {
-                    return `<option value="${block.id}">${block.name}</option>`;
+                    return `<option value="${block.blockId}">${block.blockName}</option>`;
                 });
                 blocks.unshift('<option value="">Chọn block</option>');
                 $('#modifyBlockId').html(blocks);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin block');
+        }
+    });
+}
+
+const getSemester = (semesterRequest) => {
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/semester-by-name-year',
+        dataType: 'json',
+        data: semesterRequest,
+        async: false,
+        success: function (responseBody) {
+            $('#modifyBlockId').empty();
+            if (responseBody?.data?.semesterId) {
+                $("#block").removeClass("d-none")
+                const blockRequest = {
+                    semesterId: responseBody?.data?.semesterId,
+                    year: $("#modifyYearId").val()
+                }
+                fetchBlocks(blockRequest)
+            } else {
+                showToastError('Không tìm thấy học kỳ phù hợp');
             }
         },
         error: function (error) {
@@ -386,14 +438,9 @@ const submitFormFilter = (e) => {
     const startEndDate = $('#startEndDate').val().trim();
     const shift = $('#shift').val().trim();
     const classSubjectCode = $('#classSubjectCode').val().trim();
-    // hỗ trợ lấy thời gian
-    console.log({
-        size, facilityChildId, subjectName, staffName, startEndDate, shift, classSubjectCode
-    })
 
     let startDateString = startEndDate.substring(0, 9);
     let endDateString = startEndDate.substring(12);
-
     let startDate = null;
     let endDate = null;
     if (startEndDate !== '') {

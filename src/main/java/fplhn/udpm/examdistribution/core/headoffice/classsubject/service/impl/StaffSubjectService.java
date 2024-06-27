@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.service.impl;
 
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CountClassSubjectByStaffRequest;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.response.CountClassSubjectByStaffResponse;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectByStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.StaffSubjectExtendRepository;
 import fplhn.udpm.examdistribution.entity.StaffSubject;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
@@ -17,26 +16,25 @@ public class StaffSubjectService {
     private final StaffSubjectExtendRepository staffSubjectExtendRepository;
 
     public void createOrUpdateStaffSubject(StaffSubject staffSubject) {
-        Optional<StaffSubject> subjectOptional = staffSubjectExtendRepository
+        Optional<StaffSubject> staffSubjectOptional = staffSubjectExtendRepository
                 .findByStaffAndSubjectAndRecentlySemester(staffSubject.getStaff(),
                         staffSubject.getSubject(), staffSubject.getRecentlySemester());
 
-        StaffSubject staffSubjectAddOrUpdate = subjectOptional.orElse(staffSubject);
+        StaffSubject staffSubjectAddOrUpdate = staffSubjectOptional.orElse(staffSubject);
         staffSubjectAddOrUpdate.setStatus(EntityStatus.ACTIVE);
 
         staffSubjectExtendRepository.save(staffSubjectAddOrUpdate);
     }
 
-    public void removeStaffSubject(CountClassSubjectByStaffRequest request) {
-        Optional<CountClassSubjectByStaffResponse> countClassSubjectByStaffResponseOptional =
-                staffSubjectExtendRepository.countClassSubjectByStaff(request);
-
-        if (countClassSubjectByStaffResponseOptional.isPresent() && countClassSubjectByStaffResponseOptional.get().getCountClassSubject() <= 1) {
-
-            String idStaffSubject = countClassSubjectByStaffResponseOptional.get().getStaffSubjectId();
-            StaffSubject staffSubject = staffSubjectExtendRepository.findById(idStaffSubject).get();
-            staffSubject.setStatus(EntityStatus.INACTIVE);
-            staffSubjectExtendRepository.save(staffSubject);
+    public void removeStaffSubject(ClassSubjectByStaffRequest request) {
+        Integer count = staffSubjectExtendRepository.countClassSubjectByStaff(request);
+        String idStaffSubject = staffSubjectExtendRepository.getClassSubjectId(request);
+        if (count <= 1 && idStaffSubject != null) {
+            Optional<StaffSubject> staffSubject = staffSubjectExtendRepository.findById(idStaffSubject);
+            if (staffSubject.isPresent()) {
+                staffSubject.get().setStatus(EntityStatus.INACTIVE);
+                staffSubjectExtendRepository.save(staffSubject.get());
+            }
         }
     }
 

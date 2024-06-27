@@ -1,10 +1,11 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.BlockRequest;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.SemesterRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.BlockClassSubjectRepository;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.FacilityChildClassSubjectRepository;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.StaffClassSubjectRepository;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.SubjectClassSubjectRepository;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.SemesterClassSubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -17,21 +18,19 @@ public class ClassSubjectCommonService {
 
     private final FacilityChildClassSubjectRepository facilityChildClassSubjectRepository;
 
-    private final StaffClassSubjectRepository staffClassSubjectRepository;
+    private final SemesterClassSubjectRepository semesterClassSubjectRepository;
 
-    private final SubjectClassSubjectRepository subjectClassSubjectRepository;
-
-    public ResponseObject<?> getAllBlock() {
+    public ResponseObject<?> findBySemesterByNameAndYear(SemesterRequest request) {
         return new ResponseObject<>(
-                blockClassSubjectRepository.findAll(),
+                semesterClassSubjectRepository.findByNameAndYear(request),
                 HttpStatus.OK,
-                "Get all block successfully"
+                "Find successfully"
         );
     }
 
-    public ResponseObject<?> getAllBlockByYear(Integer year) {
+    public ResponseObject<?> getAllBlockByYear(BlockRequest request) {
         return new ResponseObject<>(
-                blockClassSubjectRepository.getAllBlockByYear(year),
+                blockClassSubjectRepository.getAllBlockByYear(request),
                 HttpStatus.OK,
                 "Get all block by year successfully"
         );
@@ -43,34 +42,6 @@ public class ClassSubjectCommonService {
                 HttpStatus.OK,
                 "Get all facility child successfully"
         );
-    }
-
-    public ResponseObject<?> getAllStaff() {
-        return new ResponseObject<>(
-                staffClassSubjectRepository.findAll(),
-                HttpStatus.OK,
-                "Get all staff successfully"
-        );
-    }
-
-    public ResponseObject<?> findStaffByCode(String staffCode) {
-        return staffClassSubjectRepository.findByStaffCode(staffCode)
-                .map(staff -> new ResponseObject<>(staff, HttpStatus.OK, "Find staff by code"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Staff not found"));
-    }
-
-    public ResponseObject<?> getAllSubject() {
-        return new ResponseObject<>(
-                subjectClassSubjectRepository.findAll(),
-                HttpStatus.OK,
-                "Get all subject successfully"
-        );
-    }
-
-    public ResponseObject<?> findSubjectByCode(String subjectCode) {
-        return subjectClassSubjectRepository.findBySubjectCode(subjectCode)
-                .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Find subject by code"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Subject not found"));
     }
 
 }

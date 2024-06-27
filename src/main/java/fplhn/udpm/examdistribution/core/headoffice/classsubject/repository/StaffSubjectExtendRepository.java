@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.repository;
 
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CountClassSubjectByStaffRequest;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.response.CountClassSubjectByStaffResponse;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectByStaffRequest;
 import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffSubject;
@@ -19,20 +18,25 @@ public interface StaffSubjectExtendRepository extends StaffSubjectRepository {
 
     @Query(value = """
             SELECT
-            	COUNT(DISTINCT cs.class_subject_code) AS 'countClassSubject',
-            	ss.id AS 'staffSubjectId'
+            	IFNULL(COUNT(cs.id), 0)
+            FROM
+            	class_subject cs
+            WHERE
+            	cs.id_staff = :#{#request.staffId}
+            	AND cs.id_subject = :#{#request.subjectId}
+            	AND cs.id_block = :#{#request.blockId}
+            """, nativeQuery = true)
+    Integer countClassSubjectByStaff(ClassSubjectByStaffRequest request);
+
+    @Query(value = """
+            SELECT
+            	ss.id
             FROM
             	staff_subject ss
-            LEFT JOIN staff s ON
-             	ss.id_staff = s.id
-            LEFT JOIN class_subject cs ON
-             	cs.id_staff = s.id
             WHERE
             	ss.id_staff = :#{#request.staffId}
             	AND ss.id_subject = :#{#request.subjectId}
-            	AND cs.id_block = :#{#request.blockId}
-            GROUP BY ss.id
             """, nativeQuery = true)
-    Optional<CountClassSubjectByStaffResponse> countClassSubjectByStaff(CountClassSubjectByStaffRequest request);
+    String getClassSubjectId(ClassSubjectByStaffRequest request);
 
 }

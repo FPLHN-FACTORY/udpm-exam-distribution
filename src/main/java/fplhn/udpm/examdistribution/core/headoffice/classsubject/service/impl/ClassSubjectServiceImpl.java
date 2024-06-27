@@ -2,9 +2,9 @@ package fplhn.udpm.examdistribution.core.headoffice.classsubject.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectByStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectKeywordRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectRequest;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CountClassSubjectByStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CreateUpdateClassSubjectRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.BlockClassSubjectRepository;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.repository.ClassSubjectExtendRepository;
@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
@@ -131,6 +132,7 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
     }
 
     @Override
+    @Transactional
     public ResponseObject<?> updateClassSubject(String classSubjectId, CreateUpdateClassSubjectRequest request) {
 
         Optional<ClassSubject> classSubjectOptional = classSubjectExtendRepository.findById(classSubjectId);
@@ -180,18 +182,14 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
         staffSubject.setSubject(subjectOptional.get());
         staffSubject.setStaff(staffOptional.get());
         staffSubject.setRecentlySemester(semester);
-        System.out.println("+++++++++++++++++++++++++++++++++++++++");
-        System.out.println(request.getStaffCode());
-        System.out.println(classSubjectOptional.get().getStaff().getStaffCode());
 
         staffSubjectService.createOrUpdateStaffSubject(staffSubject);
-        if (!request.getStaffCode().equalsIgnoreCase(classSubjectOptional.get().getStaff().getStaffCode())) {
-            System.out.println("+++++++++++++++++++++++++++++++++++++++");
-            System.out.println("Có thay đổi mã nhân viên");
-            CountClassSubjectByStaffRequest countClassSubjectByStaffRequest = new CountClassSubjectByStaffRequest();
+        String staffCodeOld = classSubjectOptional.get().getStaff().getStaffCode();
+        if (!request.getStaffCode().equalsIgnoreCase(staffCodeOld)) {
+            ClassSubjectByStaffRequest countClassSubjectByStaffRequest = new ClassSubjectByStaffRequest();
             countClassSubjectByStaffRequest.setSubjectId(subjectOptional.get().getId());
             countClassSubjectByStaffRequest.setBlockId(blockOptional.get().getId());
-            countClassSubjectByStaffRequest.setStaffId(staffOptional.get().getId());
+            countClassSubjectByStaffRequest.setStaffId(classSubjectOptional.get().getStaff().getId());
 
             staffSubjectService.removeStaffSubject(countClassSubjectByStaffRequest);
         }
