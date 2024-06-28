@@ -26,7 +26,6 @@ public final class MappingConstants {
     // Constants representing the redirect paths for various resources under head office
     public static final String REDIRECT_HEAD_OFFICE_SUBJECT = HEAD_OFFICE + "/subjects";
     public static final String REDIRECT_HEAD_OFFICE_SEMESTER = HEAD_OFFICE + "/semesters";
-    public static final String REDIRECT_HEAD_OFFICE_MAJOR = HEAD_OFFICE + "/majors";
     public static final String REDIRECT_HEAD_OFFICE_BLOCK = HEAD_OFFICE + "/blocks";
     public static final String REDIRECT_HEAD_OFFICE_FACILITY = HEAD_OFFICE + "/facilities";
     public static final String REDIRECT_HEAD_OFFICE_CAMPUS = HEAD_OFFICE + "/campuses";
@@ -47,6 +46,7 @@ public final class MappingConstants {
     public static final String API_HEAD_OFFICE_CAMPUS = API_HEAD_OFFICE_PREFIX + "/campuses";
     public static final String API_HEAD_OFFICE_DEPARTMENT = API_HEAD_OFFICE_PREFIX + "/departments";
     public static final String API_HEAD_OFFICE_DEPARTMENT_FACILITY = API_HEAD_OFFICE_PREFIX + "/departments-facility";
+    public static final String API_HEAD_OFFICE_MAJOR_FACILITY = API_HEAD_OFFICE_PREFIX + "/majors-facility";
     public static final String API_HEAD_OFFICE_STAFF = API_HEAD_OFFICE_PREFIX + "/staffs";
     public static final String API_HEAD_OFFICE_STUDENT = API_HEAD_OFFICE_PREFIX + "/students";
     public static final String API_HEAD_OFFICE_CLASS_SUBJECT = API_HEAD_OFFICE_PREFIX + "/class-subjects";

@@ -1,5 +1,7 @@
 package fplhn.udpm.examdistribution.infrastructure.exception;
 
+import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -39,7 +41,12 @@ public class GlobalRestExceptionHandler {
         } else {
             ex.printStackTrace(System.out);
             log.warn(ex.getMessage());
-            return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return Helper.createResponseEntity(
+                    ResponseObject.errorForward(
+                            "Internal Server Error",
+                            HttpStatus.INTERNAL_SERVER_ERROR
+                    )
+            );
         }
     }
 

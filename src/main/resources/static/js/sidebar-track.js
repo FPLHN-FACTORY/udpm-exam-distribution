@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     $('.nav-item a').each(function () {
         let itemUrl = $(this).attr('href');
-        if (currentUrl === itemUrl) {
+        if (currentUrl.includes(itemUrl) && itemUrl !== '/') {
             $(this).parent().addClass('active');
         } else {
             $(this).parent().removeClass('active');
