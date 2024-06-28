@@ -5,7 +5,7 @@
 
 :root {
     --common-button-color: #1A2035;
-    --common-button-main-color: #8681D8;
+    --common-button-main-color: #052C65;
 }
 
 /* Table Style */
@@ -45,16 +45,28 @@ tr:nth-child(even) {
 }
 
 /* Pagination Style */
-#pagination {
-    margin: 0;
+.pagination {
+    margin: 0 !important;
 }
 
-#pagination > li.page-item.disabled > a {
-    color: white;
+#pagination-major-facilities {
+    margin: 0 !important;
 }
 
-#pagination > li > a {
-    color: white;
+.pagination > li.page-item.disabled > a {
+    color: white !important;
+}
+
+#pagination-major-facilities > li.page-item.disabled > a {
+    color: white !important;
+}
+
+.pagination > li > a {
+    color: white !important;
+}
+
+#pagination-major-facilities > li > a {
+    color: white !important;
 }
 
 .pagination .page-link {

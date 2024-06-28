@@ -73,9 +73,9 @@
                                 </tr>
                                 </thead>
                                 <tbody id="departmentFacilityTableBody" class="table-group-divider">
-                                    <tr>
-                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
                                 </tbody>
                             </table>
                             <div class="d-flex justify-content-end align-items-center gap-3">
@@ -98,7 +98,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Modify Department -->
+    <!-- Modal Modify Department Facility -->
     <div class="modal fade" id="departmentFacilityModal" tabindex="-1" aria-labelledby="addDepartmentFacilityModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -135,7 +135,175 @@
             </div>
         </div>
     </div>
-    <!-- Modal Modify Department -->
+    <!-- Modal Modify Department Facility -->
+    <!-- Modal List Major Facility -->
+    <div class="modal fade" id="modalListMajorFacility" tabindex="-1" aria-labelledby="listMajorFacilityModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5
+                            class="modal-title fw-bold"
+                            id="listMajorFacilityModalLabel"
+                    >
+                        Danh sách chuyên ngành theo cơ sở
+                    </h5>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            aria-label="Close"
+                            onclick="handleCloseModalListMajorFacility()"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Filter Major Facility -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h5 class="mb-4">Bộ lọc</h5>
+                        <form id="filterMajorFacilityForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="majorFacilityNameFilter" class="form-label">Tên chuyên ngành</label>
+                                    <input type="text" id="majorFacilityNameFilter" class="form-control"
+                                           placeholder="Nhập tên chuyên ngành"/>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="majorFacilityHeadOfMajorCodeFilter" class="form-label">Mã Trưởng
+                                        môn</label>
+                                    <input type="text" id="majorFacilityHeadOfMajorCodeFilter" class="form-control"
+                                           placeholder="Nhập mã trưởng môn"/>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="majorFacilityHeadOfMajorNameFilter" class="form-label">Tên Trưởng
+                                        môn</label>
+                                    <input type="text" id="majorFacilityHeadOfMajorNameFilter" class="form-control"
+                                           placeholder="Nhập tên trưởng môn"/>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button id="buttonFilterMajorFacility" type="button" class="btn btn-secondary"
+                                        onclick="handleFilterMajorFacility()"
+                                >
+                                    Tìm kiếm
+                                </button>
+                                <button type="reset" class="btn" id="resetFilterMajorFacility"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                        onclick="handleResetFilterMajorFacility()"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter Major Facility -->
+
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4 mb-4">
+                            <h4 id="majorFacilityListTitle">Danh sách chuyên ngành theo cơ sở</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="handleOpenModalAddMajorFacility()"
+                            >
+                                Thêm Chuyên Ngành Theo Cơ Sở
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td>Tên chuyên ngành</td>
+                                    <td>Thông tin trưởng môn</td>
+                                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động</td>
+                                </tr>
+                                </thead>
+                                <tbody id="majorFacilityTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination-major-facilities">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="page-size-major-facilities" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal List Major Facility -->
+    <!-- Modal Add / Update Major Facility -->
+    <div
+            class="modal fade"
+            id="modalAddOrUpdateMajorFacility"
+            tabindex="-1"
+            aria-labelledby="addOrUpdateMajorFacilityModalLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5
+                            class="modal-title fw-bold"
+                            id="addOrUpdateMajorFacilityModalLabel"
+                    >
+                        Thêm chuyên ngành theo cơ sở
+                    </h5>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            aria-label="Close"
+                            onclick="handleCloseModalAddMajorFacility()"
+                    ></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="modifyMajorFacilityId"/>
+                    <div class="mb-3">
+                        <label for="modifyMajorId" class="form-label">Chuyên ngành</label>
+                        <select class="form-select" id="modifyMajorId" required>
+                            <option value="">--Chuyên ngành--</option>
+                        </select>
+                        <div class="invalid-feedback" id="majorIdError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modifyHeadMajorId" class="form-label">Trưởng môn</label>
+                        <select class="form-select" id="modifyHeadMajorId" required>
+                            <option value="">--Trưởng môn--</option>
+                        </select>
+                        <div class="invalid-feedback" id="headMajorIdError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                            type="button"
+                            class="btn"
+                            data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;"
+                    >
+                        Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="addOrUpdateMajorFacilityButton"
+                            onclick="handleAddOrUpdateMajorFacility()"
+                    >
+                        Thêm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Add / Update Major Facility -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -144,7 +312,7 @@
 <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
 <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/sidebar-track.js}"></script>
 <script th:src="@{/js/constants.js}"></script>
 <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
 <script th:src="@{/js/utils.js}"></script>

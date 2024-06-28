@@ -38,8 +38,14 @@ const ApiConstant = {
     API_HEAD_OFFICE_CAMPUS: "/api/v1/head-office/campuses",
     API_HEAD_OFFICE_DEPARTMENT: "/api/v1/head-office/departments",
     API_HEAD_OFFICE_DEPARTMENT_FACILITY: "/api/v1/head-office/departments-facility",
+    API_HEAD_OFFICE_MAJOR_FACILITY: "/api/v1/head-office/majors-facility",
     API_HEAD_OFFICE_STAFF: "/api/v1/head-office/staffs",
     API_HEAD_OFFICE_STUDENT: "/api/v1/head-office/students",
     API_HEAD_OFFICE_CLASS_SUBJECT: "/api/v1/head-office/class-subjects",
     API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles"
 };
+
+const INIT_PAGINATION = {
+    page: 1,
+    size: 5,
+}

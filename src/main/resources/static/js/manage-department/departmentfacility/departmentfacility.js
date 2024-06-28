@@ -150,6 +150,13 @@ const fetchSearchDepartmentFacility = (
                                         '${departmentFacility.facilityId}', '${departmentFacility.headOfDepartmentId}'
                                     )" class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                                 </span>
+                                <span class="fs-4">
+                                    <i 
+                                        onclick="handleOpenModalListMajorFacility('${departmentFacility.departmentFacilityId}')"
+                                        class="fa-solid fa-circle-info"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
                             </td>
                         </tr>`;
             });
@@ -370,3 +377,288 @@ const handleAddOrUpdateDepartmentFacility = () => {
         }
     });
 };
+
+
+// MAJOR FACILITY HANDLER
+
+let currentDepartmentFacilityId = null;
+let currentDepartmentId = null;
+
+$(document).ready(() => {
+    fetchListStaff();
+
+    fetchListMajor(currentDepartmentId);
+
+    $('#pageSize-major-facilities').on('change', function () {
+        getMajorFacilities(
+            INIT_PAGINATION.page,
+            $('#page-size-major-facilities').val(),
+            currentDepartmentFacilityId,
+            $('#majorFacilityHeadOfMajorNameFilter').val() ? $('#majorFacilityHeadOfMajorNameFilter').val() : null,
+            $('#majorFacilityNameFilter').val() ? $('#majorFacilityNameFilter').val() : null,
+            $('#majorFacilityHeadOfMajorCodeFilter').val() ? $('#majorFacilityHeadOfMajorCodeFilter').val() : null
+        );
+    });
+
+})
+
+const handleOpenModalListMajorFacility = (departmentFacilityId) => {
+    currentDepartmentFacilityId = departmentFacilityId;
+    $('#modalListMajorFacility').modal('show');
+    getMajorFacilities(1, 5, currentDepartmentFacilityId);
+}
+
+const handleCloseModalListMajorFacility = () => {
+    $('#modalListMajorFacility').modal('hide');
+    currentDepartmentFacilityId = null;
+}
+
+const getMajorFacilities = (
+    page = INIT_PAGINATION.page,
+    size = $('#page-size-major-facilities').val(),
+    departmentFacilityId = null,
+    headMajorName = null,
+    majorName = null,
+    headMajorCode = null,
+) => {
+
+    const params = {
+        page: page,
+        size: size,
+        departmentFacilityId: departmentFacilityId,
+        headMajorName: headMajorName,
+        majorName: majorName,
+        headMajorCode: headMajorCode,
+    }
+
+    let url = ApiConstant.API_HEAD_OFFICE_MAJOR_FACILITY + '?';
+
+    for (let [key, value] of Object.entries(params)) {
+        if (value) {
+            url += `${key}=${value}&`;
+        }
+    }
+
+    url = url.slice(0, -1);
+
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: function (responseBody) {
+            if (responseBody?.data?.data?.length === 0) {
+                $('#majorFacilityTableBody').html(`
+                    <tr>
+                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                    </tr>
+                `);
+                return;
+            }
+            const majorFacilities = responseBody?.data?.majorFacilities?.data?.map((majorFacility, index) => {
+                return `<tr>
+                            <td>${majorFacility.orderNumber}</td>
+                            <td>${majorFacility.majorName}</td>
+                            <td>${majorFacility.headMajorCodeName}</td>
+                            <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                            <a>
+                                <i  
+                                    onclick="handleOpenModalUpdateMajorFacility('${majorFacility.id}')"
+                                    class="fa-solid fa-eye"
+                                    style="cursor: pointer; margin-left: 10px;"
+                                ></i>
+                                </a>
+                            </td>
+                        </tr>`;
+            });
+
+            $('#majorFacilityTableBody').html(majorFacilities);
+            $('#majorFacilityListTitle').text(`Danh sách chuyên ngành theo cơ sở: ${responseBody?.data?.facilityDepartmentInfo?.facilityName} - ${responseBody?.data?.facilityDepartmentInfo?.departmentName}`);
+            currentDepartmentId = responseBody?.data?.facilityDepartmentInfo?.departmentId;
+            createPaginationMajorFacility(responseBody?.data?.majorFacilities?.totalPages, page);
+        }
+    });
+};
+
+const createPaginationMajorFacility = (totalPages, currentPage) => {
+    let paginationHtml = '';
+
+    if (currentPage > 1) {
+        paginationHtml += `
+                     <li class="page-item">
+                        <a class="page-link" href="#" onclick="changeMajorFacility(${currentPage - 1})">
+                            Trước
+                        </a>
+                     </li>`;
+    } else {
+        paginationHtml += `
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">
+                        Trước
+                    </a>
+                </li>
+        `;
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            paginationHtml += `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`;
+        } else {
+            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="changeMajorFacility(${i})">${i}</a></li>`;
+        }
+    }
+
+    if (currentPage < totalPages) {
+        paginationHtml += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changeMajorFacility(${currentPage + 1})">
+                          Sau
+                    </a>
+                </li>
+`;
+    } else {
+        paginationHtml += `
+            <li class="page-item disabled">
+                <a class="page-link" href="#">
+                    Sau
+                </a>
+            </li>
+`;
+    }
+
+    $('#pagination-major-facilities').html(paginationHtml);
+}
+
+const changeMajorFacility = (page) => {
+    getMajorFacilities(page);
+}
+
+const handleFilterMajorFacility = () => {
+    getMajorFacilities(
+        1,
+        $('#page-size-major-facilities').val(),
+        currentDepartmentFacilityId,
+        $('#majorFacilityHeadOfMajorNameFilter').val(),
+        $('#majorFacilityNameFilter').val(),
+        $('#majorFacilityHeadOfMajorCodeFilter').val()
+    );
+}
+
+const handleResetFilterMajorFacility = () => {
+    $('#majorFacilityHeadOfMajorNameFilter').val('');
+    $('#majorFacilityNameFilter').val('');
+    $('#majorFacilityHeadOfMajorCodeFilter').val('');
+    getMajorFacilities(1, $('#page-size-major-facilities').val(), currentDepartmentFacilityId);
+}
+
+const handleOpenModalAddMajorFacility = () => {
+    $('.form-control').removeClass('is-invalid');
+    $('#modalAddOrUpdateMajorFacility').modal('show');
+    $('#addOrUpdateMajorFacilityModalLabel').text('Thêm chuyên ngành theo cơ sở');
+    fetchListStaff();
+    fetchListMajor(currentDepartmentId);
+}
+
+const handleCloseModalAddMajorFacility = () => {
+    $('#modalAddOrUpdateMajorFacility').modal('hide');
+    $('#modalListMajorFacility').modal('show');
+    getMajorFacilities(
+        INIT_PAGINATION.page,
+        $('#page-size-major-facilities').val(),
+        currentDepartmentFacilityId
+    );
+}
+
+const handleOpenModalUpdateMajorFacility = (majorFacilityId) => {
+    $('.form-control').removeClass('is-invalid');
+    $('#modalAddOrUpdateMajorFacility').modal('show');
+    $('#modalListMajorFacility').modal('hide');
+    $('#addOrUpdateMajorFacilityModalLabel').text('Cập nhật chuyên ngành theo cơ sở');
+    $('#addOrUpdateMajorFacilityButton').text('Cập nhật');
+    fetchListStaff();
+    fetchListMajor(currentDepartmentId);
+    $.ajax({
+        type: 'GET',
+        url: `${ApiConstant.API_HEAD_OFFICE_MAJOR_FACILITY}/${majorFacilityId}`,
+        success: function (responseBody) {
+            const data = responseBody?.data;
+            $('#modifyMajorFacilityId').val(data?.id);
+            $('#modifyMajorId').val(data?.majorId);
+            $('#modifyHeadMajorId').val(data?.headMajorId);
+        }
+    });
+}
+
+const fetchListStaff = () => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_OFFICE_DEPARTMENT_FACILITY + "/get-list-head-of-department",
+        type: "GET",
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const listStaff = responseBody?.data?.map((staff, index) => {
+                        return `<option value="${staff.staffId}">${staff.staffName} - ${staff.staffCode}</option>`;
+                    }
+                );
+                listStaff.unshift('<option value="" selected disabled>--Trưởng môn--</option>');
+                $('#modifyHeadMajorId').html(listStaff);
+                $('#majorFacilityHeadOfMajorIdFilter').html(listStaff);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy danh sách nhân viên');
+        }
+    });
+}
+
+const fetchListMajor = (departmentId) => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_OFFICE_MAJOR_FACILITY + "/major/" + departmentId,
+        type: "GET",
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const listMajor = responseBody?.data?.map((major, index) => {
+                        return `<option value="${major.majorId}">${major.majorName}</option>`;
+                    }
+                );
+                listMajor.unshift('<option value="" selected disabled>--Chuyên ngành--</option>');
+                $('#modifyMajorId').html(listMajor);
+                $('#majorFacilityNameFilter').html(listMajor);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy danh sách chuyên ngành');
+        }
+    });
+}
+
+const handleAddOrUpdateMajorFacility = () => {
+    const addOrUpdateApiUrl = $('#modifyMajorFacilityId').val() ? `/${$('#modifyMajorFacilityId').val()}` : '';
+    const finalUrl = ApiConstant.API_HEAD_OFFICE_MAJOR_FACILITY + addOrUpdateApiUrl;
+    $.ajax({
+        url: finalUrl,
+        type: $('#modifyMajorFacilityId').val() ? "PUT" : "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            majorFacilityId: $('#modifyMajorFacilityId').val() ? $('#modifyMajorFacilityId').val() : null,
+            majorId: $('#modifyMajorId').val(),
+            headMajorId: $('#modifyHeadMajorId').val(),
+            departmentFacilityId: currentDepartmentFacilityId
+        }),
+        success: function (responseBody) {
+            showToastSuccess($('#modifyMajorFacilityId').val() ? "Cập nhật chuyên ngành theo cơ sở thành công" : "Thêm chuyên ngành theo cơ sở thành công");
+            handleCloseModalAddMajorFacility();
+        },
+        error: function (error) {
+            $('.form-select').removeClass('is-invalid');
+            if (error?.responseJSON?.length > 0) {
+                error.responseJSON.forEach(err => {
+                    console.log(`#${err.fieldError}Error`)
+                    $(`#${err.fieldError}Error`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                });
+            } else if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+}

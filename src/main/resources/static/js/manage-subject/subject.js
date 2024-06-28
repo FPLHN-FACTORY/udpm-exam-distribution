@@ -298,9 +298,29 @@ const fetchDepartments = () => {
 
 const submitSubjectForm = () => {
     if ($('#subjectId').val() === '') {
-        createSubject();
+        swal({
+            title: "Xác nhận thêm môn học",
+            text: "Bạn có chắc chắn muốn thêm môn học này không?",
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willCreate) => {
+            if (willCreate) {
+                createSubject();
+            }
+        });
     } else {
-        updateSubject();
+        swal({
+            title: "Xác nhận cập nhật môn học",
+            text: "Bạn có chắc chắn muốn cập nhật môn học này không?",
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willUpdate) => {
+            if (willUpdate) {
+                updateSubject();
+            }
+        });
     }
 }
 
