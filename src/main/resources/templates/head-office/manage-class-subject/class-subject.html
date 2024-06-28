@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <title>HO - Quản lý lớp môn</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-office :: sidebar-head-office}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý lớp môn</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="mb-3 col-4">
+                                    <select class="form-select" id="facilityChildId">
+                                        <option value="">Chọn cơ sở con</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <input type="text" class="form-control" id="subjectName"
+                                           placeholder="Tên môn học">
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <input type="text" class="form-control" id="staffName"
+                                           placeholder="Tên giảng viên">
+                                </div>
+
+                                <div class="mb-3 col-4">
+                                    <input type="text" class="form-control" id="startEndDate"
+                                           placeholder="Start date ⇀ End date">
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <select class="form-select" id="shift">
+                                        <option value="">Chọn ca</option>
+                                        <option value="CA1">CA 1</option>
+                                        <option value="CA2">CA 2</option>
+                                        <option value="CA3">CA 3</option>
+                                        <option value="CA4">CA 4</option>
+                                        <option value="CA5">CA 5</option>
+                                        <option value="CA6">CA 6</option>
+                                        <option value="CA7">CA 7</option>
+                                        <option value="CA8">CA 8</option>
+                                        <option value="CA9">CA 9</option>
+                                        <option value="CA10">CA 10</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <input type="text" class="form-control" id="classSubjectCode"
+                                           placeholder="Mã lớp">
+                                </div>
+
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
+                                <button
+                                        type="reset"
+                                        class="btn"
+                                        id="resetFilter"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách lớp môn</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddClassSubject()"
+                            >
+                                Thêm Lớp Môn Học
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td class="text-nowrap text-center">STT</td>
+                                    <td class="text-nowrap text-center">Mã lớp học</td>
+                                    <td class="text-nowrap text-center">Môn học</td>
+                                    <td class="text-nowrap text-center">Ca</td>
+                                    <td class="text-nowrap text-center">Ngày</td>
+                                    <td class="text-nowrap text-center">Giảng viên</td>
+                                    <td class="text-nowrap text-center">Block</td>
+                                    <td class="text-nowrap text-center">Cơ sở</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="classSubjectTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="9" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Subject -->
+    <div class="modal fade" id="classSubjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="classSubjectModalLabel">Thêm lớp môn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            onclick="closeModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSubjectForm">
+                        <input type="hidden" id="classSubjectId">
+                        <div class="row d-flex px-3 pt-5">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label for="modifySemesterId" class="form-label">Học kỳ</label>
+                                    <select class="form-select" id="modifySemesterId">
+                                        <option value="">Chọn học kỳ</option>
+                                        <option value="SPRING">Spring</option>
+                                        <option value="SUMMER">Summer</option>
+                                        <option value="FALL">Fall</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label for="modifyYearId" class="form-label">Năm học</label>
+                                    <input type="text" class="form-control" id="modifyYearId"
+                                           placeholder="Chọn năm học">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex px-3 d-none" id="block">
+
+                            <div class="mb-3 col-6">
+                                <label for="modifyBlockId" class="form-label">Block</label>
+                                <select class="form-select" id="modifyBlockId" required>
+                                    <option value="">Chọn block</option>
+                                </select>
+                                <div class="invalid-feedback" id="blockIdError"></div>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="modifyFacilityChildId" class="form-label">Cơ sở con</label>
+                                <select class="form-select" id="modifyFacilityChildId" required>
+                                    <option value="">Chọn cơ sở con</option>
+                                </select>
+                                <div class="invalid-feedback" id="facilityChildIdError"></div>
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label for="modifyStaffCode" class="form-label">Mã giảng viên</label>
+                                <input type="text" class="form-control" id="modifyStaffCode" required>
+                                <div class="invalid-feedback" id="staffCodeError"></div>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="modifyDay" class="form-label">Ngày</label>
+                                <input type="date" class="form-control" id="modifyDay" required>
+                                <div class="invalid-feedback" id="dayError"></div>
+                            </div>
+
+                            <div class="mb-3 col-4">
+                                <label for="modifySubjectCode" class="form-label">Mã môn học</label>
+                                <input type="text" class="form-control" id="modifySubjectCode" required>
+                                <div class="invalid-feedback" id="subjectCodeError"></div>
+                            </div>
+                            <div class="mb-3 col-4">
+                                <label for="modifyShift" class="form-label">Ca</label>
+                                <select class="form-select" id="modifyShift" required>
+                                    <option value="">Chọn ca</option>
+                                    <option value="CA1">CA 1</option>
+                                    <option value="CA2">CA 2</option>
+                                    <option value="CA3">CA 3</option>
+                                    <option value="CA4">CA 4</option>
+                                    <option value="CA5">CA 5</option>
+                                    <option value="CA6">CA 6</option>
+                                    <option value="CA7">CA 7</option>
+                                    <option value="CA8">CA 8</option>
+                                    <option value="CA9">CA 9</option>
+                                    <option value="CA10">CA 10</option>
+                                </select>
+                                <div class="invalid-feedback" id="shiftError"></div>
+                            </div>
+                            <div class="mb-3 col-4">
+                                <label for="modifyClassSubjectCode" class="form-label">Mã lớp</label>
+                                <input type="text" class="form-control" id="modifyClassSubjectCode" required>
+                                <div class="invalid-feedback" id="classSubjectCodeError"></div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;"
+                            onclick="closeModal()">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifySubjectButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Subject -->
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<!--  Datepicker  -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/manage-class-subject/class-subject.js}"></script>
+</body>
+</html>

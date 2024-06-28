@@ -36,6 +36,7 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_OFFICE_STUDENT = HEAD_OFFICE + "/students";
     public static final String REDIRECT_HEAD_OFFICE_CLASS_SUBJECT = HEAD_OFFICE + "/class-subjects";
     public static final String REDIRECT_HEAD_OFFICE_ROLE = HEAD_OFFICE + "/roles";
+    public static final String REDIRECT_HEAD_OFFICE_STAFF_SUBJECT = HEAD_OFFICE + "/staff-subject";
 
     // Constants representing the full paths for various resources under head office
     public static final String API_HEAD_OFFICE_SUBJECT = API_HEAD_OFFICE_PREFIX + "/subjects";
@@ -50,5 +51,6 @@ public final class MappingConstants {
     public static final String API_HEAD_OFFICE_STUDENT = API_HEAD_OFFICE_PREFIX + "/students";
     public static final String API_HEAD_OFFICE_CLASS_SUBJECT = API_HEAD_OFFICE_PREFIX + "/class-subjects";
     public static final String API_HEAD_OFFICE_ROLE = API_HEAD_OFFICE_PREFIX + "/roles";
+    public static final String API_HEAD_OFFICE_STAFF_SUBJECT = API_HEAD_OFFICE_PREFIX + "/staff-subject";
 
 }
