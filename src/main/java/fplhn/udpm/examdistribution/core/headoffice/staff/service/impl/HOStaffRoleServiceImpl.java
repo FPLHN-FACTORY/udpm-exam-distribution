@@ -62,7 +62,6 @@ public class HOStaffRoleServiceImpl implements HOStaffRoleService {
             staffRole.setStaff(staff.get());
             staffRole.setId(CodeGenerator.generateRandomCode());
             staffRole.setStatus(EntityStatus.ACTIVE);
-            System.out.println("add staff role " );
             staffRoleRepository.save(staffRole);
         } else {
             staffRoles.get(0).setStatus(staffRoles.get(0).getStatus().equals(EntityStatus.INACTIVE) ? EntityStatus.ACTIVE : EntityStatus.INACTIVE);

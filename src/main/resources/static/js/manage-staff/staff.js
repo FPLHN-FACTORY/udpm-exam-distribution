@@ -1,3 +1,5 @@
+let fileUpload = null;
+
 $(document).ready(function () {
 
     getStaffs();
@@ -15,13 +17,13 @@ $(document).ready(function () {
         let modifyAccountFPT = $('#modifyAccountFPT').val();
         let modifyAccountFE = $('#modifyAccountFE').val();
         //validate staff name
-        if (!staffName || staffName?.trim().length===0){
+        if (!staffName || staffName?.trim().length === 0) {
             check = false;
             $('#modifyNameError').text('Tên nhân viên không được trống!');
-        } else if(staffName?.trim().length > 250){
+        } else if (staffName?.trim().length > 250) {
             check = false;
             $('#modifyNameError').text('Tên nhân viên không được lớn hơn 250 ký tự!')
-        }else {
+        } else {
             $('#modifyNameError').text('')
         }
         //validate staff code
@@ -87,10 +89,13 @@ $(document).ready(function () {
             }).then((confirm) => {
                 if (confirm) {
                     saveStaff();
+                } else {
+                    $('#modifyStaffModal').modal('show');
                 }
             });
         }
     });
+
 });
 
 function isValidFptEmail(email) {
@@ -388,6 +393,89 @@ function handleDelete(staffId, staffName) {
     });
 }
 
-function handleDetail(idStaff){
-    window.location.href = ApiConstant.REDIRECT_HEAD_OFFICE_STAFF+"/"+idStaff
+function handleDetail(idStaff) {
+    window.location.href = ApiConstant.REDIRECT_HEAD_OFFICE_STAFF + "/" + idStaff
 }
+
+
+function showModalImport() {
+    fileUpload = null;
+    $('#btn_upload').addClass('disabled');
+    $('#input_file').val('').change();
+    $('#upload-box-name').text('');
+    $('#upload-box-size').text('');
+    $('#modalUploadExcel').modal('show');
+};
+
+function selectFile() {
+    $('#input-file').click();
+}
+
+const convertSize = (bytes) => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+};
+
+function changeFile(input) {
+
+    if (input.files.length < 1) {
+        return;
+    }
+
+    const file = input.files[0];
+    const fileType = file.type;
+
+    const acceptType = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+    ];
+
+    if (!acceptType.includes(fileType)) {
+        showToastError("Định dạng tệp tin không hợp lệ.");
+        return;
+    }
+    $('#upload-box-name').text(file.name);
+    $('#upload-box-size').text(convertSize(file.size));
+
+    $('#btn_upload').removeClass('disabled');
+    fileUpload = file;
+};
+
+function submitUpload() {
+    if (fileUpload == null) {
+        return;
+    }
+    const formData = new FormData();
+    formData.append("file", fileUpload);
+
+    let url = ApiConstant.API_HEAD_OFFICE_STAFF + "/file/upload"
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+            responseType: 'blob'
+        },
+        data: formData,
+        success: (response, status, xhr) => {
+            showToastSuccess("import thành công!");
+            $('#modalUploadExcel').modal('hide');
+            $('#input_file').val('');
+            clearFormSearch();
+        },
+        error: (xhr) => {
+            $('#modalUploadExcel').modal('hide');
+            $('#input_file').val('');
+            showToastError("upload thất bại!");
+        },
+        complete: () => {
+            $('#input_file').val('');
+            $('#modal_import').modal('hide');
+        }
+    });
+};
+

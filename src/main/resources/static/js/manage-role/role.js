@@ -61,9 +61,11 @@ $(document).ready(function () {
                         className: "btn btn-secondary",
                     },
                 },
-            }).then((willDelete) => {
-                if (willDelete) {
+            }).then((ok) => {
+                if (ok) {
                     saveRole();
+                }else {
+                    $('#modifyRoleModal').modal('show');
                 }
             });
         }

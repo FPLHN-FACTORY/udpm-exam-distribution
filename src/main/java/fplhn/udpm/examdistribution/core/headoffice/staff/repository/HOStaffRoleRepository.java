@@ -38,8 +38,7 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
             nativeQuery = true)
     List<HOStaffRoleResponse> getRolesByStaffId(String staffId);
 
-    @Query(value = """
-
+    @Query(value = """ 
             SELECT r.name AS roleName,
                    r.id AS idRole,
                    f.name AS facilityName,
@@ -52,23 +51,23 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
                    END as checked
                   FROM exam_distribution.role r
                   LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
-                  LEFT JOIN exam_distribution.staff_role sr ON sr.id_role = r.id
                   WHERE r.status = 0
-              AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-              AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
-                  ORDER BY sr.last_modified_date desc
+                  AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
+                  AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+                  ORDER BY r.last_modified_date desc
               """, countQuery = """
-                    SELECT COUNT(*)
-                    FROM exam_distribution.role r
-                    LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
-                    LEFT JOIN exam_distribution.staff_role sr ON sr.id_role = r.id
-                    WHERE r.status = 0
-                    AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-                    AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
-                    ORDER BY sr.last_modified_date desc
+                      SELECT COUNT(*)
+                      FROM exam_distribution.role r
+                      LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
+                      WHERE r.status = 0
+                      AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
+                      AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+                      ORDER BY r.last_modified_date desc
             """, nativeQuery = true)
     Page<HOStaffRoleCheckResponse> getRolesChecked(Pageable pageable, HOStaffRoleRequest hoRoleRequest);
 
     List<StaffRole> findAllByRole_IdAndStaff_Id(String roleId, String staffId);
+
+    List<StaffRole> findAllByStaff_IdAndStatus(String staffId, EntityStatus status);
 
 }

@@ -190,6 +190,10 @@ function getAllRoles(
             }
             const roles = responseBody?.data?.content?.map((role, index) => {
                 return `<tr>
+                            
+                            <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
+                            <td>${role.roleName}</td>  
+                            <td>${role.facilityName}</td> 
                             <td><div class="col-auto">
                               <label class="colorinput">
                                 <input
@@ -204,10 +208,7 @@ function getAllRoles(
                                 ></span>
                               </label>
                             </div>
-                            </td>
-                            <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
-                            <td>${role.roleName}</td>  
-                            <td>${role.facilityName}</td>  
+                            </td> 
                         </tr>`;
             });
             $('#roleTableBodyModal').html(roles);

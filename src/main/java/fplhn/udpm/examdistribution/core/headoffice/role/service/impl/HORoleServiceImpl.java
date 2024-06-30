@@ -5,10 +5,13 @@ import fplhn.udpm.examdistribution.core.headoffice.role.model.request.HORoleRequ
 import fplhn.udpm.examdistribution.core.headoffice.role.model.request.HOSaveRoleRequest;
 import fplhn.udpm.examdistribution.core.headoffice.role.repository.HORoleFacilityRepository;
 import fplhn.udpm.examdistribution.core.headoffice.role.repository.HORoleRepository;
+import fplhn.udpm.examdistribution.core.headoffice.role.repository.HORoleStaffRepository;
 import fplhn.udpm.examdistribution.core.headoffice.role.service.HORoleService;
 import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Role;
+import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.repository.StaffRoleRepository;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +25,15 @@ import java.util.Optional;
 public class HORoleServiceImpl implements HORoleService {
 
     private final HORoleRepository roleRepository;
+
     private final HORoleFacilityRepository facilityRepository;
 
-    public HORoleServiceImpl(HORoleRepository roleRepository, HORoleFacilityRepository facilityRepository) {
+    private final HORoleStaffRepository staffRoleRepository;
+
+    public HORoleServiceImpl(HORoleRepository roleRepository, HORoleFacilityRepository facilityRepository, HORoleStaffRepository staffRoleRepository) {
         this.roleRepository = roleRepository;
         this.facilityRepository = facilityRepository;
+        this.staffRoleRepository = staffRoleRepository;
     }
 
     @Override
@@ -48,6 +55,11 @@ public class HORoleServiceImpl implements HORoleService {
     public ResponseObject<?> deleteRole(String id) {
         Optional<Role> role = roleRepository.findById(id);
         if (role.isPresent()) {
+            //change status in staff_role
+            List<StaffRole> staffRoles = staffRoleRepository.findAllByRole_IdAndStatus(id,EntityStatus.ACTIVE);
+            staffRoles.stream().forEach(staffRole -> staffRole.setStatus(EntityStatus.INACTIVE));
+            staffRoleRepository.saveAll(staffRoles);
+            //change status in role
             role.get().setStatus(EntityStatus.INACTIVE);
             roleRepository.save(role.get());
             return new ResponseObject<>(null,

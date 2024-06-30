@@ -40,6 +40,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.apache.poi:poi:3.17'
+    implementation 'org.apache.poi:poi-ooxml:3.17'
+    implementation 'org.springframework.batch:spring-batch-core:5.0.3'
+    implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
 
     //Manual Add Dependencies
     implementation "me.paulschwarz:spring-dotenv:4.0.0"
