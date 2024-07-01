@@ -1,0 +1,30 @@
+.background-login {
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.background-login:before {
+    content: "";
+    background-image: url(../../assets/image/bg-simple.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-filter: blur(1px);
+    filter: blur(1px);
+    height: 100%;
+    left: 0;
+    opacity: .8;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+}
+
+.footer-login {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}

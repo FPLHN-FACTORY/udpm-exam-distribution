@@ -1,4 +1,8 @@
 package fplhn.udpm.examdistribution.core.authentication.repository;
 
-public interface AuthenticationRepository {
+import fplhn.udpm.examdistribution.repository.StudentRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AuthenticationRepository extends StudentRepository {
 }
