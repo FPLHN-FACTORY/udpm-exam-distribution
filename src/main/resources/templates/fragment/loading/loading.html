@@ -1,6 +1,5 @@
-<div th:fragment="loading" class="loading" id="loading">
-    <div class="loading__content">
-        <div class="loading__spinner"></div>
-        <div class="loading__text">Loading...</div>
+<div th:fragment="loading">
+    <div id="loading" class="loading-overlay" th:style="'display:none;'">
+        <div class="loading-spinner"></div>
     </div>
 </div>

@@ -63,8 +63,6 @@ const getSubjects = (
 
     url = url.slice(0, -1);
 
-    $('#loading').show();
-
     $.ajax({
         type: "GET",
         url: url,
@@ -104,7 +102,6 @@ const getSubjects = (
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
         }
     });
-    $('#loading').hide();
 }
 
 const changePage = (page) => {

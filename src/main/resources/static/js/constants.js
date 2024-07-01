@@ -30,6 +30,9 @@ const ApiConstant = {
     REDIRECT_HEAD_OFFICE_CLASS_SUBJECT: "/head-office/class-subjects",
     REDIRECT_HEAD_OFFICE_ROLE: "/head-office/roles",
 
+    // Constants representing the redirect paths for various resources under head department
+    REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
+
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
     API_HEAD_OFFICE_SEMESTER: "/api/v1/head-office/semesters",
@@ -45,12 +48,33 @@ const ApiConstant = {
     API_HEAD_OFFICE_CLASS_SUBJECT: "/api/v1/head-office/class-subjects",
     API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles",
 
+    // Constants representing the full paths for various resources under head department
+    API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/manage-head-of-subjects",
+
+    // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",
     REDIRECT_AUTHENTICATION_LOGOUT: "/authentication/logout",
     REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
+
 };
 
 const INIT_PAGINATION = {
     page: 1,
     size: 5,
-}
+};
+
+const EXAM_DISTRIBUTION_CONSTANT_KEY = "e_d_i";
+
+const getExamDistributionInfo = () => {
+    const examDistributionInfo = JSON.parse(CookieUtil.get(EXAM_DISTRIBUTION_CONSTANT_KEY));
+    return {
+        userRole: examDistributionInfo.userRole || null,
+        departmentFacilityId: examDistributionInfo.departmentFacilityId || null,
+        departmentName: examDistributionInfo.departmentName || null,
+        facilityName: examDistributionInfo.facilityName || null,
+        userEmailFPT: examDistributionInfo.userEmailFPT || null,
+        userEmailFe: examDistributionInfo.userEmailFe || null,
+        userFullName: examDistributionInfo.userFullName || null,
+        userId: examDistributionInfo.userId || null,
+    };
+};

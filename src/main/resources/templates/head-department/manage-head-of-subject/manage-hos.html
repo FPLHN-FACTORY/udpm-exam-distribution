@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quản lý trưởng môn - môn học</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-of-department:: sidebar-head-of-department}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý trưởng môn - môn học</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <!-- Filter -->
+                    <!-- Table -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách nhân viên</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã nhân viên</td>
+                                    <td>Tên nhân viên</td>
+                                    <td>Email FPT</td>
+                                    <td>Email FE</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="manageHOSTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/sidebar-track.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+<script th:src="@{/js/cookie-utils.js}"></script>
+<script th:src="@{/js/head-department_manage-hos/manage-hos.js}"></script>
+</body>
+</html>
