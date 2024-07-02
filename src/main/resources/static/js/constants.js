@@ -1,4 +1,8 @@
 const ApiConstant = {
+    AUTHENTICATION: "AUTHENTICATION",
+    REDIRECT_AUTHENTICATION_LOGOUT: "/authentication/logout",
+    REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
+
     HEAD_SUBJECT: "/head-subject",
     HEAD_OFFICE: "/head-office",
     HEAD_DEPARTMENT: "/head-department",

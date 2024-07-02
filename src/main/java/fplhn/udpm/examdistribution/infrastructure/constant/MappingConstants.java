@@ -7,6 +7,13 @@ package fplhn.udpm.examdistribution.infrastructure.constant;
 public final class MappingConstants {
 
     // Constants representing the base paths for various resources
+    public static final String REDIRECT_GOOGLE_AUTHORIZATION = "/oauth2/authorization/google";
+    public static final String AUTHENTICATION = "/authentication";
+    public static final String REDIRECT_AUTHENTICATION_LOGOUT = AUTHENTICATION + "/logout";
+    public static final String REDIRECT_AUTHENTICATION_AUTHOR_SWITCH = "/author-switch";
+    public static final String REDIRECT_AUTHENTICATION_FORBIDDEN = "/403";
+    public static final String REDIRECT_AUTHENTICATION_UNAUTHORIZE = "/401";
+
     public static final String HEAD_SUBJECT = "/head-subject";
     public static final String HEAD_OFFICE = "/head-office";
     public static final String HEAD_DEPARTMENT = "/head-department";

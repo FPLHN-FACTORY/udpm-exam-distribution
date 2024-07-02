@@ -8,7 +8,7 @@ public class CommonController {
 
     @GetMapping("/head-office")
     public String viewHeadOffice() {
-        return "redirect:/head-office/block";
+        return "redirect:/head-office/semesters";
     }
 
 }
