@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.infrastructure.security;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.infrastructure.constant.Role;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.CustomAccessDeniedHandler;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.CustomLogoutHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.CustomUnAuthorizeHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2AuthenticationFailureHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -31,6 +32,8 @@ public class AuthorizationFilterChainConfig {
 
     private final CustomUnAuthorizeHandler customUnAuthorizeHandler;
 
+    private final CustomLogoutHandler customLogoutHandler;
+
     private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
@@ -54,6 +57,7 @@ public class AuthorizationFilterChainConfig {
         httpSecurity.logout(logout -> {
             logout.logoutUrl(MappingConstants.REDIRECT_AUTHENTICATION_LOGOUT); //khi bấm vào đây thì thông tin của người dùng hiện tại được dùng để author sẽ bị clear.
             logout.logoutSuccessUrl("/").permitAll(); // sau khi bị clear thì sẽ tự động chuyển tới trang "/".
+            logout.addLogoutHandler(customLogoutHandler);
         });
         httpSecurity.exceptionHandling(exception -> {
             exception.accessDeniedHandler(customAccessDeniedHandler); //xử lý 403

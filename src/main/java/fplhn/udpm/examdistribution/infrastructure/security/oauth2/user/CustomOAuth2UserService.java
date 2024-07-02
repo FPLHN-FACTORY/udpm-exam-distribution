@@ -24,16 +24,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        this.clearSession();
+
         OAuth2User user = super.loadUser(userRequest);
         OAuth2UserInfo userInfo = new OAuth2UserInfo(user.getAttributes());
-        Optional<Staff> isStaffExist = authStaffRepository.getStaffByAccountFpt(userInfo.getEmail());
+        String facilityId = (String) httpSession.getAttribute(SessionConstant.FACILITY_ID);
 
-        this.clearSession();
+        Optional<Staff> isStaffExist = authStaffRepository.getStaffByAccountFptAndFacilityId(userInfo.getEmail(), facilityId);
 
         if (isStaffExist.isEmpty()) {
             httpSession.setAttribute(SessionConstant.ERROR_LOGIN, "Tài khoản không được phép đăng nhập vào hệ thống!");
         }
-        List<String> listRole = authStaffRepository.getListRoleByEmail(userInfo.getEmail());
+        List<String> listRole = authStaffRepository.getListRoleByEmail(userInfo.getEmail(), facilityId);
         String screen = (String) httpSession.getAttribute(SessionConstant.SCREEN_LOGIN);
 
         if (!isUserHasRole(screen, listRole)) {

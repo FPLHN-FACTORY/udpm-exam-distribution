@@ -14,4 +14,6 @@ public class SessionConstant {
 
     public static String REDIRECT_LOGIN = "redirect_login";
 
+    public static String FACILITY_ID = "facility_id";
+
 }

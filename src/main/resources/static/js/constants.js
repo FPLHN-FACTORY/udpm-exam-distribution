@@ -1,8 +1,4 @@
 const ApiConstant = {
-    AUTHENTICATION: "AUTHENTICATION",
-    REDIRECT_AUTHENTICATION_LOGOUT: "/authentication/logout",
-    REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
-
     HEAD_SUBJECT: "/head-subject",
     HEAD_OFFICE: "/head-office",
     HEAD_DEPARTMENT: "/head-department",
@@ -18,6 +14,7 @@ const ApiConstant = {
     API_HEAD_DEPARTMENT_PREFIX: "/api/v1/head-department",
     API_TEACHER_PREFIX: "/api/v1/teacher",
     API_STUDENT_PREFIX: "/api/v1/student",
+    API_AUTHENTICATION_PREFIX: "/api/v1/authentication",
 
     // Constants representing the redirect paths for various resources under head office
     REDIRECT_HEAD_OFFICE_SUBJECT: "/head-office/subjects",
@@ -46,7 +43,11 @@ const ApiConstant = {
     API_HEAD_OFFICE_STAFF: "/api/v1/head-office/staffs",
     API_HEAD_OFFICE_STUDENT: "/api/v1/head-office/students",
     API_HEAD_OFFICE_CLASS_SUBJECT: "/api/v1/head-office/class-subjects",
-    API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles"
+    API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles",
+
+    AUTHENTICATION: "AUTHENTICATION",
+    REDIRECT_AUTHENTICATION_LOGOUT: "/authentication/logout",
+    REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
 };
 
 const INIT_PAGINATION = {

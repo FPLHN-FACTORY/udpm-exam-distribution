@@ -23,10 +23,11 @@ public class AuthenticationController {
     public void authorSwitch(
             @RequestParam(name = "screen", required = false) String screen,
             @RequestParam(name = "redirect_uri", required = false) String redirectUri,
+            @RequestParam(name = "facility_id", required = false) String facilityId,
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        authenticationService.authorSwitch(screen, redirectUri, request, response);
+        authenticationService.authorSwitch(screen, redirectUri, facilityId, request, response);
     }
 
     @GetMapping(MappingConstants.REDIRECT_AUTHENTICATION_FORBIDDEN)

@@ -1,10 +1,13 @@
 package fplhn.udpm.examdistribution.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.util.SerializationUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -49,6 +52,12 @@ public class CookieUtils {
     public static String serialize(Object object) {
         return Base64.getUrlEncoder()
                 .encodeToString(SerializationUtils.serialize(object));
+    }
+
+    public static String serializeAndEncode(Object object) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(object);
+        return Base64.getEncoder().encodeToString(jsonString.getBytes(StandardCharsets.UTF_8));
     }
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
