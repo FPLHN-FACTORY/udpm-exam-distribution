@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>401</title>
+    <link rel="shortcut icon" href="https://ap.poly.edu.vn/images/favicon.ico"/>
+    <link th:href="@{/css/error/error.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div class="content-error">
+    <div class="logo">
+        <img width="20%" th:src="@{/assets/image/Logo_FPT.png}" alt="Logo"/>
+        <img width="20%" th:src="@{/assets/image/logo-udpm-dark.png}" alt="Logo"/>
+    </div>
+    <h1>401!</h1>
+    <h2>UnAuthorization</h2>
+    <span onclick="handleRedirectLogout()">Đăng nhập lại</span>
+</div>
+<script th:src="@{/js/constants.js}"></script>
+<script>
+    const handleRedirectLogout = () => {
+        window.location.href = ApiConstant.REDIRECT_AUTHENTICATION_LOGOUT;
+    }
+</script>
+</body>
+</html>

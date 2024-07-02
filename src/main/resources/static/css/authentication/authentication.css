@@ -1,0 +1,46 @@
+.background-permission {
+    height: 100vh;
+    position: relative;
+    width: 100%;
+}
+
+.background-permission:before {
+    content: "";
+    background-image: url(../../assets/image/bg-simple.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-filter: blur(1px);
+    filter: blur(1px);
+    height: 100%;
+    left: 0;
+    opacity: .8;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+}
+
+.image-permission {
+    text-align: center;
+    cursor: pointer;
+}
+
+.image-permission:hover img {
+    transition: transform 0.3s ease 0s;
+    transform: scale(1.1);
+}
+
+.choose-facility {
+    /*ced4da*/
+    width: 250px;
+    border: 1px solid #ced4da;
+    height: 40px;
+    border-radius: 5px;
+    background-color: white;
+    margin-left: 5px;
+}
+
+.choose-facility:focus {
+    border: 1px solid #80bdff;
+    box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+}

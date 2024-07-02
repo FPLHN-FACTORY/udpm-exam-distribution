@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Static table examples">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/css/authentication/authentication.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+    <title>Đăng nhập</title>
+</head>
+<body>
+<div class="wrapper">
+    <div class="background-permission">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(-120px + 100vh); padding: 10px 10px 40px;">
+            <div class="row">
+                <div class="col-6">
+                    <img th:src="@{/assets/image/Logo_FPT.png}" alt="Ảnh logo FPT" width="150"/>
+                </div>
+                <div class="col-6">
+                    <img th:src="@{/assets/image/logo-udpm-dark.png}" alt="Ảnh logo UDPM" width="150"/>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 30px;">Thay đổi vai trò quản lý sự
+                        kiện</h1>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <span style="font-family: Nunito; font-weight: bolder; font-size: 20px;">Chọn cơ sở</span>
+                    <select id="listFacility" class="choose-facility" required>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 20px; color: red" th:text="${error}"></h1>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center" style="gap: 50px; margin: 70px 150px 0 150px">
+                <div onclick="handleRedirectGoogleLogin(1)" class="image-permission">
+                    <img type="button" style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/BanDaoTao.png}" alt="Ảnh Ban đào tạo"/>
+                    <button class="btn btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ml-2">Admin</span>
+                        </div>
+                    </button>
+                </div>
+                <div onclick="handleRedirectGoogleLogin(2)" class="image-permission">
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/TM_CNBM.png}" alt="Ảnh Trưởng môn/Chủ nhiệm bộ môn"/>
+                    <button type="button" class="btn btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ml-2">Trưởng môn/Chủ nhiệm bộ môn</span>
+                        </div>
+                    </button>
+                </div>
+                <div onclick="handleRedirectGoogleLogin(3)" class="image-permission">
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/GV.png}" alt="Ảnh Giảng viên"/>
+                    <button type="button" class="btn btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ml-2">Giảng viên</span>
+                        </div>
+                    </button>
+                </div>
+                <div onclick="handleRedirectGoogleLogin(4)" class="image-permission">
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/QLDT.png}" alt="Ảnh Sinh Viên"/>
+                    <button type="button" class="btn btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ml-2">Sinh Viên</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div style="min-height: calc(120px + 0vh); display: flex; justify-content: center; align-items: center; z-index: 1000; font-size: 1.3rem;">
+            <p>
+                <span style="font-size: 20px">Powered by</span>
+                <span style="font-family: Nunito; font-weight: bold; font-size: 23px; margin: 0 5px">FPLHN-UDPM</span>
+            </p>
+            <img th:src="@{/assets/image/logo-udpm-dark.png}" alt="logo" style="width: 100%; height: auto; max-width: 100px;">
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+<script th:src="@{/js/authentication/authentication.js}"></script>
+</body>
+</html>
