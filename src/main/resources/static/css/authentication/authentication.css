@@ -1,11 +1,10 @@
-.background-login {
+.background-permission {
     height: 100vh;
     position: relative;
     width: 100%;
-    text-align: center;
 }
 
-.background-login:before {
+.background-permission:before {
     content: "";
     background-image: url(../../assets/image/bg-simple.jpg);
     background-repeat: no-repeat;
@@ -21,10 +20,12 @@
     z-index: -1;
 }
 
-.footer-login {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
+.image-permission {
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+.image-permission:hover img{
+    transition: transform 0.3s ease 0s;
+    transform: scale(1.1);
 }
