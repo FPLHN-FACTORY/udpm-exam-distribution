@@ -1,10 +1,8 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fplhn.udpm.examdistribution.entity.DepartmentFacility;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
-import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthDepartmentFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomUserCookie;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.OAuth2UserInfo;
@@ -32,8 +30,6 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final AuthStaffRepository authStaffRepository;
 
-    private final AuthDepartmentFacilityRepository departmentFacilityRepository;
-
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -59,17 +55,16 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         Optional<Staff> optionalStaff = authStaffRepository.getStaffByAccountFpt(userInfo.getEmail());
         Staff currentStaff = optionalStaff.get();
         String role = authentication.getAuthorities().toString();
-        Optional<DepartmentFacility> departmentFacilityOptional = departmentFacilityRepository.getDepartmentFacilityByFacilityId(httpSession.getAttribute(SessionConstant.FACILITY_ID).toString());
-        DepartmentFacility departmentFacility = departmentFacilityOptional.get();
 
         CustomUserCookie userCookie = CustomUserCookie.builder()
                 .userId(currentStaff.getId())
-                .departmentFacilityId(departmentFacility.getId())
-                .departmentName(departmentFacility.getDepartment().getName())
-                .facilityName(departmentFacility.getFacility().getId())
+                .departmentFacilityId(currentStaff.getDepartmentFacility().getId())
+                .departmentName(currentStaff.getDepartmentFacility().getDepartment().getName())
+                .facilityName(currentStaff.getDepartmentFacility().getFacility().getId())
                 .userEmailFPT(currentStaff.getAccountFpt())
                 .userEmailFe(currentStaff.getAccountFe())
                 .userFullName(currentStaff.getName())
+                .userPicture(userInfo.getPicture())
                 .userRole(role)
                 .build();
         String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
