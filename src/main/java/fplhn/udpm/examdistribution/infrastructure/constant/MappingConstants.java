@@ -37,6 +37,9 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_OFFICE_ROLE = HEAD_OFFICE + "/roles";
     public static final String REDIRECT_HEAD_OFFICE_STAFF_SUBJECT = HEAD_OFFICE + "/staff-subject";
 
+    // Constants representing the redirect paths for various resources under head department
+    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
+
     // Constants representing the full paths for various resources under head office
     public static final String API_HEAD_OFFICE_SUBJECT = API_HEAD_OFFICE_PREFIX + "/subjects";
     public static final String API_HEAD_OFFICE_SEMESTER = API_HEAD_OFFICE_PREFIX + "/semesters";
@@ -53,6 +56,9 @@ public final class MappingConstants {
     public static final String API_HEAD_OFFICE_ROLE = API_HEAD_OFFICE_PREFIX + "/roles";
     public static final String API_HEAD_OFFICE_STAFF_SUBJECT = API_HEAD_OFFICE_PREFIX + "/staff-subject";
 
+    // Constants representing the full paths for various resources under head department
+    public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/manage-head-of-subjects";
+
     public static final String REDIRECT_GOOGLE_AUTHORIZATION = "/oauth2/authorization/google";
     public static final String AUTHENTICATION = "/authentication";
     public static final String REDIRECT_AUTHENTICATION_LOGOUT = AUTHENTICATION + "/logout";
@@ -60,4 +66,5 @@ public final class MappingConstants {
     public static final String REDIRECT_AUTHENTICATION_FORBIDDEN = "/403";
     public static final String REDIRECT_AUTHENTICATION_UNAUTHORIZE = "/401";
     public static final String API_AUTHENTICATION = API_VERSION_PREFIX + AUTHENTICATION;
+
 }

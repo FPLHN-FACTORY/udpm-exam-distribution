@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quản lý trưởng môn - môn học</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-department:: sidebar-head-of-department}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý trưởng môn - môn học</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded mb-4">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Lọc dữ liệu</h4>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="staffCode">Mã giảng viên</label>
+                                    <input type="text" class="form-control" id="staffCode"
+                                           placeholder="Nhập mã giảng viên">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="staffName">Tên giảng viên</label>
+                                    <input type="text" class="form-control" id="staffName"
+                                           placeholder="Nhập tên giảng viên">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button class="btn btn-secondary" id="btnSearchStaff">Tìm kiếm</button>
+                            <button class="btn ms-3" id="btnResetSearchStaff"
+                                    style="background-color: var(--common-button-color); color: white;">Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Filter -->
+                    <!-- Table -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách nhân viên</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã nhân viên</td>
+                                    <td>Tên nhân viên</td>
+                                    <td>Email FPT</td>
+                                    <td>Email FE</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="manageHOSTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  Modal Assign Subject For Staff - Head Of Subject  -->
+    <div
+            class="modal fade"
+            id="modifyAssignSubjectForStaff"
+            tabindex="-1"
+            aria-labelledby="modifyAssignSubjectForStaffLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifyAssignSubjectForStaffLabel">Phân công môn học cho trưởng môn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded mb-4">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Lọc dữ liệu</h4>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="subjectCode">Mã môn học</label>
+                                    <input type="text" class="form-control" id="subjectCode"
+                                           placeholder="Nhập mã môn học">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="subjectName">Tên môn học</label>
+                                    <input type="text" class="form-control" id="subjectName"
+                                           placeholder="Nhập tên môn học">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="subjectType">Hình thức học</label>
+                                    <select class="form-select" id="subjectType">
+                                        <option value="">Chọn hình thức môn học</option>
+                                        <option value="TRADITIONAL">Traditional</option>
+                                        <option value="ONLINE">Online</option>
+                                        <option value="BLEND">Blend</option>
+                                        <option value="TRUC_TUYEN">Trực tuyến</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button class="btn btn-secondary" id="btnSearchSubjectAssign">Tìm kiếm</button>
+                            <button class="btn ms-3" id="btnResetSearchSubjectAssign"
+                                    style="background-color: var(--common-button-color); color: white;">Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Filter -->
+                    <!-- Table -->
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Thuộc quản lý</td>
+                                <td>Mã môn học</td>
+                                <td>Tên môn học</td>
+                                <td>Hình thức học</td>
+                            </tr>
+                            </thead>
+                            <tbody id="subjectAssignedTableBody" class="table-group-divider">
+                            <tr>
+                                <td colspan="6" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <div class="d-flex align-items-center">
+                                <nav>
+                                    <ul class="pagination" id="paginationSubjectAssigned">
+                                    </ul>
+                                </nav>
+                            </div>
+                            <select class="form-select" id="pageSizeSubjectAssigned" style="width: 100px;">
+                                <option value="5">5 bản ghi / Trang</option>
+                                <option value="10">10 bản ghi / Trang</option>
+                                <option value="20">20 bản ghi / Trang</option>
+                                <option value="50">50 bản ghi / Trang</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnAssignSubjectForStaff">Phân công</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  Modal Assign Subject For Staff - Head Of Subject  -->
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/sidebar-track.js}"></script>
+<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+<script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/js/head-department_manage-hos/manage-hos.js}"></script>
+</body>
+</html>

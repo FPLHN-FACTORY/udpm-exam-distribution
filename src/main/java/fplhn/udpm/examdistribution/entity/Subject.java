@@ -55,4 +55,8 @@ public class Subject extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_department")
     private Department department;
 
+    @ManyToOne
+    @JoinColumn(name = "id_head_subject")
+    private Staff headSubject;
+
 }

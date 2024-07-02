@@ -43,6 +43,8 @@ const getSubjects = (
     startDate = null
 ) => {
 
+    $('#loading').show();
+
     const params = {
         page: page,
         size: size,
@@ -62,8 +64,6 @@ const getSubjects = (
     }
 
     url = url.slice(0, -1);
-
-    $('#loading').show();
 
     $.ajax({
         type: "GET",
@@ -96,15 +96,16 @@ const getSubjects = (
                             </td>
                         </tr>`;
             });
+            $('#loading-ele').hide();
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
         },
         error: function (error) {
+            $('#loading-ele').hide();
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
         }
     });
-    $('#loading').hide();
 }
 
 const changePage = (page) => {

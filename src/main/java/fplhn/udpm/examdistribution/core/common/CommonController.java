@@ -11,4 +11,9 @@ public class CommonController {
         return "redirect:/head-office/semesters";
     }
 
+    @GetMapping("/head-department")
+    public String viewHeadDepartment() {
+        return "redirect:/head-department/manage-head-of-subjects";
+    }
+
 }

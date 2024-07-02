@@ -27,8 +27,7 @@
             </div>
             <div class="row mt-4">
                 <div class="col-12">
-                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 30px;">Thay đổi vai trò quản lý sự
-                        kiện</h1>
+                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 30px;">Đăng nhập</h1>
                 </div>
             </div>
             <div class="row mt-4">
@@ -40,43 +39,59 @@
             </div>
             <div class="row mt-4">
                 <div class="col-12">
-                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 20px; color: red" th:text="${error}"></h1>
+                    <h1 style="font-family: Nunito; font-weight: bolder; font-size: 20px; color: red"
+                        th:text="${error}"></h1>
                 </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center" style="gap: 50px; margin: 70px 150px 0 150px">
+            <div class="d-flex justify-content-between align-items-center"
+                 style="gap: 50px; margin: 70px 150px 0 150px">
                 <div onclick="handleRedirectGoogleLogin(1)" class="image-permission">
-                    <img type="button" style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/BanDaoTao.png}" alt="Ảnh Ban đào tạo"/>
+                    <img type="button" style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/BanDaoTao.png}" alt="Ảnh Ban đào tạo"/>
                     <button class="btn btn-primary px-3 mt-3">
                         <div class="d-flex align-items-center">
                             <i class="fs-4 fa-solid fa-user"></i>
-                            <span class="fs-4 ml-2">Admin</span>
+                            <span class="fs-4 ms-2">Admin</span>
                         </div>
                     </button>
                 </div>
                 <div onclick="handleRedirectGoogleLogin(2)" class="image-permission">
-                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/TM_CNBM.png}" alt="Ảnh Trưởng môn/Chủ nhiệm bộ môn"/>
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/TM_CNBM.png}" alt="Ảnh Trưởng môn/Chủ nhiệm bộ môn"/>
                     <button type="button" class="btn btn-primary px-3 mt-3">
                         <div class="d-flex align-items-center">
                             <i class="fs-4 fa-solid fa-user"></i>
-                            <span class="fs-4 ml-2">Trưởng môn/Chủ nhiệm bộ môn</span>
+                            <span class="fs-4 ms-2">Trưởng môn</span>
                         </div>
                     </button>
                 </div>
                 <div onclick="handleRedirectGoogleLogin(3)" class="image-permission">
-                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/GV.png}" alt="Ảnh Giảng viên"/>
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/TM_CNBM.png}" alt="Ảnh Trưởng môn/Chủ nhiệm bộ môn"/>
                     <button type="button" class="btn btn-primary px-3 mt-3">
                         <div class="d-flex align-items-center">
                             <i class="fs-4 fa-solid fa-user"></i>
-                            <span class="fs-4 ml-2">Giảng viên</span>
+                            <span class="fs-4 ms-2 text-truncate">Chủ nhiệm bộ môn</span>
                         </div>
                     </button>
                 </div>
                 <div onclick="handleRedirectGoogleLogin(4)" class="image-permission">
-                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;" th:src="@{/assets/image/QLDT.png}" alt="Ảnh Sinh Viên"/>
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/GV.png}" alt="Ảnh Giảng viên"/>
                     <button type="button" class="btn btn-primary px-3 mt-3">
                         <div class="d-flex align-items-center">
                             <i class="fs-4 fa-solid fa-user"></i>
-                            <span class="fs-4 ml-2">Sinh Viên</span>
+                            <span class="fs-4 ms-2">Giảng viên</span>
+                        </div>
+                    </button>
+                </div>
+                <div onclick="handleRedirectGoogleLogin(5)" class="image-permission">
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/QLDT.png}" alt="Ảnh Sinh Viên"/>
+                    <button type="button" class="btn btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ms-2">Sinh Viên</span>
                         </div>
                     </button>
                 </div>
@@ -87,9 +102,13 @@
                 <span style="font-size: 20px">Powered by</span>
                 <span style="font-family: Nunito; font-weight: bold; font-size: 23px; margin: 0 5px">FPLHN-UDPM</span>
             </p>
-            <img th:src="@{/assets/image/logo-udpm-dark.png}" alt="logo" style="width: 100%; height: auto; max-width: 100px;">
+            <img th:src="@{/assets/image/logo-udpm-dark.png}" alt="logo"
+                 style="width: 100%; height: auto; max-width: 100px;">
         </div>
     </div>
+    <!--  Loading  -->
+    <div th:insert="~{fragment/loading/loading :: loading}"></div>
+    <!--  Loading  -->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>

@@ -1,0 +1,87 @@
+<!-- This is the main container for the sidebar of the head office page -->
+<div th:fragment="sidebar-head-of-department">
+
+    <!-- The sidebar with a dark background color -->
+    <div class="sidebar" data-background-color="dark">
+
+        <!-- The logo section of the sidebar -->
+        <div class="sidebar-logo">
+
+            <!-- The header of the logo section with a dark background color -->
+            <div class="logo-header" data-background-color="dark">
+
+                <!-- The logo link -->
+                <a th:href="@{/}" class="logo">
+                    <img
+                            th:src="@{/assets/image/logo-udpm.png}"
+                            alt="logo-udpm"
+                            class="p-2 mt-3 navbar-brand"
+                            height="70"
+                    />
+                </a>
+
+                <!-- The navigation toggle buttons -->
+                <div class="nav-toggle">
+
+                    <!-- The button to toggle the sidebar -->
+                    <button class="btn btn-toggle toggle-sidebar">
+                        <i class="gg-menu-right"></i>
+                    </button>
+
+                    <!-- The button to toggle the sidenav -->
+                    <button class="btn btn-toggle sidenav-toggler">
+                        <i class="gg-menu-left"></i>
+                    </button>
+                </div>
+
+                <!-- The button to toggle the topbar -->
+                <button class="topbar-toggler more">
+                    <i class="gg-more-vertical-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- The wrapper for the sidebar content with a custom scrollbar -->
+        <div class="sidebar-wrapper scrollbar scrollbar-inner">
+
+            <!-- The actual content of the sidebar -->
+            <div class="sidebar-content">
+
+                <!-- The secondary navigation menu -->
+                <ul class="nav nav-secondary">
+
+                    <!-- The active navigation item -->
+                    <li class="nav-item">
+
+                        <!-- The link for the active navigation item -->
+                        <a
+                                th:href="@{/head-department/join-room}"
+                                class="collapsed"
+                                aria-expanded="false"
+                        >
+                            <!-- The icon for the active navigation item -->
+                            <i class="fa-regular fa-calendar-days"></i>
+
+                            <!-- The text for the active navigation item -->
+                            <p>Tham gia phòng thi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- The link for the active navigation item -->
+                        <a
+                                th:href="@{/head-department/manage-head-of-subjects}"
+                                class="collapsed"
+                                aria-expanded="false"
+                        >
+                            <!-- The icon for the active navigation item -->
+                            <i class="fa-regular fa-calendar-days"></i>
+
+                            <!-- The text for the active navigation item -->
+                            <p>Quản lý trưởng môn</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
