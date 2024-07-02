@@ -26,9 +26,14 @@ import java.util.Optional;
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationSuccessHandler.class);
+
     private final HttpSession httpSession;
 
     private final AuthStaffRepository authStaffRepository;
+
+    private static final int COOKIE_EXPIRE = 7200;
+
+    private static final String COOKIE_NAME = "e_d_i";
 
     @Override
     public void onAuthenticationSuccess(
@@ -39,7 +44,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         OAuth2UserInfo userInfo = (OAuth2UserInfo) authentication.getPrincipal();
 
         if (httpSession.getAttribute(SessionConstant.ROLE) == null || httpSession.getAttribute(SessionConstant.ERROR_LOGIN) != null) {
-            new DefaultRedirectStrategy().sendRedirect(request, response, "/"); //trở về trang đăng nhập với lỗi.
+            new DefaultRedirectStrategy().sendRedirect(request, response, "/");
         } else {
             this.setCookie(response, authentication, userInfo);
 
@@ -47,7 +52,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             String serverPort = String.valueOf(request.getServerPort());
 
             String domain = "http://" + serverName + ":" + serverPort + "/" + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
-            new DefaultRedirectStrategy().sendRedirect(request, response, domain); //di chuyển đến trang người dùng chọn.
+            new DefaultRedirectStrategy().sendRedirect(request, response, domain);
         }
     }
 
@@ -69,17 +74,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .build();
         String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
-        CookieUtils.addCookie(response, "e_d_i", base64Encoded, 10000);
-
-//        CookieUtils.addCookie(response, "u_roles", role, 10000);
-//        CookieUtils.addCookie(response, "df_id", departmentFacility.getId(), 10000);
-//        CookieUtils.addCookie(response, "d_name", departmentFacility.getDepartment().getName(), 10000);
-//        CookieUtils.addCookie(response, "f_name", departmentFacility.getFacility().getId(), 10000);
-//        CookieUtils.addCookie(response, "u_pic", userInfo.getPicture(), 10000);
-//        CookieUtils.addCookie(response, "u_e_fpt", currentStaff.getAccountFpt(), 10000);
-//        CookieUtils.addCookie(response, "u_e_fe", currentStaff.getAccountFe(), 10000);
-//        CookieUtils.addCookie(response, "u_fn", "'" + userInfo.getGivenName() + "'", 10000);
-//        CookieUtils.addCookie(response, "u_id", userInfo.getId(), 10000);
+        CookieUtils.addCookie(
+                response,
+                COOKIE_NAME,
+                base64Encoded,
+                COOKIE_EXPIRE,
+                false,
+                false
+        );
     }
 
 }

@@ -27,10 +27,18 @@ public class CookieUtils {
         return Optional.empty();
     }
 
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public static void addCookie(
+            HttpServletResponse response,
+            String name,
+            String value,
+            int maxAge,
+            boolean isSecure,
+            boolean isHttpOnly
+    ) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        cookie.setSecure(isSecure);
+        cookie.setHttpOnly(isHttpOnly);
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
     }

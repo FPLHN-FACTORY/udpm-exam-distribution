@@ -66,15 +66,33 @@ const INIT_PAGINATION = {
 const EXAM_DISTRIBUTION_CONSTANT_KEY = "e_d_i";
 
 const getExamDistributionInfo = () => {
-    const examDistributionInfo = JSON.parse(CookieUtil.get(EXAM_DISTRIBUTION_CONSTANT_KEY));
+    const cookieValue = Cookies.get(EXAM_DISTRIBUTION_CONSTANT_KEY);
+
+    if (!cookieValue) return {};
+
+    let examDistributionInfoDecoded;
+    try {
+        examDistributionInfoDecoded = decodeURIComponent(escape(window.atob(cookieValue)));
+    } catch (error) {
+        return {};
+    }
+
+    let examDistributionInfo;
+    try {
+        examDistributionInfo = JSON.parse(examDistributionInfoDecoded);
+    } catch (error) {
+        return {};
+    }
+
     return {
-        userRole: examDistributionInfo.userRole || null,
-        departmentFacilityId: examDistributionInfo.departmentFacilityId || null,
-        departmentName: examDistributionInfo.departmentName || null,
-        facilityName: examDistributionInfo.facilityName || null,
-        userEmailFPT: examDistributionInfo.userEmailFPT || null,
-        userEmailFe: examDistributionInfo.userEmailFe || null,
-        userFullName: examDistributionInfo.userFullName || null,
-        userId: examDistributionInfo.userId || null,
+        userRole: examDistributionInfo?.userRole || null,
+        departmentFacilityId: examDistributionInfo?.departmentFacilityId || null,
+        departmentName: examDistributionInfo?.departmentName || null,
+        facilityName: examDistributionInfo?.facilityName || null,
+        userEmailFPT: examDistributionInfo?.userEmailFPT || null,
+        userEmailFe: examDistributionInfo?.userEmailFe || null,
+        userFullName: examDistributionInfo?.userFullName || null,
+        userId: examDistributionInfo?.userId || null,
+        userPicture: examDistributionInfo?.userPicture || null,
     };
 };

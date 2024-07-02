@@ -4,10 +4,12 @@ public enum Role {
 
     BAN_DAO_TAO,
 
-    TM_CNBM,
+    TRUONG_MON,
 
     GIANG_VIEN,
 
-    SINH_VIEN
+    SINH_VIEN,
+
+    CHU_NHIEM_BO_MON
 
 }
