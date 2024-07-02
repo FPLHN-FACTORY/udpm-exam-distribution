@@ -27,4 +27,6 @@ public class CustomUserCookie implements Serializable {
 
     private String userId;
 
+    private String userPicture;
+
 }
