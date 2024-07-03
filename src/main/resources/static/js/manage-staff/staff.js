@@ -461,20 +461,16 @@ function submitUpload() {
             responseType: 'blob'
         },
         data: formData,
-        success: (response, status, xhr) => {
+        success: (response) => {
             showToastSuccess("import thành công!");
             $('#modalUploadExcel').modal('hide');
             $('#input_file').val('');
             clearFormSearch();
         },
-        error: (xhr) => {
+        error: (error) => {
             $('#modalUploadExcel').modal('hide');
             $('#input_file').val('');
             showToastError("upload thất bại!");
-        },
-        complete: () => {
-            $('#input_file').val('');
-            $('#modal_import').modal('hide');
         }
     });
 };

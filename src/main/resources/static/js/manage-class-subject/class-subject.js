@@ -482,3 +482,165 @@ const closeModal = () => {
 const formatDate = (number) => {
     return moment(number).format('DD-MM-YYYY');
 }
+
+function openModalDownloadTemplate() {
+    $('#downloadSemester').val('');
+    $('#downloadSemesterError').val('');
+    $('#downloadYear').val('');
+    $('#downloadYearError').val('');
+    $('#modalDownloadClassSubject').modal('show');
+}
+
+function submitDownload() {
+
+    let check = 0;
+
+    if ($('#downloadYear').val().length !== 4) {
+        check = 1;
+        $('#downloadYearError').text('Năm học phải gồm 4 ký tự, ví dụ: 2024');
+    } else {
+        $('#downloadYearError').text('');
+    }
+
+    if ($('#downloadSemester').val() === '' || $('#downloadSemester').val().length === 0) {
+        check = 1;
+        $('#downloadSemesterError').text('Vui lòng chọn học kỳ!');
+    } else {
+        $('#downloadSemesterError').text('');
+    }
+
+    if (check === 0) {
+        $('#modalDownloadClassSubject').modal('hide');
+        swal({
+            title: "Xác nhận tải?",
+            text: "Bạn chắc chắn muốn tải template không?",
+            type: "warning",
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: "Hủy",
+                    className: "btn btn-black",
+                },
+                confirm: {
+                    text: "Tải",
+                    className: "btn btn-secondary",
+                },
+            },
+        }).then((willDelete) => {
+            if (willDelete) {
+                let url = ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/download-template-class-subject' + '?semester=' + $('#downloadSemester').val() + "&year=" + $('#downloadYear').val();
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function (responseBody) {
+
+                        var link = document.createElement('a');
+
+                        var filename = "template-class-subject.xlsx";
+
+                        var url = window.URL.createObjectURL(responseBody);
+
+                        link.href = url;
+
+                        link.download = filename;
+
+                        document.body.appendChild(link);
+
+                        link.click();
+
+                        document.body.removeChild(link);
+
+                        window.URL.revokeObjectURL(url);
+
+                    },
+                    error: function (error) {
+                        if (error?.status === 404) {
+                            showToastError('Học kì ' + $('#downloadSemester').val() + ' năm ' + $('#downloadYear').val() + ' không tồn tại.');
+                        } else {
+                            showToastError('Học kì ' + $('#downloadSemester').val() + ' năm ' + $('#downloadYear').val() + ' không tồn tại.');
+                        }
+                    }
+                });
+            } else {
+                $('#modalDownloadClassSubject').modal('show');
+            }
+        });
+    }
+
+}
+
+function openSelectFile() {
+    $('#input-file-class-subject').click();
+}
+
+const convertSize = (bytes) => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+    // Kiểm tra nếu kích thước lớn hơn 100 MB
+    if (bytes > 100 * 1024 * 1024) return null;
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+    if (bytes === 0) return '0 Byte';
+};
+
+function submitUpload(fileUpload) {
+    if (fileUpload == null) {
+        return;
+    }
+    const formData = new FormData();
+    formData.append("file", fileUpload);
+
+    let url = ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + "/file/upload"
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+            responseType: 'blob'
+        },
+        data: formData,
+        success: (response) => {
+            showToastSuccess("import thành công!");
+            $('#input-file-class-subject').val('');
+            resetFilterForm();
+            getClassSubjects();
+        },
+        error: (error) => {
+            $('#input-file-class-subject').val('');
+            showToastError("import thất bại!");
+            resetFilterForm();
+            getClassSubjects();
+        }
+    });
+}
+
+function handleChangeFile(input) {
+
+    if (input.files.length < 1) {
+        return;
+    }
+
+    const file = input.files[0];
+    const fileType = file.type;
+
+    const acceptType = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+    ];
+
+    if (!acceptType.includes(fileType)) {
+        showToastError("Định dạng tệp tin không hợp lệ.");
+        return;
+    }
+    if (convertSize(file.size) === null) {
+        showToastError("File không được lơn hơn 100MB")
+        return;
+    }
+
+    submitUpload(file)
+}

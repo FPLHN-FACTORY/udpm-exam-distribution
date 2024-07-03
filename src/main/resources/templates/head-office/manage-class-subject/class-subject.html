@@ -83,13 +83,31 @@
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
                             <h4>Danh sách lớp môn</h4>
-                            <button
-                                    class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddClassSubject()"
-                            >
-                                Thêm Lớp Môn Học
-                            </button>
+                            <div class="d-flex gap-3">
+                                <button
+                                        class="btn btn-secondary"
+                                        onclick="openSelectFile()"
+                                >
+                                    Import Lớp Môn
+                                </button>
+                                <input type="file"
+                                       id="input-file-class-subject"
+                                       accept=".xlsx,.xls"
+                                       style="display: none"
+                                       onchange="handleChangeFile(this)"
+                                />
+                                <button class="btn btn-secondary"
+                                        onclick="openModalDownloadTemplate()">
+                                    Download Template
+                                </button>
+                                <button
+                                        class="btn btn-secondary"
+                                        data-bs-toggle="modal"
+                                        onclick="openModalAddClassSubject()"
+                                >
+                                    Thêm Lớp Môn Học
+                                </button>
+                            </div>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
@@ -238,6 +256,48 @@
         </div>
     </div>
     <!-- Modal Modify Subject -->
+    <!-- Start Modal Download Template-->
+    <div class="modal fade" id="modalDownloadClassSubject" tabindex="-1" aria-labelledby="modalDownloadClassSubjectLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadTempalteLabel">Download Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modifyStaffForm">
+                        <div class="mb-3">
+                            <label for="downloadSemester" class="form-label">
+                                <span class="text-danger"> * </span> Học kì</label>
+                            <select id="downloadSemester" class="form-select">
+                                <option value=""> -Chọn học kỳ- </option>
+                                <option value="SPRING">Spring</option>
+                                <option value="SUMMER">Summer</option>
+                                <option value="FALL">Fall</option>
+                            </select>
+                            <div class="text-danger" id="downloadSemesterError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="downloadYear" class="form-label">
+                                <span class="text-danger"> * </span> Năm học: (VD: 2024)</label>
+                            <input type="number" class="form-control" id="downloadYear"/>
+                            <div class="text-danger" id="downloadYearError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="submitDownload()">
+                        Download Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start Modal Download Template-->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -255,6 +315,8 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/loading.js}"></script>
 <script th:src="@{/js/manage-class-subject/class-subject.js}"></script>
 </body>
 </html>
