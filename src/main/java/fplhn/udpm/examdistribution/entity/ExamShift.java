@@ -28,7 +28,7 @@ public class ExamShift extends PrimaryEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "id_subject_class")
-    private ClassSubject subjectClass;
+    private ClassSubject classSubject;
 
     @ManyToOne
     @JoinColumn(name = "id_first_supervisor")
