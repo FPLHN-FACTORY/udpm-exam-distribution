@@ -22,4 +22,9 @@ public class CommonController {
         return "redirect:/head-subject/join-room";
     }
 
+    @GetMapping(MappingConstants.TEACHER)
+    public String viewTeacher() {
+        return "redirect:/teacher/exam-shift";
+    }
+
 }

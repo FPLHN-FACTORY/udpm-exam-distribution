@@ -79,4 +79,14 @@ public final class MappingConstants {
     public static final String REDIRECT_AUTHENTICATION_UNAUTHORIZE = "/401";
     public static final String API_AUTHENTICATION = API_VERSION_PREFIX + AUTHENTICATION;
 
+    // Constants representing the full paths for various resources under teacher
+    public static final String REDIRECT_TEACHER_EXAM_SHIFT = TEACHER + "/exam-shift";
+
+    // Constants representing the full paths for various resources under teacher
+    public static final String API_TEACHER_EXAM_SHIFT = API_TEACHER_PREFIX + "/exam-shift";
+    public static final String API_TEACHER_SUBJECT = API_TEACHER_PREFIX + "/subjects";
+    public static final String API_TEACHER_BLOCK = API_TEACHER_PREFIX + "/blocks";
+    public static final String API_TEACHER_CAMPUS = API_TEACHER_PREFIX + "/campuses";
+    public static final String API_TEACHER_CLASS_SUBJECT = API_TEACHER_PREFIX + "/class-subjects";
+
 }

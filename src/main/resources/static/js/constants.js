@@ -56,6 +56,16 @@ const ApiConstant = {
     REDIRECT_AUTHENTICATION_LOGOUT: "/authentication/logout",
     REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
 
+    // Constants representing the redirect paths for various resources under teacher
+    REDIRECT_TEACHER_EXAM_SHIFT: "/teacher/exam-shift",
+
+    // Constants representing the full paths for various resources under teacher
+    API_TEACHER_EXAM_SHIFT: "/api/v1/teacher/exam-shift",
+    API_TEACHER_SUBJECT: "/api/v1/teacher/subjects",
+    API_TEACHER_BLOCK: "/api/v1/teacher/blocks",
+    API_TEACHER_CAMPUS: "/api/v1/teacher/campuses",
+    API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
+
 };
 
 const INIT_PAGINATION = {
