@@ -1,32 +1,59 @@
 package fplhn.udpm.examdistribution.core.headoffice.staff.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headoffice.department.departmentfacility.repository.DFFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOSaveStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffDepartmentFacilityRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRepository;
+import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRoleRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.service.HOStaffService;
 import fplhn.udpm.examdistribution.entity.DepartmentFacility;
+import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.Helper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class HOStaffServiceImpl implements HOStaffService {
 
     private final HOStaffRepository staffRepo;
 
     private final HOStaffDepartmentFacilityRepository departmentFacilityRepo;
 
-    public HOStaffServiceImpl(HOStaffRepository staffRepo, HOStaffDepartmentFacilityRepository departmentFacilityRepo) {
+    private final HOStaffRoleRepository staffRoleRepo;
+
+    private final DFFacilityExtendRepository facilityRepo;
+
+    public HOStaffServiceImpl(HOStaffRepository staffRepo, HOStaffDepartmentFacilityRepository departmentFacilityRepo, HOStaffRoleRepository staffRoleRepo , DFFacilityExtendRepository facilityRepo) {
         this.staffRepo = staffRepo;
         this.departmentFacilityRepo = departmentFacilityRepo;
+        this.staffRoleRepo = staffRoleRepo;
+        this.facilityRepo = facilityRepo;
     }
 
     @Override
@@ -92,6 +119,11 @@ public class HOStaffServiceImpl implements HOStaffService {
         if (staffOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "staff not found");
         }
+        //change status in staff_role
+        List<StaffRole> staffRoles = staffRoleRepo.findAllByStaff_IdAndStatus(idStaff, EntityStatus.ACTIVE);
+        staffRoles.stream().forEach(staffRole -> staffRole.setStatus(EntityStatus.INACTIVE));
+        staffRoleRepo.saveAll(staffRoles);
+        //change status in staff
         staffOptional.get().setStatus(EntityStatus.INACTIVE);
         staffRepo.save(staffOptional.get());
         return new ResponseObject<>(null, HttpStatus.OK, "delete staff successfully");

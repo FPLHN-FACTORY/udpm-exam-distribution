@@ -11,11 +11,11 @@ import java.util.List;
 public interface HOStaffDepartmentFacilityRepository extends DepartmentFacilityRepository {
 
     @Query(value = """
-        SELECT CONCAT(d.name,' - ',f.name) as departmentFacilityName,
-        	   df.id as departmentFacilityId
+        SELECT CONCAT(d.name,' - ',f.name) AS departmentFacilityName,
+        	   df.id AS departmentFacilityId
         FROM department_facility df
-        JOIN department d on d.id = df.id_department
-        JOIN facility f on f.id = df.id_facility
+        JOIN department d ON d.id = df.id_department
+        JOIN facility f ON f.id = df.id_facility
         WHERE df.status = 0
     """,nativeQuery = true)
     List<HOStaffDepartmentFacilityResponse> getDepartmentFacilities();
