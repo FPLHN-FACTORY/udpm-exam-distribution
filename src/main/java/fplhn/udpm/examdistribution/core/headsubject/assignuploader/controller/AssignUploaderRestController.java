@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headsubject.assignuploader.controller;
 
+import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.AssignUploaderRequest;
 import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.FindStaffRequest;
 import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.FindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.assignuploader.service.AssignUploaderService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +30,11 @@ public class AssignUploaderRestController {
     @GetMapping("/staff/{departmentFacilityId}")
     public ResponseEntity<?> getAllStaff(@PathVariable String departmentFacilityId, FindStaffRequest request) {
         return Helper.createResponseEntity(assignUploaderService.getAllStaff(departmentFacilityId, request));
+    }
+
+    @PostMapping("/assign-uploader")
+    public ResponseEntity<?> addOrDelAssignUploader(@RequestBody AssignUploaderRequest request) {
+        return Helper.createResponseEntity(assignUploaderService.addOrDelAssignUploader(request));
     }
 
 }

@@ -168,6 +168,7 @@ const handleClearSearch = () => {
 
 
 //-------------------------------------------------------------------------------------------------Assign Uploader-----------------------------------------------------------------------------------------------
+
 //------------------------------------------------state getter setter---------------------------------------------------
 let stateCurrentSubjectId = "";
 
@@ -183,6 +184,14 @@ const setCurrentSubjectId = (value) => {
 //------------------------------------------------state getter setter---------------------------------------------------
 
 //------------------------------------------------------function--------------------------------------------------------
+const handleOpenModalAssignUpload = (subjectId, subjectName) => {
+    setCurrentSubjectId(subjectId);
+    setCurrentSubjectNameOnView(subjectName);
+    fetchSearchStaff();
+    onChangePageSizeAssignUploader();
+    $("#assignUploaderModal").modal("show");
+};
+
 const getGlobalParamsSearchAssignUploader = () => {
     return {
         accountFptOrFe: $("#staffFPTFE").val(),
@@ -244,14 +253,6 @@ const changePageAssignUploader = (page) => {
     fetchSearchStaff(page, $('#pageSize').val(), getGlobalParamsSearchAssignUploader());
 }
 
-const handleOpenModalAssignUpload = (subjectId, subjectName) => {
-    setCurrentSubjectId(subjectId);
-    setCurrentSubjectNameOnView(subjectName);
-    fetchSearchStaff();
-    onChangePageSizeAssignUploader();
-    $("#assignUploaderModal").modal("show");
-};
-
 const handleSearchAssignUploader = () => {
     fetchSearchStaff(1, $('#pageSize').val(), getGlobalParamsSearchAssignUploader());
 };
@@ -271,6 +272,25 @@ const onChangePageSizeAssignUploader = () => {
     $("#pageSizeAssignUploader").on("change", function () {
         resetGlobalParamsSearchAssignUploader();
         fetchSearchStaff(1, $('#pageSizeAssignUploader').val(), getGlobalParamsSearchAssignUploader());
+    });
+};
+
+const handleAssignUploader = (staffId) => {
+    $.ajax({
+        contentType: "application/json",
+        type: "POST",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/assign-uploader",
+        dataType: 'json',
+        data: JSON.stringify({
+            staffId: staffId,
+            subjectId: getCurrentSubjectId()
+        }),
+        success: function (responseBody) {
+            showToastSuccess(responseBody.message);
+        },
+        error: function (error) {
+            showToastError(error?.responseJSON?.message);
+        }
     });
 };
 //------------------------------------------------------function--------------------------------------------------------
@@ -315,7 +335,7 @@ const fetchSearchStaff = (
                 `);
                 return;
             }
-            const staffs = responseData.map((staff, index) => {
+            const staffs = responseData.map(staff => {
                 return `<tr>
                             <td>${staff.orderNumber}</td>
                             <td>${staff.staffCode}</td>
@@ -327,6 +347,7 @@ const fetchSearchStaff = (
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
+                                        onclick="handleAssignUploader('${staff.id}')"
                                       name="color"
                                       type="checkbox"
                                       class="colorinput-input"
@@ -348,4 +369,4 @@ const fetchSearchStaff = (
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
         }
     });
-}
+};
