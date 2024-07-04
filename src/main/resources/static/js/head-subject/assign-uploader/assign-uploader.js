@@ -22,14 +22,16 @@ const fetchSearchSubject = (
     size = $('#pageSize').val(),
     paramSearch = {
         subjectCode: "",
-        subjectName: ""
+        subjectName: "",
+        staffId: examDistributionInfor.userId
     },
 ) => {
     const params = {
         page: page,
         size: size,
         subjectCode: paramSearch.subjectCode,
-        subjectName: paramSearch.subjectName
+        subjectName: paramSearch.subjectName,
+        staffId: paramSearch.staffId
     };
 
     let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/subject/" + examDistributionInfor.departmentFacilityId + '?';
@@ -55,7 +57,7 @@ const fetchSearchSubject = (
                 `);
                 return;
             }
-            const subjects = responseData.map((subject, index) => {
+            const subjects = responseData.map(subject => {
                 return `<tr>
                             <td>${subject.orderNumber}</td>
                             <td>${subject.subjectCode}</td>
@@ -87,7 +89,8 @@ const fetchSearchSubject = (
 const getGlobalParamsSearch = () => {
     return {
         subjectCode: $("#subjectCode").val(),
-        subjectName: $("#subjectName").val()
+        subjectName: $("#subjectName").val(),
+        staffId: examDistributionInfor.userId
     }
 }
 
@@ -173,7 +176,7 @@ const handleClearSearch = () => {
 let stateCurrentSubjectId = "";
 
 //START: getter
-const getCurrentSubjectId = (value) => stateCurrentSubjectId
+const getCurrentSubjectId = () => stateCurrentSubjectId
 //END: getter
 
 //START: setter
@@ -197,6 +200,7 @@ const getGlobalParamsSearchAssignUploader = () => {
         accountFptOrFe: $("#staffFPTFE").val(),
         staffCode: $("#staffCode").val(),
         staffName: $("#staffName").val(),
+        subjectId: getCurrentSubjectId()
     }
 }
 
@@ -302,6 +306,7 @@ const fetchSearchStaff = (
         staffCode: "",
         staffName: "",
         accountFptOrFe: "",
+        subjectId: getCurrentSubjectId()
     }
 ) => {
     const params = {
@@ -309,7 +314,8 @@ const fetchSearchStaff = (
         size: size,
         staffCode: paramSearch.staffCode,
         staffName: paramSearch.staffName,
-        accountFptOrFe: paramSearch.accountFptOrFe
+        accountFptOrFe: paramSearch.accountFptOrFe,
+        subjectId: paramSearch.subjectId
     };
 
     let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/staff/" + examDistributionInfor.departmentFacilityId + '?';
@@ -342,7 +348,6 @@ const fetchSearchStaff = (
                             <td>${staff.name}</td>
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
-                            <td>${staff.isAssigned}</td>
                             <td>
                                 <div class="col-auto">
                                   <label class="colorinput">
