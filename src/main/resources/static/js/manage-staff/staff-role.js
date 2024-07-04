@@ -62,7 +62,7 @@ function getRolesByStaffId() {
     let idStaff = url.substring(url.lastIndexOf('/') + 1);
 
     let api = ApiConstant.API_HEAD_OFFICE_STAFF + '/role/' + idStaff;
-
+    showLoading();
     $.ajax({
         type: "GET",
         url: api,
@@ -95,6 +95,7 @@ function getRolesByStaffId() {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu chức vụ!');
         }
     });
+    hideLoading();
 }
 
 function handleDelete(idRole,roleName) {
@@ -127,6 +128,8 @@ function handleDelete(idRole,roleName) {
 
             let api = ApiConstant.API_HEAD_OFFICE_STAFF + '/change-permission';
 
+            showLoading();
+
             $.ajax({
                 type: "put",
                 url: api,
@@ -143,6 +146,7 @@ function handleDelete(idRole,roleName) {
                 }
 
             });
+            hideLoading();
         }
     });
 
@@ -176,6 +180,7 @@ function getAllRoles(
 
     api = api.slice(0, -1);
 
+    showLoading();
     $.ajax({
         type: "GET",
         url: api,
@@ -219,6 +224,7 @@ function getAllRoles(
             showToastError('Có lỗi xảy ra khi lấy dữ liệu chức vụ!');
         }
     });
+    hideLoading();
 }
 
 const createPagination = (totalPages, currentPage) => {
@@ -312,6 +318,8 @@ function handleChangePermission() {
 
         let api = ApiConstant.API_HEAD_OFFICE_STAFF + '/change-permission';
 
+        showLoading();
+
         $.ajax({
             type: "put",
             url: api,
@@ -330,6 +338,7 @@ function handleChangePermission() {
                 showToastError('Có lỗi xảy ra khi sửa quyền!');
             }
         });
+        hideLoading();
     });
 }
 

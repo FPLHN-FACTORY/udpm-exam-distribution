@@ -11,12 +11,13 @@ import java.util.List;
 public interface DepartmentFacilityCustomRepository extends DepartmentFacilityRepository {
 
     @Query("""
-        select distinct df
-                    from DepartmentFacility df
-                    join fetch df.department d
-                    join fetch df.facility f
-                    where d.name = :departmentName and f.name = :facilityName
-""")
+                    SELECT DISTINCT df
+                    FROM DepartmentFacility df
+                    JOIN FETCH df.department d
+                    JOIN FETCH df.facility f
+                    WHERE d.name = :departmentName
+                    AND f.name = :facilityName
+            """)
     List<DepartmentFacility> findByDepartmentFacility(String departmentName,String facilityName);
 
 

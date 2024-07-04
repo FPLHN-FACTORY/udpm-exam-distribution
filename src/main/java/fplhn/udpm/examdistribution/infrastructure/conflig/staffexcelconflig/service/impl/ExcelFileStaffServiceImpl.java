@@ -1,11 +1,11 @@
 package fplhn.udpm.examdistribution.infrastructure.conflig.staffexcelconflig.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headoffice.role.repository.HORoleFacilityRepository;
-import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.infrastructure.conflig.staffexcelconflig.repository.DepartmentFacilityCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.conflig.staffexcelconflig.repository.RoleCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.conflig.staffexcelconflig.service.ExcelFileStaffService;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -22,28 +22,22 @@ import java.util.List;
 @Slf4j
 public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
 
-    private final HORoleFacilityRepository facilityRepo;
-
     private final DepartmentFacilityCustomRepository departmentFacilityRepository;
 
     private final RoleCustomRepository roleRepository;
 
-    public ExcelFileStaffServiceImpl(HORoleFacilityRepository facilityRepo,
-                                     DepartmentFacilityCustomRepository departmentFacilityRepository,
-                                     RoleCustomRepository roleRepository) {
-        this.facilityRepo = facilityRepo;
+    private final HttpSession httpSession;
+
+    public ExcelFileStaffServiceImpl(DepartmentFacilityCustomRepository departmentFacilityRepository,
+                                     RoleCustomRepository roleRepository,
+                                     HttpSession httpSession) {
         this.departmentFacilityRepository = departmentFacilityRepository;
         this.roleRepository = roleRepository;
+        this.httpSession = httpSession;
     }
 
     @Override
     public ResponseObject<ByteArrayInputStream> downloadTemplate() {
-        //fix cứng id cơ sở , sau khi có đăng nhập sẽ sửa lại
-        List<Facility> facilities = facilityRepo.findAll();
-        String idFacility = "";
-        if (!facilities.isEmpty()) {
-            idFacility=facilities.get(0).getId();
-        }
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Template Thông Tin Nhân Viên");
@@ -84,8 +78,8 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
             cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerCellStyle);
 
-            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility(idFacility);
-            List<String> validRole = roleRepository.findAllByFacilityId(idFacility);
+            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility((String)httpSession.getAttribute(SessionConstant.FACILITY_ID));
+            List<String> validRole = roleRepository.findAllByFacilityId((String)httpSession.getAttribute(SessionConstant.FACILITY_ID));
 
             CellRangeAddressList dataDepartmentFacility = new CellRangeAddressList(1, 1000, 5, 5);
             CellRangeAddressList dataRole = new CellRangeAddressList(1, 1000, 6, 6);
@@ -121,7 +115,7 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             workbook.write(outputStream);
-            return new ResponseObject<>(new ByteArrayInputStream(outputStream.toByteArray()), HttpStatus.OK, "download template successfully");
+            return new ResponseObject<>(new ByteArrayInputStream(outputStream.toByteArray()), HttpStatus.OK, "Download template successfully");
         } catch (IOException ex) {
             log.error("Error during export Excel file", ex);
             return null;

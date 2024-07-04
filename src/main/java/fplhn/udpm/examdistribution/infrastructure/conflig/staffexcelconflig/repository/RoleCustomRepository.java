@@ -1,6 +1,5 @@
 package fplhn.udpm.examdistribution.infrastructure.conflig.staffexcelconflig.repository;
 
-import fplhn.udpm.examdistribution.entity.DepartmentFacility;
 import fplhn.udpm.examdistribution.entity.Role;
 import fplhn.udpm.examdistribution.repository.RoleRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,10 +24,11 @@ public interface RoleCustomRepository extends RoleRepository {
 
     @Query(
             value = """
-            select distinct r
-            from Role r
-            join fetch r.facility f
-            where r.name = :roleName and f.name = :facilityName
+            SELECT DISTINCT r
+            FROM Role r
+            JOIN FETCH r.facility f
+            WHERE r.name = :roleName
+            AND f.name = :facilityName
            """)
     List<Role> findAllByRoleNameAndFacilityName(String roleName, String facilityName);
 

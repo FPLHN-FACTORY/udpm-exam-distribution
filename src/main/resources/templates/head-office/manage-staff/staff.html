@@ -51,24 +51,26 @@
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-list"></i> Danh sách nhân viên</h4>
-                            <button
-                                    class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="showModalImport()"
-                            >
-                                Import nhân viên
-                            </button>
-                            <a class="btn btn-secondary"
-                               th:href="@{/api/v1/head-office/staffs/download-template-staffs}"
-                               download="template.xlsx">
-                                Download Template</a>
-                            <button
-                                    class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddStaff()"
-                            >
-                                Thêm nhân viên
-                            </button>
+                            <div class="d-flex gap-3">
+                                <button
+                                        class="btn btn-secondary"
+                                        data-bs-toggle="modal"
+                                        onclick="showModalImport()"
+                                >
+                                    Import nhân viên
+                                </button>
+                                <a class="btn btn-secondary"
+                                   th:href="@{/api/v1/head-office/staffs/download-template-staffs}"
+                                   download="template.xlsx">
+                                    Download Template</a>
+                                <button
+                                        class="btn btn-secondary"
+                                        data-bs-toggle="modal"
+                                        onclick="openModalAddStaff()"
+                                >
+                                    Thêm nhân viên
+                                </button>
+                            </div>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
@@ -111,7 +113,7 @@
             </div>
         </div>
     </div>
-    <!-- Start modal add role  -->
+    <!-- Start modal upload excel  -->
     <div class="modal fade" id="modalUploadExcel" tabindex="-1" aria-labelledby="RoleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -149,9 +151,9 @@
             </div>
         </div>
     </div>
-    <!-- Start modal add role -->
+    <!-- Start modal upload excel -->
 
-    <!-- Start modal upload excel  -->
+    <!-- Start modal modify staff  -->
     <div class="modal fade" id="modifyStaffModal" tabindex="-1" aria-labelledby="RoleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -164,26 +166,26 @@
                     <form id="modifyStaffForm">
                         <input type="hidden" id="modifyStaffId">
                         <div class="mb-3">
-                            <label for="modifyStaffCode" class="form-label"><span class="text-danger"> * </span> Mã nhân
-                                viên </label>
+                            <label for="modifyStaffCode" class="form-label">
+                                <span class="text-danger"> * </span> Mã nhân viên </label>
                             <input type="text" class="form-control" id="modifyStaffCode" required>
                             <div class="text-danger" id="modifyStaffCodeError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifyName" class="form-label"><span class="text-danger"> * </span> Tên nhân
-                                viên </label>
+                            <label for="modifyName" class="form-label">
+                                <span class="text-danger"> * </span> Tên nhân viên </label>
                             <input type="text" class="form-control" id="modifyName" required>
                             <div class="text-danger" id="modifyNameError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifyAccountFPT" class="form-label"><span class="text-danger"> * </span> Email
-                                FPT </label>
+                            <label for="modifyAccountFPT" class="form-label">
+                                <span class="text-danger"> * </span> Email FPT </label>
                             <input type="text" class="form-control" id="modifyAccountFPT" required>
                             <div class="text-danger" id="modifyAccountFPTError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifyAccountFE" class="form-label"><span class="text-danger"> * </span> Email
-                                FE </label>
+                            <label for="modifyAccountFE" class="form-label">
+                                <span class="text-danger"> * </span> Email FE </label>
                             <input type="text" class="form-control" id="modifyAccountFE" required>
                             <div class="text-danger" id="modifyAccountFEError"></div>
                         </div>
@@ -208,7 +210,7 @@
             </div>
         </div>
     </div>
-    <!--    end modal upload excel-->
+    <!--    end modal modify staff-->
 
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
