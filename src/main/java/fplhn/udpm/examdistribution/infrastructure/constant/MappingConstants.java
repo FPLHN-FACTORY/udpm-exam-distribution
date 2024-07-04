@@ -39,6 +39,7 @@ public final class MappingConstants {
 
     // Constants representing the redirect paths for various resources under head department
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
+    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT = HEAD_DEPARTMENT + "/manage-subjects";
 
     // Constants representing the redirect paths for various resources under head subject
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER = HEAD_SUBJECT + "/assign-uploader";
@@ -64,6 +65,7 @@ public final class MappingConstants {
 
     // Constants representing the full paths for various resources under head department
     public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/manage-head-of-subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/manage-subjects";
 
     // Constants representing the full paths for various resources under head subject
     public static final String API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER = API_HEAD_SUBJECT_PREFIX + "/assign-uploader";

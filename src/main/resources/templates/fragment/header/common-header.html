@@ -3,7 +3,7 @@
         <div class="main-header-logo">
             <!-- Logo Header -->
             <div class="logo-header" data-background-color="dark">
-                <div class="nav-toggle">
+                <div class="nav-toggle p-5">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>
                     </button>
@@ -63,7 +63,10 @@
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" th:href="@{/authentication/logout}">
+                                    <a
+                                            class="dropdown-item p-2 rounded"
+                                            th:href="@{/authentication/logout}"
+                                    >
                                         <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                     </a>
                                 </li>

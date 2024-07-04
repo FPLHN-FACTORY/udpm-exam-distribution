@@ -183,7 +183,9 @@ const getSubjectAssignForStaff = (
                 return `
                     <tr>
                         <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <input type="checkbox" class="form-check-input subject-checkbox" data-subject-id="${subject.id}" ${subject.assigned === 1 ? 'checked' : ''}>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input subject-checkbox" data-subject-id="${subject.id}" ${subject.assigned === 1 ? 'checked' : ''}>
+                            </div>
                         </td>
                         <td>${subject.subjectCode}</td>
                         <td>${subject.subjectName}</td>

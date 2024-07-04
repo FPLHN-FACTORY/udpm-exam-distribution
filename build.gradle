@@ -57,6 +57,7 @@ dependencies {
     runtimeOnly("org.webjars:popper.js:2.11.7")
     runtimeOnly("org.webjars.npm:toastify-js:1.12.0")
     runtimeOnly("org.webjars:js-cookie:3.0.1")
+    runtimeOnly("org.webjars:select2:4.0.13")
 }
 
 tasks.named('test') {
