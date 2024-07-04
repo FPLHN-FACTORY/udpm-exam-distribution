@@ -37,6 +37,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String role = (String) httpSession.getAttribute(SessionConstant.ROLE_LOGIN);
 
         if (role.equalsIgnoreCase("SINH_VIEN")) {
+            httpSession.setAttribute(SessionConstant.IS_STUDENT, SessionConstant.IS_STUDENT);
             Optional<Student> isStudentExist = authStudentRepository.isStudentExist(userInfo.getEmail());
             if (isStudentExist.isEmpty()) {
                 Student postStudent = new Student();
@@ -47,9 +48,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 postStudent.setCreatedDate(new Date().getTime());
                 postStudent.setLastModifiedDate(new Date().getTime());
                 authStudentRepository.save(postStudent);
-            }else{
-                Optional<Student> isStudentBan = authStudentRepository.isStudentBan(userInfo.getEmail());
-                if (isStudentBan.isPresent()){
+            } else {
+                Optional<Student> isStudentBan = authStudentRepository.isStudentExist(userInfo.getEmail());
+                if (isStudentBan.get().getStatus().equals(EntityStatus.ACTIVE)) {
+                    Student putStudent = isStudentBan.get();
+                    putStudent.setName(userInfo.getGivenName());
+                    putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
+                    authStudentRepository.save(putStudent);
+                } else {
                     httpSession.setAttribute(SessionConstant.ERROR_LOGIN, "Tài khoản không được phép đăng nhập vào hệ thống!");
                 }
             }

@@ -19,11 +19,4 @@ public interface AuthStudentRepository extends StudentRepository {
             """)
     Optional<Student> isStudentExist(String email);
 
-    @Query("""
-            SELECT s
-            FROM Student s
-            WHERE s.email = :email AND s.status = 1
-            """)
-    Optional<Student> isStudentBan(String email);
-
 }

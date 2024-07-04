@@ -14,4 +14,6 @@ public class SessionConstant {
 
     public static String FACILITY_ID = "facility_id";
 
+    public static String IS_STUDENT = "is_student";
+
 }

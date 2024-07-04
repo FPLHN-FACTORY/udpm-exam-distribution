@@ -2,9 +2,12 @@ package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomStudentCookie;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomUserCookie;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.OAuth2UserInfo;
 import fplhn.udpm.examdistribution.utils.CookieUtils;
@@ -27,6 +30,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final HttpSession httpSession;
 
     private final AuthStaffRepository authStaffRepository;
+
+    private final AuthStudentRepository authStudentRepository;
 
     private static final int COOKIE_EXPIRE = 7200;
 
@@ -56,21 +61,22 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private void setCookie(HttpServletResponse response, Authentication authentication, OAuth2UserInfo userInfo) throws JsonProcessingException {
-        Optional<Staff> optionalStaff = authStaffRepository.getStaffByAccountFpt(userInfo.getEmail());
-        Staff currentStaff = optionalStaff.get();
+        String isStudentSession = (String) httpSession.getAttribute(SessionConstant.IS_STUDENT);
+
+        if (SessionConstant.IS_STUDENT.equalsIgnoreCase(isStudentSession)) {
+            handleStudentSession(response, authentication, userInfo);
+        } else {
+            handleStaffSession(response, authentication, userInfo);
+        }
+    }
+
+    private void handleStudentSession(HttpServletResponse response, Authentication authentication, OAuth2UserInfo userInfo) throws JsonProcessingException {
+        Optional<Student> optionalStudent = authStudentRepository.isStudentExist(userInfo.getEmail());
+
+        Student currentStudent = optionalStudent.get();
         String role = authentication.getAuthorities().toString();
 
-        CustomUserCookie userCookie = CustomUserCookie.builder()
-                .userId(currentStaff.getId())
-                .departmentFacilityId(currentStaff.getDepartmentFacility().getId())
-                .departmentName(currentStaff.getDepartmentFacility().getDepartment().getName())
-                .facilityName(currentStaff.getDepartmentFacility().getFacility().getId())
-                .userEmailFPT(currentStaff.getAccountFpt())
-                .userEmailFe(currentStaff.getAccountFe())
-                .userFullName(userInfo.getName())
-                .userPicture(userInfo.getPicture())
-                .userRole(role)
-                .build();
+        CustomStudentCookie userCookie = buildStudentCookie(currentStudent, role, userInfo);
         String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
         CookieUtils.addCookie(
@@ -81,6 +87,49 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 false,
                 false
         );
+    }
+
+    private void handleStaffSession(HttpServletResponse response, Authentication authentication, OAuth2UserInfo userInfo) throws JsonProcessingException {
+        Optional<Staff> optionalStaff = authStaffRepository.getStaffByAccountFpt(userInfo.getEmail());
+
+        Staff currentStaff = optionalStaff.get();
+        String role = authentication.getAuthorities().toString();
+
+        CustomUserCookie userCookie = buildStaffCookie(currentStaff, role, userInfo);
+        String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
+
+        CookieUtils.addCookie(
+                response,
+                CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName(),
+                base64Encoded,
+                COOKIE_EXPIRE,
+                false,
+                false
+        );
+    }
+
+    private CustomStudentCookie buildStudentCookie(Student student, String role, OAuth2UserInfo userInfo) {
+        return CustomStudentCookie.builder()
+                .userEmail(userInfo.getEmail())
+                .userId(student.getId())
+                .userFullName(userInfo.getName())
+                .userPicture(userInfo.getPicture())
+                .userRole(role)
+                .build();
+    }
+
+    private CustomUserCookie buildStaffCookie(Staff staff, String role, OAuth2UserInfo userInfo) {
+        return CustomUserCookie.builder()
+                .userId(staff.getId())
+                .departmentFacilityId(staff.getDepartmentFacility().getId())
+                .departmentName(staff.getDepartmentFacility().getDepartment().getName())
+                .facilityName(staff.getDepartmentFacility().getFacility().getId())
+                .userEmailFPT(staff.getAccountFpt())
+                .userEmailFe(staff.getAccountFe())
+                .userFullName(userInfo.getName())
+                .userPicture(userInfo.getPicture())
+                .userRole(role)
+                .build();
     }
 
 }
