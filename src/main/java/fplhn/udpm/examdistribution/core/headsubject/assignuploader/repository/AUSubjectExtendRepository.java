@@ -23,14 +23,29 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
                     d.name AS departmentName,
                     s.created_date AS createdDate
             FROM subject s
-            LEFT JOIN department d ON s.id_department = d.id
-            LEFT JOIN department_facility df ON df.id_department = d.id
+            JOIN department d ON s.id_department = d.id
+            JOIN department_facility df ON df.id_department = d.id
+            JOIN staff st ON st.id = s.id_head_subject
             WHERE
                 (df.id = :departmentFacilityId) AND
+                (st.id = :#{#request.staffId}) AND
                 (s.status = 0) AND
                 (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
                 (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
-            """, nativeQuery = true)
+            """,
+            countQuery = """
+                    SELECT 	COUNT(s.id)
+                    FROM subject s
+                    JOIN department d ON s.id_department = d.id
+                    JOIN department_facility df ON df.id_department = d.id
+                    JOIN staff st ON st.id = s.id_head_subject
+                    WHERE
+                        (df.id = :departmentFacilityId) AND
+                        (st.id = :#{#request.staffId}) AND
+                        (s.status = 0) AND
+                        (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
+                        (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                    """, nativeQuery = true)
     Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, FindSubjectRequest request);
 
     @Query(value = """
@@ -42,18 +57,28 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
                     s.account_fe AS accountFE,
                     s.account_fpt AS accountFpt,
                     s.created_date AS createdDate,
-                    CASE
-                        WHEN au.id IS NOT NULL THEN 1
-                        ELSE 0
-                    END AS isAssigned
+                    (
+                    	SELECT
+                    		CASE
+                    			WHEN COUNT(*) > 0 THEN 1
+                    			ELSE 0
+                    		END AS isAssigned
+                    	FROM
+                    		assign_uploader au
+                    	JOIN staff st ON
+                    		au.id_staff = st.id
+                    	JOIN subject subj ON
+                    		au.id_subject = subj.id
+                    	WHERE
+                    		subj.id = :#{#request.subjectId} AND
+                    		st.id = s.id
+                    ) AS isAssigned
             FROM staff s
-            LEFT JOIN department_facility df on df.id = s.id_department_facility
+            LEFT JOIN department_facility df ON df.id = s.id_department_facility
             LEFT JOIN department d ON d.id = df.id_department
             LEFT JOIN facility f ON f.id = df.id_facility
-            LEFT JOIN assign_uploader au ON au.id_staff = s.id
-            LEFT JOIN subject subj ON au.id_subject = subj.id
-            WHERE s.status = 0 AND
-                  s.id_department_facility = :departmentFacilityId
+            WHERE (s.status = 0) AND
+                  (s.id_department_facility = :departmentFacilityId)
             AND (
                  (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                  (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -62,7 +87,26 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
                  (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
                  (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
                 )
-            """, nativeQuery = true)
+            """,
+            countQuery = """
+                    SELECT COUNT(s.id)
+                    FROM staff s
+                    LEFT JOIN department_facility df ON df.id = s.id_department_facility
+                    LEFT JOIN department d ON d.id = df.id_department
+                    LEFT JOIN facility f ON f.id = df.id_facility
+                    WHERE (s.status = 0) AND
+                          (s.id_department_facility = :departmentFacilityId)
+                    AND (
+                         (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
+                         (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
+                        )
+                    AND (
+                         (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
+                         (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
+                        )
+                    """,
+            nativeQuery = true)
     Page<StaffResponse> getAllStaff(Pageable pageable, String departmentFacilityId, FindStaffRequest request);
+
 
 }

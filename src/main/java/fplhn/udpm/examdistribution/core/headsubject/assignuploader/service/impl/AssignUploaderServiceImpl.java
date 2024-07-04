@@ -59,7 +59,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.OK,
-                    "Xóa thành công " + isAssignUploaderExist.get().getStaff().getName() + " khỏi danh sách người tải đề"
+                    "Xóa thành công giảng viên " + isAssignUploaderExist.get().getStaff().getName() + " khỏi danh sách người tải đề"
             );
         }
 
@@ -92,7 +92,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
         return new ResponseObject<>(
                 null,
                 HttpStatus.OK,
-                "Phân công nhân viên " + postedAssignUploader.getStaff().getName() + " làm người tải đề cho môn học "
+                "Phân công giảng viên " + postedAssignUploader.getStaff().getName() + " làm người tải đề cho môn học "
                 + postAssignUploader.getSubject().getName() + " thành công"
         );
     }
