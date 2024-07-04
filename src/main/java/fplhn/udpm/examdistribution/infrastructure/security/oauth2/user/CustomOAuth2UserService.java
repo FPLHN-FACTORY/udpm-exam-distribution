@@ -45,8 +45,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 postStudent.setName(userInfo.getGivenName());
                 postStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
                 postStudent.setStatus(EntityStatus.ACTIVE);
-                postStudent.setCreatedDate(new Date().getTime());
-                postStudent.setLastModifiedDate(new Date().getTime());
                 authStudentRepository.save(postStudent);
             } else {
                 Optional<Student> isStudentBan = authStudentRepository.isStudentExist(userInfo.getEmail());
