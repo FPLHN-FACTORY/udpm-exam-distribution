@@ -3,8 +3,11 @@ package fplhn.udpm.examdistribution.core.headdepartment.managehos.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.AssignSubjectStaffRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.ReassignHeadOfSubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.StaffRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.StaffsBySubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectAssignedRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectsStaffRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageStaffHOSService;
@@ -99,6 +102,44 @@ public class ManageStaffHOServiceImpl implements ManageStaffHOSService {
                 subjectsNotFound.isEmpty() ? "All operations successful" : subjectsNotFound,
                 HttpStatus.OK,
                 subjectsNotFound.isEmpty() ? "Cập nhật phân công môn học thành công" : "Some subjects not found"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getSubjectsStaff(@Valid SubjectsStaffRequest request) {
+        return new ResponseObject<>(
+                PageableObject.of(hdSubjectExtendRepository.getSubjectsStaff(request, Helper.createPageable(request, "id"))),
+                HttpStatus.OK,
+                "Lấy danh sách môn học và nhân viên phụ trách thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> reassignSubjectToStaff(@Valid ReassignHeadOfSubjectRequest request) {
+        Optional<Staff> staffOptional = hdStaffExtendRepository.findById(request.getStaffId());
+        if (staffOptional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy nhân viên");
+        }
+        Staff staff = staffOptional.get();
+
+        Optional<Subject> subjectOptional = hdSubjectExtendRepository.findById(request.getSubjectId());
+        if (subjectOptional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy môn học");
+        }
+
+        Subject subject = subjectOptional.get();
+        subject.setHeadSubject(staff);
+        hdSubjectExtendRepository.save(subject);
+
+        return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật phân công môn học thành công");
+    }
+
+    @Override
+    public ResponseObject<?> getStaffsBySubject(@Valid StaffsBySubjectRequest request) {
+        return new ResponseObject<>(
+                PageableObject.of(hdSubjectExtendRepository.getStaffsBySubject(request, Helper.createPageable(request, "id"))),
+                HttpStatus.OK,
+                "Lấy danh sách nhân viên theo môn học thành công"
         );
     }
 

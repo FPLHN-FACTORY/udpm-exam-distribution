@@ -3,6 +3,15 @@
     types: slide, forwards;
 }
 
+body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #1A2035;
+}
+
 :root {
     --common-button-color: #1A2035;
     --common-button-main-color: #052C65;
@@ -114,6 +123,12 @@ tr:nth-child(even) {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/*Dropdown - Header*/
+.dropdown-item:hover {
+    background-color: #1A2035;
+    color: white;
 }
 
 /*Tooltip custom*/
