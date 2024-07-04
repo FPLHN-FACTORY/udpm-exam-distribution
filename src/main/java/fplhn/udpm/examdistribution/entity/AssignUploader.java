@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,15 +19,15 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "assign_staff_subject")
-public class AssignStaffSubject extends PrimaryEntity implements Serializable {
+@Table(name = "assign_uploader")
+public class AssignUploader extends PrimaryEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id_staff")
     private Staff staff;
 
     @ManyToOne
-    @Column(name = "id_subject")
+    @JoinColumn(name = "id_subject")
     private Subject subject;
 
 }

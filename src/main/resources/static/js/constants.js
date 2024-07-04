@@ -33,6 +33,12 @@ const ApiConstant = {
     // Constants representing the redirect paths for various resources under head department
     REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
 
+    // Constants representing the redirect paths for various resources under head subject
+    REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/head-subject/assign-uploader",
+    REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/head-subject/exam-approval",
+    REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/head-subject/exam-rule",
+    REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
+
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
     API_HEAD_OFFICE_SEMESTER: "/api/v1/head-office/semesters",
@@ -50,6 +56,12 @@ const ApiConstant = {
 
     // Constants representing the full paths for various resources under head department
     API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/manage-head-of-subjects",
+
+    // Constants representing the full paths for various resources under head subject
+    API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",
+    API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
+    API_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
+    API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",

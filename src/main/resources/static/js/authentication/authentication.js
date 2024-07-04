@@ -1,3 +1,7 @@
+$(document).ready(function () {
+    fetchListFacility();
+});
+
 const getFacilityId = () => $("#listFacility").val();
 
 const getListMappingScreenConstant = () => {
@@ -12,16 +16,11 @@ const getListMappingScreenConstant = () => {
 
 const handleRedirectGoogleLogin = (status) => {
     const mapping = getListMappingScreenConstant().find(item => item.status === status);
-    if (screen) {
-        window.location.href = `http://localhost:8888${ApiConstant.REDIRECT_AUTHENTICATION_AUTHOR_SWITCH}?screen=${mapping.role}&redirect_uri=${mapping.redirect}&facility_id=${mapping.facility}`;
-    } else {
-        console.error("Invalid status provided");
+    const origin = window.location.origin;
+    if (mapping) {
+        window.location.href = `${origin}${ApiConstant.REDIRECT_AUTHENTICATION_AUTHOR_SWITCH}?role=${mapping.role}&redirect_uri=${mapping.redirect}&facility_id=${mapping.facility}`;
     }
 };
-
-$(document).ready(function () {
-    fetchListFacility();
-});
 
 const fetchListFacility = () => {
     $('#loading-ele').show();

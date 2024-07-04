@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
+import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        CookieUtils.deleteCookie(request, response, "e_d_i");
+        CookieUtils.deleteCookie(request, response, CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName());
     }
 
 }

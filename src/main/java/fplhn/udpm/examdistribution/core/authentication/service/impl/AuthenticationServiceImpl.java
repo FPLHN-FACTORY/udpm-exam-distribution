@@ -23,8 +23,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthFacilityExtendRepository facilityRepository;
 
     @Override
-    public void authorSwitch(String screen, String redirectUri, String facilityId, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        httpSession.setAttribute(SessionConstant.SCREEN_LOGIN, screen);
+    public void authorSwitch(String role, String redirectUri, String facilityId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        httpSession.setAttribute(SessionConstant.ROLE_LOGIN, role);
         httpSession.setAttribute(SessionConstant.REDIRECT_LOGIN, redirectUri);
         httpSession.setAttribute(SessionConstant.FACILITY_ID, facilityId);
 

@@ -21,13 +21,13 @@ public class AuthenticationController {
 
     @GetMapping(MappingConstants.REDIRECT_AUTHENTICATION_AUTHOR_SWITCH)
     public void authorSwitch(
-            @RequestParam(name = "screen", required = false) String screen,
+            @RequestParam(name = "role", required = false) String role,
             @RequestParam(name = "redirect_uri", required = false) String redirectUri,
             @RequestParam(name = "facility_id", required = false) String facilityId,
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        authenticationService.authorSwitch(screen, redirectUri, facilityId, request, response);
+        authenticationService.authorSwitch(role, redirectUri, facilityId, request, response);
     }
 
     @GetMapping(MappingConstants.REDIRECT_AUTHENTICATION_FORBIDDEN)

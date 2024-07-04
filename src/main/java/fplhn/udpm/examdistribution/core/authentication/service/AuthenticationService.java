@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public interface AuthenticationService {
 
-    void authorSwitch(String screen, String redirectUri, String facilityId, HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void authorSwitch(String role, String redirectUri, String facilityId, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     ResponseObject<?> getListFacility();
 

@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,7 +18,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
-    ) throws IOException, ServletException {
+    ) throws IOException {
         new DefaultRedirectStrategy().sendRedirect(
                 request, response,
                 MappingConstants.AUTHENTICATION + MappingConstants.REDIRECT_AUTHENTICATION_FORBIDDEN

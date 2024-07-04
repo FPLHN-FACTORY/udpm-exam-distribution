@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomUserCookie;
@@ -11,8 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -25,15 +24,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationSuccessHandler.class);
-
     private final HttpSession httpSession;
 
     private final AuthStaffRepository authStaffRepository;
 
     private static final int COOKIE_EXPIRE = 7200;
-
-    private static final String COOKIE_NAME = "e_d_i";
 
     @Override
     public void onAuthenticationSuccess(
@@ -43,16 +38,20 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     ) throws IOException {
         OAuth2UserInfo userInfo = (OAuth2UserInfo) authentication.getPrincipal();
 
-        if (httpSession.getAttribute(SessionConstant.ROLE) == null || httpSession.getAttribute(SessionConstant.ERROR_LOGIN) != null) {
+        if (httpSession.getAttribute(SessionConstant.ERROR_LOGIN) != null) {
             new DefaultRedirectStrategy().sendRedirect(request, response, "/");
         } else {
             this.setCookie(response, authentication, userInfo);
 
+            String scheme = request.getScheme();
             String serverName = request.getServerName();
-            String serverPort = String.valueOf(request.getServerPort());
+            int serverPort = request.getServerPort();
 
-            String domain = "http://" + serverName + ":" + serverPort + "/" + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
-            new DefaultRedirectStrategy().sendRedirect(request, response, domain);
+            StringBuilder origin = new StringBuilder();
+            origin.append(scheme).append("://").append(serverName).append(":").append(serverPort).append("/");
+            String urlRedirect = origin + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
+
+            new DefaultRedirectStrategy().sendRedirect(request, response, urlRedirect);
         }
     }
 
@@ -68,7 +67,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .facilityName(currentStaff.getDepartmentFacility().getFacility().getId())
                 .userEmailFPT(currentStaff.getAccountFpt())
                 .userEmailFe(currentStaff.getAccountFe())
-                .userFullName(currentStaff.getName())
+                .userFullName(userInfo.getName())
                 .userPicture(userInfo.getPicture())
                 .userRole(role)
                 .build();
@@ -76,7 +75,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         CookieUtils.addCookie(
                 response,
-                COOKIE_NAME,
+                CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName(),
                 base64Encoded,
                 COOKIE_EXPIRE,
                 false,

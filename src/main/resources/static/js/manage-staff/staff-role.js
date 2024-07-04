@@ -201,7 +201,7 @@ function getAllRoles(
                                   type="checkbox"
                                   value="${role.idRole}"
                                   class="colorinput-input checkboxRole"
-                                  ${role.checked == true ? "checked" : ""}
+                                  ${role.checked == 1 ? "checked" : ""}
                                 />
                                 <span
                                   class="colorinput-color bg-secondary"
