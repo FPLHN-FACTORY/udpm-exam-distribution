@@ -55,13 +55,13 @@ const fetchSearchSubject = (
                             <td>${subject.departmentName}</td>
                             <td>${subject.subjectType}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span class="fs-4">
+                                <span onclick="handleOpenModalExamRule('${subject.id}')" class="fs-4">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span class="fs-4">
+                                <span onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-4">
                                     <i 
                                         class="fa-solid fa-eye"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -164,3 +164,5 @@ const handleClearSearch = () => {
     fetchSearchSubject();
 };
 //------------------------------------------------------function--------------------------------------------------------
+
+

@@ -15,4 +15,6 @@ public interface SubjectResponse extends IsIdentify, HasOrderNumber {
 
     Long getCreatedDate();
 
+    String getFileId();
+
 }

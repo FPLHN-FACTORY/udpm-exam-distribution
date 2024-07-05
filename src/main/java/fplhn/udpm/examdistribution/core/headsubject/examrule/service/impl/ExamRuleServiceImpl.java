@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headsubject.examrule.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.GetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
@@ -14,6 +15,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,55 +39,65 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
     @Override
     public ResponseObject<?> uploadExamRule(String subjectId, UploadExamRuleRequest request) {
-        if (request.getFile().isEmpty()) {
+        try {
+            if (request.getFile().isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_ACCEPTABLE,
+                        "Nội quy thi chưa được tải"
+                );
+            }
+
+            Subject putSubject = subjectRepository.getReferenceById(subjectId);
+
+            if(!putSubject.getPathExamRule().isEmpty()){
+                googleDriveFileService.deleteById(putSubject.getPathExamRule());
+            }
+
+            String fileId = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+
+            putSubject.setPathExamRule(fileId);
+            subjectRepository.save(putSubject);
+
             return new ResponseObject<>(
                     null,
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Nội quy thi chưa được tải"
+                    HttpStatus.OK,
+                    "Tải nội quy thi thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Có lỗi trong quá trình xử lý"
             );
         }
-
-        String fileId = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
-        Subject putSubject = subjectRepository.getReferenceById(subjectId);
-        putSubject.setPathExamRule(fileId);
-        subjectRepository.save(putSubject);
-
-        return new ResponseObject<>(
-                null,
-                HttpStatus.OK,
-                "Tải nội quy thi thành công"
-        );
-//        try {
-//            if (request.getFile().isEmpty()) {
-//                return new ResponseObject<>(
-//                        null,
-//                        HttpStatus.NOT_ACCEPTABLE,
-//                        "Nội quy thi chưa được tải"
-//                );
-//            }
-//
-//            String fileId = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
-//            Subject putSubject = subjectRepository.getReferenceById(subjectId);
-//            putSubject.setPathExamRule(fileId);
-//            subjectRepository.save(putSubject);
-//
-//            return new ResponseObject<>(
-//                    null,
-//                    HttpStatus.OK,
-//                    "Tải nội quy thi thành công"
-//            );
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    null,
-//                    HttpStatus.BAD_REQUEST,
-//                    "Có lỗi trong quá trình sử lý"
-//            );
-//        }
     }
 
     @Override
-    public Resource getFile(String fileId) {
-        return googleDriveFileService.loadFile(fileId);
+    public ResponseObject<?> getFile(GetFileRequest request) throws IOException {
+        Optional<Subject> isSubjectExist = subjectRepository.findById(request.getSubjectId());
+        if (isSubjectExist.isEmpty()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_FOUND,
+                    "Không tìm thấy môn học này!"
+            );
+        }
+
+        Subject subject = isSubjectExist.get();
+        if (subject.getPathExamRule().isEmpty()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_FOUND,
+                    "Môn học này chưa được tải quy định đề thi"
+            );
+        }
+
+        return new ResponseObject<>(
+                googleDriveFileService.loadFile(request.getFileId()),
+                HttpStatus.OK,
+                "Tìm thấy file thành công"
+        );
     }
 
 };

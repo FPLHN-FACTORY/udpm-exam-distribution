@@ -129,8 +129,42 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
         } catch (IOException e) {
             throw new RuntimeException("Could not download the file!", e);
         }
-
         return new ByteArrayResource(outputStream.toByteArray());
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        try {
+//            // Get file metadata to determine its MIME type
+//            File fileMetadata = googleDrive.files().get(fileId).execute();
+//            String mimeType = fileMetadata.getMimeType();
+//
+//            // Download the file
+//            googleDrive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
+//
+//            if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equals(mimeType)) {
+//                // Convert DOCX to PDF
+//                try (InputStream docxInputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
+//                    XWPFDocument document = new XWPFDocument(docxInputStream);
+//                    OutputStream pdfOutputStream = new FileOutputStream("output.pdf");
+//                    Document pdfDocument = new Document();
+//                    PdfWriter.getInstance(pdfDocument, pdfOutputStream);
+//                    pdfDocument.open();
+//
+//                    List<XWPFParagraph> paragraphs = document.getParagraphs();
+//                    for (XWPFParagraph paragraph : paragraphs) {
+//                        pdfDocument.add(new Paragraph(paragraph.getText()));
+//                    }
+////                    ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+////                    PdfConverter.getInstance().convert(document, pdfOutputStream, Options.getDefault());
+////                    return new ByteArrayResource(pdfOutputStream.toByteArray());
+//                }
+//            } else if ("application/pdf".equals(mimeType)) {
+//                // Return the PDF file as is
+//                return new ByteArrayResource(outputStream.toByteArray());
+//            } else {
+//                throw new RuntimeException("Unsupported file type: " + mimeType);
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not download or process the file!", e);
+//        }
     }
 
 }

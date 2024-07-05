@@ -4,6 +4,7 @@ import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.Google
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -25,6 +26,6 @@ public interface GoogleDriveFileService {
 
     void shareFile(String fileId, String gmail);
 
-    Resource loadFile(String fileId);
+    Resource loadFile(String fileId) throws IOException;
 
 }

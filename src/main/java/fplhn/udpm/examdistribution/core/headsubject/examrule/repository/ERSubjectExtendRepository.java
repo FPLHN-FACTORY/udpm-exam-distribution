@@ -19,7 +19,8 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                     s.name AS subjectName,
                     s.subject_type AS subjectType,
                     d.name AS departmentName,
-                    s.created_date AS createdDate
+                    s.created_date AS createdDate,
+                    s.path_exam_rule AS fileId
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
