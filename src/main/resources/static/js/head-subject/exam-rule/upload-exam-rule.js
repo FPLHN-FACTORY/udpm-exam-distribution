@@ -50,6 +50,8 @@ const handleOpenModalExamRule = (subjectId) => {
 const handleSolveViewWhenOpenModal = () => { // ẩn đi view pdf và paging của nó
     $("#paging-pdf").prop("hidden", true);
     $("#pdf-viewer").prop("hidden", true);
+
+    $("#word-container").prop("hidden", true);
 };
 
 const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
@@ -64,9 +66,35 @@ const handleOpenChooseFilePdf = () => {
     pdfFile.click();
 };
 
-const handleUploadExamRule = () => {
-    console.log(getValueFileInput())
+const handleConfirmUploadExamRule = () => {
+    console.log(getValueFileInput());
+    if (getValueFileInput().size === 0 || getValueFileInput().name === "emptyFile") {
+        showToastError("Nội quy thi chưa được tải");
+    } else {
+        swal({
+            title: "Xác nhận",
+            text: "Bạn có chắc muốn tải đề thi này không?",
+            type: "warning",
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: "Hủy",
+                    className: "btn btn-black",
+                },
+                confirm: {
+                    text: "Xác nhận",
+                    className: "btn btn-secondary",
+                },
+            },
+        }).then((willDelete) => {
+            if (willDelete) {
+                handleUploadExamRule();
+            }
+        });
+    }
+};
 
+const handleUploadExamRule = () => {
     showLoading();
 
     const data = new FormData();
@@ -77,8 +105,8 @@ const handleUploadExamRule = () => {
         type: "POST",
         url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/upload/" + getStateSubjectId(),
         data: data,
-        contentType: false, // Không đặt kiểu nội dung vì nó sẽ được thiết lập tự động
-        processData: false, // Không xử lý dữ liệu, để nguyên dạng `FormData`
+        contentType: false,
+        processData: false,
         success: function (responseBody) {
             showToastSuccess(responseBody.message);
 
@@ -99,18 +127,16 @@ const handleUploadExamRule = () => {
 //----------------------------------------------------------------------------------------------------------------------
 
 $(document).ready(function () {
-    // Event listener for file input
     $("#file-pdf-input").on("change", function (e) {
         showLoading();
         const file = e.target.files[0];
         if (file) {
             const fileType = file.type;
             setValueFileInput(file);
-            if (fileType === "application/pdf" || fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            if (fileType === "application/pdf") {
                 const fileReader = new FileReader();
                 fileReader.onload = function () {
                     const pdfData = new Uint8Array(this.result);
-                    console.log(pdfData);
                     pdfjsLib
                         .getDocument({data: pdfData})
                         .promise.then(function (pdfDoc_) {
@@ -124,7 +150,7 @@ $(document).ready(function () {
                 fileReader.readAsArrayBuffer(file);
                 hideLoading();
             } else {
-                showToastError("Vui lòng chọn file PDF hoặc file DOCX");
+                showToastError("Vui lòng chọn file định dạng PDF");
             }
         }
     });
