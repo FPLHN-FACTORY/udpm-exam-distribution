@@ -166,7 +166,6 @@ const addExamShift = () => {
         room: $('#modifyRoom').val(),
         password: $('#modifyPassword').val()
     }
-    console.log("examShift", examShift);
     $.ajax({
         type: "POST",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT,
@@ -175,6 +174,7 @@ const addExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 examShiftCode = responseBody?.data;
+                console.log("examShiftCode", examShiftCode)
                 $('#examShiftModal').modal('hide');
                 localStorage.setItem('addExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + examShiftCode;
@@ -213,9 +213,11 @@ const joinExamShift = () => {
                 $('#examShiftJoinModal').modal('hide');
                 localStorage.setItem('joinExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + responseBody?.data;
-                stompClient.send("/app/exam-shift-join", {}, JSON.stringify({
-                    examShiftCode: responseBody?.data
-                }));
+                // if (stompClient && stompClient.connected) {
+                //     stompClient.send("/app/exam-shift-join", {}, JSON.stringify({message: "Có giáo viên tham gia ca thi"}));
+                // }else {
+                //     console.log("stompClient not connected");
+                // }
             }
         },
         error: function (error) {
@@ -233,4 +235,6 @@ const joinExamShift = () => {
         }
     });
 }
+
+
 

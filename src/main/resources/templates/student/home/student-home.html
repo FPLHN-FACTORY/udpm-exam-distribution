@@ -24,16 +24,13 @@
                     <h2>Trang chủ</h2>
                 </div>
                 <div class="shadow p-4 bg-white rounded">
-                    <div class="d-flex justify-content-between mt-4">
-                        <h4>Danh sách phòng thi</h4>
-                        <div>
-                            <button
-                                    class="btn btn-secondary"
-                            >
-                                Tham gia phòng thi
-                            </button>
-                        </div>
-                    </div>
+                    <button
+                            class="btn btn-secondary"
+                            data-bs-toggle="modal"
+                            onclick="openModalStudentJoinExamShift()"
+                    >
+                        Tham gia phòng thi
+                    </button>
                 </div>
             </div>
         </div>
@@ -92,5 +89,6 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/js/manage-student/home/home.js}"></script>
 </body>
 </html>

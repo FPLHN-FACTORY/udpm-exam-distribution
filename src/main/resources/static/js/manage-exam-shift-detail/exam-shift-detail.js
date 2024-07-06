@@ -2,6 +2,12 @@ $(document).ready(function () {
 
     getExamShiftByCode();
 
+    getFirstSupervisorId();
+
+    getSecondSupervisorId();
+
+    getStudents();
+
     const addExamShiftSuccessMessage = localStorage.getItem('addExamShiftSuccessMessage');
     if (addExamShiftSuccessMessage) {
         showToastSuccess(addExamShiftSuccessMessage);
@@ -14,6 +20,8 @@ $(document).ready(function () {
     }
 
     connect();
+
+    countStudentInExamShift();
 
 });
 
@@ -36,12 +44,120 @@ const getExamShiftByCode = () => {
     })
 }
 
+
 const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         stompClient.subscribe("/topic/exam-shift", function (response) {
             showToastSuccess(JSON.parse(response.body).message);
+            getSecondSupervisorId();
+        });
+        stompClient.subscribe("/topic/student-exam-shift", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            countStudentInExamShift();
+            getStudents();
         });
     });
 }
+
+const countStudentInExamShift = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/count-student',
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const students = responseBody?.data;
+                $('#studentCount').text("Tổng Số Sinh Viên: " + students);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy số sinh viên tham gia');
+        }
+    })
+}
+
+const getFirstSupervisorId = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_STAFF + '/first-supervisor/' + examShiftCode,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const firstSupervisor = responseBody?.data;
+                console.log(firstSupervisor);
+                $('#first-supervisor-info-name').text(firstSupervisor.name + ' - ' + firstSupervisor.staffCode);
+                $('#first-supervisor-info-email').text(firstSupervisor.accountFe);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    })
+}
+
+const getSecondSupervisorId = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_STAFF + '/second-supervisor/' + examShiftCode,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const secondSupervisor = responseBody?.data;
+                console.log(secondSupervisor);
+                $('#second-supervisor-info-name').text(secondSupervisor.name + ' - ' + secondSupervisor.staffCode);
+                $('#second-supervisor-info-email').text(secondSupervisor.accountFe);
+                $('#secondSupervisorColumn').removeAttr('hidden');
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    })
+}
+
+const getStudents = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_STUDENT_JOIN_EXAM_SHIFT + '/' + examShiftCode,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const students = responseBody?.data;
+                $('#studentsContainer').empty();
+                let row = $('<div class="row mt-3"></div>');
+                let colCounter = 0;
+                students.forEach((student, index) => {
+                    const col = $(`
+                        <div class="col-4">
+                            <div class="bg-white p-4 shadow rounded min-vh-30 w-30">
+                                <div class="user-box">
+                                    <div class="avatar-lg">
+                                        <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
+                                         alt="image profile"
+                                         class="avatar-img rounded"/>
+                                    </div>
+                                    <div class="u-text">
+                                        <h4>${student.name}</h4>
+                                        <p class="text-muted">${student.email}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    row.append(col);
+                    colCounter++;
+                    if (colCounter === 3) {
+                        $('#studentsContainer').append(row);
+                        row = $('<div class="row mt-3"></div>');
+                        colCounter = 0;
+                    }
+                });
+                if (colCounter !== 0) {
+                    $('#studentsContainer').append(row);
+                }
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    });
+}
+

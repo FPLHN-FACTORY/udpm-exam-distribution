@@ -14,4 +14,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/student-exam-shift-join")
+    @SendTo("/topic/student-exam-shift")
+    public NotificationResponse notifyStudentExamShift(String message) {
+        return new NotificationResponse(message);
+    }
+
 }

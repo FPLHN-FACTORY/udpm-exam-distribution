@@ -126,14 +126,26 @@ public class ExamShiftServiceImpl implements ExamShiftService {
             return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi đã đủ giám thị!");
         }
 
+//        if (examShift.getFirstSupervisor().getId().equals(existingStaff.get().getId())) {
+//            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+//                    "Giám thị " + existingStaff.get().getName() + " đang là giám thị 1 rồi!");
+//        }
+
         examShift.setSecondSupervisor(existingStaff.get());
         examShiftExtendRepository.save(examShift);
 
+        String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
         simpMessagingTemplate.convertAndSend("/topic/exam-shift",
-                new NotificationResponse("Giám thị " + existingStaff.get().getName() + " đã tham gia phòng thi!"));
+                new NotificationResponse( "Giám thị " + accountFe + " đã tham gia phòng thi!"));
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
                 HttpStatus.OK, "Tham gia phòng thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> countStudentInExamShift(String examShiftCode) {
+        return new ResponseObject<>(examShiftExtendRepository.countStudentInExamShift(examShiftCode),
+                HttpStatus.OK, "Đếm số sinh viên trong phòng thi thành công!");
     }
 
     private ResponseObject<?> validateShift(String shift) {

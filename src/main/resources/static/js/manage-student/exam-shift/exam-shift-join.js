@@ -1,0 +1,45 @@
+$(document).ready(function () {
+
+    getExamShiftByCode();
+
+    const joinExamShiftSuccessMessage = localStorage.getItem('joinExamShiftStudentSuccessMessage');
+    if (joinExamShiftSuccessMessage) {
+        showToastSuccess(joinExamShiftSuccessMessage);
+        localStorage.removeItem('joinExamShiftStudentSuccessMessage');
+    }
+
+    connect();
+
+});
+
+let examShiftCode = $('#examShiftCodeCtl').text();
+let stompClient = null;
+
+const getExamShiftByCode = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/' + examShiftCode,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const examShift = responseBody?.data;
+                $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    })
+}
+
+const connect = () => {
+    console.log("connect1")
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe("/topic/student-exam-shift", function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
+        });
+    });
+}
+
