@@ -13,7 +13,9 @@ import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,8 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
 
     private final AUAssignUploaderExtendRepository assignUploaderRepository;
 
+    private final HttpSession httpSession;
+
     @Override
     public ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
@@ -44,8 +48,9 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
     @Override
     public ResponseObject<?> getAllStaff(String departmentFacilityId, FindStaffRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
+        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
         return new ResponseObject<>(
-                PageableObject.of(subjectRepository.getAllStaff(pageable, departmentFacilityId, request)),
+                PageableObject.of(staffExtendRepository.getAllStaff(pageable, departmentFacilityId, request, userId)),
                 HttpStatus.OK,
                 "Lấy thành công danh sách nhân viên"
         );
@@ -59,7 +64,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.OK,
-                    "Xóa thành công " + isAssignUploaderExist.get().getStaff().getName() + " khỏi danh sách người tải đề"
+                    "Xóa thành công giảng viên " + isAssignUploaderExist.get().getStaff().getName() + " khỏi danh sách người tải đề"
             );
         }
 
@@ -92,7 +97,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
         return new ResponseObject<>(
                 null,
                 HttpStatus.OK,
-                "Phân công nhân viên " + postedAssignUploader.getStaff().getName() + " làm người tải đề cho môn học "
+                "Phân công giảng viên " + postedAssignUploader.getStaff().getName() + " làm người tải đề cho môn học "
                 + postAssignUploader.getSubject().getName() + " thành công"
         );
     }

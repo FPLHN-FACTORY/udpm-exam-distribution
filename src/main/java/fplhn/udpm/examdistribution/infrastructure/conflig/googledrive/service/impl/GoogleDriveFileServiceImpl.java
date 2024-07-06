@@ -1,14 +1,19 @@
 package fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.impl;
 
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.utils.PermissionDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +23,8 @@ import java.util.List;
 public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
 
     private final GoogleDriveManagerService googleDriveManagerService;
+
+    private final Drive googleDrive;
 
     @Override
     public List<GoogleDriveFileDTO> findAll() {
@@ -81,7 +88,7 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
             permissionDetail.setType("private");
             permissionDetail.setRole("private");
         }
-        permissionDetail.setEmailAddress("exam-distribution@exam-distribution.iam.gserviceaccount.com");
+        permissionDetail.setEmailAddress("exam-distribution@exam-distribution-428417.iam.gserviceaccount.com");
 
         return googleDriveManagerService.uploadFile(file, folderName, permissionDetail);
     }
@@ -111,6 +118,53 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
                 .build();
 
         googleDriveManagerService.createPermissionForEmail(fileId, permissionDetail);
+    }
+
+    @Override
+    public Resource loadFile(String fileId) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            googleDrive.files().get(fileId)
+                    .executeMediaAndDownloadTo(outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not download the file!", e);
+        }
+        return new ByteArrayResource(outputStream.toByteArray());
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        try {
+//            // Get file metadata to determine its MIME type
+//            File fileMetadata = googleDrive.files().get(fileId).execute();
+//            String mimeType = fileMetadata.getMimeType();
+//
+//            // Download the file
+//            googleDrive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
+//
+//            if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equals(mimeType)) {
+//                // Convert DOCX to PDF
+//                try (InputStream docxInputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
+//                    XWPFDocument document = new XWPFDocument(docxInputStream);
+//                    OutputStream pdfOutputStream = new FileOutputStream("output.pdf");
+//                    Document pdfDocument = new Document();
+//                    PdfWriter.getInstance(pdfDocument, pdfOutputStream);
+//                    pdfDocument.open();
+//
+//                    List<XWPFParagraph> paragraphs = document.getParagraphs();
+//                    for (XWPFParagraph paragraph : paragraphs) {
+//                        pdfDocument.add(new Paragraph(paragraph.getText()));
+//                    }
+////                    ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+////                    PdfConverter.getInstance().convert(document, pdfOutputStream, Options.getDefault());
+////                    return new ByteArrayResource(pdfOutputStream.toByteArray());
+//                }
+//            } else if ("application/pdf".equals(mimeType)) {
+//                // Return the PDF file as is
+//                return new ByteArrayResource(outputStream.toByteArray());
+//            } else {
+//                throw new RuntimeException("Unsupported file type: " + mimeType);
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not download or process the file!", e);
+//        }
     }
 
 }

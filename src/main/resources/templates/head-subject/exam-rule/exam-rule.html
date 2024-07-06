@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/head-subject/exam-rule/exam-rule.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Quản lý trưởng môn - Quy định phòng thi</title>
 </head>
@@ -19,9 +20,135 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
-
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quy định phòng thi</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="subjectCode">Mã môn học</label>
+                                    <input type="text" id="subjectCode" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectName">Tên môn học</label>
+                                    <input type="text" id="subjectName" class="form-control">
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button onclick="handleSearchSubject()" id="buttonFilter" type="button" class="btn btn-secondary">Tìm kiếm</button>
+                                <button
+                                        onclick="handleClearSearch()"
+                                        type="reset"
+                                        class="btn"
+                                        id="resetFilter"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="mt-4">
+                            <h4>Danh sách môn học</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã môn học</td>
+                                    <td>Tên môn học</td>
+                                    <td>Bộ môn</td>
+                                    <td>Loại môn học</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <!-- Modal Upload Exam Rule -->
+    <div class="modal modal-xl fade" id="examRuleModal" tabindex="-1" aria-labelledby="examRuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quản lý quy định đề thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center ">
+                        <input type="file" id="file-pdf-input" hidden accept="application/pdf" />
+                        <button type="button" onclick="handleOpenChooseFilePdf()" class="btn btn-primary">Upload</button>
+                        <button type="button" onclick="handleConfirmUploadExamRule()" class="btn btn-primary">Tải đề thi</button>
+                    </div>
+                    <div class="mt-4">
+                        <div id="pdf-viewer" hidden>
+                            <canvas id="pdf-canvas"></canvas>
+                        </div>
+                        <div id="paging-pdf" hidden class="mt-3">
+                            <button class="btn btn-primary" id="prev-page">Previous</button>
+                            <button class="btn btn-primary" id="next-page">Next</button>
+                            <p>Page: <span id="page-num"></span> / <span id="total-page"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Upload Exam Rule -->
+
+    <!-- Modal Upload Exam Rule -->
+    <div class="modal modal-xl fade" id="detailExamRuleModal" tabindex="-1" aria-labelledby="detailExamRuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết quy định thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pdf-viewer-detail" hidden>
+                        <canvas id="pdf-canvas-detail"></canvas>
+                    </div>
+                    <div id="paging-pdf-detail" class="mt-3" hidden>
+                        <button class="btn btn-primary" id="prev-page-detail">Previous</button>
+                        <button class="btn btn-primary" id="next-page-detail">Next</button>
+                        <p>Page: <span id="page-num-detail"></span> / <span id="total-page-detail"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Upload Exam Rule -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -37,9 +164,12 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
-<script th:src="@{/js/manage-department/department/department.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
-
+<script th:src="@{/js/loading.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script th:src="@{/js/head-subject/exam-rule/exam-rule.js}"></script>
+<script th:src="@{/js/head-subject/exam-rule/detail-exam-rule.js}"></script>
+<script th:src="@{/js/head-subject/exam-rule/upload-exam-rule.js}"></script>
 </body>
 </html>

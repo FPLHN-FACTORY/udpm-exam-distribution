@@ -43,8 +43,16 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     implementation 'org.apache.poi:poi:3.17'
     implementation 'org.apache.poi:poi-ooxml:3.17'
+
+//    implementation 'org.apache.poi:poi-scratchpad:3.17'
+//    implementation 'com.itextpdf:itextpdf:5.5.10'
+//    implementation 'com.itextpdf.tool:xmlworker:5.5.10'
+//    implementation 'org.apache.pdfbox:pdfbox-tools:3.0.2'
+//    implementation 'net.sf.cssbox:pdf2dom:1.2'
+
     implementation 'org.springframework.batch:spring-batch-core:5.0.3'
     implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
 
