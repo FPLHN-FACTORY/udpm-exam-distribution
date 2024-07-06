@@ -1,5 +1,6 @@
 let currentPage = 1;
 let currentPageChild = 1;
+let currentFacilityId = null;
 
 $(document).ready(function () {
 
@@ -12,12 +13,20 @@ $(document).ready(function () {
         getFacilitis(1, $('#pageSize').val(), facilityName, facilityStatus);
     });
 
-    $('#facilityButton').on('click', function () {
-        submitFacilityForm();
+    $('#facilityCreateButton').on('click', function () {
+        confirmCreateFacility();
+    });
+
+    $('#facilityUpdateButton').on('click', function () {
+        confirmUpdateFacility();
     });
 
     $('#facilityChildButton').on('click', function () {
         submitFacilityChildForm();
+    });
+
+    $('#closeFacilityChildButton').on('click', function () {
+        getFacilityUpdate(currentFacilityId);
     });
 
     $('#resetFilter').on('click', function () {
@@ -42,7 +51,7 @@ const getFacilitis = (
         page: page,
         size: size,
         name: facilityName,
-        status : facilityStatus
+        status: facilityStatus
     };
 
     let url = ApiConstant.API_HEAD_OFFICE_FACILITY + '?';
@@ -59,6 +68,7 @@ const getFacilitis = (
         type: "GET",
         url: url,
         success: function (responseBody) {
+            console.log(responseBody);
             if (responseBody?.data?.data?.length === 0) {
                 $('#facilityTableBody').html(`
                     <tr>
@@ -71,19 +81,19 @@ const getFacilitis = (
                 return `<tr>
                             <td>${facility.orderNumber}</td>
                             <td>${facility.facilityName}</td>
-                            <td>${facility.facilityStatus == 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
-                            <td style="width: 20px; text-wrap: nowrap; padding: 0 10px;">
-                                 <a onclick="confirmDelete('${facility.id}')">
-                                <i 
-                                    class="fas fa-trash-alt"
-                                    style="cursor: pointer; margin-left: 10px;"
-                                ></i>
-                                </a>
-                                <a onclick="openModalUpdate('${facility.id}')">
-                                 <i class="fa-solid fa-edit"
-                                        style="cursor: pointer; margin-left: 10px"
-                                 ></i>
-                                </a>
+                            <td>${facility.facilityStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
+                            <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                                 <span onclick="confirmDelete('${facility.id}')">
+                                    <i 
+                                        class="fas fa-trash-alt"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
+                                <span onclick="getFacilityUpdate('${facility.id}')">
+                                     <i class="fa-solid fa-edit"
+                                            style="cursor: pointer; margin-left: 10px"
+                                     ></i>
+                                </span>
                             </td>
                         </tr>`;
             });
@@ -98,7 +108,7 @@ const getFacilitis = (
 }
 
 const changePage = (page) => {
-    if ($('#facilityModal').hasClass('show')) {
+    if ($('#facilityUpdateModal').hasClass('show')) {
         currentPageChild = page;
         // Nếu modal đang hiển thị, thực hiện hành động này
         getFacilityChild(page);
@@ -111,7 +121,6 @@ const changePage = (page) => {
 
 const createPagination = (totalPages, currentPage) => {
     let paginationHtml = '';
-
     if (currentPage > 1) {
         paginationHtml += `
                      <li class="page-item">
@@ -208,8 +217,7 @@ const createPaginationChild = (totalPages, currentPage) => {
 }
 
 const createFacility = () => {
-    $('#facilityModalLabel').text('Thêm cơ sở');
-    const facilityName = $('#modifyFacilityName').val();
+    const facilityName = $('#modifyFacilityNameCreate').val();
 
     const facilityRequest = {
         facilityName: facilityName
@@ -224,15 +232,15 @@ const createFacility = () => {
             if (responseBody) {
                 showToastSuccess('Thêm cơ sở thành công');
                 getFacilitis();
-                $('#facilityModal').modal('hide');
+                $('#facilityCreateModal').modal('hide');
             }
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                    $(`#${err.fieldError}ErrorCreate`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Create`).addClass('is-invalid');
                 });
             } else {
                 showToastError(error.responseJSON.message);
@@ -242,8 +250,8 @@ const createFacility = () => {
 }
 
 const updateFacility = () => {
-    const facilityName = $('#modifyFacilityName').val();
-    const facilityId = $('#facilityId').val();
+    const facilityName = $('#modifyFacilityNameUpdate').val();
+    const facilityId = $('#facilityUpdateId').val();
 
     const facilityUpdateRequest = {
         facilityName: facilityName,
@@ -258,15 +266,15 @@ const updateFacility = () => {
             if (responseBody) {
                 showToastSuccess('Cập nhật cơ sở thành công');
                 getFacilitis();
-                $('#facilityModal').modal('hide');
+                $('#facilityUpdateModal').modal('hide');
             }
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                    $(`#${err.fieldError}ErrorUpdate`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Update`).addClass('is-invalid');
                 });
             } else {
                 showToastError(error.responseJSON.message);
@@ -275,10 +283,11 @@ const updateFacility = () => {
     });
 }
 
-const confirmDelete = (id) => {
+const confirmUpdateFacility = () =>
+{
     swal({
-        title: "Xác nhận xóa?",
-        text: "Bạn chắn muốn xóa chức vụ cơ sở này không?",
+        title: "Xác nhận sửa?",
+        text: "Bạn chắn muốn sửa cơ sở này không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -287,7 +296,53 @@ const confirmDelete = (id) => {
                 className: "btn btn-black",
             },
             confirm: {
-                text: "Xóa",
+                text: "Lưu",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willUpdate) => {
+        if (willUpdate) {
+            updateFacility();
+        }
+    });
+}
+
+const confirmCreateFacility = () => {
+    swal({
+        title: "Xác nhận thêm?",
+        text: "Bạn chắn muốn thêm cơ sở này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thêm",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            createFacility();
+        }
+    });
+}
+
+const confirmDelete = (id) => {
+    swal({
+        title: "Xác nhận thay đổi trạng thái?",
+        text: "Bạn chắn muốn thay đổi trạng thái cơ sở này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thay đổi",
                 className: "btn btn-secondary",
             },
         },
@@ -299,7 +354,7 @@ const confirmDelete = (id) => {
 }
 
 const changeStatus = (id) => {
-    if ($('#facilityModal').hasClass('show')) {
+    if ($('#facilityUpdateModal').hasClass('show')) {
         $.ajax({
             type: "PUT",
             url: ApiConstant.API_HEAD_OFFICE_FACILITY + "/facility-child" + `/${id}/change-status`,
@@ -333,7 +388,6 @@ const changeStatus = (id) => {
 
 const createFacilityChild = () => {
     const facilityChildName = $('#modifyFacilityChildName').val();
-    const facilityId = $('#facilityId').val();
 
     const facilityChildRequest = {
         facilityChildName: facilityChildName
@@ -341,14 +395,14 @@ const createFacilityChild = () => {
 
     $.ajax({
         type: "POST",
-        url: ApiConstant.API_HEAD_OFFICE_FACILITY + `/${facilityId}` + "/facility-child",
+        url: ApiConstant.API_HEAD_OFFICE_FACILITY + "/" + currentFacilityId + "/facility-child",
         data: JSON.stringify(facilityChildRequest),
         contentType: "application/json",
         success: function (responseBody) {
             if (responseBody) {
                 showToastSuccess('Thêm cơ sở con thành công');
-                getFacilityChild();
                 $('#facilityChildModal').modal('hide');
+                getFacilityUpdate(currentFacilityId);
             }
         },
         error: function (error) {
@@ -364,6 +418,53 @@ const createFacilityChild = () => {
         }
     });
 }
+
+const confirmCreateFacilityChild = () => {
+    swal({
+        title: "Xác nhận thêm?",
+        text: "Bạn chắn muốn thêm cơ sở con này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thêm",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            createFacilityChild();
+        }
+    });
+}
+
+const confirmUpdateFacilityChild = () => {
+    swal({
+        title: "Xác nhận sửa?",
+        text: "Bạn chắn muốn sửa cơ sở con này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Lưu",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            updateFacilityChild();
+        }
+    });
+}
+
 
 const updateFacilityChild = () => {
     const facilityChildName = $('#modifyFacilityChildName').val();
@@ -383,6 +484,7 @@ const updateFacilityChild = () => {
                 showToastSuccess('Cập nhật cơ sở thành công');
                 getFacilityChild();
                 $('#facilityChildModal').modal('hide');
+                getFacilityUpdate(currentFacilityId);
             }
         },
         error: function (error) {
@@ -399,76 +501,40 @@ const updateFacilityChild = () => {
     });
 }
 
-const openModalAdd = () => {
-    resetFieldError();
-    if ($('#facilityModal').hasClass('show')) {
-        $('#facilityChildId').val('');
-        $('#modifyFacilityChildName').val('');
-        $('#facilityChildModalLabel').text('Thêm cơ sở con');
-        $('#facilityChildModal').modal('show');
-    } else {
-        // Ẩn phần tử có id là "fieldUpdate"
-        $('#fieldUpdate').hide();
-        $('#facilityId').val('');
-        $('#modifyFacilityName').val('');
-        $('#facilityModalLabel').text('Thêm cơ sở');
-        $('#facilityModal').modal('show');
-        resetFieldError();
-    }
-}
-
-const openModalUpdate = (facilityId) => {
-    resetFieldError();
-    if ($('#facilityModal').hasClass('show')) {
-        $.ajax({
-            type: "GET",
-            url: ApiConstant.API_HEAD_OFFICE_FACILITY + "/facility-child" + `/${facilityId}`,
-            success: function (responseBody) {
-                if (responseBody?.data) {
-                    const facilityChild = responseBody?.data;
-                    $('#modifyFacilityChildName').val(facilityChild.facilityChildName);
-                    $('#facilityChildId').val(facilityChild.id);
-                    $('#facilityChildModalLabel').text('Cập nhật cơ sở con');
-                    $('#facilityChildModal').modal('show');
-                }
-            },
-            error: function (error) {
-                showToastError('Có lỗi xảy ra khi lấy thông tin cơ sở');
+const getFacilityUpdate = (facilityId) => {
+    currentFacilityId = facilityId;
+    currentPageChild = 1;
+    $('#facilityNameErrorUpdate').text('');
+    $('.form-control').removeClass('is-invalid');
+    
+    $('#facilityUpdateId').val(facilityId);
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_OFFICE_FACILITY + `/${facilityId}`,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const facility = responseBody?.data;
+                $('#modifyFacilityNameUpdate').val(facility.facilityName);
+                getFacilityChild();
+                $('#facilityUpdateModal').modal('show');
             }
-        });
-    } else {
-        $.ajax({
-            type: "GET",
-            url: ApiConstant.API_HEAD_OFFICE_FACILITY + `/${facilityId}`,
-            success: function (responseBody) {
-                if (responseBody?.data) {
-                    const facility = responseBody?.data;
-                    $('#modifyFacilityName').val(facility.facilityName);
-                    $('#facilityId').val(facility.id);
-                    $('#facilityModalLabel').text('Cập nhật cơ sở');
-                    $('#fieldUpdate').show();
-                    getFacilityChild();
-                    $('#facilityModal').modal('show');
-                }
-            },
-            error: function (error) {
-                showToastError('Có lỗi xảy ra khi lấy thông tin cơ sở');
-            }
-        });
-    }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin cơ sở');
+        }
+    });
 }
 
 const getFacilityChild = (
     page = currentPageChild,
     size = 5,
 ) => {
-    const facilityId = $('#facilityId').val();
     const params = {
-        page: page,
+        page: currentPageChild,
         size: size,
     }
 
-    let url = ApiConstant.API_HEAD_OFFICE_FACILITY + "/" + `${facilityId}` + "/facility-child?";
+    let url = ApiConstant.API_HEAD_OFFICE_FACILITY + "/" + currentFacilityId + "/facility-child?";
 
     for (let [key, value] of Object.entries(params)) {
         if (value) {
@@ -494,19 +560,19 @@ const getFacilityChild = (
                 return `<tr>
                             <td>${facilityChild.orderNumber}</td>
                             <td>${facilityChild.facilityChildName}</td>
-                            <td>${facilityChild.facilityChildStatus == 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
-                            <td style="width: 10px; text-wrap: nowrap; padding: 0 10px;">
-                                <a onclick="confirmDelete('${facilityChild.id}')">
-                                <i 
-                                    class="fas fa-trash-alt"
-                                    style="cursor: pointer; margin-left: 10px;"
-                                ></i>
-                                </a>
-                                <a onclick="openModalUpdate('${facilityChild.id}')">
+                            <td>${facilityChild.facilityChildStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
+                            <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                                <span onclick="confirmDelete('${facilityChild.id}')">
+                                    <i 
+                                        class="fas fa-trash-alt"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
+                                <span onclick="getDetailFacilityChild('${facilityChild.id}')">
                                     <i class="fa-solid fa-edit"
                                         style="cursor: pointer; margin-left: 10px"
-                                 ></i>
-                                </a>
+                                    ></i>
+                                </span>
                             </td>
                         </tr>`;
             });
@@ -520,19 +586,31 @@ const getFacilityChild = (
     });
 }
 
-const submitFacilityForm = () => {
-    if ($('#facilityId').val() === '') {
-        createFacility();
-    } else {
-        updateFacility();
-    }
+const getDetailFacilityChild = (facilityChildId) => {
+    $.ajax({
+        type: "GET",
+        url:ApiConstant.API_HEAD_OFFICE_FACILITY + "/facility-child/" + facilityChildId,
+        success: function (response) {
+            if (response?.data) {
+                const facilityChild = response?.data;
+                $('#facilityChildId').val(facilityChild.id);
+                $('#modifyFacilityChildName').val(facilityChild.facilityChildName);
+                $('#facilityChildModalLabel').text('Cập nhật cơ sở con');
+                $('#facilityUpdateModal').modal('hide');
+                $('#facilityChildModal').modal('show');
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin block');
+        }
+    });
 }
 
 const submitFacilityChildForm = () => {
     if ($('#facilityChildId').val() === '') {
-        createFacilityChild();
+        confirmCreateFacilityChild();
     } else {
-        updateFacilityChild();
+        confirmUpdateFacilityChild();
     }
 }
 
@@ -542,11 +620,23 @@ const resetFilterForm = () => {
     getFacilitis();
 }
 
-const resetFieldError = () => {
-    $('#facilityNameError').text('');
-    $('#modifyFacilityName').removeClass("is-invalid");
+const openModalAddFacility = () => {
+    $('#modifyFacilityNameCreate').text('');
+    $('.form-control').removeClass('is-invalid');
+
+    $('#facilityCreateModal').modal('show');
+};
+
+const openModalAddFacilityChild = () => {
+    $('#facilityChildId').val('');
+    $('#modifyFacilityChildName').val('');
+
     $('#facilityChildNameError').text('');
-    $('#modifyFacilityChildName').removeClass("is-invalid");
-    currentPage = 1;
-    currentPageChild = 1;
+    $('.form-control').removeClass('is-invalid');
+
+    $('#facilityChildModalLabel').text('Thêm cơ sở con');
+    $('#facilityUpdateModal').modal('hide');
+    $('#facilityChildModal').modal('show');
 }
+
+

@@ -40,8 +40,8 @@
                                     <select id="facilityStatus" name="facilityStatus" class="form-select"
                                             style="height: 60%;">
                                         <option value="">Chọn Trạng thái</option>
-                                        <option value="1">Hoạt động</option>
-                                        <option value="0">Dừng hoạt động</option>
+                                        <option value="0">Hoạt động</option>
+                                        <option value="1">Dừng hoạt động</option>
                                     </select>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                             <button
                                     class="btn btn-secondary"
                                     data-bs-toggle="modal"
-                                    onclick="openModalAdd()"
+                                    onclick="openModalAddFacility()"
                             >
                                 Thêm cơ sở
                             </button>
@@ -75,9 +75,10 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Tên cở sở</td>
+                                    <td>Tên cơ sở</td>
                                     <td>Trạng thái</td>
-                                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
@@ -107,27 +108,56 @@
             </div>
         </div>
     </div>
-    <!-- Modal Modify Facility -->
-    <div class="modal fade" id="facilityModal" tabindex="-1" aria-labelledby="addFacilityLabel"
+    <!-- Modal Create Modify Facility -->
+    <div class="modal fade" id="facilityCreateModal" tabindex="-1" aria-labelledby="addFacilityLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="facilityModalLabel">Thêm cơ sở</h5>
+                    <h5 class="modal-title" id="facilityCreateModalLabel">Thêm cơ sở</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addFacilityForm">
-                        <input type="hidden" id="facilityId">
                         <div class="mb-3">
-                            <label for="modifyFacilityName" class="form-label">Tên cơ sở</label>
-                            <input type="text" class="form-control" id="modifyFacilityName" required>
-                            <div class="invalid-feedback" id="facilityNameError"></div>
+                            <label for="modifyFacilityNameCreate" class="form-label">Tên cơ sở</label>
+                            <input type="text" class="form-control" id="modifyFacilityNameCreate" required>
+                            <div class="invalid-feedback" id="facilityNameErrorCreate"></div>
                         </div>
                     </form>
-                    <div id="fieldUpdate">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="facilityCreateButton">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Modify Facility -->
+
+    <!-- Modal Modify Update Facility -->
+    <div class="modal fade" id="facilityUpdateModal" tabindex="-1" aria-labelledby="addFacilityLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="facilityModalLabel">Sửa cơ sở</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateFacilityForm">
+                        <input type="hidden" id="facilityUpdateId">
+                        <div class="mb-3">
+                            <label for="modifyFacilityNameUpdate" class="form-label">Tên cơ sở</label>
+                            <input type="text" class="form-control" id="modifyFacilityNameUpdate" required>
+                            <div class="invalid-feedback" id="facilityNameErrorUpdate"></div>
+                        </div>
+                    </form>
+                    <div>
                         <div>
-                            <button class="btn btn-secondary" onclick="openModalAdd()">Thêm sơ sở con</button>
+                            <button class="btn btn-secondary" onclick="openModalAddFacilityChild()">Thêm sơ sở con</button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
@@ -161,12 +191,13 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="facilityButton">Lưu</button>
+                    <button type="button" class="btn btn-secondary" id="facilityUpdateButton">Lưu</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal Modify Facility -->
+
     <!-- Modal Modify Facility child-->
     <div class="modal fade" id="facilityChildModal" tabindex="-1" aria-labelledby="addFacilityChildLabel"
          aria-hidden="true">
@@ -187,7 +218,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal"
+                    <button type="button" class="btn" data-bs-dismiss="modal" id="closeFacilityChildButton"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
                     <button type="button" class="btn btn-secondary" id="facilityChildButton">Lưu</button>
@@ -196,7 +227,7 @@
         </div>
     </div>
     <!-- Modal Modify FacilityChild-->
-    <!-- Modal Modify Subject -->
+
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>

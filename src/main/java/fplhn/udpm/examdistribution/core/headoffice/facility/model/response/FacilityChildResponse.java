@@ -7,6 +7,7 @@ public interface FacilityChildResponse extends IsIdentify, HasOrderNumber {
 
     String getFacilityChildName();
 
-    String getFacilityChildStatus();
+    Integer getFacilityChildStatus();
 
+    Long getCreatedDate();
 }

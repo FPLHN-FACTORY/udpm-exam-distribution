@@ -6,7 +6,7 @@ $(document).ready(function () {
         e.preventDefault();
         const semesterName = $('#semesterName').val();
         const semesterYear = $('#semesterYear').val();
-        const startTime = $('#startTime').val();
+        const startTime = $('#startDate').val();
         getSemesters(1, 5, semesterName, semesterYear, startTime);
     });
 
@@ -49,7 +49,7 @@ const getAllBlockBySemesterId = (semesterId) => {
                                 class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
                             <span class="fs-4">
-                                <i onclick="changeStatusBlock('${block.id}')"
+                                <i onclick="confirmChangeStatusBlock('${block.id}')"
                                 class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
                         </td>
@@ -69,7 +69,7 @@ const getSemesters = (
     size = $('#pageSize').val(),
     semesterName = null,
     semesterYear = null,
-    startTime = null
+    startDate = null
 ) => {
 
     const params = {
@@ -77,7 +77,7 @@ const getSemesters = (
         size: size,
         semesterName: semesterName,
         semesterYear: semesterYear,
-        startDate: new Date(startTime).getTime()
+        startDate: new Date(startDate).getTime()
     };
 
     let url = ApiConstant.API_HEAD_OFFICE_SEMESTER + '?';
@@ -108,7 +108,7 @@ const getSemesters = (
                                 class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
                             <span class="fs-4">
-                                <i onclick="changeStatusSemester('${semester.id}')"
+                                <i onclick="confirmChangeStatusSemester('${semester.id}')"
                                 class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
                         </td>
@@ -215,6 +215,29 @@ const createSemester = () => {
     })
 };
 
+const confirmCreateSemester = (id) => {
+    swal({
+        title: "Xác nhận thêm?",
+        text: "Bạn chắn muốn thêm học kì này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thêm",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            createSemester();
+        }
+    });
+}
+
 const getDetailSemester = (semesterId) => {
     currentSemesterId = semesterId;
     $('#semesterIdUpdate').val(semesterId);
@@ -265,8 +288,8 @@ const updateSemester = () => {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                    $(`#${err.fieldError}ErrorUpdate`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Update`).addClass('is-invalid');
                 });
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
@@ -276,6 +299,29 @@ const updateSemester = () => {
         }
     })
 };
+
+const confirmUpdateSemester = (id) => {
+    swal({
+        title: "Xác nhận sửa?",
+        text: "Bạn chắn muốn sửa học kì này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Lưu",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            updateSemester();
+        }
+    });
+}
 
 const changeStatusSemester = (semesterId) => {
     $.ajax({
@@ -293,43 +339,51 @@ const changeStatusSemester = (semesterId) => {
     })
 }
 
-const createBlock = (semesterId) => {
-    const blockName = $('#modifyBlockName').val();
-    const startTimeBlock = $('#modifyStartTimeBlock').val();
-    const endTimeBlock = $('#modifyEndTimeBlock').val();
-
-    $.ajax({
-        type: 'POST',
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK,
-        data: JSON.stringify({
-            blockName: blockName,
-            semesterId: semesterId,
-            startTime: new Date(startTimeBlock).getTime(),
-            endTime: new Date(endTimeBlock).getTime()
-        }),
-        contentType: 'application/json',
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                getDetailSemester(semesterId);
-                $('#blockModal').modal('hide');
-            }
+const confirmChangeStatusSemester = (semesterId) => {
+    swal({
+        title: "Xác nhận thay đổi trạng thái?",
+        text: "Bạn chắn muốn thay đổi trạng thái học kỳ này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thay đổi",
+                className: "btn btn-secondary",
+            },
         },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
-                });
-            } else if (error?.responseJSON?.message) {
-                showToastError(error.responseJSON?.message)
-            } else {
-                showToastError('Có lỗi xảy ra khi thêm học kỳ');
-            }
+    }).then((willDelete) => {
+        if (willDelete) {
+            changeStatusSemester(semesterId);
         }
-    })
-};
+    });
+}
+
+const confirmUpdateBlock = (id) => {
+    swal({
+        title: "Xác nhận Sửa?",
+        text: "Bạn chắn muốn thêm block này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Lưu",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            updateBlock();
+        }
+    });
+}
 
 const getDetailBlock = (blockId) => {
     $.ajax({
@@ -338,6 +392,7 @@ const getDetailBlock = (blockId) => {
         success: function (response) {
             if (response?.data) {
                 const block = response?.data;
+                resetFormErrorBlock();
                 $('#blockId').val(block.id);
                 $('#modifyBlockName').val(block.blockName);
                 $('#modifyStartTimeBlock').val(getValueForInputDate(block.startTime));
@@ -379,13 +434,75 @@ const updateBlock = () => {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                    $(`#${err.fieldError}BlockError`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Block`).addClass('is-invalid');
                 });
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
                 showToastError('Có lỗi xảy ra khi cập nhật học kỳ');
+            }
+        }
+    })
+};
+
+const confirmCreateBlock = () => {
+    swal({
+        title: "Xác nhận Thêm?",
+        text: "Bạn chắn muốn thêm block này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thêm",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            createBlock(currentSemesterId);
+        }
+    });
+}
+
+const createBlock = (semesterId) => {
+    const blockName = $('#modifyBlockName').val();
+    const startTimeBlock = $('#modifyStartTimeBlock').val();
+    const endTimeBlock = $('#modifyEndTimeBlock').val();
+
+    $.ajax({
+        type: 'POST',
+        url: ApiConstant.API_HEAD_OFFICE_BLOCK,
+        data: JSON.stringify({
+            blockName: blockName,
+            semesterId: semesterId,
+            startTime: new Date(startTimeBlock).getTime(),
+            endTime: new Date(endTimeBlock).getTime()
+        }),
+        contentType: 'application/json',
+        success: function (response) {
+            if (response) {
+                showToastSuccess(response?.message);
+                getDetailSemester(semesterId);
+                $('#blockModal').modal('hide');
+            }
+        },
+        error: function (error) {
+            $('.form-control').removeClass('is-invalid');
+            if (error?.responseJSON?.length > 0) {
+                error.responseJSON.forEach(err => {
+                    console.log(err)
+                    $(`#${err.fieldError}BlockError`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Block`).addClass('is-invalid');
+                });
+            } else if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message)
+            } else {
+                showToastError('Có lỗi xảy ra khi thêm học kỳ');
             }
         }
     })
@@ -407,22 +524,44 @@ const changeStatusBlock = (blockId) => {
     })
 }
 
+const confirmChangeStatusBlock = (blockId) => {
+    swal({
+        title: "Xác nhận thay đổi trạng thái?",
+        text: "Bạn chắn muốn thay đổi trạng thái block này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Thay đổi",
+                className: "btn btn-secondary",
+            },
+        },
+    }).then((willDelete) => {
+        if (willDelete) {
+            changeStatusBlock(blockId);
+        }
+    });
+}
 
 const submitSemesterForm = () => {
     if ($('#semesterId').val() === '') {
-        createSemester();
+        confirmCreateSemester();
     }
 }
 
 const submitUpdateSemesterForm = () => {
-    updateSemester();
+    confirmUpdateSemester();
 }
 
 const submitBlockForm = () => {
     if ($('#blockId').val() === '') {
-        createBlock(currentSemesterId);
+        confirmCreateBlock();
     } else {
-        updateBlock();
+        confirmUpdateBlock();
     }
 }
 
