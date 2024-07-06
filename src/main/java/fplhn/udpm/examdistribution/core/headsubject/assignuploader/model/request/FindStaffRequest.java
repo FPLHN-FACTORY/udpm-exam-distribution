@@ -14,4 +14,6 @@ public class FindStaffRequest extends PageableRequest {
 
     private String staffName;
 
+    private String subjectId;
+
 }

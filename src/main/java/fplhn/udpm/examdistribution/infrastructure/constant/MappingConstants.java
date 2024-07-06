@@ -70,7 +70,7 @@ public final class MappingConstants {
     // Constants representing the full paths for various resources under head subject
     public static final String API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER = API_HEAD_SUBJECT_PREFIX + "/assign-uploader";
     public static final String API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL = API_HEAD_SUBJECT_PREFIX + "/exam-approval";
-    public static final String API_SUBJECT_MANAGE_EXAM_RULE = API_HEAD_SUBJECT_PREFIX + "/exam-rule";
+    public static final String API_HEAD_SUBJECT_MANAGE_EXAM_RULE = API_HEAD_SUBJECT_PREFIX + "/exam-rule";
     public static final String API_HEAD_SUBJECT_MANAGE_JOIN_ROOM = API_HEAD_SUBJECT_PREFIX + "/join-room";
 
     public static final String REDIRECT_GOOGLE_AUTHORIZATION = "/oauth2/authorization/google";

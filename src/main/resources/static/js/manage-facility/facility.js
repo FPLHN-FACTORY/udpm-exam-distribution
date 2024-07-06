@@ -283,8 +283,7 @@ const updateFacility = () => {
     });
 }
 
-const confirmUpdateFacility = () =>
-{
+const confirmUpdateFacility = () => {
     swal({
         title: "Xác nhận sửa?",
         text: "Bạn chắn muốn sửa cơ sở này không?",
@@ -506,7 +505,7 @@ const getFacilityUpdate = (facilityId) => {
     currentPageChild = 1;
     $('#facilityNameErrorUpdate').text('');
     $('.form-control').removeClass('is-invalid');
-    
+
     $('#facilityUpdateId').val(facilityId);
     $.ajax({
         type: "GET",
@@ -589,7 +588,7 @@ const getFacilityChild = (
 const getDetailFacilityChild = (facilityChildId) => {
     $.ajax({
         type: "GET",
-        url:ApiConstant.API_HEAD_OFFICE_FACILITY + "/facility-child/" + facilityChildId,
+        url: ApiConstant.API_HEAD_OFFICE_FACILITY + "/facility-child/" + facilityChildId,
         success: function (response) {
             if (response?.data) {
                 const facilityChild = response?.data;

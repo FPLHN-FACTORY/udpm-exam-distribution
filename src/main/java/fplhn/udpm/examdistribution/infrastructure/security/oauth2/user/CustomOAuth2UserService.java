@@ -33,7 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User user = super.loadUser(userRequest);
         OAuth2UserInfo userInfo = new OAuth2UserInfo(user.getAttributes());
 
-        String facilityId = (String) httpSession.getAttribute(SessionConstant.FACILITY_ID);
+        String facilityId = (String) httpSession.getAttribute(SessionConstant.FACILITY_ID_LOGIN);
         String role = (String) httpSession.getAttribute(SessionConstant.ROLE_LOGIN);
 
         if (role.equalsIgnoreCase("SINH_VIEN")) {
@@ -42,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             if (isStudentExist.isEmpty()) {
                 Student postStudent = new Student();
                 postStudent.setEmail(userInfo.getEmail());
-                postStudent.setName(userInfo.getGivenName());
+                postStudent.setName(userInfo.getName());
                 postStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
                 postStudent.setStatus(EntityStatus.ACTIVE);
                 authStudentRepository.save(postStudent);
@@ -50,7 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 Optional<Student> isStudentBan = authStudentRepository.isStudentExist(userInfo.getEmail());
                 if (isStudentBan.get().getStatus().equals(EntityStatus.ACTIVE)) {
                     Student putStudent = isStudentBan.get();
-                    putStudent.setName(userInfo.getGivenName());
+                    putStudent.setName(userInfo.getName());
                     putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
                     authStudentRepository.save(putStudent);
                 } else {
@@ -70,8 +70,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private void clearSession() {
         httpSession.removeAttribute(SessionConstant.ERROR_LOGIN);
-        httpSession.removeAttribute(SessionConstant.EMAIL);
-        httpSession.removeAttribute(SessionConstant.PICTURE);
     }
 
 }

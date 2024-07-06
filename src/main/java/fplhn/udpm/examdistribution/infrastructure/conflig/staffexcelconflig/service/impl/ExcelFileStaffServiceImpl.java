@@ -78,8 +78,8 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
             cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerCellStyle);
 
-            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility((String)httpSession.getAttribute(SessionConstant.FACILITY_ID));
-            List<String> validRole = roleRepository.findAllByFacilityId((String)httpSession.getAttribute(SessionConstant.FACILITY_ID));
+            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility((String)httpSession.getAttribute(SessionConstant.FACILITY_ID_LOGIN));
+            List<String> validRole = roleRepository.findAllByFacilityId((String)httpSession.getAttribute(SessionConstant.FACILITY_ID_LOGIN));
 
             CellRangeAddressList dataDepartmentFacility = new CellRangeAddressList(1, 1000, 5, 5);
             CellRangeAddressList dataRole = new CellRangeAddressList(1, 1000, 6, 6);
