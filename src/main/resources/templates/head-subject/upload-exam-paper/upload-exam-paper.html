@@ -8,6 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/head-subject/upload-exam-paper/upload-exam-paper.css}"/>
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Quản lý trưởng môn - Phân người tải đề</title>
 </head>
@@ -23,7 +25,8 @@
                 <ul class="nav nav-underline mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-upload-exam-paper-tab" data-bs-toggle="pill"
-                                data-bs-target="#pills-upload-exam-paper" type="button" role="tab" aria-controls="pills-home"
+                                data-bs-target="#pills-upload-exam-paper" type="button" role="tab"
+                                aria-controls="pills-home"
                                 aria-selected="false">Tải đề thi
                         </button>
                     </li>
@@ -38,7 +41,187 @@
                     <div class="tab-pane fade show active" id="pills-upload-exam-paper" role="tabpanel"
                          aria-labelledby="pills-upload-exam-paper-tab" tabindex="0">
                         <div class="bg-white shadow rounded min-vh-100">
-                            abcbcbcbbcbc
+                            <div class="p-4">
+                                <h2>Tải đề thi</h2>
+                            </div>
+                            <div class="p-4">
+                                <!-- Filter -->
+                                <div class="shadow p-4 mb-4 bg-white rounded">
+                                    <form id="filterFormUEP">
+                                        <div class="row">
+                                            <div class="col form-group">
+                                                <label for="examPaperCode">Mã đề thi</label>
+                                                <input type="text" id="examPaperCode" class="form-control">
+                                            </div>
+                                            <div class="col form-group">
+                                                <label for="subjectId">Môn học</label>
+                                                <select id="subjectId" name="subjectId" class="form-select"
+                                                        style="height: 60%;">
+                                                    <option value="">--Chọn môn học--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <button id="buttonFilterUEP" type="button"
+                                                    class="btn btn-secondary">Tìm kiếm
+                                            </button>
+                                            <button
+                                                    type="reset"
+                                                    class="btn"
+                                                    id="resetFilterUEP"
+                                                    style="background-color: var(--common-button-color); color: white;"
+                                            >
+                                                Xóa bộ lọc
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- Filter -->
+                                <div class="shadow p-4 bg-white rounded">
+                                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                                        <h4 style="margin-bottom: 0">Danh sách đề thi</h4>
+                                        <button class="btn btn-secondary" data-bs-toggle="modal">
+                                            Tải đề thi
+                                        </button>
+                                    </div>
+                                    <!-- Swiper -->
+                                    <div class="swiper-container">
+                                        <div class="swiper mySwiper">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <img src="https://lh3.googleusercontent.com/drive-storage/AJQWtBMTeQaCcXqeTSfdVWSTZXRSLhZPtQ7tQsWC--5qSlgJhW2B8df0zw24wvgRfDwDCjuGajzPJfvyLyMbyLVdZjgKB4p4fY0FOjVE7jkaeeT6-1Y=s220" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <img src="https://swiperjs.com/demos/images/nature-3.jpg" alt="logo"/>
+                                                    <ul>
+                                                        <li><span>Môn:</span> Java1</li>
+                                                        <li><span>Chuyên ngành:</span> PTPM</li>
+                                                        <li><span>Mã đề thi:</span> ABC123</li>
+                                                        <li><span>Người tạo:</span> Nguyễn Vĩ Mạnh</li>
+                                                        <li><span>Ngày tạo:</span> 28/04/2004</li>
+                                                        <li><span>Trạng thái:</span> Đang sử dụng</li>
+                                                        <li><span>Cơ sở:</span> Kiều Mai</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="swiper-button-next"></div>
+                                            <div class="swiper-button-prev"></div>
+                                            <div class="swiper-scrollbar"></div>
+                                            <div class="autoplay-progress">
+                                                <svg viewBox="0 0 48 48">
+                                                    <circle cx="24" cy="24" r="20"></circle>
+                                                </svg>
+                                                <span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pills-assign-uploader" role="tabpanel"
@@ -226,6 +409,8 @@
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script th:src="@{/js/head-subject/assign-uploader/assign-uploader.js}"></script>
+<script th:src="@{/js/head-subject/upload-exam-paper/upload-exam-paper.js}"></script>
 </body>
 </html>

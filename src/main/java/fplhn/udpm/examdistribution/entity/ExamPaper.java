@@ -48,6 +48,9 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
     @Column(name = "path")
     private String path;
 
+    @Column(name = "thumbnail_link")
+    private String thumbnailLink;
+
     @ManyToOne
     @JoinColumn(name = "id_staff_upload")
     private Staff staffUpload;

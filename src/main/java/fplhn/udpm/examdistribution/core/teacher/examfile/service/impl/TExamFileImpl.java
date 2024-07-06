@@ -13,6 +13,7 @@ import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
+import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
@@ -82,7 +83,12 @@ public class TExamFileImpl implements TExamFileService {
                     "Không tìm thấy chuyên ngành - cơ sở hoặc môn học hoặc nhân viên"
             );
         }
-        String fileId = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+
+        GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+
+        String fileId = googleDriveFileDTO.getId();
+        String thumbnailLink = googleDriveFileDTO.getThumbnailLink();
+
         ExamPaper examPaper = new ExamPaper();
         examPaper.setId(CodeGenerator.generateRandomCode());
         examPaper.setPath(fileId);
@@ -94,6 +100,7 @@ public class TExamFileImpl implements TExamFileService {
         examPaper.setExamPaperCreatedDate(new Date().getTime());
         examPaper.setStaffUpload(staffs.get());
         examPaper.setStatus(EntityStatus.ACTIVE);
+        examPaper.setThumbnailLink(thumbnailLink);
         tExamPaperRepository.save(examPaper);
 
         return new ResponseObject<>(

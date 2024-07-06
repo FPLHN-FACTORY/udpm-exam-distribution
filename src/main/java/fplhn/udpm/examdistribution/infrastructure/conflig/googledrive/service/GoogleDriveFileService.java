@@ -16,7 +16,7 @@ public interface GoogleDriveFileService {
 
     void deleteById(String fileId);
 
-    String upload(MultipartFile file, String folderName, boolean isPublic);
+    GoogleDriveFileDTO upload(MultipartFile file, String folderName, boolean isPublic);
 
     void download(String fileId, OutputStream outputStream);
 

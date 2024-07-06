@@ -78,7 +78,7 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
     }
 
     @Override
-    public String upload(MultipartFile file, String folderName, boolean isPublic) {
+    public GoogleDriveFileDTO upload(MultipartFile file, String folderName, boolean isPublic) {
         PermissionDetail permissionDetail = PermissionDetail.builder().build();
 
         if (isPublic) {
