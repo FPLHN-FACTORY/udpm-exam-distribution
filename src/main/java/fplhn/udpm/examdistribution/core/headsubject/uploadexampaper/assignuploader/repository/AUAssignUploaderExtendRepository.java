@@ -1,9 +1,8 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.repository;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.AssignUploaderRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.AssignUploaderRequest;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.repository.AssignUploaderRepository;
-import fplhn.udpm.examdistribution.repository.SubjectRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

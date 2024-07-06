@@ -42,7 +42,7 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT = HEAD_DEPARTMENT + "/manage-subjects";
 
     // Constants representing the redirect paths for various resources under head subject
-    public static final String REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER = HEAD_SUBJECT + "/assign-uploader";
+    public static final String REDIRECT_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER = HEAD_SUBJECT + "/upload-exam-paper";
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL = HEAD_SUBJECT + "/exam-approval";
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE = HEAD_SUBJECT + "/exam-rule";
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM = HEAD_SUBJECT + "/join-room";

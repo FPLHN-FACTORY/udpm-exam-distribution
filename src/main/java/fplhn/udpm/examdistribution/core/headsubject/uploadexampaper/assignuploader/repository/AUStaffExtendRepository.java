@@ -1,7 +1,7 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.repository;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.FindStaffRequest;
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.response.StaffResponse;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindStaffRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.StaffResponse;
 import fplhn.udpm.examdistribution.repository.StaffRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,9 +1,9 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.controller;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.controller;
 
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.AssignUploaderRequest;
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.FindStaffRequest;
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request.FindSubjectRequest;
-import fplhn.udpm.examdistribution.core.headsubject.assignuploader.service.AssignUploaderService;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.AssignUploaderRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindStaffRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindSubjectRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.service.AssignUploaderService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;

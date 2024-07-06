@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.response;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response;
 
 import fplhn.udpm.examdistribution.core.common.base.HasOrderNumber;
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
