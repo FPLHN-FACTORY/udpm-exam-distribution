@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.block.repository.BlockTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.ClassSubjectTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.CreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.JoinExamShiftRequest;

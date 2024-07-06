@@ -3,6 +3,7 @@ const classSubjectCodeUrl = "?classSubjectCode=";
 const subjectIdUrl = "&subjectId=";
 const blockIdUrl = "&blockId=";
 const facilityChildIdUrl = "&facilityChildId=";
+const examShiftDateUrl = "&examShiftDate=";
 
 let subjectId = null;
 let blockId = null;
@@ -36,24 +37,21 @@ $(document).ready(function () {
 
     $('#modifySubjectId').on('change', function () {
         subjectId = $(this).val();
-        console.log("subjectId" + subjectId);
         if (subjectId != null) {
             fetchBlocks();
             fetchFacilityChildren();
         }
     });
 
-    $('#modifyBlockId').on('change', function () {
-        blockId = $(this).val();
-        console.log("blockId" + blockId);
-        if (subjectId != null && blockId != null && facilityChildId != null) {
-            getClassSubjectIdByRequest();
-        }
-    });
+    // $('#modifyBlockId').on('change', function () {
+    //     blockId = $(this).val();
+    //     if (subjectId != null && blockId != null && facilityChildId != null) {
+    //         getClassSubjectIdByRequest();
+    //     }
+    // });
 
     $('#modifyFacilityChildId').on('change', function () {
         facilityChildId = $(this).val();
-        console.log("facilityChildId" + facilityChildId);
         if (subjectId != null && blockId != null && facilityChildId != null) {
             getClassSubjectIdByRequest();
         }
@@ -91,19 +89,37 @@ const fetchSubjects = () => {
     });
 }
 
+// const fetchBlocks = () => {
+//     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
+//     $.ajax({
+//         type: "GET",
+//         url: ApiConstant.API_TEACHER_BLOCK + classSubjectCodeUrl + subjectClassCodeVal + subjectIdUrl + subjectId,
+//         success: function (responseBody) {
+//             if (responseBody?.data) {
+//                 console.log("blocks", responseBody?.data)
+//                 const blocks = responseBody?.data?.map((block, index) => {
+//                     return `<option value="${block.id}">${block.blockName}</option>`;
+//                 });
+//                 blocks.unshift('<option value="">Chọn block</option>');
+//                 $('#modifyBlockId').html(blocks);
+//             }
+//         },
+//         error: function (error) {
+//             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+//         }
+//     });
+// }
+
 const fetchBlocks = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_TEACHER_BLOCK + classSubjectCodeUrl + subjectClassCodeVal + subjectIdUrl + subjectId,
+        url: ApiConstant.API_TEACHER_BLOCK + '/block-id' + classSubjectCodeUrl + subjectClassCodeVal
+            + subjectIdUrl + subjectId + examShiftDateUrl + new Date($('#modifyExamDate').val()).getTime(),
         success: function (responseBody) {
             if (responseBody?.data) {
                 console.log("blocks", responseBody?.data)
-                const blocks = responseBody?.data?.map((block, index) => {
-                    return `<option value="${block.id}">${block.blockName}</option>`;
-                });
-                blocks.unshift('<option value="">Chọn block</option>');
-                $('#modifyBlockId').html(blocks);
+                blockId = responseBody?.data;
             }
         },
         error: function (error) {
@@ -147,14 +163,6 @@ const getClassSubjectIdByRequest = () => {
             showToastError('Có lỗi xảy ra khi lấy thông tin lớp môn');
         }
     })
-};
-
-const openModalAddExamShift = () => {
-    $('#examShiftModal').modal('show');
-};
-
-const openModalJoinExamShift = () => {
-    $('#examShiftJoinModal').modal('show');
 };
 
 const addExamShift = () => {
@@ -213,11 +221,6 @@ const joinExamShift = () => {
                 $('#examShiftJoinModal').modal('hide');
                 localStorage.setItem('joinExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + responseBody?.data;
-                // if (stompClient && stompClient.connected) {
-                //     stompClient.send("/app/exam-shift-join", {}, JSON.stringify({message: "Có giáo viên tham gia ca thi"}));
-                // }else {
-                //     console.log("stompClient not connected");
-                // }
             }
         },
         error: function (error) {
@@ -235,6 +238,14 @@ const joinExamShift = () => {
         }
     });
 }
+
+const openModalAddExamShift = () => {
+    $('#examShiftModal').modal('show');
+};
+
+const openModalJoinExamShift = () => {
+    $('#examShiftJoinModal').modal('show');
+};
 
 
 

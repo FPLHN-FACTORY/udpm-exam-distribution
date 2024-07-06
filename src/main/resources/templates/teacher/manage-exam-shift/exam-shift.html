@@ -54,6 +54,7 @@
                 <div class="modal-body">
                     <form id="addExamShiftForm">
                         <input type="hidden" id="examShiftId">
+                        <input type="hidden" id="blockId">
                         <div class="mb-3">
                             <label for="modifyShift" class="form-label">Ca</label>
                             <input type="text" class="form-control" id="modifyShift" th:value="${currentShift}"
@@ -79,12 +80,12 @@
                                 <option value="">Chọn môn thi</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="modifyBlockId" class="form-label">Block</label>
-                            <select class="form-select" id="modifyBlockId" required>
-                                <option value="">Chọn block</option>
-                            </select>
-                        </div>
+<!--                        <div class="mb-3">-->
+<!--                            <label for="modifyBlockId" class="form-label">Block</label>-->
+<!--                            <select class="form-select" id="modifyBlockId" required>-->
+<!--                                <option value="">Chọn block</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
                         <div class="mb-3">
                             <label for="modifyFacilityChildId" class="form-label">Campus</label>
                             <select class="form-select" id="modifyFacilityChildId" required>

@@ -22,4 +22,10 @@ public class BlockTeacherRestController {
                 .findAllByClassSubjectCodeAndSubjectId(classSubjectCode, subjectId));
     }
 
+    @GetMapping("/block-id")
+    public ResponseEntity<?> findBlockId(String classSubjectCode, String subjectId, Long examShiftDate) {
+        return Helper.createResponseEntity(blockTeacherService
+                .findBlockId(classSubjectCode, subjectId, examShiftDate));
+    }
+
 }
