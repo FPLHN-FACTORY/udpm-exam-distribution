@@ -21,4 +21,13 @@ public class BlockTeacherServiceImpl implements BlockTeacherService {
         );
     }
 
+    @Override
+    public ResponseObject<?> findBlockId(String classSubjectCode, String subjectId, Long examShiftDate) {
+        return new ResponseObject<>(
+                blockTeacherExtendRepository.findBlockId(examShiftDate, classSubjectCode, subjectId),
+                HttpStatus.OK,
+                "Lấy id block thành công!"
+        );
+    }
+
 }

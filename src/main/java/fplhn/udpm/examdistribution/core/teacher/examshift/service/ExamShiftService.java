@@ -13,4 +13,6 @@ public interface ExamShiftService {
 
     ResponseObject<?> joinExamShift(@Valid JoinExamShiftRequest joinExamShiftRequest);
 
+    ResponseObject<?> countStudentInExamShift(String examShiftCode);
+
 }

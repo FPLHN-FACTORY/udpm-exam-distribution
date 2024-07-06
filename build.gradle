@@ -55,6 +55,7 @@ dependencies {
 
     implementation 'org.springframework.batch:spring-batch-core:5.0.3'
     implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     //Manual Add Dependencies
     implementation "me.paulschwarz:spring-dotenv:4.0.0"
@@ -66,6 +67,8 @@ dependencies {
     runtimeOnly("org.webjars.npm:toastify-js:1.12.0")
     runtimeOnly("org.webjars:js-cookie:3.0.1")
     runtimeOnly("org.webjars:select2:4.0.13")
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {

@@ -36,4 +36,9 @@ public class ExamShiftRestController {
         return Helper.createResponseEntity(examShiftService.joinExamShift(joinExamShiftRequest));
     }
 
+    @GetMapping("/{examShiftCode}/count-student")
+    public ResponseEntity<?> countStudentInExamShift(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(examShiftService.countStudentInExamShift(examShiftCode));
+    }
+
 }

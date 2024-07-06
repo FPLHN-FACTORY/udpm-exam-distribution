@@ -80,6 +80,14 @@ const ApiConstant = {
     API_TEACHER_BLOCK: "/api/v1/teacher/blocks",
     API_TEACHER_CAMPUS: "/api/v1/teacher/campuses",
     API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
+    API_TEACHER_STAFF: "/api/v1/teacher/staffs",
+
+    // Constants representing the redirect paths for various resources under student
+    REDIRECT_STUDENT_HOME: "/student/home",
+
+    // Constants representing the full paths for various resources under student
+    API_STUDENT_EXAM_SHIFT: "/api/v1/student/exam-shift",
+    API_STUDENT_JOIN_EXAM_SHIFT: "/api/v1/student/exam-shift/join",
 
 };
 

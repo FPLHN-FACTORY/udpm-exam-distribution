@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.block.repository.BlockTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.ClassSubjectTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.CreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.JoinExamShiftRequest;
@@ -10,6 +11,7 @@ import fplhn.udpm.examdistribution.core.teacher.staff.repository.StaffTeacherExt
 import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.conflig.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
@@ -17,6 +19,7 @@ import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,6 +35,8 @@ public class ExamShiftServiceImpl implements ExamShiftService {
     private final StaffTeacherExtendRepository staffTeacherExtendRepository;
 
     private final ExamShiftExtendRepository examShiftExtendRepository;
+
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public ResponseObject<?> createExamShift(@Valid CreateExamShiftRequest createExamShiftRequest) {
@@ -122,11 +127,26 @@ public class ExamShiftServiceImpl implements ExamShiftService {
             return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi đã đủ giám thị!");
         }
 
+//        if (examShift.getFirstSupervisor().getId().equals(existingStaff.get().getId())) {
+//            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+//                    "Giám thị " + existingStaff.get().getName() + " đang là giám thị 1 rồi!");
+//        }
+
         examShift.setSecondSupervisor(existingStaff.get());
         examShiftExtendRepository.save(examShift);
 
+        String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
+        simpMessagingTemplate.convertAndSend("/topic/exam-shift",
+                new NotificationResponse( "Giám thị " + accountFe + " đã tham gia phòng thi!"));
+
         return new ResponseObject<>(examShift.getExamShiftCode(),
                 HttpStatus.OK, "Tham gia phòng thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> countStudentInExamShift(String examShiftCode) {
+        return new ResponseObject<>(examShiftExtendRepository.countStudentInExamShift(examShiftCode),
+                HttpStatus.OK, "Đếm số sinh viên trong phòng thi thành công!");
     }
 
     private ResponseObject<?> validateShift(String shift) {

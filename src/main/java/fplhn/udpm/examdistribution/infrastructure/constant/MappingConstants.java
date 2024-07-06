@@ -92,5 +92,13 @@ public final class MappingConstants {
     public static final String API_TEACHER_BLOCK = API_TEACHER_PREFIX + "/blocks";
     public static final String API_TEACHER_CAMPUS = API_TEACHER_PREFIX + "/campuses";
     public static final String API_TEACHER_CLASS_SUBJECT = API_TEACHER_PREFIX + "/class-subjects";
+    public static final String API_TEACHER_STAFF = API_TEACHER_PREFIX + "/staffs";
+
+    // Constants representing the full paths for various resources under student
+    public static final String REDIRECT_STUDENT_HOME = STUDENT + "/home";
+
+    // Constants representing the full paths for various resources under teacher
+    public static final String API_STUDENT_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift";
+    public static final String API_STUDENT_JOIN_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift/join";
 
 }
