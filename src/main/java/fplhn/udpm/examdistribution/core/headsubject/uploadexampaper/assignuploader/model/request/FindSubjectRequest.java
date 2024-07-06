@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.headsubject.assignuploader.model.request;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableRequest;
 import lombok.Getter;
