@@ -10,11 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -36,7 +32,7 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
     private MajorFacility majorFacility;
 
     @Column(name = "exam_paper_code")
-    private String maDeThi;
+    private String examPaperCode;
 
     @Column(name = "created_exam_paper_date")
     private Long examPaperCreatedDate;
@@ -51,5 +47,9 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
 
     @Column(name = "path")
     private String path;
+
+    @ManyToOne
+    @JoinColumn(name = "id_staff_upload")
+    private Staff staffUpload;
 
 }

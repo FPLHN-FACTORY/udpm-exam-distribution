@@ -17,6 +17,7 @@ import fplhn.udpm.examdistribution.entity.DepartmentFacility;
 import fplhn.udpm.examdistribution.entity.Major;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +107,7 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
         MajorFacility majorFacility = new MajorFacility();
         majorFacility.setMajor(majorOptional.get());
         majorFacility.setDepartmentFacility(departmentFacilityOptional.get());
+        majorFacility.setStatus(EntityStatus.ACTIVE);
         majorFacility.setStaff(staffOptional.get());
         majorFacilityExtendRepository.save(majorFacility);
 
