@@ -10,6 +10,7 @@ import fplhn.udpm.examdistribution.core.teacher.staff.repository.StaffTeacherExt
 import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.conflig.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
@@ -17,6 +18,7 @@ import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,6 +34,8 @@ public class ExamShiftServiceImpl implements ExamShiftService {
     private final StaffTeacherExtendRepository staffTeacherExtendRepository;
 
     private final ExamShiftExtendRepository examShiftExtendRepository;
+
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public ResponseObject<?> createExamShift(@Valid CreateExamShiftRequest createExamShiftRequest) {
@@ -124,6 +128,9 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
         examShift.setSecondSupervisor(existingStaff.get());
         examShiftExtendRepository.save(examShift);
+
+        simpMessagingTemplate.convertAndSend("/topic/exam-shift",
+                new NotificationResponse("Giám thị " + existingStaff.get().getName() + " đã tham gia phòng thi!"));
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
                 HttpStatus.OK, "Tham gia phòng thi thành công!");

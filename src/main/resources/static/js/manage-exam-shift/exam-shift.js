@@ -213,6 +213,9 @@ const joinExamShift = () => {
                 $('#examShiftJoinModal').modal('hide');
                 localStorage.setItem('joinExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + responseBody?.data;
+                stompClient.send("/app/exam-shift-join", {}, JSON.stringify({
+                    examShiftCode: responseBody?.data
+                }));
             }
         },
         error: function (error) {

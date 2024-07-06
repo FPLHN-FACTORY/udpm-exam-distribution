@@ -13,9 +13,12 @@ $(document).ready(function () {
         localStorage.removeItem('joinExamShiftSuccessMessage');
     }
 
+    connect();
+
 });
 
 let examShiftCode = $('#examShiftCodeCtl').text();
+let stompClient = null;
 
 const getExamShiftByCode = () => {
     $.ajax({
@@ -31,4 +34,14 @@ const getExamShiftByCode = () => {
             showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
         }
     })
+}
+
+const connect = () => {
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe("/topic/exam-shift", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+        });
+    });
 }

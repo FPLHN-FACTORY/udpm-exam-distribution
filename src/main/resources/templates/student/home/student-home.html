@@ -9,11 +9,11 @@
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
-    <title>Teacher - Trang chủ</title>
+    <title>Student - Trang chủ</title>
 </head>
 <body>
 <div class="wrapper">
-    <div th:insert="~{fragment/sidebar/sidebar-teacher :: sidebar-teacher}"></div>
+    <div th:insert="~{fragment/sidebar/sidebar-student :: sidebar-student}"></div>
     <div class="main-panel">
         <div class="main-header">
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
@@ -29,14 +29,6 @@
                         <div>
                             <button
                                     class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddExamShift()"
-                            >
-                                Tạo phòng thi
-                            </button>
-                            <button
-                                    class="btn btn-secondary"
-                                    onclick="openModalJoinExamShift()"
                             >
                                 Tham gia phòng thi
                             </button>
@@ -46,73 +38,6 @@
             </div>
         </div>
     </div>
-
-    <!--     Modal Create ExamShift -->
-    <div class="modal fade" id="examShiftModal" tabindex="-1" aria-labelledby="addExamShiftModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="examShiftModalLabel">Thêm phòng thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addExamShiftForm">
-                        <input type="hidden" id="examShiftId">
-                        <div class="mb-3">
-                            <label for="modifyShift" class="form-label">Ca</label>
-                            <input type="text" class="form-control" id="modifyShift" th:value="${currentShift}"
-                                   disabled required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyExamDate" class="form-label">Ngày thi</label>
-                            <input type="text" class="form-control" id="modifyExamDate" disabled required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyRoom" class="form-label">Phòng thi</label>
-                            <input type="text" class="form-control" id="modifyRoom" required>
-                            <div class="invalid-feedback" id="roomError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifySubjectClassCode" class="form-label">Mã lớp môn</label>
-                            <input type="text" class="form-control" id="modifySubjectClassCode" required>
-                            <div class="invalid-feedback" id="classSubjectCodeError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifySubjectId" class="form-label">Môn thi</label>
-                            <select class="form-select" id="modifySubjectId" required>
-                                <option value="">Chọn môn thi</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyBlockId" class="form-label">Block</label>
-                            <select class="form-select" id="modifyBlockId" required>
-                                <option value="">Chọn block</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyFacilityChildId" class="form-label">Campus</label>
-                            <select class="form-select" id="modifyFacilityChildId" required>
-                                <option value="">Chọn campus</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyPassword" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="modifyPassword" required>
-                            <div class="invalid-feedback" id="passwordError"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="modifyExamShiftButton">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Modal Create ExamShift -->
 
     <!-- Modal Join ExamShift -->
     <div class="modal fade" id="examShiftJoinModal" tabindex="-1" aria-labelledby="ExamShiftJoinModalLabel"
@@ -167,6 +92,5 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
-<script th:src="@{/js/manage-exam-shift/exam-shift.js}"></script>
 </body>
 </html>
