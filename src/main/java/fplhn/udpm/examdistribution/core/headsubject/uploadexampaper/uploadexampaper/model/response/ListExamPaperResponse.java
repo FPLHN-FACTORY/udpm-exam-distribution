@@ -1,36 +1,30 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import fplhn.udpm.examdistribution.core.common.base.HasOrderNumber;
+import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-@Getter
-@Setter
-public class ListExamPaperResponse {
+public interface ListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
-    private String id;
+    String getFileId();
 
-    private String fileId;
+    String getSubjectId();
 
-    private String subjectId;
+    String getSubjectName();
 
-    private String subjectName;
+    String getMajorName();
 
-    private String majorName;
+    String getExamPaperCode();
 
-    private String examPaperCode;
+    String getStaffName();
 
-    private String staffName;
+    Long getCreatedDate();
 
-    private long createdDate;
+    String getStatus();
 
-    private String status;
+    String getFacilityName();
 
-    private String facilityName;
+    String getExamPaperType();
 
-    private String thumbnailLink;
-
-    private String examPaperType;
-
-    private String majorFacilityId;
+    String getMajorFacilityId();
 
 }

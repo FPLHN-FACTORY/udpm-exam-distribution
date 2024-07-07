@@ -85,6 +85,8 @@ const handlePostOrPutExamPaper = () => {
     data.append("subjectId", getValueExamPaperSubjectId())
     data.append("file", getExamPaperFile());
 
+    handleResetFieldsError();
+
     showLoading();
     $.ajax({
         url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/exam-paper",
@@ -93,15 +95,13 @@ const handlePostOrPutExamPaper = () => {
         contentType: false,
         processData: false,
         success: function (responseBody) {
-            setTimeout(() => { //đợi google ren ra thumbnail-link
-                showToastSuccess(responseBody.message);
+            showToastSuccess(responseBody.message);
 
-                fetchListExamPaper($("#subjectId").val());
+            fetchListExamPaper(1, $('#pageSizeFirstPage').val(), getGlobalParamsSearchFirstPage());
 
-                closeModalExamPaper();
+            closeModalExamPaper();
 
-                hideLoading();
-            }, 1000)
+            hideLoading();
         },
         error: function (error) {
             const myError = error?.responseJSON;
@@ -139,10 +139,6 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     showViewByStatus(status);
     handleResetFieldsError();
 
-    //reset lai page 1
-    pageNum = 1;
-    setExamPaperFile(new File([], ""))
-
     if (status !== 3) {
         handleFetchExamRule(fileId);
         if (status === 2) {
@@ -151,7 +147,7 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
             setValueExamPaperSubjectId(subjectId);
             setValueExamPaperId(examPaperId);
         }
-    }else{
+    } else {
         clearFieldsChoose();
     }
 
@@ -159,17 +155,11 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
 };
 
 const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    const pdfViewer = $("#pdf-viewer");
-    const pdfPaging = $("#paging-pdf");
-
-    pdfViewer.prop("hidden", true);
-    pdfPaging.prop("hidden", true);
-
     $("#show-pdf").prop("hidden", false);
 
-    pdfViewer.prop("hidden", false);
+    $("#pdf-viewer").prop("hidden", false);
     if (totalPage > 1) {
-        pdfPaging.prop("hidden", false);
+        $("#paging-pdf").prop("hidden", false);
     }
 };
 
@@ -183,7 +173,14 @@ const handleFetchExamRule = (fileId) => {
         },
         success: function (responseBody) {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+
+            const blob = new Blob([pdfData], { type: 'application/pdf' });
+            const file = new File([blob], "exam_rule.pdf", { type: 'application/pdf' });
+            setExamPaperFile(file);
+            console.log(file);
+
             renderPdfInView(pdfData);
+
             hideLoading();
         },
         error: function (error) {
@@ -211,10 +208,10 @@ const onChangeChoosePDFFile = () => {
                     renderPdfInView(pdfData);
                 };
                 fileReader.readAsArrayBuffer(file);
-                hideLoading();
             } else {
                 showToastError("Vui lòng chọn file định dạng PDF");
             }
+            hideLoading();
         }
     });
 };
@@ -288,10 +285,12 @@ const showViewByStatus = (status) => {
     $("#view-add-edit").prop("hidden", !(status === 2 || status === 3));
     $("#modal-footer").prop("hidden", !(status === 2 || status === 3));
 
-    $("#show-pdf").prop("hidden", status === 3)
+    $("#show-pdf").prop("hidden", true);
 
-    $("#paging-pdf").prop("hidden", status !== 3);
-    $("#pdf-viewer").prop("hidden", status !== 3);
+    $("#file-pdf-input").val("");
+    //reset lai page 1
+    pageNum = 1;
+    setExamPaperFile(new File([], ""));
 };
 
 
