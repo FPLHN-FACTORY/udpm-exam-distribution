@@ -76,8 +76,6 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                  	df.id = mf.id_department_facility
                  JOIN facility f ON
                  	f.id = df.id_facility
-                 JOIN staff st ON
-                 	st.id_department_facility = df.id
                  WHERE mf.status = 0 AND f.id = :facilityId AND df.id_department = :departmentId
             """, nativeQuery = true)
     List<ListMajorFacilityResponse> getMajorFacilityByDepartmentFacilityId(String facilityId, String departmentId);
