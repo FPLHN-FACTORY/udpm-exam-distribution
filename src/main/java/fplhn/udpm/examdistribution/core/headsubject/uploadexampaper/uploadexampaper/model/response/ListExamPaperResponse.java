@@ -9,6 +9,8 @@ public class ListExamPaperResponse {
 
     private String id;
 
+    private String fileId;
+
     private String subjectId;
 
     private String subjectName;
@@ -25,6 +27,10 @@ public class ListExamPaperResponse {
 
     private String facilityName;
 
-    private String thumnailLink;
+    private String thumbnailLink;
+
+    private String examPaperType;
+
+    private String majorFacilityId;
 
 }

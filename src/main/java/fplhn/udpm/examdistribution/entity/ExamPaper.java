@@ -10,7 +10,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -47,9 +51,6 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
 
     @Column(name = "path")
     private String path;
-
-    @Column(name = "thumbnail_link")
-    private String thumbnailLink;
 
     @ManyToOne
     @JoinColumn(name = "id_staff_upload")

@@ -1,3 +1,35 @@
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+#pdf-viewer {
+    border: 1px solid #999;
+    width: 100%;
+    height: 700px;
+    overflow: auto;
+    border-radius: 10px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#pdf-viewer::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+#pdf-viewer-detail {
+    border: 1px solid #999;
+    width: 100%;
+    height: 750px;
+    overflow: auto;
+    border-radius: 10px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#pdf-viewer-detail::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
 .swiper-container {
     width: 100%;
     height: 70vh;
@@ -18,6 +50,30 @@
     /* Center slide text vertically */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Code box-shadow */
+}
+
+.manipulate {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.swiper-slide:hover .manipulate {
+    opacity: 1;
+    transition: ease-in-out 0.5s;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.manipulate i:nth-child(2) {
+    margin: 0 10px 0 10px;
 }
 
 .swiper-slide img {

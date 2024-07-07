@@ -87,7 +87,6 @@ public class TExamFileImpl implements TExamFileService {
         GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
 
         String fileId = googleDriveFileDTO.getId();
-        String thumbnailLink = googleDriveFileDTO.getThumbnailLink();
 
         ExamPaper examPaper = new ExamPaper();
         examPaper.setId(CodeGenerator.generateRandomCode());
@@ -100,7 +99,6 @@ public class TExamFileImpl implements TExamFileService {
         examPaper.setExamPaperCreatedDate(new Date().getTime());
         examPaper.setStaffUpload(staffs.get());
         examPaper.setStatus(EntityStatus.ACTIVE);
-        examPaper.setThumbnailLink(thumbnailLink);
         tExamPaperRepository.save(examPaper);
 
         return new ResponseObject<>(
