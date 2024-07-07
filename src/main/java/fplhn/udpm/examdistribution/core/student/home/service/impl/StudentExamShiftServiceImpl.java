@@ -12,9 +12,11 @@ import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.conflig.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class StudentExamShiftServiceImpl implements StudentExamShiftService {
 
     private final ExamShiftStudentExtendRepository examShiftStudentExtendRepository;
@@ -34,6 +37,23 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
     private final StudentExamShiftExtendRepository studentExamShiftExtendRepository;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    @Override
+    public boolean findStudentInExamShift(String examShiftCode) {
+        Optional<ExamShift> existingExamShift = examShiftStudentExtendRepository
+                .findByExamShiftCode(examShiftCode);
+        if (existingExamShift.isEmpty()) {
+            return false;
+        }
+
+        Optional<StudentExamShift> studentExamShift = studentExamShiftExtendRepository
+                .findByExamShiftIdAndStudentId(existingExamShift.get().getId(), SessionConstant.CURRENT_USER_ID);
+        if (studentExamShift.isEmpty() && SessionConstant.ROLE_LOGIN.equals("SINH_VIEN")) {
+            return false;
+        }
+
+        return true;
+    }
 
     @Override
     public ResponseObject<?> joinExamShift(@Valid StudentExamShiftRequest studentExamShiftRequest) {
@@ -70,8 +90,8 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
         simpMessagingTemplate.convertAndSend("/topic/student-exam-shift",
                 new NotificationResponse(
                         "Sinh viên "
-                        + existingStudent.get().getStudentCode()
-                        + " đã tham gia phòng thi!"));
+                                + existingStudent.get().getStudentCode()
+                                + " đã tham gia phòng thi!"));
 
         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                 HttpStatus.OK, "Tham gia phòng thi thành công!");

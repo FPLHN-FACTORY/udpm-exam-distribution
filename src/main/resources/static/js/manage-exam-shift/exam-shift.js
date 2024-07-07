@@ -43,12 +43,12 @@ $(document).ready(function () {
         }
     });
 
-    // $('#modifyBlockId').on('change', function () {
-    //     blockId = $(this).val();
-    //     if (subjectId != null && blockId != null && facilityChildId != null) {
-    //         getClassSubjectIdByRequest();
-    //     }
-    // });
+    $('#modifyBlockId').on('change', function () {
+        blockId = $(this).val();
+        if (subjectId != null && blockId != null && facilityChildId != null) {
+            getClassSubjectIdByRequest();
+        }
+    });
 
     $('#modifyFacilityChildId').on('change', function () {
         facilityChildId = $(this).val();
@@ -89,37 +89,19 @@ const fetchSubjects = () => {
     });
 }
 
-// const fetchBlocks = () => {
-//     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
-//     $.ajax({
-//         type: "GET",
-//         url: ApiConstant.API_TEACHER_BLOCK + classSubjectCodeUrl + subjectClassCodeVal + subjectIdUrl + subjectId,
-//         success: function (responseBody) {
-//             if (responseBody?.data) {
-//                 console.log("blocks", responseBody?.data)
-//                 const blocks = responseBody?.data?.map((block, index) => {
-//                     return `<option value="${block.id}">${block.blockName}</option>`;
-//                 });
-//                 blocks.unshift('<option value="">Chọn block</option>');
-//                 $('#modifyBlockId').html(blocks);
-//             }
-//         },
-//         error: function (error) {
-//             showToastError('Có lỗi xảy ra khi lấy thông tin block');
-//         }
-//     });
-// }
-
 const fetchBlocks = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_TEACHER_BLOCK + '/block-id' + classSubjectCodeUrl + subjectClassCodeVal
-            + subjectIdUrl + subjectId + examShiftDateUrl + new Date($('#modifyExamDate').val()).getTime(),
+        url: ApiConstant.API_TEACHER_BLOCK + classSubjectCodeUrl + subjectClassCodeVal + subjectIdUrl + subjectId,
         success: function (responseBody) {
             if (responseBody?.data) {
                 console.log("blocks", responseBody?.data)
-                blockId = responseBody?.data;
+                const blocks = responseBody?.data?.map((block, index) => {
+                    return `<option value="${block.id}">${block.blockName}</option>`;
+                });
+                blocks.unshift('<option value="">Chọn block</option>');
+                $('#modifyBlockId').html(blocks);
             }
         },
         error: function (error) {
@@ -127,6 +109,24 @@ const fetchBlocks = () => {
         }
     });
 }
+
+// const fetchBlocks = () => {
+//     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
+//     $.ajax({
+//         type: "GET",
+//         url: ApiConstant.API_TEACHER_BLOCK + '/block-id' + classSubjectCodeUrl + subjectClassCodeVal
+//             + subjectIdUrl + subjectId + examShiftDateUrl + new Date($('#modifyExamDate').val()).getTime(),
+//         success: function (responseBody) {
+//             if (responseBody?.data) {
+//                 console.log("blocks", responseBody?.data)
+//                 blockId = responseBody?.data;
+//             }
+//         },
+//         error: function (error) {
+//             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+//         }
+//     });
+// }
 
 const fetchFacilityChildren = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
@@ -165,6 +165,12 @@ const getClassSubjectIdByRequest = () => {
     })
 };
 
+const checkClassSubject = (id) => {
+    if ($(`#${id}`).val() === '') {
+        $(`#${id}`).addClass('is-invalid');
+    }
+}
+
 const addExamShift = () => {
     const examShift = {
         classSubjectId: classSubjectId,
@@ -182,7 +188,6 @@ const addExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 examShiftCode = responseBody?.data;
-                console.log("examShiftCode", examShiftCode)
                 $('#examShiftModal').modal('hide');
                 localStorage.setItem('addExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + examShiftCode;
@@ -192,10 +197,16 @@ const addExamShift = () => {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
+                    if (err.fieldError === 'classSubjectId') {
+                        showToastError(err.message);
+                    }
+                    checkClassSubject('modifySubjectClassCode');
+                    checkClassSubject('modifySubjectId');
+                    checkClassSubject('modifyBlockId');
+                    checkClassSubject('modifyFacilityChildId');
                     $(`#${err.fieldError}Error`).text(err.message);
                     $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
                 });
-
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
@@ -240,11 +251,48 @@ const joinExamShift = () => {
 }
 
 const openModalAddExamShift = () => {
+    resetFormAddExamShift();
+    removeFormAddError();
     $('#examShiftModal').modal('show');
 };
 
+const resetFormAddExamShift = () => {
+    $('#modifyRoom').val('');
+    $('#modifySubjectClassCode').val('');
+    $('#modifySubjectId').val('');
+    $('#modifyBlockId').val('');
+    $('#modifyFacilityChildId').val('');
+    $('#modifyPassword').val('');
+}
+
+const removeFormAddError = (id) => {
+    $('#modifyRoom').removeClass('is-invalid');
+    $('#roomError').text('');
+    $('#modifySubjectClassCode').removeClass('is-invalid');
+    $('#classSubjectCodeError').text('');
+    $('#modifySubjectId').removeClass('is-invalid');
+    $('#modifyBlockId').removeClass('is-invalid');
+    $('#modifyFacilityChildId').removeClass('is-invalid');
+    $('#modifyPassword').removeClass('is-invalid');
+    $('#passwordError').text('');
+};
+
 const openModalJoinExamShift = () => {
+    resetFormJoinExamShift();
+    removeFormJoinError();
     $('#examShiftJoinModal').modal('show');
+};
+
+const resetFormJoinExamShift = () => {
+    $('#modifyExamShiftCodeJoin').val('');
+    $('#modifyPasswordJoin').val('');
+}
+
+const removeFormJoinError = (id) => {
+    $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
+    $('#examShiftCodeJoinError').text('');
+    $('#modifyPasswordJoin').removeClass('is-invalid');
+    $('#passwordJoinError').text('');
 };
 
 

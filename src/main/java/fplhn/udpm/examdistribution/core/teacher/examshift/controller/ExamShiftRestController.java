@@ -7,6 +7,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,11 @@ public class ExamShiftRestController {
     @GetMapping("/{examShiftCode}/count-student")
     public ResponseEntity<?> countStudentInExamShift(@PathVariable String examShiftCode) {
         return Helper.createResponseEntity(examShiftService.countStudentInExamShift(examShiftCode));
+    }
+
+    @DeleteMapping("/{examShiftCode}/remove-student/{studentId}")
+    public ResponseEntity<?> removeStudent(@PathVariable String examShiftCode, @PathVariable String studentId) {
+        return Helper.createResponseEntity(examShiftService.removeStudent(examShiftCode, studentId));
     }
 
 }

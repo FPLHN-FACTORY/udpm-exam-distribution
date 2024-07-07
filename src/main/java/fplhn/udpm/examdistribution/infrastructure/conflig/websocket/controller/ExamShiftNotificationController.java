@@ -20,4 +20,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/exam-shift-kick")
+    @SendTo("/topic/student-exam-shift-kick")
+    public NotificationResponse notifyKickStudentInExamShift(String message) {
+        return new NotificationResponse(message);
+    }
+
 }

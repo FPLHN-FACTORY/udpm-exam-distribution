@@ -4,6 +4,12 @@ $(document).ready(function () {
     $('#modifyExamShiftJoinButton').on('click', function () {
         joinExamShift();
     });
+
+    const kickExamShiftStudentSuccessMessage = localStorage.getItem('kickExamShiftStudentSuccessMessage');
+    if (kickExamShiftStudentSuccessMessage) {
+        showToastError(kickExamShiftStudentSuccessMessage);
+        localStorage.removeItem('kickExamShiftStudentSuccessMessage');
+    }
 });
 
 const openModalStudentJoinExamShift = () => {

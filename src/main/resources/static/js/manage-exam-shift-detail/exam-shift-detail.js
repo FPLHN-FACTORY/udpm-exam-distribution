@@ -58,23 +58,12 @@ const connect = () => {
             countStudentInExamShift();
             getStudents();
         });
+        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            countStudentInExamShift();
+            getStudents();
+        });
     });
-}
-
-const countStudentInExamShift = () => {
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/count-student',
-        success: function (responseBody) {
-            if (responseBody?.data) {
-                const students = responseBody?.data;
-                $('#studentCount').text("Tổng Số Sinh Viên: " + students);
-            }
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy số sinh viên tham gia');
-        }
-    })
 }
 
 const getFirstSupervisorId = () => {
@@ -114,6 +103,38 @@ const getSecondSupervisorId = () => {
     })
 }
 
+const removeStudent = (studentId) => {
+    $.ajax({
+        type: "DELETE",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/remove-student/' + studentId,
+        success: function (responseBody) {
+            if (responseBody?.message) {
+                const message = responseBody?.message;
+                showToastSuccess(message);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+        }
+    });
+}
+
+const countStudentInExamShift = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/count-student',
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const students = responseBody?.data;
+                $('#studentCount').text("Tổng Số Sinh Viên: " + students);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy số sinh viên tham gia');
+        }
+    });
+}
+
 const getStudents = () => {
     $.ajax({
         type: "GET",
@@ -126,8 +147,8 @@ const getStudents = () => {
                 let colCounter = 0;
                 students.forEach((student, index) => {
                     const col = $(`
-                        <div class="col-4">
-                            <div class="bg-white p-4 shadow rounded min-vh-30 w-30">
+                        <div class="col-3">
+                            <div class="bg-white p-4 shadow rounded min-vh-30 w-30 position-relative">
                                 <div class="user-box">
                                     <div class="avatar-lg">
                                         <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
@@ -137,6 +158,10 @@ const getStudents = () => {
                                     <div class="u-text">
                                         <h4>${student.name}</h4>
                                         <p class="text-muted">${student.email}</p>
+                                        <p class="text-muted">
+                                        Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
+                                        <button class="btn position-absolute top-0 end-0 p-2 fs-3" 
+                                        onclick="removeStudent('${student.id}')">&times;</button>
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +169,7 @@ const getStudents = () => {
                     `);
                     row.append(col);
                     colCounter++;
-                    if (colCounter === 3) {
+                    if (colCounter === 4) {
                         $('#studentsContainer').append(row);
                         row = $('<div class="row mt-3"></div>');
                         colCounter = 0;

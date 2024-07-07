@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.staff.repository;
 
 import fplhn.udpm.examdistribution.core.teacher.staff.model.response.StaffTeacherResponse;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.repository.StaffRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ public interface StaffTeacherExtendRepository extends StaffRepository {
 
     @Query(value = """
             SELECT
+            	s.id as id,
             	s.name as name,
             	s.staff_code as staffCode,
             	s.account_fe as accountFe,
@@ -25,6 +27,7 @@ public interface StaffTeacherExtendRepository extends StaffRepository {
 
     @Query(value = """
             SELECT
+            	s.id as id,
             	s.name as name,
             	s.staff_code as staffCode,
             	s.account_fe as accountFe,

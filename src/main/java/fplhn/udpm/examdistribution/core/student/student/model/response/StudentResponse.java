@@ -1,6 +1,8 @@
 package fplhn.udpm.examdistribution.core.student.student.model.response;
 
-public interface StudentResponse {
+import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
+
+public interface StudentResponse extends IsIdentify {
 
     String getName();
 

@@ -29,7 +29,7 @@ public interface BlockTeacherExtendRepository extends BlockRepository {
 
     @Query(value = """
             SELECT
-            	b.id as id
+            	b.id
             FROM
             	block b
             JOIN class_subject cs on
