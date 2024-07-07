@@ -22,24 +22,28 @@ public interface TSubjectRepository extends SubjectRepository {
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
-            WHERE
-                (df.id = :departmentFacilityId) AND
-                (s.status = 0) AND
-                (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+            JOIN assign_uploader au ON au.id_subject = s.id
+            WHERE au.id_staff LIKE :staffId
+                AND (df.id = :departmentFacilityId)
+                AND au.status = 0
+                AND (s.status = 0) 
+                AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
+                AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
             """,
             countQuery = """
                     SELECT 	COUNT(s.id)
                     FROM subject s
                     JOIN department d ON s.id_department = d.id
                     JOIN department_facility df ON df.id_department = d.id
-                    WHERE
-                        (df.id = :departmentFacilityId) AND
-                        (s.status = 0) AND
-                        (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                        (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                    JOIN assign_uploader au ON au.id_subject = s.id
+                    WHERE au.id_staff LIKE :staffId
+                    AND (df.id = :departmentFacilityId)
+                    AND au.status = 0
+                    AND (s.status = 0) 
+                    AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
+                    AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
                     """, nativeQuery = true)
-    Page<TSubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, TFindSubjectRequest request);
+    Page<TSubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, TFindSubjectRequest request,String staffId);
 
 
 }
