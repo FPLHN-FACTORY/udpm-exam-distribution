@@ -73,6 +73,8 @@ public final class MappingConstants {
     public static final String API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL = API_HEAD_SUBJECT_PREFIX + "/exam-approval";
     public static final String API_HEAD_SUBJECT_MANAGE_EXAM_RULE = API_HEAD_SUBJECT_PREFIX + "/exam-rule";
     public static final String API_HEAD_SUBJECT_MANAGE_JOIN_ROOM = API_HEAD_SUBJECT_PREFIX + "/join-room";
+    public static final String API_HEAD_SUBJECT_STAFF = API_HEAD_SUBJECT_PREFIX + "/staffs";
+    public static final String API_HEAD_SUBJECT_STUDENT = API_HEAD_SUBJECT_PREFIX + "/students";
 
     public static final String REDIRECT_GOOGLE_AUTHORIZATION = "/oauth2/authorization/google";
     public static final String AUTHENTICATION = "/authentication";

@@ -26,4 +26,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/exam-shift-head-subject-join")
+    @SendTo("/topic/head-subject-exam-shift-join")
+    public NotificationResponse notifyExamShiftHeadSubjectJoin(String message) {
+        return new NotificationResponse(message);
+    }
+
 }

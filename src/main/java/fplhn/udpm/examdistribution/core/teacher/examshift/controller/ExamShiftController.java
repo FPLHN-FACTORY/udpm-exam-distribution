@@ -28,7 +28,7 @@ public class ExamShiftController {
     public String viewDetail(@PathVariable String examShiftCode, Model model) {
         boolean isUsersInExamShift = examShiftService.findUsersInExamShift(examShiftCode);
         if (!isUsersInExamShift) {
-            return "500/index";
+            return "error/404";
         }
         model.addAttribute("examShiftCodeCtl", examShiftCode);
         return "teacher/manage-exam-shift-detail/exam-shift-detail";
