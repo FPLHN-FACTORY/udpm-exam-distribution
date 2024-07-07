@@ -65,6 +65,8 @@ const ApiConstant = {
     API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
     API_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
+    API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
+    API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",

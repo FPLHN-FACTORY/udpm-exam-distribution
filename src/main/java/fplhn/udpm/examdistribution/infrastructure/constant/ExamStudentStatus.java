@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.constant;
 
 public enum ExamStudentStatus {
     REGISTERED,
-    CHECKED_IN,
-    CHECKED_OUT,
-    ABSENT
+    IN_EXAM,
+    DONE_EXAM, // Xác nhận sinh viên chấm thi xong
+    KICKED
 }

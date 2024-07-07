@@ -27,7 +27,7 @@ public class HomeController {
     @GetMapping("/{examShiftCode}")
     public String viewDetail(@PathVariable String examShiftCode, Model model) {
         if (!studentExamShiftService.findStudentInExamShift(examShiftCode)) {
-            return "500/index";
+            return "error/404";
         }
         model.addAttribute("examShiftCodeCtl", examShiftCode);
         return "student/exam-shift/exam-shift-join";
