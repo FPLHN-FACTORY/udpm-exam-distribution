@@ -6,16 +6,16 @@ import java.time.LocalTime;
 
 @Getter
 public enum Shift {
-    CA1(LocalTime.of(0,0), LocalTime.of(2, 0)),
+    CA1(LocalTime.of(7,0), LocalTime.of(9, 0)),
     CA2(LocalTime.of(9, 30), LocalTime.of(11, 30)),
-    CA3(LocalTime.of(12, 30), LocalTime.of(17, 0)),
-    CA4(LocalTime.of(14, 30), LocalTime.of(16, 30)),
-    CA5(LocalTime.of(16, 38), LocalTime.of(19, 0)),
-    CA6(LocalTime.of(17, 30), LocalTime.of(23, 0)),
-    CA7(LocalTime.of(22, 0), LocalTime.of(0, 0)),
-    CA8(LocalTime.of(0, 15), LocalTime.of(2, 30)),
-    CA9(LocalTime.of(3, 0), LocalTime.of(5, 0)),
-    CA10(LocalTime.of(5, 30), LocalTime.of(7, 30));
+    CA3(LocalTime.of(12, 0), LocalTime.of(14, 0)),
+    CA4(LocalTime.of(14, 5), LocalTime.of(16, 30)),
+    CA5(LocalTime.of(17, 0), LocalTime.of(19, 0)),
+    CA6(LocalTime.of(19, 30), LocalTime.of(23, 30)),
+    CA7(LocalTime.of(0, 30), LocalTime.of(2, 0)),
+    CA8(LocalTime.of(2, 30), LocalTime.of(4, 0)),
+    CA9(LocalTime.of(4, 30), LocalTime.of(4, 45)),
+    CA10(LocalTime.of(5, 0), LocalTime.of(6, 30));
 
     private final LocalTime startTime;
     private final LocalTime endTime;

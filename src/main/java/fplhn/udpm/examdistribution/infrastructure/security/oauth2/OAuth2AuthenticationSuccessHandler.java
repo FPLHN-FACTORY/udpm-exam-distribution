@@ -120,7 +120,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private CustomUserCookie buildStaffCookie(Staff staff, String role, OAuth2UserInfo userInfo) {
-        setCurrentUserInformationSession(userInfo, staff);
+        setCurrentUserInformationSession(userInfo, staff, role);
         return CustomUserCookie.builder()
                 .userId(staff.getId())
                 .departmentFacilityId(staff.getDepartmentFacility().getId())
@@ -140,12 +140,13 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, student.getId());
     }
 
-    private void setCurrentUserInformationSession(OAuth2UserInfo userInfo, Staff student) {
+    private void setCurrentUserInformationSession(OAuth2UserInfo userInfo, Staff student, String role) {
         httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, student.getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, student.getDepartmentFacility().getFacility().getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, student.getDepartmentFacility().getDepartment().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_ROLE, role);
     }
 
 }

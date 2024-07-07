@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class CreateExamShiftRequest {
 
-    @NotBlank(message = "Lớp môn không được để trống")
+    @NotBlank(message = "Vui lòng nhập đầy đủ thông tin để lấy lớp môn")
     private String classSubjectId;
 
     private String firstSupervisorId;

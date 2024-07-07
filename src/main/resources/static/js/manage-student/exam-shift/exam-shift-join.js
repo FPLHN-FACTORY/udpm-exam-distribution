@@ -40,6 +40,10 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
         });
+        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
+            localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
+            window.location.href = ApiConstant.REDIRECT_STUDENT_HOME;
+        });
     });
 }
 

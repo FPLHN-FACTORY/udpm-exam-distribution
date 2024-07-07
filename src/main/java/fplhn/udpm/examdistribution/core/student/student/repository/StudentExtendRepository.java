@@ -12,6 +12,7 @@ public interface StudentExtendRepository extends StudentRepository {
 
     @Query(value = """
             SELECT
+                s.id as id,
             	s.name as name,
             	s.student_code as studentCode,
             	s.email as email,
