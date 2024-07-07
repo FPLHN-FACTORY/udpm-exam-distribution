@@ -126,11 +126,11 @@ const handleUploadExamRule = () => {
 };
 //----------------------------------------------------------------------------------------------------------------------
 
-$(document).ready(function () {
-    $("#file-pdf-input").on("change", function (e) {
-        showLoading();
+$(document).ready(() => {
+    $("#file-pdf-input").on("change", (e) => {
         const file = e.target.files[0];
         if (file) {
+            showLoading();
             const fileType = file.type;
             setValueFileInput(file);
             if (fileType === "application/pdf") {

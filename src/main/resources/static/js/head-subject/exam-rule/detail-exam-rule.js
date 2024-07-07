@@ -24,14 +24,14 @@ const setStateSubjectIdDetail = (value) => {
 
 
 const handleOpenModalDetailExamRule = (fileId, subjectId) => {
-    if(fileId === ""){
+    if(fileId === "" || fileId === "null"){
         showToastError("Môn học này chưa được tải quy định đề thi");
     }else{
         setStateSubjectIdDetail(subjectId);
 
         handleSolveViewWhenOpenModalDetail();
 
-        //reset laij page 1
+        //reset lai page 1
         pageNumDetail = 1;
         handleFetchExamRule(fileId);
 
@@ -45,6 +45,7 @@ const handleSolveViewWhenOpenModalDetail = () => { // ẩn đi view pdf và pagi
 };
 
 const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
+    console.log(totalPage);
     $("#pdf-viewer-detail").prop("hidden", false);
     if (totalPage > 1) {
         $("#paging-pdf-detail").prop("hidden", false);
@@ -61,7 +62,6 @@ const handleFetchExamRule = (fileId) => {
             subjectId: getStateSubjectIdDetail()
         },
         success: function (responseBody) {
-            console.log(responseBody);
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             pdfjsLibDetail
                 .getDocument({data: pdfData})

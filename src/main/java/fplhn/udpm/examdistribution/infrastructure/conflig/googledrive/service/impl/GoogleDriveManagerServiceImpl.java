@@ -5,9 +5,11 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.config.GoogleDriveConfig;
+import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.utils.PermissionDetail;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService {
 
     private final GoogleDriveConfig googleDriveConfig;
@@ -114,7 +117,7 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
     }
 
     @Override
-    public String uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail) {
+    public GoogleDriveFileDTO uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail) {
         if (multipartFile == null) return null;
 
         File file = new File();
@@ -126,7 +129,7 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
                     .getDrive()
                     .files()
                     .create(file, new InputStreamContent(multipartFile.getContentType(), new ByteArrayInputStream(multipartFile.getBytes())))
-                    .setFields("id")
+                    .setFields("id,thumbnailLink,shared,size,name,webViewLink")
                     .execute();
 
             if (!"private".equals(permissionDetail.getType()) && !"private".equals(permissionDetail.getRole())) {
@@ -135,8 +138,15 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
                         .permissions()
                         .create(uploadedFile.getId(), setPermission(permissionDetail));
             }
+            GoogleDriveFileDTO googleDriveFileDTO = new GoogleDriveFileDTO();
+            googleDriveFileDTO.setId(uploadedFile.getId());
+            googleDriveFileDTO.setThumbnailLink(uploadedFile.getThumbnailLink());
+            googleDriveFileDTO.setShared(uploadedFile.getShared());
+            googleDriveFileDTO.setSize(String.valueOf(uploadedFile.getSize()));
+            googleDriveFileDTO.setName(uploadedFile.getName());
+            googleDriveFileDTO.setLink(uploadedFile.getWebViewLink());
 
-            return uploadedFile.getId();
+            return googleDriveFileDTO;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

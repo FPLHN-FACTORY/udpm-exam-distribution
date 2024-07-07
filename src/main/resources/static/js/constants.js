@@ -61,6 +61,7 @@ const ApiConstant = {
 
     // Constants representing the full paths for various resources under head subject
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",
+    API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER: "/api/v1/head-subject/upload-exam-paper",
     API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
     API_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",

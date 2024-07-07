@@ -10,7 +10,7 @@ public class SessionConstant {
 
     public static final String CURRENT_USER_FACILITY_ID = "current_facility_id";
 
-    public static final String CURRENT_USER_DEPARTMENT_ID = "current_facility_id";
+    public static final String CURRENT_USER_DEPARTMENT_ID = "current_department_id";
 
     public static final String ERROR_LOGIN = "error_login";
 

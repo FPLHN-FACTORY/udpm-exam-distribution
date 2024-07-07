@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service;
 
 import com.google.api.services.drive.model.File;
+import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.utils.PermissionDetail;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +21,7 @@ public interface GoogleDriveManagerService {
 
     void createPermissionForEmail(String id, PermissionDetail permissionDetail);
 
-    String uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail);
+    GoogleDriveFileDTO uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail);
 
     String getFolderId(String folderName);
 
