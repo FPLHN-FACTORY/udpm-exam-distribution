@@ -52,7 +52,7 @@ public class TExamFileImpl implements TExamFileService {
     public ResponseObject<?> getAllSubject(String departmentFacilityId, TFindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, request)),
+                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, request,(String)httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
                 HttpStatus.OK,
                 "Lấy thành công danh sách môn học"
         );

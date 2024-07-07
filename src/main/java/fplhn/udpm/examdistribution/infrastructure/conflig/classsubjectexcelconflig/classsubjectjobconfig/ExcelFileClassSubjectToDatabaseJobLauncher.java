@@ -36,7 +36,6 @@ public class ExcelFileClassSubjectToDatabaseJobLauncher {
     @Setter
     private String fullPathFileName;
 
-
     @Scheduled(cron = "${excel.file.to.database.job.cron}")
     void launchExcelToDatabaseJob() {
         if (enabled.get() && fullPathFileName != null) {

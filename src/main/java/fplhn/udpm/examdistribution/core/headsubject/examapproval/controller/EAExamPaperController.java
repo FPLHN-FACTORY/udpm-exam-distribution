@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(MappingConstants.REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL)
-public class ExamApprovalController {
+public class EAExamPaperController {
 
     @GetMapping
     public String viewExamApproval() {
