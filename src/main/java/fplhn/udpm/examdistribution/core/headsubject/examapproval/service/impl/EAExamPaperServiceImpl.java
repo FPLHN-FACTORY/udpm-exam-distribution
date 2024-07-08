@@ -7,7 +7,7 @@ import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EAEx
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EASubjectRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.service.EAExamPaperService;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
