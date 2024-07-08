@@ -38,4 +38,7 @@ public class StudentExamShift extends PrimaryEntity implements Serializable {
     @Column(name = "join_time")
     private Long joinTime;
 
+    @Column(name = "reason")
+    private String reason;
+
 }

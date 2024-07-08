@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,9 +43,20 @@ public class ExamShiftRestController {
         return Helper.createResponseEntity(examShiftService.countStudentInExamShift(examShiftCode));
     }
 
-    @DeleteMapping("/{examShiftCode}/remove-student/{studentId}")
-    public ResponseEntity<?> removeStudent(@PathVariable String examShiftCode, @PathVariable String studentId) {
-        return Helper.createResponseEntity(examShiftService.removeStudent(examShiftCode, studentId));
+    @PutMapping("/{examShiftCode}/remove-student/{studentId}")
+    public ResponseEntity<?> removeStudent(
+            @PathVariable String examShiftCode, @PathVariable String studentId, @RequestBody String reason) {
+        return Helper.createResponseEntity(examShiftService.removeStudent(examShiftCode, studentId, reason));
+    }
+
+    @PutMapping("/{examShiftCode}/approve-student/{studentId}")
+    public ResponseEntity<?> approveStudent(@PathVariable String examShiftCode, @PathVariable String studentId) {
+        return Helper.createResponseEntity(examShiftService.approveStudent(examShiftCode, studentId));
+    }
+
+    @PutMapping("/{examShiftCode}/refuse-student/{studentId}")
+    public ResponseEntity<?> refuseStudent(@PathVariable String examShiftCode, @PathVariable String studentId) {
+        return Helper.createResponseEntity(examShiftService.refuseStudent(examShiftCode, studentId));
     }
 
 }

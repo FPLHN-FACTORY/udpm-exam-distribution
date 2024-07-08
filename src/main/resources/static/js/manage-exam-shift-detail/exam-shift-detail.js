@@ -8,6 +8,8 @@ $(document).ready(function () {
 
     getStudents();
 
+    getStudentRejoin();
+
     const addExamShiftSuccessMessage = localStorage.getItem('addExamShiftSuccessMessage');
     if (addExamShiftSuccessMessage) {
         showToastSuccess(addExamShiftSuccessMessage);
@@ -20,6 +22,8 @@ $(document).ready(function () {
     }
 
     connect();
+
+    removeStudentSubmit();
 
     countStudentInExamShift();
 
@@ -57,11 +61,17 @@ const connect = () => {
             showToastSuccess(JSON.parse(response.body).message);
             countStudentInExamShift();
             getStudents();
+            getStudentRejoin();
         });
         stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
             showToastSuccess(JSON.parse(response.body).message);
             countStudentInExamShift();
             getStudents();
+            getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getStudentRejoin();
         });
     });
 }
@@ -104,9 +114,50 @@ const getSecondSupervisorId = () => {
 }
 
 const removeStudent = (studentId) => {
+    let reason = $('#modifyReason').val();
     $.ajax({
-        type: "DELETE",
+        type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/remove-student/' + studentId,
+        data: JSON.stringify(reason),
+        contentType: 'application/json',
+        success: function (responseBody) {
+            if (responseBody?.message) {
+                const message = responseBody?.message;
+                showToastSuccess(message);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+        }
+    });
+}
+
+const approveStudent = (studentId) => {
+    let reason = $('#modifyReason').val();
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/approve-student/' + studentId,
+        data: JSON.stringify(reason),
+        contentType: 'application/json',
+        success: function (responseBody) {
+            if (responseBody?.message) {
+                const message = responseBody?.message;
+                showToastSuccess(message);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+        }
+    });
+}
+
+const refuseStudent = (studentId) => {
+    let reason = $('#modifyReason').val();
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/refuse-student/' + studentId,
+        data: JSON.stringify(reason),
+        contentType: 'application/json',
         success: function (responseBody) {
             if (responseBody?.message) {
                 const message = responseBody?.message;
@@ -161,7 +212,7 @@ const getStudents = () => {
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         <button class="btn position-absolute top-0 end-0 p-2 fs-3" 
-                                        onclick="removeStudent('${student.id}')">&times;</button>
+                                        onclick="openModalRemoveStudent('${student.id}')">&times;</button>
                                     </div>
                                 </div>
                             </div>
@@ -185,4 +236,81 @@ const getStudents = () => {
         }
     });
 }
+
+const getStudentRejoin = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_STUDENT_JOIN_EXAM_SHIFT + '/rejoin/' + examShiftCode,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const students = responseBody?.data;
+                $('#studentsRejoinContainer').empty();
+                let row = $('<div class="row mt-3"></div>');
+                let colCounter = 0;
+                students.forEach((student, index) => {
+                    const col = $(`
+                        <div class="col-3">
+                            <div class="bg-white p-2 shadow rounded min-vh-30">
+                                <div class="user-box">
+                                    <div class="avatar-lg">
+                                        <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
+                                         alt="image profile"
+                                         class="avatar-img rounded"/>
+                                    </div>
+                                    <div class="u-text">
+                                        <h4>${student.name}</h4>
+                                        <p class="text-muted">${student.email}</p>
+                                        <p class="text-muted">
+                                        Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
+                                        <button class="btn-label-secondary" 
+                                                onclick="approveStudent('${student.id}')">
+                                                Phê duyệt
+                                        </button>
+                                        <button class="btn-label-danger" 
+                                                onclick="refuseStudent('${student.id}')">
+                                                Từ chối
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    row.append(col);
+                    colCounter++;
+                    if (colCounter === 4) {
+                        $('#studentsRejoinContainer').append(row);
+                        row = $('<div class="row mt-3"></div>');
+                        colCounter = 0;
+                    }
+                });
+                if (colCounter !== 0) {
+                    $('#studentsRejoinContainer').append(row);
+                }
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    });
+}
+
+const openModalRemoveStudent = (studentId) => {
+    $('#studentIdRemove').val(studentId);
+    $(`#modifyReason`).removeClass('is-invalid');
+    $(`#examReasonError`).text('');
+    $('#removeStudentModal').modal('show');
+}
+
+const removeStudentSubmit = () => {
+    $('#modifyRemoveStudentButton').click(function () {
+        const studentId = $('#studentIdRemove').val();
+        if ($('#modifyReason').val() === '') {
+            $(`#modifyReason`).addClass('is-invalid');
+            $(`#examReasonError`).text('Lý do không được để trống');
+        } else {
+            removeStudent(studentId);
+            $('#removeStudentModal').modal('hide');
+        }
+    });
+};
 

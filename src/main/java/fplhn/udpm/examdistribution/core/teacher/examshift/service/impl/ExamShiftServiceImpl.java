@@ -16,6 +16,7 @@ import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
@@ -130,8 +131,7 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     @Override
     public ResponseObject<?> joinExamShift(@Valid JoinExamShiftRequest joinExamShiftRequest) {
-        Optional<ExamShift> existingExamShift = examShiftExtendRepository
-                .findByExamShiftCode(joinExamShiftRequest.getExamShiftCodeJoin());
+        Optional<ExamShift> existingExamShift = findExamShiftByCode(joinExamShiftRequest.getExamShiftCodeJoin());
         if (existingExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
                     "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
@@ -179,30 +179,83 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     @Override
     @Transactional
-    public ResponseObject<?> removeStudent(String examShiftCode, String studentId) {
-        Optional<ExamShift> examShift = examShiftExtendRepository.findByExamShiftCode(examShiftCode);
+    public ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
         if (examShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
         }
 
-        Optional<Student> student = studentTeacherExtendRepository.findById(studentId);
+        Optional<Student> student = findStudentById(studentId);
         if (student.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
         }
 
-        Optional<StudentExamShift> studentExamShift = studentExamShiftTeacherExtendRepository
-                .findByExamShiftIdAndStudentId(examShift.get().getId(), student.get().getId());
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
         if (studentExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
                     "Không có sinh viên trong phòng thi này!");
         }
 
-        studentExamShiftTeacherExtendRepository.deleteById(studentExamShift.get().getId());
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+        studentExamShift.get().setReason(reason);
 
         simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-kick",
                 new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi phòng thi!"));
 
         return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> approveStudent(String examShiftCode, String studentId) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+        if (examShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        }
+
+        Optional<Student> student = findStudentById(studentId);
+        if (student.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+        }
+
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
+        if (studentExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Không có sinh viên trong phòng thi này!");
+        }
+
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
+        studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
+
+        return new ResponseObject<>(null, HttpStatus.OK,
+                "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> refuseStudent(String examShiftCode, String studentId) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+        if (examShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        }
+
+        Optional<Student> student = findStudentById(studentId);
+        if (student.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+        }
+
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
+        if (studentExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Không có sinh viên trong phòng thi này!");
+        }
+
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+        studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
+
+        return new ResponseObject<>(null, HttpStatus.OK,
+                "Từ chối sinh viên " + student.get().getName() + " thành công!");
     }
 
 //    private ResponseObject<?> validateShift(String shift) {
@@ -219,6 +272,18 @@ public class ExamShiftServiceImpl implements ExamShiftService {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mật khẩu không hợp lệ!");
         }
         return null;
+    }
+
+    private Optional<ExamShift> findExamShiftByCode(String examShiftCode) {
+        return examShiftExtendRepository.findByExamShiftCode(examShiftCode);
+    }
+
+    private Optional<Student> findStudentById(String studentId) {
+        return studentTeacherExtendRepository.findById(studentId);
+    }
+
+    private Optional<StudentExamShift> findStudentExamShift(String examShiftId, String studentId) {
+        return studentExamShiftTeacherExtendRepository.findByExamShiftIdAndStudentId(examShiftId, studentId);
     }
 
 }

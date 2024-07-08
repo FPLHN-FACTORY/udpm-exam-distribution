@@ -79,19 +79,39 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
                     "Phòng thi không tồn hoặc mật khẩu không đúng!");
         }
 
-        StudentExamShift studentExamShift = new StudentExamShift();
-        studentExamShift.setStudent(existingStudent.get());
-        studentExamShift.setExamShift(examShift);
-        studentExamShift.setJoinTime(studentExamShiftRequest.getJoinTime());
-        studentExamShift.setExamStudentStatus(ExamStudentStatus.REGISTERED);
-        studentExamShift.setStatus(EntityStatus.ACTIVE);
-        studentExamShiftExtendRepository.save(studentExamShift);
+        Optional<StudentExamShift> studentExamShiftExist = studentExamShiftExtendRepository
+                .findByExamShiftIdAndStudentId(examShift.getId(), studentExamShiftRequest.getStudentId());
+        if (studentExamShiftExist.isPresent()) {
+            ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
+            if (examStudentStatus.equals(ExamStudentStatus.KICKED)
+                    || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
+                studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
+                studentExamShiftExtendRepository.save(studentExamShiftExist.get());
+                simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-rejoin",
+                        new NotificationResponse(
+                                "Sinh viên "
+                                        + existingStudent.get().getStudentCode()
+                                        + " yêu cầu tham gia phòng thi!"));
+                return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+                        HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
+            }
+            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                    "Sinh viên đã ở trong phòng thi này rồi!");
+        } else {
+            StudentExamShift studentExamShift = new StudentExamShift();
+            studentExamShift.setStudent(existingStudent.get());
+            studentExamShift.setExamShift(examShift);
+            studentExamShift.setJoinTime(studentExamShiftRequest.getJoinTime());
+            studentExamShift.setExamStudentStatus(ExamStudentStatus.REGISTERED);
+            studentExamShift.setStatus(EntityStatus.ACTIVE);
+            studentExamShiftExtendRepository.save(studentExamShift);
 
-        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift",
-                new NotificationResponse(
-                        "Sinh viên "
-                                + existingStudent.get().getStudentCode()
-                                + " đã tham gia phòng thi!"));
+            simpMessagingTemplate.convertAndSend("/topic/student-exam-shift",
+                    new NotificationResponse(
+                            "Sinh viên "
+                                    + existingStudent.get().getStudentCode()
+                                    + " đã tham gia phòng thi!"));
+        }
 
         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                 HttpStatus.OK, "Tham gia phòng thi thành công!");
