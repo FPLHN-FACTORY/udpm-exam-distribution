@@ -30,4 +30,8 @@ public class AssignUploader extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_subject")
     private Subject subject;
 
+    @ManyToOne
+    @JoinColumn(name = "id_semester")
+    private Semester semester;
+
 }
