@@ -8,11 +8,10 @@ import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.Uploa
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
 import fplhn.udpm.examdistribution.entity.Subject;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
