@@ -50,4 +50,16 @@ public interface ExamShiftExtendRepository extends ExamShiftRepository {
             AND es.room = :room
             """, nativeQuery = true)
     Integer countByExamDateAndShiftAndRoom(Long examDate, String shift, String room);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	student_exam_shift ses
+            JOIN exam_shift es ON
+            	ses.id_exam_shift = es.id
+            WHERE
+            	es.exam_shift_code = :examShiftCode
+            """, nativeQuery = true)
+    Integer countStudentInExamShift(String examShiftCode);
 }

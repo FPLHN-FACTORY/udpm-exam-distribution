@@ -33,6 +33,7 @@ const ApiConstant = {
     // Constants representing the redirect paths for various resources under head department
     REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
     REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT: "/head-department/manage-subjects",
+    REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/head-department/join-room",
 
     // Constants representing the redirect paths for various resources under head subject
     REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/head-subject/assign-uploader",
@@ -58,12 +59,18 @@ const ApiConstant = {
     // Constants representing the full paths for various resources under head department
     API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/manage-head-of-subjects",
     API_HEAD_DEPARTMENT_MANAGE_SUBJECT: "/api/v1/head-department/manage-subjects",
+    API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/api/v1/head-department/join-room",
+    API_HEAD_DEPARTMENT_STAFF: "/api/v1/head-department/staffs",
+    API_HEAD_DEPARTMENT_STUDENT: "/api/v1/head-department/students",
 
     // Constants representing the full paths for various resources under head subject
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",
+    API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER: "/api/v1/head-subject/upload-exam-paper",
     API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
     API_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
+    API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
+    API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",
@@ -74,11 +81,20 @@ const ApiConstant = {
     REDIRECT_TEACHER_EXAM_SHIFT: "/teacher/exam-shift",
 
     // Constants representing the full paths for various resources under teacher
+    API_TEACHER_EXAM_FILE: "/api/v1/teacher/exam-file",
     API_TEACHER_EXAM_SHIFT: "/api/v1/teacher/exam-shift",
     API_TEACHER_SUBJECT: "/api/v1/teacher/subjects",
     API_TEACHER_BLOCK: "/api/v1/teacher/blocks",
     API_TEACHER_CAMPUS: "/api/v1/teacher/campuses",
     API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
+    API_TEACHER_STAFF: "/api/v1/teacher/staffs",
+
+    // Constants representing the redirect paths for various resources under student
+    REDIRECT_STUDENT_HOME: "/student/home",
+
+    // Constants representing the full paths for various resources under student
+    API_STUDENT_EXAM_SHIFT: "/api/v1/student/exam-shift",
+    API_STUDENT_JOIN_EXAM_SHIFT: "/api/v1/student/exam-shift/join",
 
 };
 
@@ -118,5 +134,6 @@ const getExamDistributionInfo = () => {
         userFullName: examDistributionInfo?.userFullName || null,
         userId: examDistributionInfo?.userId || null,
         userPicture: examDistributionInfo?.userPicture || null,
+        isAssignUploader: examDistributionInfo?.isAssignUploader || null,
     };
 };

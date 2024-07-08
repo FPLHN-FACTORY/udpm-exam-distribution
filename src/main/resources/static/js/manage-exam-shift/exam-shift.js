@@ -3,6 +3,7 @@ const classSubjectCodeUrl = "?classSubjectCode=";
 const subjectIdUrl = "&subjectId=";
 const blockIdUrl = "&blockId=";
 const facilityChildIdUrl = "&facilityChildId=";
+const examShiftDateUrl = "&examShiftDate=";
 
 let subjectId = null;
 let blockId = null;
@@ -36,7 +37,6 @@ $(document).ready(function () {
 
     $('#modifySubjectId').on('change', function () {
         subjectId = $(this).val();
-        console.log("subjectId" + subjectId);
         if (subjectId != null) {
             fetchBlocks();
             fetchFacilityChildren();
@@ -45,7 +45,6 @@ $(document).ready(function () {
 
     $('#modifyBlockId').on('change', function () {
         blockId = $(this).val();
-        console.log("blockId" + blockId);
         if (subjectId != null && blockId != null && facilityChildId != null) {
             getClassSubjectIdByRequest();
         }
@@ -53,7 +52,6 @@ $(document).ready(function () {
 
     $('#modifyFacilityChildId').on('change', function () {
         facilityChildId = $(this).val();
-        console.log("facilityChildId" + facilityChildId);
         if (subjectId != null && blockId != null && facilityChildId != null) {
             getClassSubjectIdByRequest();
         }
@@ -112,6 +110,24 @@ const fetchBlocks = () => {
     });
 }
 
+// const fetchBlocks = () => {
+//     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
+//     $.ajax({
+//         type: "GET",
+//         url: ApiConstant.API_TEACHER_BLOCK + '/block-id' + classSubjectCodeUrl + subjectClassCodeVal
+//             + subjectIdUrl + subjectId + examShiftDateUrl + new Date($('#modifyExamDate').val()).getTime(),
+//         success: function (responseBody) {
+//             if (responseBody?.data) {
+//                 console.log("blocks", responseBody?.data)
+//                 blockId = responseBody?.data;
+//             }
+//         },
+//         error: function (error) {
+//             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+//         }
+//     });
+// }
+
 const fetchFacilityChildren = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
     $.ajax({
@@ -149,13 +165,11 @@ const getClassSubjectIdByRequest = () => {
     })
 };
 
-const openModalAddExamShift = () => {
-    $('#examShiftModal').modal('show');
-};
-
-const openModalJoinExamShift = () => {
-    $('#examShiftJoinModal').modal('show');
-};
+const checkClassSubject = (id) => {
+    if ($(`#${id}`).val() === '') {
+        $(`#${id}`).addClass('is-invalid');
+    }
+}
 
 const addExamShift = () => {
     const examShift = {
@@ -166,7 +180,6 @@ const addExamShift = () => {
         room: $('#modifyRoom').val(),
         password: $('#modifyPassword').val()
     }
-    console.log("examShift", examShift);
     $.ajax({
         type: "POST",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT,
@@ -184,10 +197,16 @@ const addExamShift = () => {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
+                    if (err.fieldError === 'classSubjectId') {
+                        showToastError(err.message);
+                    }
+                    checkClassSubject('modifySubjectClassCode');
+                    checkClassSubject('modifySubjectId');
+                    checkClassSubject('modifyBlockId');
+                    checkClassSubject('modifyFacilityChildId');
                     $(`#${err.fieldError}Error`).text(err.message);
                     $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
                 });
-
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
@@ -230,4 +249,51 @@ const joinExamShift = () => {
         }
     });
 }
+
+const openModalAddExamShift = () => {
+    resetFormAddExamShift();
+    removeFormAddError();
+    $('#examShiftModal').modal('show');
+};
+
+const resetFormAddExamShift = () => {
+    $('#modifyRoom').val('');
+    $('#modifySubjectClassCode').val('');
+    $('#modifySubjectId').val('');
+    $('#modifyBlockId').val('');
+    $('#modifyFacilityChildId').val('');
+    $('#modifyPassword').val('');
+}
+
+const removeFormAddError = (id) => {
+    $('#modifyRoom').removeClass('is-invalid');
+    $('#roomError').text('');
+    $('#modifySubjectClassCode').removeClass('is-invalid');
+    $('#classSubjectCodeError').text('');
+    $('#modifySubjectId').removeClass('is-invalid');
+    $('#modifyBlockId').removeClass('is-invalid');
+    $('#modifyFacilityChildId').removeClass('is-invalid');
+    $('#modifyPassword').removeClass('is-invalid');
+    $('#passwordError').text('');
+};
+
+const openModalJoinExamShift = () => {
+    resetFormJoinExamShift();
+    removeFormJoinError();
+    $('#examShiftJoinModal').modal('show');
+};
+
+const resetFormJoinExamShift = () => {
+    $('#modifyExamShiftCodeJoin').val('');
+    $('#modifyPasswordJoin').val('');
+}
+
+const removeFormJoinError = (id) => {
+    $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
+    $('#examShiftCodeJoinError').text('');
+    $('#modifyPasswordJoin').removeClass('is-invalid');
+    $('#passwordJoinError').text('');
+};
+
+
 

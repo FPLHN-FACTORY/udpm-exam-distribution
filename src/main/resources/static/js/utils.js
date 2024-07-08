@@ -6,6 +6,13 @@ const formatFromUnixTimeToDate = (unixTime) => {
     return new Date(unixTime).toLocaleDateString();
 }
 
+const formatFromUnixTimeToHoursMinutes = (unixTime) => {
+    let date = new Date(unixTime);
+    let timeString = date.toLocaleTimeString();
+    let [hours, minutes] = timeString.split(':').slice(0, 2);
+    return `${hours.padStart(2, '0')}:${minutes}`;
+}
+
 const getValueForInputDate = (unix) => {
     return new Date(unix).toLocaleDateString('en-CA');
 }

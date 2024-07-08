@@ -8,10 +8,10 @@ import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.Uploa
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
 import fplhn.udpm.examdistribution.entity.Subject;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,12 +50,12 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
             Subject putSubject = subjectRepository.getReferenceById(subjectId);
 
-            if(!putSubject.getPathExamRule().isEmpty()){
+            if(putSubject.getPathExamRule() != null){
                 googleDriveFileService.deleteById(putSubject.getPathExamRule());
             }
 
-            String fileId = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
-
+            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+            String fileId = googleDriveFileDTO.getId();
             putSubject.setPathExamRule(fileId);
             subjectRepository.save(putSubject);
 
@@ -85,7 +85,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
         }
 
         Subject subject = isSubjectExist.get();
-        if (subject.getPathExamRule().isEmpty()) {
+        if (subject.getPathExamRule() == null || subject.getPathExamRule().isEmpty()) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.NOT_FOUND,

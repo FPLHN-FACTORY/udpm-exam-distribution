@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <title>Student - Trang chủ</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-student :: sidebar-student}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h2 id="examShiftCode">Phòng thi - Mã tham gia: </h2>
+                    <div>
+                        <button
+                                class="btn btn-secondary"
+                        >
+                            Nội quy phòng thi
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4" style="background-color: #e9ebed;" id="pills-tabContent">
+                    <div class="p-4 bg-white rounded" style="height: 297mm;">
+                        asfdsfsd
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The toggle theme button -->
+    <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+<script th:src="@{/webjars/stomp-websocket/2.3.3/stomp.min.js}"></script>
+<script th:src="@{/js/sidebar-track.js}"></script>
+<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+<script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/js/manage-student/exam-shift/exam-shift-join.js}"></script>
+</body>
+</html>

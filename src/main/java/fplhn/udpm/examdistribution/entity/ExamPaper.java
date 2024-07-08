@@ -36,7 +36,7 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
     private MajorFacility majorFacility;
 
     @Column(name = "exam_paper_code")
-    private String maDeThi;
+    private String examPaperCode;
 
     @Column(name = "created_exam_paper_date")
     private Long examPaperCreatedDate;
@@ -51,5 +51,9 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
 
     @Column(name = "path")
     private String path;
+
+    @ManyToOne
+    @JoinColumn(name = "id_staff_upload")
+    private Staff staffUpload;
 
 }

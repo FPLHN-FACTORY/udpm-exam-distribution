@@ -4,7 +4,6 @@ import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -40,6 +39,9 @@ public class Staff extends PrimaryEntity implements Serializable {
     @Column(name = "account_fpt", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String accountFpt;
+
+    @Column(name = "picture", length = EntityProperties.LENGTH_NAME)
+    private String picture;
 
     @ManyToOne
     @JoinColumn(name = "id_department_facility")

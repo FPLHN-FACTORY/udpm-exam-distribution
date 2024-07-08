@@ -24,24 +24,19 @@
                     <h2>Trang chủ</h2>
                 </div>
                 <div class="shadow p-4 bg-white rounded">
-                    <div class="d-flex justify-content-between mt-4">
-                        <h4>Danh sách phòng thi</h4>
-                        <div>
-                            <button
-                                    class="btn btn-secondary"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddExamShift()"
-                            >
-                                Tạo phòng thi
-                            </button>
-                            <button
-                                    class="btn btn-secondary"
-                                    onclick="openModalJoinExamShift()"
-                            >
-                                Tham gia phòng thi
-                            </button>
-                        </div>
-                    </div>
+                    <button
+                            class="btn btn-secondary"
+                            data-bs-toggle="modal"
+                            onclick="openModalAddExamShift()"
+                    >
+                        Tạo phòng thi
+                    </button>
+                    <button
+                            class="btn btn-secondary"
+                            onclick="openModalJoinExamShift()"
+                    >
+                        Tham gia phòng thi
+                    </button>
                 </div>
             </div>
         </div>
@@ -132,7 +127,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="modifyPasswordJoin" class="form-label">Mật khẩu phòng thi</label>
-                            <input type="text" class="form-control" id="modifyPasswordJoin" required>
+                            <input type="password" class="form-control" id="modifyPasswordJoin" required>
                             <div class="invalid-feedback" id="passwordJoinError"></div>
                         </div>
                     </form>
@@ -157,6 +152,8 @@
 <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
 <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+<script th:src="@{/webjars/stomp-websocket/2.3.3/stomp.min.js}"></script>
 <script th:src="@{/js/sidebar-track.js}"></script>
 <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
 <script th:src="@{/js/constants.js}"></script>

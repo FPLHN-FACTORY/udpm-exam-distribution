@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -26,6 +25,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final AuthStaffRepository authStaffRepository;
 
     private final AuthStudentRepository authStudentRepository;
+
+    private static final String errorMessage = "Tài khoản không được phép đăng nhập vào hệ thống!";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -40,32 +41,40 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             httpSession.setAttribute(SessionConstant.IS_STUDENT, SessionConstant.IS_STUDENT);
             Optional<Student> isStudentExist = authStudentRepository.isStudentExist(userInfo.getEmail());
             if (isStudentExist.isEmpty()) {
-                Student postStudent = new Student();
-                postStudent.setEmail(userInfo.getEmail());
-                postStudent.setName(userInfo.getName());
-                postStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
-                postStudent.setStatus(EntityStatus.ACTIVE);
-                authStudentRepository.save(postStudent);
+                postStudent(userInfo);
             } else {
-                Optional<Student> isStudentBan = authStudentRepository.isStudentExist(userInfo.getEmail());
-                if (isStudentBan.get().getStatus().equals(EntityStatus.ACTIVE)) {
-                    Student putStudent = isStudentBan.get();
-                    putStudent.setName(userInfo.getName());
-                    putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
-                    authStudentRepository.save(putStudent);
-                } else {
-                    httpSession.setAttribute(SessionConstant.ERROR_LOGIN, "Tài khoản không được phép đăng nhập vào hệ thống!");
-                }
+                checkStudentIsBanAndPut(userInfo);
             }
         } else {
             Optional<Staff> isStaffExist = authStaffRepository.getStaffByAccountFptAndFacilityId(userInfo.getEmail(), facilityId, role);
             if (isStaffExist.isEmpty()) {
-                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, "Tài khoản không được phép đăng nhập vào hệ thống!");
+                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, errorMessage);
             }
         }
 
         userInfo.setRole(role);
         return userInfo;
+    }
+
+    private void postStudent(OAuth2UserInfo userInfo) {
+        Student postStudent = new Student();
+        postStudent.setEmail(userInfo.getEmail());
+        postStudent.setName(userInfo.getName());
+        postStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
+        postStudent.setStatus(EntityStatus.ACTIVE);
+        authStudentRepository.save(postStudent);
+    }
+
+    private void checkStudentIsBanAndPut(OAuth2UserInfo userInfo) {
+        Optional<Student> isStudentBan = authStudentRepository.isStudentExist(userInfo.getEmail());
+        if (isStudentBan.get().getStatus().equals(EntityStatus.ACTIVE)) {
+            Student putStudent = isStudentBan.get();
+            putStudent.setName(userInfo.getName());
+            putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
+            authStudentRepository.save(putStudent);
+        } else {
+            httpSession.setAttribute(SessionConstant.ERROR_LOGIN, errorMessage);
+        }
     }
 
     private void clearSession() {

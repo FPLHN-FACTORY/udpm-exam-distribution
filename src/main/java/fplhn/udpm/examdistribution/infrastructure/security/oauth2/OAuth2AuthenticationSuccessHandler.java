@@ -1,10 +1,12 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthAssignUploaderRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomStudentCookie;
@@ -32,6 +34,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final AuthStaffRepository authStaffRepository;
 
     private final AuthStudentRepository authStudentRepository;
+
+    private final AuthAssignUploaderRepository assignUploaderRepository;
 
     private static final int COOKIE_EXPIRE = 7200;
 
@@ -120,7 +124,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private CustomUserCookie buildStaffCookie(Staff staff, String role, OAuth2UserInfo userInfo) {
-        setCurrentUserInformationSession(userInfo, staff);
+        setCurrentUserInformationSession(userInfo, staff, role);
         return CustomUserCookie.builder()
                 .userId(staff.getId())
                 .departmentFacilityId(staff.getDepartmentFacility().getId())
@@ -131,6 +135,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .userFullName(userInfo.getName())
                 .userPicture(userInfo.getPicture())
                 .userRole(role)
+                .isAssignUploader(httpSession.getAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER).toString())
                 .build();
     }
 
@@ -138,14 +143,28 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, student.getId());
+
+        student.setPicture(userInfo.getPicture());
+        authStudentRepository.save(student);
     }
 
-    private void setCurrentUserInformationSession(OAuth2UserInfo userInfo, Staff student) {
+    private void setCurrentUserInformationSession(OAuth2UserInfo userInfo, Staff staff, String role) {
         httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, student.getId());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, student.getDepartmentFacility().getFacility().getId());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, student.getDepartmentFacility().getDepartment().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, staff.getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, staff.getDepartmentFacility().getFacility().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, staff.getDepartmentFacility().getDepartment().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_ROLE, role);
+
+        staff.setPicture(userInfo.getPicture());
+        authStaffRepository.save(staff);
+
+        Optional<AssignUploader> isAssignUploaderIsExist = assignUploaderRepository.findByStaffId(staff.getId());
+        if (isAssignUploaderIsExist.isPresent()) {
+            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "TRUE");
+        } else {
+            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "FALSE");
+        }
     }
 
 }

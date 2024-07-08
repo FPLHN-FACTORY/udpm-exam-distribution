@@ -46,26 +46,22 @@ dependencies {
 
     implementation 'org.apache.poi:poi:3.17'
     implementation 'org.apache.poi:poi-ooxml:3.17'
-
-//    implementation 'org.apache.poi:poi-scratchpad:3.17'
-//    implementation 'com.itextpdf:itextpdf:5.5.10'
-//    implementation 'com.itextpdf.tool:xmlworker:5.5.10'
-//    implementation 'org.apache.pdfbox:pdfbox-tools:3.0.2'
-//    implementation 'net.sf.cssbox:pdf2dom:1.2'
-
     implementation 'org.springframework.batch:spring-batch-core:5.0.3'
     implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
 
-    //Manual Add Dependencies
-    implementation "me.paulschwarz:spring-dotenv:4.0.0"
-    implementation('org.webjars:webjars-locator-core:0.55')
-    runtimeOnly("org.webjars:jquery:3.7.1")
-    runtimeOnly("org.webjars:bootstrap:5.3.3")
-    runtimeOnly("org.webjars:font-awesome:6.5.2")
-    runtimeOnly("org.webjars:popper.js:2.11.7")
-    runtimeOnly("org.webjars.npm:toastify-js:1.12.0")
-    runtimeOnly("org.webjars:js-cookie:3.0.1")
-    runtimeOnly("org.webjars:select2:4.0.13")
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'org.webjars:webjars-locator-core:0.55'
+    runtimeOnly 'org.webjars:jquery:3.7.1'
+    runtimeOnly 'org.webjars:bootstrap:5.3.3'
+    runtimeOnly 'org.webjars:font-awesome:6.5.2'
+    runtimeOnly 'org.webjars:popper.js:2.11.7'
+    runtimeOnly 'org.webjars.npm:toastify-js:1.12.0'
+    runtimeOnly 'org.webjars:js-cookie:3.0.1'
+    runtimeOnly 'org.webjars:select2:4.0.13'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {

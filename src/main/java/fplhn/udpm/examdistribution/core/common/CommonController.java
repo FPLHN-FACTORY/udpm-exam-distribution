@@ -27,4 +27,9 @@ public class CommonController {
         return "redirect:/teacher/exam-shift";
     }
 
+    @GetMapping(MappingConstants.STUDENT)
+    public String viewStudent() {
+        return "redirect:/student/home";
+    }
+
 }

@@ -6,4 +6,6 @@ public interface BlockTeacherService {
 
     ResponseObject<?> findAllByClassSubjectCodeAndSubjectId(String classSubjectCode, String subjectId);
 
+    ResponseObject<?> findBlockId(String classSubjectCode, String subjectId, Long examShiftDate);
+
 }

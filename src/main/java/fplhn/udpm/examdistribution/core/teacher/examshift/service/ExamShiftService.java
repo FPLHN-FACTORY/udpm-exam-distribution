@@ -7,10 +7,16 @@ import jakarta.validation.Valid;
 
 public interface ExamShiftService {
 
+    boolean findUsersInExamShift(String examShiftCode);
+
     ResponseObject<?> createExamShift(@Valid CreateExamShiftRequest createExamShiftRequest);
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
     ResponseObject<?> joinExamShift(@Valid JoinExamShiftRequest joinExamShiftRequest);
+
+    ResponseObject<?> countStudentInExamShift(String examShiftCode);
+
+    ResponseObject<?> removeStudent(String examShiftCode, String studentId);
 
 }
