@@ -13,8 +13,8 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampa
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Subject;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.dto.GoogleDriveFileDTO;
-import fplhn.udpm.examdistribution.infrastructure.conflig.googledrive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
