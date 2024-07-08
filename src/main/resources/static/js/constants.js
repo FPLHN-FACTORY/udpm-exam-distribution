@@ -134,5 +134,6 @@ const getExamDistributionInfo = () => {
         userFullName: examDistributionInfo?.userFullName || null,
         userId: examDistributionInfo?.userId || null,
         userPicture: examDistributionInfo?.userPicture || null,
+        isAssignUploader: examDistributionInfo?.isAssignUploader || null,
     };
 };

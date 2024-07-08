@@ -30,20 +30,12 @@ const fetchListFacility = () => {
         url: ApiConstant.API_AUTHENTICATION_PREFIX + "/get-list-facility",
         dataType: 'json',
         success: function (data) {
-            const select = document.getElementById('listFacility');
-            data?.data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                option.text = item.name;
-                select.appendChild(option);
+            const facilities = data?.data.map(item => {
+                return `<option value="${item.id}">${item.name}</option>`;
             });
-            $('#listFacility').val(select);
-            if ($("#listFacility").find('option').length > 0) {
-                $("#listFacility").prop('selectedIndex', 0);
-            }
-            setTimeout(() => {
-                $('#loading-ele').hide();
-            }, 1000);
+            $('#listFacility').html(facilities);
+
+            $('#loading-ele').hide();
         },
         error: function (error) {
             setTimeout(() => {
