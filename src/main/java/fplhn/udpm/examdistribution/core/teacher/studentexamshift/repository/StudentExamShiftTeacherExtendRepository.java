@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface StudentExamShiftTeacherExtendRepository extends StudentExamShiftRepository {
 
-    Optional<StudentExamShift> findByExamShiftIdAndStudentId(String id, String id1);
+    Optional<StudentExamShift> findByExamShiftIdAndStudentId(String examShiftId, String studentId);
 }

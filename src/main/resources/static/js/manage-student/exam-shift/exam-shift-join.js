@@ -32,7 +32,6 @@ const getExamShiftByCode = () => {
 }
 
 const connect = () => {
-    console.log("connect1")
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {

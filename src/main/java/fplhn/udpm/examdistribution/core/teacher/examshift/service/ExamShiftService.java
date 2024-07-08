@@ -17,6 +17,10 @@ public interface ExamShiftService {
 
     ResponseObject<?> countStudentInExamShift(String examShiftCode);
 
-    ResponseObject<?> removeStudent(String examShiftCode, String studentId);
+    ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason);
+
+    ResponseObject<?> approveStudent(String examShiftCode, String studentId);
+
+    ResponseObject<?> refuseStudent(String examShiftCode, String studentId);
 
 }
