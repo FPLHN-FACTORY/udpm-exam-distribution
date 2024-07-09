@@ -8,9 +8,11 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/head-subject/exam-approval/tag.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <link rel="stylesheet" th:href="@{/css/teacher/manage-exam-file/exam-file.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
-    <title>Teacher - Tải đề thi</title>
+    <title>Teacher - Đề thi thử</title>
 </head>
 <body>
 <div class="wrapper">
@@ -22,7 +24,7 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Tải đề thi</h2>
+                    <h2>Đề thi thử</h2>
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
@@ -33,12 +35,32 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" id="subjectCode" class="form-control">
+                                    <label for="subjectAndDepartment">Môn học/bộ môn</label>
+                                    <input type="text" id="subjectAndDepartment" class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="subjectName">Tên môn học</label>
-                                    <input type="text" id="subjectName" class="form-control">
+                                    <label for="subjectType" class="form-label"> Loại môn học </label>
+                                    <select class="form-select" id="subjectType">
+                                        <option value="">-- Chọn loại đề --</option>
+                                        <option value="TRADITIONAL">Truyền thống</option>
+                                        <option value="ONLINE">Online</option>
+                                        <option value="BLEND">Truyền thống kết hợp Online</option>
+                                        <option value="TRUC_TUYEN">Trực tuyến</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectStatus" class="form-label"> Trạng thái </label>
+                                    <select class="form-select" id="subjectStatus">
+                                        <option value="">-- Chọn Trạng thái --</option>
+                                        <option value="MO">Mở</option>
+                                        <option value="DANG_DANG_KY">Đang đăng ký</option>
+                                        <option value="DONG">Đóng</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="semesterFind" class="form-label"> Học kì </label>
+                                    <select class="form-select" id="semesterFind">
+                                    </select>
                                 </div>
                             </div>
                         </form>
@@ -53,10 +75,11 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Mã môn học</td>
-                                    <td>Tên môn học</td>
+                                    <td>Môn học</td>
                                     <td>Bộ môn</td>
                                     <td>Loại môn học</td>
+                                    <td>Trạng thái</td>
+                                    <td>Học kì</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
@@ -89,78 +112,73 @@
         </div>
     </div>
     <!-- Modal Upload Exam File -->
-    <div class="modal modal-xl fade" id="examFileModal" tabindex="-1" aria-labelledby="examFileModalLabel"
+    <div class="modal modal-xl fade" id="mockExamPaperModal" tabindex="-1" aria-labelledby="examFileModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tải đề thi</h5>
+                    <h5 class="modal-title" id="labelMockExamPaper">Đề thi thử: </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <span class="text-danger"> * </span> Loại đề </label>
-                        <select class="form-select" id="exam-paper-type" required>
-                            <option value="">-- Chọn loại đề --</option>
-                            <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
-                            <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
-                        </select>
-                        <div class="text-danger" id="exam-paper-type-error"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
-                        <select class="form-select" id="major-facility" required>
-                            <option value="">-- Chuyên ngành - cơ sở --</option>
-                        </select>
-                        <div class="text-danger" id="major-facility-error"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <span class="text-danger"> * </span> Đề thi </label>
-                        <div>
-                            <button class="btn btn-secondary" onclick="handleOpenChooseFilePdf()">
-                                <i class="fas fa-file-excel"></i> Chọn đề thi
-                            </button>
-                            <input type="file" id="file-pdf-input" hidden accept="application/msword,text/plain,.doc, .docx, .xls, .xlsx,
-                            .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.ms-powerpoint,application/pdf"/>
+                    <div class="p-4">
+                        <!-- Filter -->
+                        <div class="shadow p-4 mb-4 bg-white rounded">
+                            <h3 class="m-portlet__head-text">
+                                <i class="fa-solid fa-filter"></i> Bộ lọc
+                            </h3>
+                            <form id="filterFormMockExam">
+                                <div class="row">
+                                    <div class="col form-group">
+                                        <label for="staff-upload-find">Mã đề/Giảng viên upload</label>
+                                        <input type="text" id="staff-upload-find" class="form-control">
+                                    </div>
+                                    <div class="col form-group">
+                                        <label for="staff-upload-find">Ngày upload</label>
+                                        <input type="text" class="form-control" id="startEndDate"
+                                               placeholder="Start date ⇀ End date">
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </div>
-                    <div class="mt-4">
-                        <div id="pdf-viewer" hidden>
-                            <canvas id="pdf-canvas"></canvas>
+                        <!-- Filter -->
+                        <div class="shadow p-4 bg-white rounded">
+                            <div class="mt-4">
+                                <h4>Danh sách đề thi thử</h4>
+                            </div>
+                            <div class="table-responsive mt-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <td>STT</td>
+                                        <td>Mã đề</td>
+                                        <td>Loại đề</td>
+                                        <td>Giảng viên upload</td>
+                                        <td>Ngày upload</td>
+                                        <td
+                                                style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                        </td>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="mockExamTableBody" class="table-group-divider">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div id="paging-pdf" hidden class="mt-3">
-                            <button class="btn btn-secondary" id="prev-page">Previous</button>
-                            <button class="btn btn-secondary" id="next-page">Next</button>
-                            <p>Page: <span id="page-num"></span> / <span id="total-page"></span></p>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được
-                            trống!</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="text-center d-flex justify-content-end gap-3">
-                        <button type="button" id="btn-upload-exam-file" onclick="handleUploadExamRule()"
-                                class="btn btn-secondary">Tải đề lên
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal Upload Exam File -->
-
-    <!-- Modal Upload Exam File -->
-    <div class="modal modal-xl fade" id="detailExamFileModal" tabindex="-1" aria-labelledby="detailExamFileModalLabel"
-         aria-hidden="true">
+    <!-- Modal Detail Mock Exam Paper -->
+    <div class="modal modal-xl fade" id="detailMockExamModal" tabindex="-1" aria-labelledby="detailExamRuleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tải đề thi</h5>
+                    <h5 class="modal-title">Chi tiết đề thi thử</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -168,15 +186,15 @@
                         <canvas id="pdf-canvas-detail"></canvas>
                     </div>
                     <div id="paging-pdf-detail" class="mt-3" hidden>
-                        <button class="btn btn-secondary" id="prev-page-detail">Previous</button>
-                        <button class="btn btn-secondary" id="next-page-detail">Next</button>
+                        <button class="btn btn-primary" id="prev-page-detail">Previous</button>
+                        <button class="btn btn-primary" id="next-page-detail">Next</button>
                         <p>Page: <span id="page-num-detail"></span> / <span id="total-page-detail"></span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal Upload Exam File -->
+    <!-- Modal Detail Mock Exam Paper -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -191,12 +209,17 @@
 <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/loading.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
+<!--datepicker -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script th:src="@{/js/loading.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script th:src="@{/js/teacher/manage-exam-file/exam-file.js}"></script>
-<script th:src="@{/js/teacher/manage-exam-file/upload-exam-file.js}"></script>
+<script th:src="@{/js/teacher/manage-mock-exam-paper/detail-mock-exam-paper.js}"></script>
+<script th:src="@{/js/teacher/manage-mock-exam-paper/mock-exam-paper.js}"></script>
 </body>
 </html>

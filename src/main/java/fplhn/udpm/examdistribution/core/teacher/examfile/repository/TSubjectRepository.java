@@ -23,26 +23,32 @@ public interface TSubjectRepository extends SubjectRepository {
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
             JOIN assign_uploader au ON au.id_subject = s.id
+            JOIN semester s2 ON s2.id = au.id_semester
+            JOIN block b ON b.id_semester = s2.id
             WHERE au.id_staff LIKE :staffId
-                AND (df.id = :departmentFacilityId)
-                AND au.status = 0
-                AND (s.status = 0) 
-                AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
-                AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+            AND (df.id = :departmentFacilityId)
+            AND au.status = 0
+            AND (s.status = 0) 
+            AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
+            AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
+            AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
             """,
             countQuery = """
-                    SELECT 	COUNT(s.id)
-                    FROM subject s
-                    JOIN department d ON s.id_department = d.id
-                    JOIN department_facility df ON df.id_department = d.id
-                    JOIN assign_uploader au ON au.id_subject = s.id
-                    WHERE au.id_staff LIKE :staffId
-                    AND (df.id = :departmentFacilityId)
-                    AND au.status = 0
-                    AND (s.status = 0) 
-                    AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
-                    AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
-                    """, nativeQuery = true)
+            SELECT 	COUNT(s.id)
+            FROM subject s
+            JOIN department d ON s.id_department = d.id
+            JOIN department_facility df ON df.id_department = d.id
+            JOIN assign_uploader au ON au.id_subject = s.id
+            JOIN semester s2 ON s2.id = au.id_semester
+            JOIN block b ON b.id_semester = s2.id
+            WHERE au.id_staff LIKE :staffId
+            AND (df.id = :departmentFacilityId)
+            AND au.status = 0
+            AND (s.status = 0) 
+            AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
+            AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"})
+            AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+            """, nativeQuery = true)
     Page<TSubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, TFindSubjectRequest request,String staffId);
 
 

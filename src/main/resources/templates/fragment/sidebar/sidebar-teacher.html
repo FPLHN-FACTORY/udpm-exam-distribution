@@ -48,7 +48,7 @@
             <div class="sidebar-content">
 
                 <!-- The secondary navigation menu -->
-                <ul class="nav nav-secondary">
+                <ul class="nav nav-secondary" id="navigation-menu-teacher">
 
                     <!-- The active navigation item -->
                     <li class="nav-item">
@@ -70,19 +70,39 @@
 
                         <!-- The link for the active navigation item -->
                         <a
-                                th:href="@{/teacher/exam-file}"
+                                th:href="@{/teacher/mock-exam-paper}"
                                 class="collapsed"
                                 aria-expanded="false"
                         >
                             <!-- The icon for the active navigation item -->
-                            <i class="fa-solid fa-upload"></i>
+                            <i class="fa-regular fa-calendar-days"></i>
 
                             <!-- The text for the active navigation item -->
-                            <p>Tải đề lên</p>
+                            <p>Đề thi thử</p>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script>
+        $(document).ready(function () {
+            const examDistributionInfor = getExamDistributionInfo();
+
+            if (examDistributionInfor.isAssignUploader === "TRUE") {
+                $('#navigation-menu-teacher').append(`
+                <li class="nav-item">
+                    <!-- The link for the active navigation item -->
+                    <a href="/teacher/exam-file" class="collapsed" aria-expanded="false">
+                        <!-- The icon for the active navigation item -->
+                        <i class="fa-solid fa-upload"></i>
+                        <!-- The text for the active navigation item -->
+                        <p>Tải đề lên</p>
+                    </a>
+                </li>
+            `);
+            }
+        });
+    </script>
 </div>

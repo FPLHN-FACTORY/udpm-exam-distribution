@@ -147,7 +147,7 @@ const handleUploadExamRule = () => {
             if (ok) {
                 showLoading();
                 const data = new FormData();
-                data.append("folderName", "Exam/"+getStateSubjectCode()+"/"+$("#exam-paper-type").val());
+                data.append("folderName", getStateSubjectCode());
                 data.append("file", getValueFileInput());
                 data.append("examPaperType", $("#exam-paper-type").val());
                 data.append("majorFacilityId", getStateMajorFacilityId());
