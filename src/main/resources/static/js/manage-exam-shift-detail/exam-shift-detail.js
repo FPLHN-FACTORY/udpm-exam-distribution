@@ -73,6 +73,16 @@ const connect = () => {
             showToastSuccess(JSON.parse(response.body).message);
             getStudentRejoin();
         });
+        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getStudentRejoin();
+            getStudents();
+            countStudentInExamShift();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
+            showToastError(JSON.parse(response.body).message);
+            getStudentRejoin();
+        });
     });
 }
 
@@ -263,11 +273,11 @@ const getStudentRejoin = () => {
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         <button class="btn-label-secondary" 
-                                                onclick="approveStudent('${student.id}')">
+                                                onclick="approveStudentSubmit('${student.id}')">
                                                 Phê duyệt
                                         </button>
                                         <button class="btn-label-danger" 
-                                                onclick="refuseStudent('${student.id}')">
+                                                onclick="refuseStudentSubmit('${student.id}')">
                                                 Từ chối
                                         </button>
                                     </div>
@@ -296,8 +306,9 @@ const getStudentRejoin = () => {
 
 const openModalRemoveStudent = (studentId) => {
     $('#studentIdRemove').val(studentId);
-    $(`#modifyReason`).removeClass('is-invalid');
+    $('#modifyReason').val('');
     $(`#examReasonError`).text('');
+    $(`#modifyReason`).removeClass('is-invalid');
     $('#removeStudentModal').modal('show');
 }
 
@@ -313,4 +324,37 @@ const removeStudentSubmit = () => {
         }
     });
 };
+
+const approveStudentSubmit = (studentId) => {
+    if (studentId !== null) {
+        swal({
+            title: "Xác nhận phê duyệt sinh viên",
+            text: "Phê duyệt sinh viên vào phòng thi?",
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willApprove) => {
+            if (willApprove) {
+                approveStudent(studentId);
+            }
+        });
+    }
+};
+
+const refuseStudentSubmit = (studentId) => {
+    if (studentId !== null) {
+        swal({
+            title: "Xác nhận từ chối sinh viên",
+            text: "Từ chối sinh viên vào phòng thi?",
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willApprove) => {
+            if (willApprove) {
+                refuseStudent(studentId);
+            }
+        });
+    }
+};
+
 

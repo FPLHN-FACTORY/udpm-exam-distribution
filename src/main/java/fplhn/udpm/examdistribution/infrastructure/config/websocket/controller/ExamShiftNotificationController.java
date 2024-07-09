@@ -32,6 +32,18 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/exam-shift-approve")
+    @SendTo("/topic/student-exam-shift-approve")
+    public NotificationResponse notifyApproveStudentExamShift(String message) {
+        return new NotificationResponse(message);
+    }
+
+    @MessageMapping("/exam-shift-refuse")
+    @SendTo("/topic/student-exam-shift-refuse")
+    public NotificationResponse notifyRefuseStudentExamShift(String message) {
+        return new NotificationResponse(message);
+    }
+
     @MessageMapping("/exam-shift-head-subject-join")
     @SendTo("/topic/head-subject-exam-shift-join")
     public NotificationResponse notifyExamShiftHeadSubjectJoin(String message) {
