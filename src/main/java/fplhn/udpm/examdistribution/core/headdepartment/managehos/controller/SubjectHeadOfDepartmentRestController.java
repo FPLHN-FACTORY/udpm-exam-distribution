@@ -3,7 +3,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.managehos.controller;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.ReassignHeadOfSubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.StaffsBySubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectsStaffRequest;
-import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageStaffHOSService;
+import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageSubjectService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +20,21 @@ import static fplhn.udpm.examdistribution.utils.Helper.createResponseEntity;
 @RequiredArgsConstructor
 public class SubjectHeadOfDepartmentRestController {
 
-    private final ManageStaffHOSService manageStaffHOSService;
+    private final ManageSubjectService manageSubjectService;
 
-    @GetMapping("/subjects-staff")
+    @GetMapping
     public ResponseEntity<?> getSubjectsStaff(SubjectsStaffRequest request) {
-        return createResponseEntity(manageStaffHOSService.getSubjectsStaff(request));
+        return createResponseEntity(manageSubjectService.getSubjectsStaff(request));
     }
 
     @GetMapping("/staffs-by-subject")
     public ResponseEntity<?> getStaffsBySubject(StaffsBySubjectRequest request) {
-        return createResponseEntity(manageStaffHOSService.getStaffsBySubject(request));
+        return createResponseEntity(manageSubjectService.getStaffsBySubject(request));
     }
 
     @PostMapping("/reassign-subject")
     public ResponseEntity<?> reassignSubjectToStaff(@RequestBody ReassignHeadOfSubjectRequest request) {
-        return createResponseEntity(manageStaffHOSService.reassignSubjectToStaff(request));
+        return createResponseEntity(manageSubjectService.reassignSubjectToStaff(request));
     }
 
 }

@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response;
 
-public interface StaffsBySubjectResponse extends StaffResponse {
+public interface StaffsBySubjectResponse extends HeadSubjectResponse {
 
-    Long getAssigned();
+    Boolean getIsHeadOfSubject();
 
 }

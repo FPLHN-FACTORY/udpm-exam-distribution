@@ -14,4 +14,7 @@ public class ReassignHeadOfSubjectRequest {
     @NotNull(message = "ID giáo viên không được để trống")
     private String staffId;
 
+    @NotNull(message = "ID học kỳ không được để trống")
+    private String currentSemesterId;
+
 }

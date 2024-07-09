@@ -7,13 +7,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StaffRequest extends PageableRequest {
+public class HeadSubjectRequest extends PageableRequest {
 
     @NotNull
     private String departmentFacilityId;
 
-    private String staffName;
+    @NotNull
+    private String semesterId;
 
-    private String staffCode;
+    @NotNull
+    private String currentUserId;
 
 }

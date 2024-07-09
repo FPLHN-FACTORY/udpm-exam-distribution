@@ -19,17 +19,15 @@ const getSubjectsAssignWithHeadSubject = (
     staffName = null,
 ) => {
 
-    const params = {
-        departmentFacilityId,
-        subjectCode,
-        subjectName,
-        staffCode,
-        staffName
-    }
-
     const url = getUrlParameters(
-        ApiConstant.API_HEAD_DEPARTMENT_MANAGE_SUBJECT + "/subjects-staff",
-        params
+        ApiConstant.API_HEAD_DEPARTMENT_MANAGE_SUBJECT,
+        {
+            departmentFacilityId,
+            subjectCode,
+            subjectName,
+            staffCode,
+            staffName
+        }
     );
 
     $.ajax({

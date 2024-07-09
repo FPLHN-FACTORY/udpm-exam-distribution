@@ -15,10 +15,6 @@ public class SubjectAssignedRequest extends PageableRequest {
     @NotNull
     private String departmentFacilityId;
 
-    private String subjectCode;
-
-    private String subjectName;
-
     private String subjectType;
 
 }
