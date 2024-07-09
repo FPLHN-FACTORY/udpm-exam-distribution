@@ -5,11 +5,13 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.AddExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPBlockExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPMajorFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPUploadExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.UploadExamPaperService;
+import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Subject;
@@ -46,9 +48,13 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     private final UEPStaffExtendRepository staffRepository;
 
+    private final UEPBlockExtendRepository blockRepository;
+
     private final GoogleDriveFileService googleDriveFileService;
 
     private final HttpSession httpSession;
+
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     @Override
     public ResponseObject<?> getListSubject() {
@@ -148,6 +154,14 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
+            if(request.getFile().getSize() > MAX_FILE_SIZE){
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_ACCEPTABLE,
+                        "Nội quy thi không được lớn hơn 5MB"
+                );
+            }
+
             Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(request.getMajorFacilityId());
             if (isMajorFacilityExist.isEmpty()) {
                 return new ResponseObject<>(
@@ -166,12 +180,30 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
-            String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-
-            String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
-
-            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
             ExamPaper putExamPaper = new ExamPaper();
+
+            Long now = new Date().getTime();
+            boolean isFoundBlock = false;
+            for(Block block : blockRepository.findAll()){
+                if(block.getStartTime() <= now && now <= block.getEndTime()){
+                    putExamPaper.setBlock(block);
+                    isFoundBlock = true;
+                    break;
+                }
+            }
+
+            if(!isFoundBlock){
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy học kỳ block phù hợp"
+                );
+            }
+
+            String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
+            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
+
             putExamPaper.setPath(googleDriveFileDTO.getId());
             putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
             putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
@@ -181,6 +213,11 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             putExamPaper.setExamPaperCreatedDate(new Date().getTime());
             putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
             putExamPaper.setStatus(EntityStatus.ACTIVE);
+            if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.OFFICIAL_EXAM_PAPER)) {
+                putExamPaper.setIsPublic(true);
+            } else {
+                putExamPaper.setIsPublic(false);
+            }
             examPaperRepository.save(putExamPaper);
 
             return new ResponseObject<>(
@@ -206,6 +243,14 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                         null,
                         HttpStatus.NOT_FOUND,
                         "Không tìm thấy đề thi này"
+                );
+            }
+
+            if(request.getFile().getSize() > MAX_FILE_SIZE){
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_ACCEPTABLE,
+                        "Nội quy thi không được lớn hơn 5MB"
                 );
             }
 
