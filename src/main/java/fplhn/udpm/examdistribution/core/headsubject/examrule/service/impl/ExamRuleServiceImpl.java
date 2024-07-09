@@ -27,6 +27,8 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
     private final GoogleDriveFileService googleDriveFileService;
 
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+
     @Override
     public ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
@@ -43,8 +45,16 @@ public class ExamRuleServiceImpl implements ExamRuleService {
             if (request.getFile().isEmpty()) {
                 return new ResponseObject<>(
                         null,
-                        HttpStatus.NOT_ACCEPTABLE,
+                        HttpStatus.NOT_FOUND,
                         "Nội quy thi chưa được tải"
+                );
+            }
+
+            if(request.getFile().getSize() > MAX_FILE_SIZE){
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_ACCEPTABLE,
+                        "Nội quy thi không được lớn hơn 5MB"
                 );
             }
 
