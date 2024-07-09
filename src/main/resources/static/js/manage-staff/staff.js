@@ -4,11 +4,13 @@ $(document).ready(function () {
 
     getStaffs();
 
+    getAllDepartmentFacility();
+
     $('#pageSize').on("change", () => {
         getStaffs(1, $('#pageSize').val(), $('#searchStaffCode').val()?.trim(), $('#searchName').val()?.trim(), $('#searchAccountFptOrFe').val()?.trim());
     });
 
-    handleAddEvent([$('#searchStaffCode'), $('#searchName'), $('#searchAccountFptOrFe')])
+    handleAddEvent([$('#searchQuery'), $('#searchDepartmentFacility')])
 
     $('#modifyStaffButton').on('click', function () {
         let check = true;
@@ -99,12 +101,12 @@ $(document).ready(function () {
 });
 
 function isValidFptEmail(email) {
-    var fptEmailRegex = /^[A-Za-z0-9._%+-]+@fpt\.edu\.vn$/;
+    const fptEmailRegex = /^[A-Za-z0-9._%+-]+@fpt\.edu\.vn$/;
     return fptEmailRegex.test(email);
 }
 
 function isValidFeEmail(email) {
-    var feEmailRegex = /^[A-Za-z0-9._%+-]+@fe\.edu\.vn$/;
+    const feEmailRegex = /^[A-Za-z0-9._%+-]+@fe\.edu\.vn$/;
     return feEmailRegex.test(email);
 }
 
@@ -159,34 +161,37 @@ function clearFormSearch() {
 function handleAddEvent(listDom) {
     for (let i = 0; i < listDom.length; i++) {
         listDom[i].on("keyup", debounce(() => {
-            getStaffs(1, $('#pageSize').val(), $('#searchStaffCode').val()?.trim(), $('#searchName').val()?.trim(), $('#searchAccountFptOrFe').val()?.trim());
-        }));
+            getStaffs(
+                1,
+                $('#pageSize').val(),
+                $('#searchQuery').val()?.trim(),
+                $('#searchDepartmentFacility').val(),
+            );
+        }, 1000));
+
+        listDom[i].on("change", debounce(() => {
+            getStaffs(
+                1,
+                $('#pageSize').val(),
+                $('#searchQuery').val()?.trim(),
+                $('#searchDepartmentFacility').val(),
+            );
+        }, 1000));
     }
 }
 
 function getStaffs(
     page = 1,
     size = $('#pageSize').val(),
-    staffCode = null,
-    name = null,
-    accountFptOrFe = null
+    query = $('#searchQuery').val()?.trim(),
+    departmentFacilityId = $('#searchDepartmentFacility').val()?.trim(),
 ) {
-    const params = {
+    const url = getUrlParameters(ApiConstant.API_HEAD_OFFICE_STAFF, {
         page: page,
         size: size,
-        staffCode: staffCode,
-        name: name,
-        accountFptOrFe: accountFptOrFe
-    };
-    let url = ApiConstant.API_HEAD_OFFICE_STAFF + '?';
-
-    for (let [key, value] of Object.entries(params)) {
-        if (value) {
-            url += `${key}=${value}&`;
-        }
-    }
-
-    url = url.slice(0, -1);
+        q: query,
+        departmentFacilityId: departmentFacilityId
+    })
     $.ajax({
         type: "GET",
         url: url,
@@ -349,6 +354,7 @@ function getAllDepartmentFacility() {
             });
             departmentFacilities.unshift('<option value="">Chọn bộ môn - cơ sở</option>');
             $('#modifydepartmentFacility').html(departmentFacilities);
+            $('#searchDepartmentFacility').html(departmentFacilities);
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn cơ sở!');
