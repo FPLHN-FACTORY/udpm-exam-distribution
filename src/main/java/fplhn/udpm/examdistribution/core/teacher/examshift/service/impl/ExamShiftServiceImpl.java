@@ -228,7 +228,10 @@ public class ExamShiftServiceImpl implements ExamShiftService {
         studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
         studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
 
-        return new ResponseObject<>(null, HttpStatus.OK,
+        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-approve",
+                new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào phòng thi!"));
+
+        return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
                 "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
     }
 
@@ -253,6 +256,9 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
         studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
         studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
+
+        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-refuse",
+                new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
 
         return new ResponseObject<>(null, HttpStatus.OK,
                 "Từ chối sinh viên " + student.get().getName() + " thành công!");

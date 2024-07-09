@@ -15,6 +15,9 @@ $(document).ready(function () {
 });
 
 const openModalStudentJoinExamShift = () => {
+    $('#modifyExamShiftCodeJoin').val('');
+    $('#modifyPasswordJoin').val('');
+    $('.form-control').removeClass('is-invalid');
     $('#examShiftJoinModal').modal('show');
 }
 
@@ -27,6 +30,16 @@ const connect = () => {
         stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
             messageType = 'rejoin';
         });
+        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
+            showToastError('Bạn đã bị từ chối tham gia ca thi!');
+        });
+        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
+            let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
+            if (examShiftCodeRejoin) {
+                window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + examShiftCodeRejoin;
+                localStorage.removeItem('rejoinExamShiftCode');
+            }
+        });
     });
 }
 
@@ -37,6 +50,7 @@ const joinExamShift = () => {
         passwordJoin: $('#modifyPasswordJoin').val(),
         joinTime: new Date().getTime()
     }
+    localStorage.setItem('rejoinExamShiftCode', examShift.examShiftCodeJoin);
     $.ajax({
         type: "POST",
         url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/join',
