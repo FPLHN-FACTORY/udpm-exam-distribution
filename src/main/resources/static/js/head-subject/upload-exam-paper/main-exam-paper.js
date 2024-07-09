@@ -79,12 +79,13 @@ const fetchListExamPaper = (
             const examPapers = responseData.map((item, index) => {
                 return `<tr>
                             <td>${item.orderNumber}</td>
+                            <td>${item.examPaperCode}</td>
                             <td>${item.subjectName}</td>
                             <td>${item.majorName}</td>
-                            <td>${item.examPaperCode}</td>
+                            <td>${convertExamPaperType(item.examPaperType)}</td>
                             <td>${item.staffName}</td>
-                            <td>${item.createdDate}</td>
-                            <td>${item.status}</td>
+                            <td>${formatDateTime(item.createdDate)}</td>
+                            <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')" class="fs-4">
@@ -182,7 +183,7 @@ const handleDeleteExamPaper = (examPaperId) => {
         text: "Bạn có chắc muốn xóa đề thi này không?",
         type: "warning",
         buttons: {
-                cancel: {
+            cancel: {
                 visible: true,
                 text: "Hủy",
                 className: "btn btn-black",
@@ -240,3 +241,35 @@ const handleFetchMajorFacility = () => {
         }
     });
 };
+
+const formatDateTime = (date) => {
+    const d = new Date(Number(date));
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+const convertExamPaperStatus = (status) => {
+    switch (status) {
+        case "IN_USE":
+            return '<span class="tag tag-success">Đang sử dụng</span>';
+        case 'STOP_USING':
+            return '<span class="tag tag-danger">Ngưng sử dụng</span>';
+        default:
+            return '<span class="tag tag-secondary">Không xác định</span>';
+    }
+}
+
+const convertExamPaperType = (status) => {
+    switch (status) {
+        case "OFFICIAL_EXAM_PAPER":
+            return '<span class="tag tag-success">Đề thi thật</span>';
+        case 'MOCK_EXAM_PAPER':
+            return '<span class="tag tag-purple">Đề thi thử</span>';
+        default:
+            return '<span class="tag tag-secondary">Không xác định</span>';
+    }
+}

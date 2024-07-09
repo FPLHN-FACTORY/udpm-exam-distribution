@@ -34,7 +34,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                    subj.id AS subjectId,
                    subj.name AS subjectName,
                    m.name AS majorName,
-                   st.name AS staffName,
+                   CONCAT(st.staff_code,"_",st.name) AS staffName,
                    f.name AS facilityName,
                    mf.id AS majorFacilityId
             FROM exam_paper ep
@@ -45,8 +45,8 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
             JOIN department_facility df ON df.id = mf.id_department_facility
             JOIN facility f ON f.id = df.id_facility
             WHERE ep.status = 0 AND
-                  ep.exam_paper_status = :examPaperStatus AND
                   subj.id_head_subject = :userId AND
+                  ep.exam_paper_status <> :examPaperStatus AND
                   (:subjectId IS NULL OR subj.id LIKE CONCAT("%",:subjectId,"%"))
             """, countQuery = """
             SELECT COUNT(ep.id)
@@ -59,7 +59,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
             JOIN facility f ON f.id = df.id_facility
             WHERE ep.status = 0 AND
                   subj.id_head_subject = :userId AND
-                  ep.exam_paper_status = :examPaperStatus AND
+                  ep.exam_paper_status <> :examPaperStatus AND
                   (:subjectId IS NULL OR subj.id LIKE CONCAT("%",:subjectId,"%"))
             """, nativeQuery = true)
     Page<ListExamPaperResponse> getListExamPaper(Pageable pageable, String subjectId, String userId, String examPaperStatus);

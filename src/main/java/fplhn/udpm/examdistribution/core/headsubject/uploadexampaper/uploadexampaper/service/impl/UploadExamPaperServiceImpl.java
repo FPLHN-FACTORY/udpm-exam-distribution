@@ -66,7 +66,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
         String subjectId = request.getSubjectId();
         return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, subjectId, userId, ExamPaperStatus.IN_USE.toString())),
+                PageableObject.of(examPaperRepository.getListExamPaper(pageable, subjectId, userId, ExamPaperStatus.WAITING_APPROVAL.toString())),
                 HttpStatus.OK,
                 "Lấy thành công danh sách đề thi"
         );
@@ -177,7 +177,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
             putExamPaper.setMajorFacility(isMajorFacilityExist.get());
             putExamPaper.setSubject(isSubjectExist.get());
-            putExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + CodeGenerator.generateRandomCode().substring(0, 3));
+            putExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
             putExamPaper.setExamPaperCreatedDate(new Date().getTime());
             putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
             putExamPaper.setStatus(EntityStatus.ACTIVE);

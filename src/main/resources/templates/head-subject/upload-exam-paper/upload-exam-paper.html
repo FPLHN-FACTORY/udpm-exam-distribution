@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <link rel="stylesheet" th:href="@{/css/head-subject/upload-exam-paper/upload-exam-paper.css}"/>
+    <link rel="stylesheet" th:href="@{/css/head-subject/upload-exam-paper/tag.css}"/>
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Quản lý trưởng môn - Quản lý đề thi</title>
 </head>
@@ -55,6 +56,39 @@
                                                     style="height: 60%;">
                                             </select>
                                         </div>
+                                        <div class="col form-group">
+                                            <label for="subjectId">Loại đề thi</label>
+                                            <select id="examPaperTypeId" name="form-select"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                                <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
+                                                <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
+                                            </select>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label for="subjectId">Học kỳ</label>
+                                            <select id="semesterId" name="semesterId"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                            </select>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label for="subjectId">Block</label>
+                                            <select id="blockId" name="blockId"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="button" class="btn btn-secondary">Tìm kiếm</button>
+                                        <button
+                                                type="reset"
+                                                class="btn"
+                                                style="background-color: var(--common-button-color); color: white;"
+                                        >
+                                            Xóa bộ lọc
+                                        </button>
                                     </div>
                                 </div>
                                 <!-- Filter -->
@@ -71,9 +105,10 @@
                                             <thead>
                                             <tr>
                                                 <td>STT</td>
+                                                <td>Mã đề thi</td>
                                                 <td>Môn</td>
                                                 <td>Chuyên ngành</td>
-                                                <td>Mã đề thi</td>
+                                                <td>Loại đề thi</td>
                                                 <td>Người tạo</td>
                                                 <td>Ngày tạo</td>
                                                 <td>Trạng thái</td>

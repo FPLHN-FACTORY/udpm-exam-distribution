@@ -57,8 +57,8 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
     private Staff staffUpload;
 
     @ManyToOne
-    @JoinColumn(name = "id_semester")
-    private Semester semester;
+    @JoinColumn(name = "id_block")
+    private Block block;
 
     @Column(name = "is_public")
     private Boolean isPublic;
