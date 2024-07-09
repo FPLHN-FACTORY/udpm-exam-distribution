@@ -276,12 +276,19 @@ function saveRole() {
             $('#modifyRoleModal').modal('hide');
         },
         error: function (error) {
-            if (error?.responseJSON?.status === 'CONFLICT') {
-                showToastError("Chức vụ đã tồn tại!");
+            $('.form-control').removeClass('is-invalid');
+            console.log(error);
+            if (error?.responseJSON?.length > 0) {
+                error.responseJSON.forEach(err => {
+                    console.log(err)
+                    $(`#${err.fieldError}Error`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                });
+            } else if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message)
             } else {
-                showToastError('Có lỗi xảy ra khi lưu chức vụ!');
+                showToastError('Có lỗi xảy ra khi thêm học kỳ');
             }
-
         }
     });
 }

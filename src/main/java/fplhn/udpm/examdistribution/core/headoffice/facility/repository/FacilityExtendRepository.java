@@ -17,7 +17,8 @@ public interface FacilityExtendRepository extends FacilityRepository {
     @Query(
             value = """
                     SELECT
-                        ROW_NUMBER() OVER (ORDER BY fa.id DESC ) as orderNumber,
+                        ROW_NUMBER() OVER (
+                        ORDER BY fa.id DESC ) as orderNumber,
                         fa.id as id,
                         fa.name as facilityName,
                         fa.status as facilityStatus,
