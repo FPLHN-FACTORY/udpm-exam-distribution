@@ -12,19 +12,27 @@ import org.springframework.stereotype.Repository;
 public interface ERSubjectExtendRepository extends SubjectRepository {
 
     @Query(value = """
-            SELECT 	s.id AS id,
-            		ROW_NUMBER() OVER(
-                    ORDER BY s.id DESC) AS orderNumber,
-                    s.subject_code AS subjectCode,
-                    s.name AS subjectName,
-                    s.subject_type AS subjectType,
-                    d.name AS departmentName,
-                    s.created_date AS createdDate,
-                    s.path_exam_rule AS fileId
-            FROM subject s
-            JOIN department d ON s.id_department = d.id
-            JOIN department_facility df ON df.id_department = d.id
-            JOIN staff st ON st.id = s.id_head_subject
+            SELECT
+            	s.id AS id,
+            	ROW_NUMBER() OVER(
+            ORDER BY
+            	s.id DESC) AS orderNumber,
+            	s.subject_code AS subjectCode,
+            	s.name AS subjectName,
+            	s.subject_type AS subjectType,
+            	d.name AS departmentName,
+            	s.created_date AS createdDate,
+            	s.path_exam_rule AS fileId
+            FROM
+            	subject s
+            JOIN department d ON
+            	s.id_department = d.id
+            JOIN department_facility df ON
+            	df.id_department = d.id
+            JOIN head_subject_by_semester hsbs ON
+            	hsbs.id_subject = s.id
+            JOIN staff st ON
+            	st.id = hsbs.id_staff
             WHERE
                 (df.id = :departmentFacilityId) AND
                 (st.id = :#{#request.staffId}) AND
@@ -37,7 +45,8 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                     FROM subject s
                     JOIN department d ON s.id_department = d.id
                     JOIN department_facility df ON df.id_department = d.id
-                    JOIN staff st ON st.id = s.id_head_subject
+                    JOIN head_subject_by_semester hsbs ON hsbs.id_subject = s.id
+                    JOIN staff st ON st.id = hsbs.id_staff
                     WHERE
                         (df.id = :departmentFacilityId) AND
                         (st.id = :#{#request.staffId}) AND

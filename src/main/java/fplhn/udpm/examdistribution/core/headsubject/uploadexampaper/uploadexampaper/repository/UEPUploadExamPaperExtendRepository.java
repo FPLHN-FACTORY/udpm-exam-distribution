@@ -15,10 +15,23 @@ import java.util.List;
 public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository {
 
     @Query(value = """
-            SELECT  s.id AS id,
-                    s.name AS name
-            FROM subject s
-            WHERE s.id_head_subject = :userId
+            SELECT
+            	subj.id AS id,
+            	subj.name AS name
+            FROM
+            	head_subject_by_semester hsbs
+            JOIN subject subj ON hsbs.id_subject = subj.id
+            JOIN staff st ON st.id = hsbs.id_staff
+            WHERE
+            	st.id = :userId
+            """,countQuery = """
+            SELECT COUNT(hsbs.id)
+            FROM
+            	head_subject_by_semester hsbs
+            JOIN subject subj ON hsbs.id_subject = subj.id
+            JOIN staff st ON st.id = hsbs.id_staff
+            WHERE
+            	st.id = :userId
             """, nativeQuery = true)
     List<ListSubjectResponse> getListSubject(String userId);
 
