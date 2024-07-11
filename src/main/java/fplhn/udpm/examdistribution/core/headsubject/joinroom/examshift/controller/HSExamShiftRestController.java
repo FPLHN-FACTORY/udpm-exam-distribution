@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.controller;
 
-import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.request.JoinRoomRequest;
-import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service.JoinRoomService;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.request.HSExamShiftServiceRequest;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service.HSExamShiftService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(MappingConstants.API_HEAD_SUBJECT_MANAGE_JOIN_ROOM)
-public class JoinRoomRestController {
+public class HSExamShiftRestController {
 
-    private final JoinRoomService joinRoomService;
+    private final HSExamShiftService joinRoomService;
+
+    @GetMapping
+    public ResponseEntity<?> getAllExamShift() {
+        return Helper.createResponseEntity(joinRoomService.getAllExamShift());
+    }
 
     @PostMapping
-    public ResponseEntity<?> joinExamShift(@RequestBody JoinRoomRequest joinRoomRequest) {
+    public ResponseEntity<?> joinExamShift(@RequestBody HSExamShiftServiceRequest joinRoomRequest) {
         return Helper.createResponseEntity(joinRoomService.joinExamShift(joinRoomRequest));
     }
 

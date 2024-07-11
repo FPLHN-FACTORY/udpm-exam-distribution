@@ -1,13 +1,27 @@
 $(document).ready(function () {
+
+    getExamShifts();
+
     $('#modifyExamShiftJoinButton').on('click', function () {
-        joinExamShift();
+        joinExamShiftSubmit($('#modifyExamShiftCodeJoin').val());
     });
+
+    connect();
 });
 
-const joinExamShift = () => {
+const connect = () => {
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe("/topic/teacher-exam-shift-create", function (response) {
+            getExamShifts();
+        });
+    });
+}
+
+const joinExamShift = (examShiftCode) => {
     const examShift = {
-        examShiftCodeJoin: $('#modifyExamShiftCodeJoin').val(),
-        passwordJoin: $('#modifyPasswordJoin').val(),
+        examShiftCodeJoin: examShiftCode
     }
     $.ajax({
         type: "POST",
@@ -45,12 +59,70 @@ const openModalJoinExamShift = () => {
 
 const resetFormJoinExamShift = () => {
     $('#modifyExamShiftCodeJoin').val('');
-    $('#modifyPasswordJoin').val('');
+    // $('#modifyPasswordJoin').val('');
 }
 
-const removeFormJoinError = (id) => {
+const removeFormJoinError = () => {
     $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
     $('#examShiftCodeJoinError').text('');
-    $('#modifyPasswordJoin').removeClass('is-invalid');
-    $('#passwordJoinError').text('');
+};
+
+const getExamShifts = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const examShifts = responseBody?.data;
+                $('#examShiftsContainer').empty();
+                let row = $('<div class="row mt-3"></div>');
+                let colCounter = 0;
+                examShifts.forEach((examShift, index) => {
+                    const col = $(`
+                        <div class="col-3" onclick="joinExamShiftSubmit('${examShift.examShiftCode}')">
+                            <div class="btn-label-info p-2 shadow rounded min-vh-30">
+                                <div class="user-box">
+                                    <div class="u-text">
+                                        <h3>${examShift.examShiftCode}</h3>
+                                        <p class="text-muted">Phòng thi: ${examShift.room}</p>
+                                        <p class="text-muted">Người tạo: ${examShift.codeFirstSupervisor}</p>
+                                        <p class="text-muted">Trạng thái: ${examShift.status}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    row.append(col);
+                    colCounter++;
+                    if (colCounter === 4) {
+                        $('#examShiftsContainer').append(row);
+                        row = $('<div class="row mt-3"></div>');
+                        colCounter = 0;
+                    }
+                });
+                if (colCounter !== 0) {
+                    $('#examShiftsContainer').append(row);
+                }
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+        }
+    });
+}
+
+const joinExamShiftSubmit = (examShiftCode) => {
+    if (examShiftCode !== null) {
+        swal({
+            title: "Xác nhận tham gia phòng thi",
+            text: `Tham gia phòng thi ${examShiftCode}?`,
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willJoin) => {
+            if (willJoin) {
+                joinExamShift(examShiftCode);
+            }
+        });
+    }
 };

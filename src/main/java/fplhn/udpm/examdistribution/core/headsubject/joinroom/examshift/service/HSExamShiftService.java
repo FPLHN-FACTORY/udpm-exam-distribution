@@ -1,16 +1,16 @@
-package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service;
+package fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.request.HSExamShiftServiceRequest;
 import jakarta.validation.Valid;
 
-public interface HDExamShiftService {
+public interface HSExamShiftService {
 
     boolean getExamShiftByRequest(String examShiftCode);
 
     ResponseObject<?> getAllExamShift();
 
-    ResponseObject<?> joinExamShift(@Valid HDExamShiftRequest joinRoomRequest);
+    ResponseObject<?> joinExamShift(@Valid HSExamShiftServiceRequest joinRoomRequest);
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
