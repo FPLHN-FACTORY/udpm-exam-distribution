@@ -12,6 +12,8 @@ public class SessionConstant {
 
     public static final String CURRENT_USER_DEPARTMENT_ID = "current_department_id";
 
+    public static final String CURRENT_USER_DEPARTMENT_FACILITY_ID = "current_department_facility_id";
+
     public static final String CURRENT_USER_ROLE = "current_user_role";
 
     public static final String CURRENT_USER_IS_ASSIGN_UPLOADER = "current_user_is_assign_uploader";

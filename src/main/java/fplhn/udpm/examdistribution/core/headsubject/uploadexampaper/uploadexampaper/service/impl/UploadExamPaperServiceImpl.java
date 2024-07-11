@@ -110,8 +110,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     @Override
     public ResponseObject<?> getListStaff() {
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         return new ResponseObject<>(
-                staffRepository.getListStaff(),
+                staffRepository.getListStaff(departmentFacilityId),
                 HttpStatus.OK,
                 "Lấy danh sách nhân viên thành công"
         );

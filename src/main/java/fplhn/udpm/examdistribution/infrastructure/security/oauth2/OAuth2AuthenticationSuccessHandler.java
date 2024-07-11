@@ -159,6 +159,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, staff.getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, staff.getDepartmentFacility().getFacility().getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, staff.getDepartmentFacility().getDepartment().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID, staff.getDepartmentFacility().getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ROLE, role);
 
         staff.setPicture(userInfo.getPicture());

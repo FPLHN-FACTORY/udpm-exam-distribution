@@ -34,11 +34,12 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
             JOIN staff st ON
             	st.id = hsbs.id_staff
             WHERE
-                (df.id = :departmentFacilityId) AND
-                (st.id = :#{#request.staffId}) AND
-                (s.status = 0) AND
-                (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                df.id = :departmentFacilityId AND
+                
+                st.id = :#{#request.staffId} AND
+                s.status = 0 AND
+                :#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"} AND
+                :#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"}
             """,
             countQuery = """
                     SELECT 	COUNT(s.id)

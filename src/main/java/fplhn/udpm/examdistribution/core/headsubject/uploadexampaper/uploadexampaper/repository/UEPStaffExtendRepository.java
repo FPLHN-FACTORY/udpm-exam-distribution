@@ -17,15 +17,17 @@ public interface UEPStaffExtendRepository extends StaffRepository {
             FROM
             	staff st
             WHERE
-            	st.status = 0
+            	st.status = 0 AND
+            	st.id_department_facility = :departmentFacilityId
             """,countQuery = """
             SELECT
             	COUNT(DISTINCT st.id)
             FROM
             	staff st
             WHERE
-            	st.status = 0
+            	st.status = 0 AND
+            	st.id_department_facility = :departmentFacilityId
             """, nativeQuery = true)
-    List<ListStaffResponse> getListStaff();
+    List<ListStaffResponse> getListStaff(String departmentFacilityId);
 
 }
