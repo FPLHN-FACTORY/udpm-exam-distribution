@@ -12,8 +12,9 @@ public interface UEPClassSubjectExtendRepository extends ClassSubjectRepository 
             FROM ClassSubject cs
             JOIN Staff st ON st.id = cs.staff.id
             WHERE cs.block.id = :blockId AND
-                  cs.subject.id = :subjectId
+                  cs.subject.id = :subjectId AND
+                  st.departmentFacility.id = :departmentFacilityId
             """)
-    String[] getEmailStaffByBlockId(String blockId, String subjectId);
+    String[] getEmailStaffByBlockId(String blockId, String subjectId, String departmentFacilityId);
 
 }

@@ -382,7 +382,8 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
             String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
             String subjectId = optionalExamPaper.get().getSubject().getId();
-            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId);
+            String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
 
             if (listEmailStaff.length == 0) {
                 return new ResponseObject<>(
