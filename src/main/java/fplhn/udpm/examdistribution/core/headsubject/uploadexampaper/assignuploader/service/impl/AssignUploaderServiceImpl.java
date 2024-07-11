@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Optional;
 
@@ -128,7 +129,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             );
         }
 
-        if (request.getMaxUpload() > 100) {
+        if (request.getMaxUpload().compareTo(new BigInteger("100")) > 0) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.NOT_ACCEPTABLE,
@@ -141,7 +142,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
         postAssignUploader.setSubject(isSubjectExist.get());
         postAssignUploader.setStatus(EntityStatus.ACTIVE);
         postAssignUploader.setSemester(semesterRepository.getReferenceById(semesterId));
-        postAssignUploader.setMaxUpload(request.getMaxUpload());
+        postAssignUploader.setMaxUpload(request.getMaxUpload().intValue());
 
         AssignUploader postedAssignUploader = assignUploaderRepository.save(postAssignUploader);
 
