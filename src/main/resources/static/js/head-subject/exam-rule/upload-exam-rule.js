@@ -98,7 +98,6 @@ const handleUploadExamRule = () => {
     showLoading();
 
     const data = new FormData();
-    data.append("folderName", "ExamRule");
     data.append("file", getValueFileInput());
 
     $.ajax({

@@ -8,7 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
-    <link rel="stylesheet" th:href="@{/css/head-subject/exam-approval/tag.css}">
+    <link rel="stylesheet" th:href="@{/css/head-subject/exam-approval/exam-approval.css}">
+    <link rel="stylesheet" th:href="@{/css/common/tag.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Quản lý trưởng môn - Phê duyệt đề thi</title>
 </head>
@@ -20,7 +21,7 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
-            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+            <div class="bg-white m-4 shadow rounded min-vh-100">
                 <div class="p-4">
                     <h2>Phê duyệt đề thi</h2>
                 </div>
@@ -38,7 +39,7 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="exam-type-find">Loại đề</label>
-                                    <select class="form-select" id="exam-type-find" required>
+                                    <select class="form-select" id="exam-type-find" style="height: 60%;" required>
                                         <option value="">-- Chọn loại đề --</option>
                                         <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
                                         <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
@@ -46,7 +47,7 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="subject-find">Môn học</label>
-                                    <select class="form-select" id="subject-find" required>
+                                    <select class="form-select" id="subject-find" style="height: 60%;" required>
                                         <option value="">-- Chọn môn học --</option>
                                     </select>
                                 </div>

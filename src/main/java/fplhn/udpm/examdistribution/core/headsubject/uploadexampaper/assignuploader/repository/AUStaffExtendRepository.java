@@ -21,6 +21,26 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     s.account_fpt AS accountFpt,
                     s.created_date AS createdDate,
                     (
+                        SELECT
+                            CASE
+                                WHEN COUNT(ep.id) > 0 THEN 1
+                                ELSE 0
+                            END AS isHasSampleExamPaper
+                        FROM exam_paper AS ep
+                        JOIN block b ON b.id = ep.id_block
+                        WHERE ep.id_staff_upload = :userId AND
+                              ep.id_subject = :#{#request.subjectId} AND
+                              b.id_semester = :semesterId AND
+                              ep.exam_paper_type = "SAMPLE_EXAM_PAPER"
+                    ) AS isHasSampleExamPaper,
+                    (
+                        SELECT au.max_upload AS maxUpload
+                        FROM assign_uploader au
+                        WHERE au.id_staff = s.id AND
+                              au.id_subject = :#{#request.subjectId} AND
+                              au.id_semester = :semesterId
+                    ) AS maxUpload,
+                    (
                     	SELECT
                     		CASE
                     			WHEN COUNT(*) > 0 THEN 1
@@ -71,6 +91,6 @@ public interface AUStaffExtendRepository extends StaffRepository {
                         )
                     """,
             nativeQuery = true)
-    Page<StaffResponse> getAllStaff(Pageable pageable, String departmentFacilityId, FindStaffRequest request, String userId);
+    Page<StaffResponse> getAllStaff(Pageable pageable, String departmentFacilityId, FindStaffRequest request, String userId, String semesterId);
 
 }

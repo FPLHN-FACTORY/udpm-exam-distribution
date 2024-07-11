@@ -22,33 +22,39 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
             	   ep.exam_paper_status AS examPaperStatus,
             	   ep.path AS path,
             	   ep.created_exam_paper_date AS createdExamPaperDate,
-            	   CONCAT(s2.subject_code, ' - ',s2.name) AS subjectName,
+            	   CONCAT(subj.subject_code, ' - ',subj.name) AS subjectName,
             	   s.staff_code AS staffUpload
             FROM exam_paper ep
-            JOIN staff s ON s.id = ep.id_staff_upload
-            JOIN subject s2 ON s2.id = ep.id_subject
-            JOIN staff s3 ON s3.id = s2.id_head_subject
-            WHERE ep.exam_paper_status LIKE 'WAITING_APPROVAL'
-            AND s3.id LIKE :idHeadSubject
-            AND ep.status = 0
-            AND (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"})
-            AND (:#{#request.idSubject} IS NULL OR s2.id LIKE :#{"%" + #request.idSubject + "%"})
-            AND (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
+            JOIN head_subject_by_semester hsbs ON hsbs.id_subject = ep.id_subject
+            JOIN block b ON b.id = ep.id_block
+            JOIN subject subj ON subj.id = hsbs.id_subject
+            JOIN staff s ON s.id = hsbs.id_staff
+            WHERE ep.exam_paper_status = 'WAITING_APPROVAL' AND
+                  hsbs.id_staff = :idHeadSubject AND
+                  hsbs.id_semester = :semesterId AND
+                  b.id_semester = :semesterId AND
+                  ep.status = 0 AND 
+                  (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"}) AND
+                  (:#{#request.idSubject} IS NULL OR subj.id LIKE :#{"%" + #request.idSubject + "%"}) AND
+                  (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
             """,countQuery = """
-            SELECT 	COUNT(ep.id)
+            SELECT COUNT(ep.id)
             FROM exam_paper ep
-            JOIN staff s ON s.id = ep.id_staff_upload
-            JOIN subject s2 ON s2.id = ep.id_subject
-            JOIN staff s3 ON s3.id = s2.id_head_subject
-            WHERE ep.exam_paper_status LIKE 'WAITING_APPROVAL'
-            AND s3.id LIKE :idHeadSubject
-            AND ep.status = 0
-            AND (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"})
-            AND (:#{#request.idSubject} IS NULL OR s2.id LIKE :#{"%" + #request.idSubject + "%"})
-            AND (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
+            JOIN head_subject_by_semester hsbs ON hsbs.id_subject = ep.id_subject
+            JOIN block b ON b.id = ep.id_block
+            JOIN subject subj ON subj.id = hsbs.id_subject
+            JOIN staff s ON s.id = hsbs.id_staff
+            WHERE ep.exam_paper_status = 'WAITING_APPROVAL' AND
+                  hsbs.id_staff = :idHeadSubject AND
+                  hsbs.id_semester = :semesterId AND
+                  b.id_semester = :semesterId AND
+                  ep.status = 0 AND 
+                  (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"}) AND
+                  (:#{#request.idSubject} IS NULL OR subj.id LIKE :#{"%" + #request.idSubject + "%"}) AND
+                  (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
             """
             , nativeQuery = true)
-    Page<EAExamPaperResponse> getExamApprovals(Pageable pageable, EAExamPaperRequest request, String idHeadSubject);
+    Page<EAExamPaperResponse> getExamApprovals(Pageable pageable, EAExamPaperRequest request, String idHeadSubject, String semesterId);
 
     @Query(value = """
             SELECT ep.id as id,

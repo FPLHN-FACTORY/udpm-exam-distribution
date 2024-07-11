@@ -51,3 +51,57 @@
     background-color: #f9f0ff;
     border-color: #d3adf7;
 }
+
+.tag.tag-cyan{
+    color: #08979c;
+    background-color: #e6fffb;
+    border-color: #87e8de;
+}
+
+.tag.tag-blue{
+    color: #0958d9;
+    background-color: #e6f4ff;
+    border-color: #91caff;
+}
+
+.tag.tag-geek-blue{
+    color: #1d39c4;
+    background-color: #f0f5ff;
+    border-color: #adc6ff;
+}
+
+.tag.tag-lime{
+    color: #7cb305;
+    background-color: #fcffe6;
+    border-color: #eaff8f;
+}
+
+.tag.tag-magenta{
+    color: #c41d7f;
+    background-color: #fff0f6;
+    border-color: #ffadd2;
+}
+
+.tag.tag-red{
+    color: #cf1322;
+    background-color: #fff1f0;
+    border-color: #ffa39e;
+}
+
+.tag.tag-volcano{
+    color: #d4380d;
+    background-color: #fff2e8;
+    border-color: #ffbb96;
+}
+
+.tag.tag-orange{
+    color: #d46b08;
+    background-color: #fff7e6;
+    border-color: #ffd591;
+}
+
+.tag.tag-gold{
+    color: #d48806;
+    background-color: #fffbe6;
+    border-color: #ffe58f;
+}

@@ -34,10 +34,12 @@ const fetchSearchSubject = (
 
     url = url.slice(0, -1);
 
+    showLoading();
     $.ajax({
         type: "GET",
         url: url,
         success: function (responseBody) {
+            hideLoading();
             const responseData = responseBody?.data?.data;
             if (responseData.length === 0) {
                 $('#subjectTableBody').html(`
@@ -53,15 +55,15 @@ const fetchSearchSubject = (
                             <td>${subject.subjectCode}</td>
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
-                            <td>${subject.subjectType}</td>
+                            <td>${convertSubjectType(subject.subjectType)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamRule('${subject.id}')" class="fs-4">
+                                <span onclick="handleOpenModalExamRule('${subject.id}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-4">
+                                <span onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-eye"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -76,6 +78,7 @@ const fetchSearchSubject = (
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
+            hideLoading();
         }
     });
 };
@@ -165,4 +168,18 @@ const handleClearSearch = () => {
 };
 //------------------------------------------------------function--------------------------------------------------------
 
+const convertSubjectType = (status) => {
+    switch (status) {
+        case "TRADITIONAL":
+            return '<span class="tag tag-success">TRADITIONAL</span>';
+        case 'ONLINE':
+            return '<span class="tag tag-cyan">ONLINE</span>';
+        case 'BLEND':
+            return '<span class="tag tag-blue">BLEND</span>';
+        case 'TRUC_TUYEN':
+            return '<span class="tag tag-lime">TRUC_TUYEN</span>';
+        default:
+            return '<span class="tag tag-secondary">Không xác định</span>';
+    }
+}
 

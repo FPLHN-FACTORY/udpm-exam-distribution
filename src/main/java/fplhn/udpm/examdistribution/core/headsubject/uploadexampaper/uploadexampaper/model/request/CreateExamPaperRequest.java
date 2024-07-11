@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class AddExamPaperRequest {
+public class CreateExamPaperRequest {
 
     @NotBlank(message = "Kiểu của đề thi chưa được chọn")
     private String examPaperType;

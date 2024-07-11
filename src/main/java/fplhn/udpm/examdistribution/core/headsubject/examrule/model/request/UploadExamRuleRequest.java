@@ -10,6 +10,4 @@ public class UploadExamRuleRequest {
 
     private MultipartFile file;
 
-    private String folderName;
-
 }

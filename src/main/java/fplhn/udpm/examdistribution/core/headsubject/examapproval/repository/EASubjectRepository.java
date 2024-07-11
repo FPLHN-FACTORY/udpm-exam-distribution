@@ -11,16 +11,18 @@ import java.util.List;
 public interface EASubjectRepository extends SubjectRepository {
 
     @Query(value = """
-            SELECT CONCAT(s.subject_code,' - ',s.name)as subjectName,
-            		s.id as subjectId
-            FROM subject s
-            JOIN department d on d.id = s.id_department
+            SELECT CONCAT(subj.subject_code,' - ',subj.name)as subjectName,
+            		subj.id as subjectId
+            FROM subject subj
+            JOIN department d on d.id = subj.id_department
             JOIN department_facility df on df.id_department = d.id
-            JOIN staff s2 on s2.id = s.id_head_subject
-            WHERE s.status = 0
-            AND df.id LIKE :departmentFacilityId
-            AND s2.id LIKE :staffId
+            JOIN head_subject_by_semester hsbs ON hsbs.id_subject = subj.id
+            JOIN staff st on st.id = hsbs.id_staff
+            WHERE subj.status = 0 AND
+                  df.id LIKE :departmentFacilityId AND
+                  st.id LIKE :staffId AND
+                  hsbs.id_semester = :semesterId
             """, nativeQuery = true)
-    List<EASubjectResponse> getAllSubjects(String departmentFacilityId,String staffId);
+    List<EASubjectResponse> getAllSubjects(String departmentFacilityId, String staffId, String semesterId);
 
 }

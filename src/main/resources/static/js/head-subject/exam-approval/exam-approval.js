@@ -70,14 +70,14 @@ const createPagination = (totalPages, currentPage) => {
     if (currentPage > 1) {
         paginationHtml += `
                      <li class="page-item">
-                        <a class="page-link" onclick="changePage(${currentPage - 1})">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">
                             Trước
                         </a>
                      </li>`;
     } else {
         paginationHtml += `
                 <li class="page-item disabled">
-                    <a class="page-link">
+                    <a class="page-link" href="#">
                         Trước
                     </a>
                 </li>
@@ -86,16 +86,16 @@ const createPagination = (totalPages, currentPage) => {
 
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
-            paginationHtml += `<li class="page-item active"><a class="page-link text-white">${i}</a></li>`;
+            paginationHtml += `<li class="page-item active"><a href="#" class="page-link text-white">${i}</a></li>`;
         } else {
-            paginationHtml += `<li class="page-item"><a class="page-link" onclick="changePage(${i})">${i}</a></li>`;
+            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
         }
     }
 
     if (currentPage < totalPages) {
         paginationHtml += `
                 <li class="page-item">
-                    <a class="page-link" onclick="changePage(${currentPage + 1})">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">
                           Sau
                     </a>
                 </li>
@@ -103,7 +103,7 @@ const createPagination = (totalPages, currentPage) => {
     } else {
         paginationHtml += `
             <li class="page-item disabled">
-                <a class="page-link">
+                <a class="page-link" href="#">
                     Sau
                 </a>
             </li>
@@ -126,9 +126,9 @@ function formatDateTime(date) {
 function getStatusBadge(status) {
     switch (status) {
         case 'MOCK_EXAM_PAPER':
-            return '<span class="tag tag-success">Đề thi thử</span>';
+            return '<span class="tag tag-purple">Đề thi thử</span>';
         case 'OFFICIAL_EXAM_PAPER':
-            return '<span class="tag tag-danger">Đề thi thật</span>';
+            return '<span class="tag tag-success">Đề thi thật</span>';
         default:
             return '<span class="tag tag-secondary">Không xác định</span>';
     }

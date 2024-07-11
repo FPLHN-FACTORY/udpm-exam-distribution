@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <link rel="stylesheet" th:href="@{/css/head-subject/upload-exam-paper/upload-exam-paper.css}"/>
-    <link rel="stylesheet" th:href="@{/css/head-subject/upload-exam-paper/tag.css}"/>
+    <link rel="stylesheet" th:href="@{/css/common/tag.css}"/>
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Quản lý trưởng môn - Quản lý đề thi</title>
 </head>
@@ -48,41 +48,57 @@
                             <div class="p-4">
                                 <!-- Filter -->
                                 <div class="shadow p-4 mb-4 bg-white rounded">
+                                    <h3 class="m-portlet__head-text">
+                                        <i class="fa-solid fa-filter"></i> Bộ lọc
+                                    </h3>
                                     <div class="row">
                                         <div class="col form-group">
-                                            <label for="subjectId">Môn học</label>
-                                            <select id="subjectId" onchange="onChangeFilterExamPaper()" name="subjectId"
-                                                    class="form-select"
-                                                    style="height: 60%;">
-                                            </select>
-                                        </div>
-                                        <div class="col form-group">
-                                            <label for="subjectId">Loại đề thi</label>
-                                            <select id="examPaperTypeId" name="form-select"
-                                                    class="form-select"
-                                                    style="height: 60%;">
-                                                <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
-                                                <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
-                                            </select>
-                                        </div>
-                                        <div class="col form-group">
-                                            <label for="subjectId">Học kỳ</label>
+                                            <label for="semesterId">Học kỳ</label>
                                             <select id="semesterId" name="semesterId"
                                                     class="form-select"
                                                     style="height: 60%;">
                                             </select>
                                         </div>
                                         <div class="col form-group">
-                                            <label for="subjectId">Block</label>
-                                            <select id="blockId" name="blockId"
+                                            <label for="blockId">Block</label>
+                                            <select id="blockId" name="semesterId"
                                                     class="form-select"
                                                     style="height: 60%;">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="text-center">
-                                        <button type="button" class="btn btn-secondary">Tìm kiếm</button>
+                                    <div class="row">
+                                        <div class="col form-group">
+                                            <label for="subjectId">Người tải</label>
+                                            <select id="staffId" name="subjectId"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                            </select>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label for="subjectId">Môn học</label>
+                                            <select id="subjectId" name="subjectId"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col form-group">
+                                            <label for="examPaperTypeId">Loại đề thi</label>
+                                            <select id="examPaperTypeId" name="form-select"
+                                                    class="form-select"
+                                                    style="height: 60%;">
+                                                <option value="">--Chọn loại đề--</option>
+                                                <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
+                                                <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button onclick="handleSearchListExamPaper()" type="button" class="btn btn-secondary">Tìm kiếm</button>
                                         <button
+                                                onclick="handleClearSearchListExamPaper()"
                                                 type="reset"
                                                 class="btn"
                                                 style="background-color: var(--common-button-color); color: white;"
@@ -109,7 +125,7 @@
                                                 <td>Môn</td>
                                                 <td>Chuyên ngành</td>
                                                 <td>Loại đề thi</td>
-                                                <td>Người tạo</td>
+                                                <td>Người tải</td>
                                                 <td>Ngày tạo</td>
                                                 <td>Trạng thái</td>
                                                 <td>Cơ sở</td>
@@ -152,6 +168,9 @@
                             <div class="p-4">
                                 <!-- Filter -->
                                 <div class="shadow p-4 mb-4 bg-white rounded">
+                                    <h3 class="m-portlet__head-text">
+                                        <i class="fa-solid fa-filter"></i> Bộ lọc
+                                    </h3>
                                     <form id="filterForm">
                                         <div class="row">
                                             <div class="col form-group">
@@ -163,7 +182,7 @@
                                                 <input type="text" id="subjectName" class="form-control">
                                             </div>
                                         </div>
-                                        <div class="text-center">
+                                        <div class="text-center mt-4">
                                             <button onclick="handleSearchSubject()" id="buttonFilter" type="button"
                                                     class="btn btn-secondary">Tìm kiếm
                                             </button>
@@ -228,6 +247,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal Modify Assign Uploader -->
     <div class="modal modal-xl fade" id="assignUploaderModal" tabindex="-1" aria-labelledby="assignUploaderModal"
          aria-hidden="true">
@@ -254,7 +274,7 @@
                             </div>
                         </div>
                         <div class="text-center">
-                            <button onclick="handleSearchAssignUploader()" id="buttonFilterAssignUpload" type="button"
+                            <button onclick="fetchSearchStaff()" id="buttonFilterAssignUpload" type="button"
                                     class="btn btn-secondary">Tìm kiếm
                             </button>
                             <button
@@ -281,6 +301,7 @@
                                     <td>Tên giảng viên</td>
                                     <td>Email FPT</td>
                                     <td>Email FE</td>
+                                    <td>Số lượng đề tải</td>
                                     <td>Phân công</td>
                                 </tr>
                                 </thead>
@@ -312,7 +333,67 @@
     </div>
     <!-- Modal Modify Assign Uploader -->
 
-    <!-- Modal Detail Exam Rule -->
+    <!-- Modal MaxUpload -->
+    <div class="modal fade" id="maxUploadModal" tabindex="-1" aria-labelledby="maxUploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Điền số lượng đề tải</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="maxUploadNumber" class="form-label">Số lượng đề tải</label>
+                        <input type="number" class="form-control" id="maxUploadNumber" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="handleOpenModalAssignUploaderAgain()" type="button" class="btn" data-bs-dismiss="modal" style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button onclick="handleAssignUploader()" type="button" class="btn btn-secondary">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal MaxUpload -->
+
+    <!-- Modal Upload Sample Exam Paper -->
+    <div class="modal modal-xl fade" id="sampleExamPaperModal" tabindex="-1" aria-labelledby="sampleExamPaperModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sampleExamPaperTitle">Quản lý quy định phòng thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center" id="button-upload-sep">
+                        <input type="file" id="file-pdf-input-sep" hidden accept="application/pdf"/>
+                        <button onclick="openInputChooseFileFdf()" type="button" class="btn btn-secondary">
+                            <i class="fa-solid fa-file-import"></i>
+                            Upload
+                        </button>
+                        <button onclick="handleUploadSampleExamPaperConfirm()" type="button" class="btn btn-secondary">
+                            <i class="fa-solid fa-upload"></i>
+                            Tải đề mẫu
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <div class="pdf-viewer" id="pdf-viewer-sep" hidden>
+                            <canvas id="pdf-canvas-sep"></canvas>
+                        </div>
+                        <div id="paging-pdf-sep" hidden class="mt-3">
+                            <button class="btn btn-secondary" id="prev-page-sep">Previous</button>
+                            <button class="btn btn-secondary" id="next-page-sep">Next</button>
+                            <p>Page: <span id="page-num-sep"></span> / <span id="total-page-sep"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Upload Sample Exam Paper -->
+
+    <!-- Modal Detail ExamPaper -->
     <div class="modal modal-xl fade" id="examPaperModal" tabindex="-1" aria-labelledby="examPaperModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -361,7 +442,7 @@
                         </div>
                     </div>
                     <div class="mt-4" id="show-pdf">
-                        <div id="pdf-viewer" hidden>
+                        <div class="pdf-viewer" id="pdf-viewer" hidden>
                             <canvas id="pdf-canvas"></canvas>
                         </div>
                         <div id="paging-pdf" class="mt-3" hidden>
@@ -381,7 +462,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Detail Exam Rule -->
+    <!-- Modal Detail ExamPaper -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -401,9 +482,9 @@
 <script th:src="@{/js/user-info-handler.js}"></script>
 <script th:src="@{/js/loading.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>-->
 <script th:src="@{/js/head-subject/assign-uploader/assign-uploader.js}"></script>
 <script th:src="@{/js/head-subject/upload-exam-paper/main-exam-paper.js}"></script>
 <script th:src="@{/js/head-subject/upload-exam-paper/manipulate-exam-paper.js}"></script>
+<script th:src="@{/js/head-subject/assign-uploader/upload-sample-exam-paper.js}"></script>
 </body>
 </html>

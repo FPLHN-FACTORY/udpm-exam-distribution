@@ -50,7 +50,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                 );
             }
 
-            if(request.getFile().getSize() > MAX_FILE_SIZE){
+            if (request.getFile().getSize() > MAX_FILE_SIZE) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
@@ -60,11 +60,13 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
             Subject putSubject = subjectRepository.getReferenceById(subjectId);
 
-            if(putSubject.getPathExamRule() != null){
+            if (putSubject.getPathExamRule() != null) {
                 googleDriveFileService.deleteById(putSubject.getPathExamRule());
             }
 
-            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+            String folderName = "ExamRule/" + putSubject.getSubjectCode();
+
+            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
             String fileId = googleDriveFileDTO.getId();
             putSubject.setPathExamRule(fileId);
             subjectRepository.save(putSubject);
