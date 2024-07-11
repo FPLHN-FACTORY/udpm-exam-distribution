@@ -1,8 +1,6 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository;
 
-import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
-import fplhn.udpm.examdistribution.repository.StaffRepository;
 import fplhn.udpm.examdistribution.repository.StudentRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
