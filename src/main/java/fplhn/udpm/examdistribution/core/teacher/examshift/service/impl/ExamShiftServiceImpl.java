@@ -21,6 +21,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,8 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     private final StudentTeacherExtendRepository studentTeacherExtendRepository;
 
+    private final HttpSession httpSession;
+
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
@@ -56,11 +59,14 @@ public class ExamShiftServiceImpl implements ExamShiftService {
         }
 
         boolean isCurrentUserSupervisor
-                = examShift.get().getFirstSupervisor().getId().equals(SessionConstant.CURRENT_USER_ID)
-                || (examShift.get().getSecondSupervisor() != null
-                && examShift.get().getSecondSupervisor().getId().equals(SessionConstant.CURRENT_USER_ID));
+                = examShift.get().getFirstSupervisor().getId()
+                          .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString())
+                  || (examShift.get().getSecondSupervisor() != null
+                      && examShift.get().getSecondSupervisor().getId()
+                              .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString()));
 
-        if (!isCurrentUserSupervisor && SessionConstant.ROLE_LOGIN.equals("GIANG_VIEN")) {
+        if (!isCurrentUserSupervisor && httpSession
+                .getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("GIANG_VIEN")) {
             return false;
         }
 

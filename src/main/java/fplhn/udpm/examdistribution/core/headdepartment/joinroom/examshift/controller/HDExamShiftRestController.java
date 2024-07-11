@@ -20,6 +20,11 @@ public class HDExamShiftRestController {
 
     private final HDExamShiftService hdExamShiftService;
 
+    @GetMapping
+    public ResponseEntity<?> getAllExamShift() {
+        return Helper.createResponseEntity(hdExamShiftService.getAllExamShift());
+    }
+
     @PostMapping
     public ResponseEntity<?> joinExamShift(@RequestBody HDExamShiftRequest joinRoomRequest) {
         return Helper.createResponseEntity(hdExamShiftService.joinExamShift(joinRoomRequest));

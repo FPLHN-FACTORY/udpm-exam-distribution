@@ -14,13 +14,6 @@ $(document).ready(function () {
     connect();
 });
 
-const openModalStudentJoinExamShift = () => {
-    $('#modifyExamShiftCodeJoin').val('');
-    $('#modifyPasswordJoin').val('');
-    $('.form-control').removeClass('is-invalid');
-    $('#examShiftJoinModal').modal('show');
-}
-
 let messageType = null;
 
 const connect = () => {

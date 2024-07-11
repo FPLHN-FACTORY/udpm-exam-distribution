@@ -9,70 +9,36 @@
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/manage-student/student-home.css}">
     <title>Student - Trang chủ</title>
 </head>
 <body>
-<div class="wrapper">
-    <div th:insert="~{fragment/sidebar/sidebar-student :: sidebar-student}"></div>
-    <div class="main-panel">
-        <div class="main-header">
-            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
-        </div>
-        <div class="container">
-            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
-                <div class="p-4">
-                    <h2>Trang chủ</h2>
-                </div>
-                <div class="shadow p-4 bg-white rounded">
-                    <button
-                            class="btn btn-secondary"
-                            data-bs-toggle="modal"
-                            onclick="openModalStudentJoinExamShift()"
-                    >
-                        Tham gia phòng thi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Join ExamShift -->
-    <div class="modal fade" id="examShiftJoinModal" tabindex="-1" aria-labelledby="ExamShiftJoinModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="examShiftJoinModalLabel">Tham gia phòng thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="joinExamShiftForm">
-                        <div class="mb-3">
-                            <label for="modifyExamShiftCodeJoin" class="form-label">Mã phòng thi</label>
-                            <input type="text" class="form-control" id="modifyExamShiftCodeJoin" required>
-                            <div class="invalid-feedback" id="examShiftCodeJoinError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyPasswordJoin" class="form-label">Mật khẩu phòng thi</label>
-                            <input type="password" class="form-control" id="modifyPasswordJoin" required>
-                            <div class="invalid-feedback" id="passwordJoinError"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="modifyExamShiftJoinButton">Tham gia</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Modal Join ExamShift -->
-
-    <!-- The toggle theme button -->
-    <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
+<div class="main-header">
+    <div th:insert="~{fragment/header/common-header-student :: common-header-student}"></div>
 </div>
+<section>
+    <div class="form-box">
+        <div class="form-value">
+            <form>
+                <h2>Tham gia phòng thi</h2>
+                <div class="inputbox">
+                    <input type="text" required id="modifyExamShiftCodeJoin">
+                    <label style="color: white;">Mã phòng</label>
+                    <div class="invalid-feedback" id="examShiftCodeJoinError"></div>
+                </div>
+                <div class="inputbox">
+                    <input type="password" required id="modifyPasswordJoin">
+                    <label style="color: white;">Mật khẩu</label>
+                    <div class="invalid-feedback" id="passwordJoinError"></div>
+                </div>
+                <button type="button" id="modifyExamShiftJoinButton">Tham gia</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- The toggle theme button -->
+<div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
