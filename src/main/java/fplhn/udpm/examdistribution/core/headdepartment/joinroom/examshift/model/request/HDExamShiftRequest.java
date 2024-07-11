@@ -11,7 +11,4 @@ public class HDExamShiftRequest {
     @NotBlank(message = "Mã phòng thi không được để trống")
     private String examShiftCodeJoin;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    private String passwordJoin;
-
 }

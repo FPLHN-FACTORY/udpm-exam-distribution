@@ -6,12 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JoinRoomRequest {
+public class HSExamShiftServiceRequest {
 
     @NotBlank(message = "Mã phòng thi không được để trống")
     private String examShiftCodeJoin;
-
-    @NotBlank(message = "Mật khẩu không được để trống")
-    private String passwordJoin;
 
 }

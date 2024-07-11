@@ -8,6 +8,12 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ExamShiftNotificationController {
 
+    @MessageMapping("/exam-shift-create")
+    @SendTo("/topic/teacher-exam-shift-create")
+    public NotificationResponse notifyExamShiftCreate(String message) {
+        return new NotificationResponse(message);
+    }
+
     @MessageMapping("/exam-shift-join")
     @SendTo("/topic/exam-shift")
     public NotificationResponse notifyExamShiftJoin(String message) {
