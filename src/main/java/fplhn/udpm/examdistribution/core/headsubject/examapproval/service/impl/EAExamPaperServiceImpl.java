@@ -41,12 +41,27 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     @Override
     public ResponseObject<?> getExamApprovals(EAExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(examApprovalRepository.getExamApprovals(pageable, request, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID)), HttpStatus.OK, "Lấy danh sách đề thi cần phê duyệt thành công");
+        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        return new ResponseObject<>(
+                examApprovalRepository.getExamApprovals(
+                        pageable, request, httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(),
+                        semesterId
+                ),
+                HttpStatus.OK,
+                "Lấy danh sách đề thi cần phê duyệt thành công"
+        );
     }
 
     @Override
     public ResponseObject<?> getSubjects(String departmentFacilityId, String staffId) {
-        return new ResponseObject<>(subjectRepository.getAllSubjects(departmentFacilityId, staffId), HttpStatus.OK, "Lấy danh sách môn học thành công");
+        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        return new ResponseObject<>(
+                subjectRepository.getAllSubjects(
+                        departmentFacilityId, staffId, semesterId
+                ),
+                HttpStatus.OK,
+                "Lấy danh sách môn học thành công"
+        );
     }
 
     @Override
@@ -58,7 +73,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
                     HttpStatus.OK,
                     "Tìm thấy file thành công"
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.OK,
@@ -113,13 +128,13 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanExamPaper() {
-        List<EAExamPaperCleanAfterSeventDayResponse> examPapers = examApprovalRepository.findAllExamPaperStatusAndCreatedDate(SEVEN_DAY,new Date().getTime());
+        List<EAExamPaperCleanAfterSeventDayResponse> examPapers = examApprovalRepository.findAllExamPaperStatusAndCreatedDate(SEVEN_DAY, new Date().getTime());
         for (EAExamPaperCleanAfterSeventDayResponse examPaper : examPapers) {
-           try {
-               examApprovalRepository.deleteById(examPaper.getId());
-               googleDriveFileService.deleteById(examPaper.getPath());
-           }catch (Exception e){
-           }
+            try {
+                examApprovalRepository.deleteById(examPaper.getId());
+                googleDriveFileService.deleteById(examPaper.getPath());
+            } catch (Exception e) {
+            }
         }
     }
 

@@ -1,25 +1,80 @@
 $(document).ready(function () {
-    fetchListSubject();
+    fetchListCurrentSubject();
     handleFetchMajorFacility();
-    fetchListExamPaper();
+    fetchListSemester();
+    fetchListStaff();
+
+    onChangeSemesterToFetchBlockAndSubject();
+
+    onChangePageSizeFirstTab();
 });
+//----------------------------------------------------------------------------------------------------------------------
+//START: state
+let isFirstRender = false;
+let stateSemesterIdNow = "";
+//END: state
+
+//START: getter
+const getIsFirstRender = () => isFirstRender;
+const getStateSemesterIdNow = () => stateSemesterIdNow;
+//END: getter
+
+//START: setter
+const setIsFirstRender = (value) => {
+    isFirstRender = value;
+};
+const setStateSemesterIdNow = (value) => {
+    stateSemesterIdNow = value;
+};
+
+const setValueSemester = (value) => {
+    $("#semesterId").val(value);
+};
+const setValueBlock = (value) => {
+    $("#blockId").val(value);
+};
+const setValueSubject = (value) => {
+    $("#subjectId").val(value);
+};
+const setValueStaff = (value) => {
+    $("#staffId").val(value);
+};
+const setValueExamPaperTypeFirstPage = (value) => {
+    $("#examPaperTypeId").val(value);
+};
+//END: setter
+//----------------------------------------------------------------------------------------------------------------------
+
 
 const getGlobalParamsSearchFirstPage = () => {
     return {
-        subjectId: $("#subjectId").val()
+        semesterId: $("#semesterId").val(),
+        blockId: $("#blockId").val(),
+        subjectId: $("#subjectId").val(),
+        staffId: $("#staffId").val(),
+        examPaperType: $("#examPaperTypeId").val(),
     }
 };
 
-const fetchListSubject = () => {
+const clearGlobalParamsSearchFirstPage = () => {
+    setValueSemester(getStateSemesterIdNow());
+    setValueBlock("");
+    setValueSubject("");
+    setValueStaff("");
+    setValueExamPaperTypeFirstPage("");
+};
+
+
+//----------------------------------------------------------------------------------------------------------------------
+const fetchListCurrentSubject = () => {
     $.ajax({
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/subject",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/current-subject",
         method: "GET",
         success: function (responseBody) {
             const subjects = responseBody?.data?.map((item) => {
                 return `<option value="${item.id}">${item.name}</option>`
             });
             subjects.unshift('<option value="">--Chọn môn học--</option>');
-            $('#subjectId').html(subjects);
             $('#exam-paper-subject').html(subjects);
         },
         error: function (error) {
@@ -33,22 +88,169 @@ const fetchListSubject = () => {
     });
 };
 
-const onChangeFilterExamPaper = () => {
-    fetchListExamPaper(1, $('#pageSizeFirstPage').val(), getGlobalParamsSearchFirstPage());
+const fetchListSubject = (semesterId) => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/subject/" + semesterId,
+        method: "GET",
+        success: function (responseBody) {
+            const subjects = responseBody?.data?.map((item) => {
+                return `<option value="${item.id}">${item.name}</option>`
+            });
+            subjects.unshift('<option value="">--Chọn môn học--</option>');
+            $('#subjectId').html(subjects);
+        },
+        error: function (error) {
+            const messageErr = error?.responseJSON?.message;
+            if (messageErr) {
+                showToastError(messageErr);
+            } else {
+                showToastError("Có lỗi xảy ra");
+            }
+        }
+    });
 };
+
+const fetchListSemester = () => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/semester",
+        method: "GET",
+        success: function (responseBody) {
+            const listData = responseBody?.data;
+            const semesters = listData?.map((item) => {
+                return `<option value="${item.id}">${item.name}</option>`
+            });
+            $('#semesterId').html(semesters);
+
+            if (!getIsFirstRender()) {
+                selectSemesterNowAndFetchBlockAndSubject(listData);
+            }
+        },
+        error: function (error) {
+            const messageErr = error?.responseJSON?.message;
+            if (messageErr) {
+                showToastError(messageErr);
+            } else {
+                showToastError("Có lỗi xảy ra");
+            }
+        }
+    });
+};
+
+const fetchListBlock = (idSemester) => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/block/" + idSemester,
+        method: "GET",
+        success: function (responseBody) {
+            const listBlocks = responseBody?.data;
+            const blocks = listBlocks?.map((item) => {
+                return `<option value="${item.id}">${item.name}</option>`
+            });
+            blocks.unshift('<option value="">--Chọn block--</option>');
+            $('#blockId').html(blocks);
+
+            if (!getIsFirstRender()) {
+                selectBlockNow(listBlocks);
+                setIsFirstRender(true);
+            }
+        },
+        error: function (error) {
+            const messageErr = error?.responseJSON?.message;
+            if (messageErr) {
+                showToastError(messageErr);
+            } else {
+                showToastError("Có lỗi xảy ra");
+            }
+        }
+    });
+};
+
+const fetchListStaff = () => {
+    $.ajax({
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/staff",
+        method: "GET",
+        success: function (responseBody) {
+            const staffs = responseBody?.data?.map((item) => {
+                return `<option value="${item.id}">${item.name}</option>`
+            });
+            staffs.unshift('<option value="">--Chọn người tải--</option>');
+            $('#staffId').html(staffs);
+        },
+        error: function (error) {
+            const messageErr = error?.responseJSON?.message;
+            if (messageErr) {
+                showToastError(messageErr);
+            } else {
+                showToastError("Có lỗi xảy ra");
+            }
+        }
+    });
+};
+//----------------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------------------------------------------------------
+const selectSemesterNowAndFetchBlockAndSubject = (listSemester) => {
+    const now = new Date().getTime();
+    let isFoundSemester = false;
+    listSemester.forEach(item => {
+        if (item.startTime < now && now < item.endTime) {
+            setValueSemester(item.id);
+            setStateSemesterIdNow(item.id);
+
+            fetchListBlock(item.id);
+            fetchListSubject(item.id);
+
+            isFoundSemester = true;
+        }
+    });
+
+    if (!isFoundSemester) {
+        showToastError("Không tìm thấy học kỳ hiện tại");
+    }
+};
+
+const onChangeSemesterToFetchBlockAndSubject = () => {
+    $("#semesterId").on("change", () => {
+        const idSemester = $("#semesterId").val();
+        fetchListBlock(idSemester);
+        fetchListSubject(idSemester);
+    });
+};
+
+const selectBlockNow = (listBlock) => {
+    const now = new Date().getTime();
+
+    let isFoundBlock = false;
+    listBlock.forEach(item => {
+        if (item.startTime < now && now < item.endTime) {
+            setValueBlock(item.id);
+            fetchListExamPaper();
+
+            isFoundBlock = true;
+        }
+    });
+
+    if (!isFoundBlock) {
+        showToastError("Không tìm thấy block hiện tại");
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 const fetchListExamPaper = (
     page = 1,
     size = $('#pageSizeFirstPage').val(),
-    paramSearch = {
-        subjectId: ""
-    },
+    paramSearch = getGlobalParamsSearchFirstPage(),
 ) => {
 
     const params = {
         page: page,
         size: size,
-        subjectId: paramSearch.subjectId
+        semesterId: paramSearch.semesterId,
+        blockId: paramSearch.blockId,
+        subjectId: paramSearch.subjectId,
+        staffId: paramSearch.staffId,
+        examPaperType: paramSearch.examPaperType,
     };
 
     let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/exam-paper" + '?';
@@ -76,33 +278,48 @@ const fetchListExamPaper = (
                 `);
                 return;
             }
-            const examPapers = responseData.map((item, index) => {
+            const examPapers = responseData.map(item => {
                 return `<tr>
                             <td>${item.orderNumber}</td>
-                            <td>${item.examPaperCode}</td>
+                            <td>
+                                <a target="_blank" href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
+                            </td>
                             <td>${item.subjectName}</td>
                             <td>${item.majorName}</td>
-                            <td>${convertExamPaperType(item.examPaperType)}</td>
+                            <td>${convertExamPaperType(item.examPaperType, item.isPublic)}</td>
                             <td>${item.staffName}</td>
                             <td>${formatDateTime(item.createdDate)}</td>
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')" class="fs-4">
+                                <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',1)" class="fs-4">
+                                <span onclick="handleOpenModalExamPaper('${item.fileId}',1)" style="margin: 0 3px;">
                                     <i class="fa-solid fa-eye"
-                                        style="cursor: pointer; margin-left: 10px;"
+                                        style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span class="fs-4" onclick="handleDeleteExamPaper('${item.id}')">
+                                <span onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;">
                                     <i 
-                                        class="fa-solid fa-trash-can"
-                                        style="cursor: pointer; margin-left: 10px;"
+                                        class="fa-solid fa-file-arrow-down"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                ${
+                                    item.examPaperType === "MOCK_EXAM_PAPER" ?
+                                        `<span onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
+                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
+                                        </span>`
+                                        : ""
+                                }
+                                <span onclick="handleDeleteExamPaper('${item.id}')">
+                                    <i 
+                                        class="fa-solid fa-shuffle"
+                                        style="cursor: pointer;"
                                     ></i>
                                 </span>
                             </td>
@@ -122,6 +339,15 @@ const fetchListExamPaper = (
             hideLoading();
         }
     });
+};
+
+const handleSearchListExamPaper = () => {
+    fetchListExamPaper();
+};
+
+const handleClearSearchListExamPaper = () => {
+    clearGlobalParamsSearchFirstPage();
+    fetchListExamPaper();
 };
 
 const createPaginationFirstPage = (totalPages, currentPage) => {
@@ -179,8 +405,8 @@ const changePageFirstPage = (page) => {
 
 const handleDeleteExamPaper = (examPaperId) => {
     swal({
-        title: "Xác nhận xóa",
-        text: "Bạn có chắc muốn xóa đề thi này không?",
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn thay đổi trạng thái của đề thi này không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -201,7 +427,7 @@ const handleDeleteExamPaper = (examPaperId) => {
                 method: "DELETE",
                 success: function (responseBody) {
                     showToastSuccess(responseBody?.message);
-                    fetchListExamPaper(1, $('#pageSizeFirstPage').val(), getGlobalParamsSearchFirstPage());
+                    fetchListExamPaper();
                     hideLoading();
                 },
                 error: function (error) {
@@ -242,6 +468,12 @@ const handleFetchMajorFacility = () => {
     });
 };
 
+const onChangePageSizeFirstTab = () => {
+    $("#pageSizeFirstPage").on("change", () => {
+        fetchListExamPaper();
+    });
+};
+
 const formatDateTime = (date) => {
     const d = new Date(Number(date));
     const day = String(d.getDate()).padStart(2, "0");
@@ -263,13 +495,14 @@ const convertExamPaperStatus = (status) => {
     }
 }
 
-const convertExamPaperType = (status) => {
-    switch (status) {
-        case "OFFICIAL_EXAM_PAPER":
-            return '<span class="tag tag-success">Đề thi thật</span>';
-        case 'MOCK_EXAM_PAPER':
-            return '<span class="tag tag-purple">Đề thi thử</span>';
-        default:
-            return '<span class="tag tag-secondary">Không xác định</span>';
+const convertExamPaperType = (status, isPublic) => {
+    if (status === "OFFICIAL_EXAM_PAPER") {
+        return '<span class="tag tag-success">Đề thi thật</span>';
+    } else if (status === "MOCK_EXAM_PAPER") {
+        if (isPublic === false) {
+            return '<span class="tag tag-magenta">Đề thi thử <i class="fa-solid fa-ban"></i> </span>';
+        } else {
+            return '<span class="tag tag-purple">Đề thi thử <i class="fa-solid fa-check"></i> </span>';
+        }
     }
 }

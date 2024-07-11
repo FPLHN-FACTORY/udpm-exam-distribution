@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.AddExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.UploadExamPaperService;
@@ -31,9 +31,24 @@ public class UploadExamPaperRestController {
 
     private final UploadExamPaperService uploadExamPaperService;
 
-    @GetMapping("/subject")
-    public ResponseEntity<?> getListSubject() {
-        return Helper.createResponseEntity(uploadExamPaperService.getListSubject());
+    @GetMapping("/subject/{semesterId}")
+    public ResponseEntity<?> getListSubject(@PathVariable String semesterId) {
+        return Helper.createResponseEntity(uploadExamPaperService.getListSubject(semesterId));
+    }
+
+    @GetMapping("/current-subject")
+    public ResponseEntity<?> getListCurrentSubject() {
+        return Helper.createResponseEntity(uploadExamPaperService.getListCurrentSubject());
+    }
+
+    @GetMapping("/semester")
+    public ResponseEntity<?> getListSemester() {
+        return Helper.createResponseEntity(uploadExamPaperService.getListSemester());
+    }
+
+    @GetMapping("/block/{semesterId}")
+    public ResponseEntity<?> getListBlock(@PathVariable String semesterId) {
+        return Helper.createResponseEntity(uploadExamPaperService.getListBlock(semesterId));
     }
 
     @GetMapping("/major-facility")
@@ -41,9 +56,9 @@ public class UploadExamPaperRestController {
         return Helper.createResponseEntity(uploadExamPaperService.getListMajorFacility());
     }
 
-    @GetMapping("/exam-paper")
-    public ResponseEntity<?> getListExamPaper(ListExamPaperRequest request) {
-        return Helper.createResponseEntity(uploadExamPaperService.getAllExamPaper(request));
+    @GetMapping("/staff")
+    public ResponseEntity<?> getListStaff() {
+        return Helper.createResponseEntity(uploadExamPaperService.getListStaff());
     }
 
     @GetMapping("/file")
@@ -62,14 +77,24 @@ public class UploadExamPaperRestController {
         return Helper.createResponseEntity(uploadExamPaperService.deleteExamPaper(id));
     }
 
+    @GetMapping("/exam-paper")
+    public ResponseEntity<?> getListExamPaper(ListExamPaperRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.getAllExamPaper(request));
+    }
+
     @PostMapping("/exam-paper")
-    public ResponseEntity<?> addExamPaper(@ModelAttribute AddExamPaperRequest request) {
-        return Helper.createResponseEntity(uploadExamPaperService.addExamPaper(request));
+    public ResponseEntity<?> createExamPaper(@ModelAttribute CreateExamPaperRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.createExamPaper(request));
     }
 
     @PutMapping("/exam-paper")
     public ResponseEntity<?> updateExamPaper(@ModelAttribute UpdateExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.updateExamPaper(request));
+    }
+
+    @PostMapping("/send-email-public-exam-paper/{examPaperId}")
+    public ResponseEntity<?> sendEmailPublicExamPaper(@PathVariable String examPaperId) {
+        return Helper.createResponseEntity(uploadExamPaperService.sendEmailPublicExamPaper(examPaperId));
     }
 
 }

@@ -2,15 +2,14 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploa
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class AssignUploaderRequest {
-
-    private String staffId;
+public class CreateSampleExamPaperRequest {
 
     private String subjectId;
 
-    private Integer maxUpload;
+    private MultipartFile file;
 
 }

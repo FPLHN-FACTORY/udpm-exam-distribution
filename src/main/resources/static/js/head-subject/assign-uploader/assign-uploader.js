@@ -9,8 +9,23 @@ const examDistributionInfor = getExamDistributionInfo();
 
 //------------------------------------------------state getter setter---------------------------------------------------
 
+//START:state
+let stateCurrentStaffId = "";
+//END:state
+
+//START:getter
+const getStateCurrentStaffId = () => stateCurrentStaffId;
+
+const getValueMaxUpload = () => $("#maxUploadNumber").val();
+//END:getter
 
 //START: setter
+const setStateCurrentStaffId = (value) => {
+    stateCurrentStaffId = value;
+};
+const setValueMaxUpload = (value) => {
+    $("#maxUploadNumber").val(value);
+};
 const setCurrentSubjectNameOnView = (value) => {
     $("#currentSubjectName").text(value);
 };
@@ -20,11 +35,7 @@ const setCurrentSubjectNameOnView = (value) => {
 const fetchSearchSubject = (
     page = 1,
     size = $('#pageSize').val(),
-    paramSearch = {
-        subjectCode: "",
-        subjectName: "",
-        staffId: examDistributionInfor.userId
-    },
+    paramSearch = getGlobalParamsSearch(),
 ) => {
     const params = {
         page: page,
@@ -44,10 +55,12 @@ const fetchSearchSubject = (
 
     url = url.slice(0, -1);
 
+    showLoading();
     $.ajax({
         type: "GET",
         url: url,
         success: function (responseBody) {
+            hideLoading();
             const responseData = responseBody?.data?.data;
             if (responseData.length === 0) {
                 $('#subjectTableBody').html(`
@@ -63,12 +76,24 @@ const fetchSearchSubject = (
                             <td>${subject.subjectCode}</td>
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
-                            <td>${subject.subjectType}</td>
+                            <td>${convertSubjectType(subject.subjectType)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalAssignUpload('${subject.id}','${subject.subjectName}')" class="fs-4">
+                                <span onclick="handleOpenModalSampleExamPaper(1,'${subject.id}','${subject.fileId}')" class="fs-6">
+                                    <i 
+                                        class="fa-solid fa-cloud-arrow-up"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span onclick="handleOpenModalSampleExamPaper(2,'${subject.id}','${subject.fileId}')" class="fs-6" style="margin: 0 3px;">
                                     <i 
                                         class="fa-solid fa-eye"
-                                        style="cursor: pointer; margin-left: 10px;"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span onclick="handleOpenModalAssignUpload('${subject.id}','${subject.subjectName}')" class="fs-6">
+                                    <i 
+                                        class="fa-solid fa-pen-to-square"
+                                        style="cursor: pointer;"
                                     ></i>
                                 </span>
                             </td>
@@ -80,6 +105,7 @@ const fetchSearchSubject = (
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
+            hideLoading();
         }
     });
 };
@@ -155,12 +181,12 @@ const changePage = (page) => {
 const onChangePageSize = () => {
     $("#pageSize").on("change", function () {
         resetGlobalParamsSearch();
-        fetchSearchSubject(1, $('#pageSize').val(), getGlobalParamsSearch());
+        fetchSearchSubject();
     });
 };
 
 const handleSearchSubject = () => {
-    fetchSearchSubject(1, $('#pageSize').val(), getGlobalParamsSearch());
+    fetchSearchSubject();
 };
 
 const handleClearSearch = () => {
@@ -174,14 +200,20 @@ const handleClearSearch = () => {
 
 //------------------------------------------------state getter setter---------------------------------------------------
 let stateCurrentSubjectId = "";
+let stateCurrentSubjectName = "";
 
 //START: getter
-const getCurrentSubjectId = () => stateCurrentSubjectId
+const getCurrentSubjectId = () => stateCurrentSubjectId;
+const getStateCurrentSubjectName = () => stateCurrentSubjectName;
+
 //END: getter
 
 //START: setter
 const setCurrentSubjectId = (value) => {
     stateCurrentSubjectId = value
+};
+const setStateCurrentSubjectName = (value) => {
+    stateCurrentSubjectName = value
 };
 //END: setter
 //------------------------------------------------state getter setter---------------------------------------------------
@@ -189,20 +221,13 @@ const setCurrentSubjectId = (value) => {
 //------------------------------------------------------function--------------------------------------------------------
 const handleOpenModalAssignUpload = (subjectId, subjectName) => {
     setCurrentSubjectId(subjectId);
+    setStateCurrentSubjectName(subjectName);
+
     setCurrentSubjectNameOnView(subjectName);
     fetchSearchStaff();
     onChangePageSizeAssignUploader();
     $("#assignUploaderModal").modal("show");
 };
-
-const getGlobalParamsSearchAssignUploader = () => {
-    return {
-        accountFptOrFe: $("#staffFPTFE").val(),
-        staffCode: $("#staffCode").val(),
-        staffName: $("#staffName").val(),
-        subjectId: getCurrentSubjectId()
-    }
-}
 
 const createPaginationAssignUploader = (totalPages, currentPage) => {
     let paginationHtml = '';
@@ -257,10 +282,6 @@ const changePageAssignUploader = (page) => {
     fetchSearchStaff(page, $('#pageSize').val(), getGlobalParamsSearchAssignUploader());
 }
 
-const handleSearchAssignUploader = () => {
-    fetchSearchStaff(1, $('#pageSize').val(), getGlobalParamsSearchAssignUploader());
-};
-
 const resetGlobalParamsSearchAssignUploader = () => {
     $("#staffFPTFE").val("");
     $("#staffCode").val("");
@@ -272,42 +293,72 @@ const handleClearSearchAssignUploader = () => {
     fetchSearchStaff();
 };
 
-const onChangePageSizeAssignUploader = () => {
-    $("#pageSizeAssignUploader").on("change", function () {
-        resetGlobalParamsSearchAssignUploader();
-        fetchSearchStaff(1, $('#pageSizeAssignUploader').val(), getGlobalParamsSearchAssignUploader());
-    });
+const handleAssignUploaderModal = (staffId, isAssigned, isHasSampleExamPaper) => {
+    setStateCurrentStaffId(staffId);
+    if (isHasSampleExamPaper === "0") {
+        showToastError("Môn học này chưa tải đề thi mẫu");
+        $("#input-assign-uploader").prop("checked", false);
+    } else {
+        if (isAssigned === "0") {
+            setValueMaxUpload("");
+            $("#input-assign-uploader").prop("checked", false);
+
+            $("#assignUploaderModal").modal("hide");
+            $("#maxUploadModal").modal("show");
+        } else {
+            $.ajax({
+                contentType: "application/json",
+                type: "POST",
+                url: ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/assign-uploader",
+                dataType: 'json',
+                data: JSON.stringify({
+                    staffId: staffId,
+                    subjectId: getCurrentSubjectId()
+                }),
+                success: function (responseBody) {
+                    showToastSuccess(responseBody.message);
+                    fetchSearchStaff();
+                },
+                error: function (error) {
+                    showToastError(error?.responseJSON?.message);
+                }
+            });
+        }
+    }
 };
 
-const handleAssignUploader = (staffId) => {
+const handleAssignUploader = () => {
     $.ajax({
         contentType: "application/json",
         type: "POST",
         url: ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/assign-uploader",
         dataType: 'json',
         data: JSON.stringify({
-            staffId: staffId,
-            subjectId: getCurrentSubjectId()
+            staffId: getStateCurrentStaffId(),
+            subjectId: getCurrentSubjectId(),
+            maxUpload: getValueMaxUpload()
         }),
         success: function (responseBody) {
             showToastSuccess(responseBody.message);
+            handleOpenModalAssignUploaderAgain();
+            $("#maxUploadModal").modal("hide");
         },
         error: function (error) {
             showToastError(error?.responseJSON?.message);
         }
     });
 };
+
+const handleOpenModalAssignUploaderAgain = () => {
+    handleOpenModalAssignUpload(getCurrentSubjectId(), getStateCurrentSubjectName());
+};
+
 //------------------------------------------------------function--------------------------------------------------------
 
 const fetchSearchStaff = (
     page = 1,
-    size = $('#pageSize').val(),
-    paramSearch = {
-        staffCode: "",
-        staffName: "",
-        accountFptOrFe: "",
-        subjectId: getCurrentSubjectId()
-    }
+    size = $('#pageSizeAssignUploader').val(),
+    paramSearch = getGlobalParamsSearchAssignUploader()
 ) => {
     const params = {
         page: page,
@@ -328,10 +379,12 @@ const fetchSearchStaff = (
 
     url = url.slice(0, -1);
 
+    showLoading();
     $.ajax({
         type: "GET",
         url: url,
         success: function (responseBody) {
+            hideLoading();
             const responseData = responseBody?.data?.data;
             if (responseData.length === 0) {
                 $('#assignUploaderTableBody').html(`
@@ -348,15 +401,17 @@ const fetchSearchStaff = (
                             <td>${staff.name}</td>
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
+                            <td>${staff.maxUpload == null ? "Không xác định" : staff.maxUpload}</td>
                             <td>
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
-                                        onclick="handleAssignUploader('${staff.id}')"
-                                      name="color"
-                                      type="checkbox"
-                                      class="colorinput-input"
-                                      ${staff.isAssigned == true ? "checked" : ""}
+                                        onclick="handleAssignUploaderModal('${staff.id}','${staff.isAssigned}','${staff.isHasSampleExamPaper}')"
+                                        name="color"
+                                        type="checkbox"
+                                        class="colorinput-input"
+                                        ${staff.isAssigned == true ? "checked" : ""}
+                                        id="input-assign-uploader"
                                     />
                                     <span
                                       class="colorinput-color bg-secondary"
@@ -375,3 +430,34 @@ const fetchSearchStaff = (
         }
     });
 };
+
+const onChangePageSizeAssignUploader = () => {
+    $("#pageSizeAssignUploader").on("change", function () {
+        resetGlobalParamsSearchAssignUploader();
+        fetchSearchStaff();
+    });
+};
+
+const getGlobalParamsSearchAssignUploader = () => {
+    return {
+        accountFptOrFe: $("#staffFPTFE").val(),
+        staffCode: $("#staffCode").val(),
+        staffName: $("#staffName").val(),
+        subjectId: getCurrentSubjectId()
+    }
+}
+
+const convertSubjectType = (status) => {
+    switch (status) {
+        case "TRADITIONAL":
+            return '<span class="tag tag-success">TRADITIONAL</span>';
+        case 'ONLINE':
+            return '<span class="tag tag-cyan">ONLINE</span>';
+        case 'BLEND':
+            return '<span class="tag tag-blue">BLEND</span>';
+        case 'TRUC_TUYEN':
+            return '<span class="tag tag-lime">TRUC_TUYEN</span>';
+        default:
+            return '<span class="tag tag-secondary">Không xác định</span>';
+    }
+}

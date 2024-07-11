@@ -2,11 +2,13 @@ package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
+import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthAssignUploaderRepository;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthBlockRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomStudentCookie;
@@ -23,6 +25,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 @Component
@@ -36,6 +39,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final AuthStudentRepository authStudentRepository;
 
     private final AuthAssignUploaderRepository assignUploaderRepository;
+
+    private final AuthBlockRepository blockRepository;
 
     private static final int COOKIE_EXPIRE = 7200;
 
@@ -159,7 +164,20 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         staff.setPicture(userInfo.getPicture());
         authStaffRepository.save(staff);
 
-        Optional<AssignUploader> isAssignUploaderIsExist = assignUploaderRepository.findByStaffId(staff.getId());
+        String blockId = "";
+        Long now = new Date().getTime();
+        for (Block block : blockRepository.findAll()) {
+            if (block.getStartTime() < now && now < block.getEndTime()) {
+                blockId = block.getId();
+                break;
+            }
+        }
+        String semesterId = blockRepository.findById(blockId).get().getSemester().getId();
+
+        httpSession.setAttribute(SessionConstant.CURRENT_BLOCK_ID, blockId);
+        httpSession.setAttribute(SessionConstant.CURRENT_SEMESTER_ID, semesterId);
+
+        Optional<AssignUploader> isAssignUploaderIsExist = assignUploaderRepository.findByStaffId(staff.getId(), semesterId);
         if (isAssignUploaderIsExist.isPresent()) {
             httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "TRUE");
         } else {
