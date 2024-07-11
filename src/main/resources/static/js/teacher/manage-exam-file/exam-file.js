@@ -1,6 +1,28 @@
 $(document).ready(function () {
+
     fetchSearchSubject();
+
     onChangePageSize();
+
+    //add event for form search
+    $('#subjectName').on("change", debounce(() => {
+        fetchSearchSubject(1,
+            $('#pageSize').val(),
+            getGlobalParamsSearch());
+    }));
+
+    $('#subjectCode').on("change", debounce(() => {
+        fetchSearchSubject(1,
+            $('#pageSize').val(),
+            getGlobalParamsSearch());
+    }));
+
+    $('#pageSize').on("change", debounce(() => {
+        fetchSearchSubject(1,
+            $('#pageSize').val(),
+            getGlobalParamsSearch());
+    }));
+
 });
 
 //START: Exam Distribution Information

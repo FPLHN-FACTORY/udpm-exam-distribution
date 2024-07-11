@@ -82,6 +82,7 @@ const ApiConstant = {
 
     // Constants representing the full paths for various resources under teacher
     API_TEACHER_EXAM_FILE: "/api/v1/teacher/exam-file",
+    API_TEACHER_MOCK_EXAM_PAPER: "/api/v1/teacher/mock-exam-paper",
     API_TEACHER_EXAM_SHIFT: "/api/v1/teacher/exam-shift",
     API_TEACHER_SUBJECT: "/api/v1/teacher/subjects",
     API_TEACHER_BLOCK: "/api/v1/teacher/blocks",

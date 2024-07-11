@@ -82,7 +82,8 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + subject.get().getName() + "/" + request.getFolderName()+"/"+request.getExamPaperType();
+        GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(),folderName, true);
 
         String fileId = googleDriveFileDTO.getId();
 
@@ -93,9 +94,14 @@ public class TExamFileImpl implements TExamFileService {
         examPaper.setExamPaperStatus(ExamPaperStatus.WAITING_APPROVAL);
         examPaper.setMajorFacility(majorFacility.get());
         examPaper.setSubject(subject.get());
-        examPaper.setExamPaperCode(subject.get().getSubjectCode() + CodeGenerator.generateRandomCode().substring(0, 3));
+        examPaper.setExamPaperCode(subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
         examPaper.setExamPaperCreatedDate(new Date().getTime());
         examPaper.setStaffUpload(staffs.get());
+        if (ExamPaperType.valueOf(request.getExamPaperType()) == ExamPaperType.MOCK_EXAM_PAPER){
+            examPaper.setIsPublic(false);
+        }else {
+            examPaper.setIsPublic(true);
+        }
         examPaper.setStatus(EntityStatus.ACTIVE);
         tExamPaperRepository.save(examPaper);
 
