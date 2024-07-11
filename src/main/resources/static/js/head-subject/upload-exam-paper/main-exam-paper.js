@@ -282,7 +282,7 @@ const fetchListExamPaper = (
                 return `<tr>
                             <td>${item.orderNumber}</td>
                             <td>
-                                <a href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
+                                <a target="_blank" href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
                             </td>
                             <td>${item.subjectName}</td>
                             <td>${item.majorName}</td>

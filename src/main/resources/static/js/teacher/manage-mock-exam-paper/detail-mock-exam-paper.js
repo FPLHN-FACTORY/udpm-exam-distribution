@@ -194,7 +194,7 @@ const fetchMockExamPaper = (subjectId,
             const mockExamPapers = responseData.map(function (mockExamPaper, index) {
                 return `<tr>
                             <td>${index + 1}</td>
-                            <td><a href="https://drive.google.com/file/d/${mockExamPaper.path}/view">${mockExamPaper.examPaperCode}</a></td>
+                            <td><a target="_blank" href="https://drive.google.com/file/d/${mockExamPaper.path}/view">${mockExamPaper.examPaperCode}</a></td>
                             <td>${getStatusTypeExam(mockExamPaper.examPaperType)}</td>
                             <td>${mockExamPaper.staffUpload}</td>
                             <td>${formatDateTime(mockExamPaper.createdExamPaperDate)}</td>
