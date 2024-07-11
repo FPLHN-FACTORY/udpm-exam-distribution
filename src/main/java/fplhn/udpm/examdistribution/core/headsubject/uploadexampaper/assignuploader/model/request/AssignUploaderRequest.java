@@ -3,6 +3,8 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploa
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 public class AssignUploaderRequest {
@@ -11,6 +13,6 @@ public class AssignUploaderRequest {
 
     private String subjectId;
 
-    private Integer maxUpload;
+    private BigInteger maxUpload;
 
 }
