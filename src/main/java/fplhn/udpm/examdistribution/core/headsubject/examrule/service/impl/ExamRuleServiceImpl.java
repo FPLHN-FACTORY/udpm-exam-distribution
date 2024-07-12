@@ -67,7 +67,8 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
             Subject putSubject = subjectRepository.getReferenceById(subjectId);
 
-            if (putSubject.getPathExamRule() != null) {
+            System.out.println(putSubject.getPathExamRule().isEmpty());
+            if (putSubject.getPathExamRule() != null && !putSubject.getPathExamRule().isEmpty()) {
                 googleDriveFileService.deleteById(putSubject.getPathExamRule());
             }
 
@@ -84,6 +85,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                     "Tải nội quy thi thành công"
             );
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
