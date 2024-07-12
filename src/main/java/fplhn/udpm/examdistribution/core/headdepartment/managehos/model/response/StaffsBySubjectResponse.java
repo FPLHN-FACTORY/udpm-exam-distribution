@@ -1,7 +1,19 @@
 package fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response;
 
-public interface StaffsBySubjectResponse extends HeadSubjectResponse {
+import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-    Boolean getIsHeadOfSubject();
+public interface StaffsBySubjectResponse extends IsIdentify {
+
+    Integer getIsHeadOfSubject();
+
+    String getStaffCode();
+
+    String getStaffName();
+
+    String getAccountFPT();
+
+    String getAccountFE();
+
+    String getSemesterInfo();
 
 }

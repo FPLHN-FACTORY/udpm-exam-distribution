@@ -3,11 +3,15 @@ $(document).ready(function () {
 
     $('#btnReassignStaffForSubject').on('click', assignStaffForSubject);
 
+    getAllSemesterAndSetDefaultCurrentSemester();
+
 });
 
 const userLoginInfo = getExamDistributionInfo();
 
 let currentSubjectId = null;
+
+let currentSemesterId = null;
 
 const getSubjectsAssignWithHeadSubject = (
     page = INIT_PAGINATION.page,
@@ -55,7 +59,7 @@ const getSubjectsAssignWithHeadSubject = (
                         <td>${swhs.subjectName}</td>
                         <td>${swhs.subjectType}</td>
                         <td  style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            ${swhs.staffInChargeInfo}
+                            ${swhs.staffInChargeInfo ? swhs.staffInChargeInfo : '<div class="badge badge-danger">Chưa phân công</div>'}
                         </td>
                         <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
                             <i class="fas fa-edit text-center" style="cursor: pointer;"
@@ -135,20 +139,17 @@ const openModalAssignSubjectForStaff = (subjectId, subjectCode, subjectName) => 
 const getStaffs = (
     page = INIT_PAGINATION.page,
     size = $('#staffPageSize').val() || INIT_PAGINATION.size,
-    departmentFacilityId = userLoginInfo.departmentFacilityId,
-    staffCode = null,
-    staffName = null,
-    subjectId = currentSubjectId
+    subjectId = currentSubjectId,
 ) => {
     const url = getUrlParameters(
         ApiConstant.API_HEAD_DEPARTMENT_MANAGE_SUBJECT + "/staffs-by-subject",
         {
             page,
             size,
-            departmentFacilityId,
-            staffCode,
-            staffName,
-            subjectId
+            departmentFacilityId: userLoginInfo.departmentFacilityId,
+            subjectId: currentSubjectId,
+            currentUserId: userLoginInfo.userId,
+            semesterId: currentSemesterId
         }
     );
 
@@ -160,9 +161,19 @@ const getStaffs = (
             const staffs = responseBody?.data?.data.map((staff, _) => {
                 return `
                     <tr>
-                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input subject-checkbox" data-staff-subject-id="${staff.id}" ${staff.assigned === 1 ? 'checked' : ''} name="staffSelection">
+                          <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                            <div class="col-auto">
+                              <label class="colorinput">
+                                <input
+                                  name="staffSelection"
+                                  data-staff-subject-id="${staff.id}" ${staff.isHeadOfSubject === 1 ? 'checked' : ''}
+                                  type="checkbox"
+                                  class="colorinput-input"
+                                />
+                                <span
+                                  class="colorinput-color bg-secondary"
+                                ></span>
+                              </label>
                             </div>
                         </td>
                         <td>${staff.staffCode}</td>
@@ -242,7 +253,8 @@ const assignStaffForSubject = () => {
 
     const data = {
         staffId: staffSubjectId,
-        subjectId: currentSubjectId
+        subjectId: currentSubjectId,
+        currentSemesterId: currentSemesterId
     };
 
     $.ajax({
@@ -267,4 +279,23 @@ const changePage = (page) => {
 
 const changePageStaffAssignWithSubject = (page) => {
     getStaffs(page);
+}
+
+const getAllSemesterAndSetDefaultCurrentSemester = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/semester",
+        contentType: "application/json",
+        success: (responseBody) => {
+            const semesters = responseBody?.data?.map((semester, _) => {
+                return `<option value="${semester.id}">${semester.semesterInfo}</option>`;
+            });
+            $('#querySearchSemester').html(semesters);
+            $('#querySearchSemester').val(responseBody?.data[0]?.id);
+            currentSemesterId = responseBody?.data[0]?.id;
+        },
+        error: (error) => {
+            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
+        }
+    });
 }

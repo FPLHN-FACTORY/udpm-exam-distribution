@@ -1,10 +1,12 @@
 package fplhn.udpm.examdistribution.core.headdepartment.managehos.service.impl;
 
+import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.ReassignHeadOfSubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.StaffsBySubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectsStaffRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDHeadSubjectBySemesterExtendRepository;
+import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageSubjectService;
@@ -29,13 +31,15 @@ public class ManageSubjectServiceImpl implements ManageSubjectService {
 
     private final HDStaffExtendRepository hdStaffExtendRepository;
 
+    private final HDSemesterExtendRepository hdSemesterExtendRepository;
+
     @Override
     public ResponseObject<?> getSubjectsStaff(SubjectsStaffRequest request) {
         return new ResponseObject<>(
-                hdSubjectExtendRepository.getSubjectsStaff(
+                PageableObject.of(hdSubjectExtendRepository.getSubjectsStaff(
                         Helper.createPageable(request, "id"),
                         request
-                ),
+                )),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công"
         );
@@ -61,6 +65,12 @@ public class ManageSubjectServiceImpl implements ManageSubjectService {
         if (headSubjectBySemester.isPresent()) {
             headSubjectBySemester.get().setStaff(staffOptional.get());
             hdHeadSubjectBySemesterExtendRepository.save(headSubjectBySemester.get());
+        } else {
+            HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
+            newHeadSubjectBySemester.setSubject(hdSubjectExtendRepository.getReferenceById(request.getSubjectId()));
+            newHeadSubjectBySemester.setSemester(hdSemesterExtendRepository.getReferenceById(request.getCurrentSemesterId()));
+            newHeadSubjectBySemester.setStaff(staffOptional.get());
+            hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
         }
 
         return new ResponseObject<>(
@@ -74,10 +84,10 @@ public class ManageSubjectServiceImpl implements ManageSubjectService {
     @Override
     public ResponseObject<?> getStaffsBySubject(StaffsBySubjectRequest request) {
         return new ResponseObject<>(
-                hdSubjectExtendRepository.getStaffsBySubject(
+                PageableObject.of(hdSubjectExtendRepository.getStaffsBySubject(
                         request,
                         Helper.createPageable(request, "id")
-                ),
+                )),
                 HttpStatus.OK,
                 "Lấy danh sách nhân viên theo môn học thành công"
         );
