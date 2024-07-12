@@ -55,4 +55,15 @@ public class MockExamPaperRestController {
         return Helper.createResponseEntity(responseObject);
     }
 
+    @GetMapping("/download")
+    public ResponseEntity<?> downLoad(@RequestParam(name = "fileId") String fileId) throws IOException {
+        ResponseObject<?> responseObject = mockExamPaperService.downLoad(fileId);
+        Resource resource = (Resource) responseObject.getData();
+        String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(data);
+    }
+
 }

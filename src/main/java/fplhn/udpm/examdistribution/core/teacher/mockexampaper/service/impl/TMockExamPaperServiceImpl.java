@@ -73,4 +73,29 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
             );
         }
     }
+
+    @Override
+    public ResponseObject<?> downLoad(String fileId) {
+        try {
+            if (fileId.trim().isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.BAD_REQUEST,
+                        "Không tìm thấy file"
+                );
+            }
+
+            return new ResponseObject<>(
+                    googleDriveFileService.loadFile(fileId),
+                    HttpStatus.OK,
+                    "Tìm thấy file thành công"
+            );
+        } catch (IOException e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Đã có 1 vài lỗi xảy ra"
+            );
+        }
+    }
 }
