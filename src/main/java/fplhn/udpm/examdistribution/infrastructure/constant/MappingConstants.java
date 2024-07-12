@@ -65,8 +65,8 @@ public final class MappingConstants {
     public static final String API_HEAD_OFFICE_STAFF_SUBJECT = API_HEAD_OFFICE_PREFIX + "/staff-subject";
 
     // Constants representing the full paths for various resources under head department
-    public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/manage-head-of-subjects";
-    public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/manage-subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/subjects";
     public static final String API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = API_HEAD_DEPARTMENT_PREFIX + "/join-room";
     public static final String API_HEAD_DEPARTMENT_STAFF = API_HEAD_DEPARTMENT_PREFIX + "/staffs";
     public static final String API_HEAD_DEPARTMENT_STUDENT = API_HEAD_DEPARTMENT_PREFIX + "/students";

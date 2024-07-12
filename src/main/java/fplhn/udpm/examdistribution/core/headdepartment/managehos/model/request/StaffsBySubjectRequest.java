@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StaffsBySubjectRequest extends StaffRequest {
+public class StaffsBySubjectRequest extends HeadSubjectRequest {
 
     @NotNull(message = "ID môn học không được để trống")
     private String subjectId;

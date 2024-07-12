@@ -18,4 +18,7 @@ public class AssignSubjectStaffRequest {
     @NotNull(message = "Môn học gỡ phân công không được để trống")
     private String[] unassignedSubjectIds;
 
+    @NotNull(message = "Học kỳ không được để trống")
+    private String semesterId;
+
 }
