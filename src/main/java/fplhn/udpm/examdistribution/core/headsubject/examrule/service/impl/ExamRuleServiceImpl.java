@@ -5,18 +5,23 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.GetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -26,6 +31,8 @@ public class ExamRuleServiceImpl implements ExamRuleService {
     private final ERSubjectExtendRepository subjectRepository;
 
     private final GoogleDriveFileService googleDriveFileService;
+
+    private final RedisService redisService;
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -105,10 +112,25 @@ public class ExamRuleServiceImpl implements ExamRuleService {
             );
         }
 
+        String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + request.getFileId();
+
+        Object foundKeyRedis = redisService.get(redisKey);
+        if (foundKeyRedis != null) {
+            return new ResponseObject<>(
+                    new FileResponse(foundKeyRedis.toString(), "abc"),
+                    HttpStatus.OK,
+                    "success"
+            );
+        }
+
+        Resource fileResponse = googleDriveFileService.loadFile(request.getFileId());
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+        redisService.set(redisKey, data);
         return new ResponseObject<>(
-                googleDriveFileService.loadFile(request.getFileId()),
+                new FileResponse(data, fileResponse.getFilename()),
                 HttpStatus.OK,
-                "Tìm thấy file thành công"
+                "success"
         );
     }
 
