@@ -1,10 +1,12 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.entity.listener.ExamPaperListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
@@ -25,6 +27,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 @Table(name = "exam_paper")
+@EntityListeners(ExamPaperListener.class)
 public class ExamPaper extends PrimaryEntity implements Serializable {
 
     @ManyToOne

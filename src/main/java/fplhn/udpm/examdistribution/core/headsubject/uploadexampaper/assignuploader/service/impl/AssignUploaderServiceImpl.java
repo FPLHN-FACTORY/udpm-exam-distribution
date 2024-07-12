@@ -6,6 +6,7 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignupload
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.CreateSampleExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindStaffRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindSubjectRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUAssignUploaderExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUBlockExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUExamPaperExtendRepository;
@@ -20,21 +21,25 @@ import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -55,6 +60,8 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
     private final AUExamPaperExtendRepository examPaperExtendRepository;
 
     private final AUBlockExtendRepository blockExtendRepository;
+
+    private final RedisService redisService;
 
     private final HttpSession httpSession;
 
@@ -165,16 +172,33 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
                 );
             }
 
+            Optional<ExamPaper> examPaper = examPaperExtendRepository.findByPath(fileId);
+
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_SAMPLE_EXAM_PAPER + examPaper.get().getId();
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new FileResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Tìm thấy file thành công"
+                );
+            }
+
+            Resource resource = googleDriveFileService.loadFile(fileId);
+            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            redisService.set(redisKey, data);
+
             return new ResponseObject<>(
-                    googleDriveFileService.loadFile(fileId),
+                    new FileResponse(data, resource.getFilename()),
                     HttpStatus.OK,
                     "Tìm thấy file thành công"
             );
         } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Đề thi mẫu không tồn tại"
             );
         }
     }

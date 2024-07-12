@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
@@ -8,7 +9,7 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampa
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Base64;
 
 @RestController
 @RequestMapping(MappingConstants.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER)
@@ -64,12 +64,15 @@ public class UploadExamPaperRestController {
     @GetMapping("/file")
     public ResponseEntity<?> getFile(@RequestParam(name = "fileId") String fileId) throws IOException {
         ResponseObject<?> responseObject = uploadExamPaperService.getFile(fileId);
-        Resource resource = (Resource) responseObject.getData();
-        String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(data);
+        if (responseObject.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return Helper.createResponseEntity(responseObject);
+        } else {
+            FileResponse fileResponse = (FileResponse) responseObject.getData();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileResponse.getData());
+        }
     }
 
     @DeleteMapping("/{id}")

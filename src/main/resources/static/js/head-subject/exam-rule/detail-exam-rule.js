@@ -45,7 +45,6 @@ const handleSolveViewWhenOpenModalDetail = () => { // ẩn đi view pdf và pagi
 };
 
 const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    console.log(totalPage);
     $("#pdf-viewer-detail").prop("hidden", false);
     if (totalPage > 1) {
         $("#paging-pdf-detail").prop("hidden", false);
