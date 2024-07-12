@@ -55,7 +55,7 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
 
         if (studentExamShift.isEmpty()
             || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-            && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
             return false;
         }
 
@@ -75,7 +75,7 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
                 .findByExamShiftCode(studentExamShiftRequest.getExamShiftCodeJoin());
         if (existingExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn hoặc mật khẩu không đúng!");
+                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
         }
 
         ExamShift examShift = existingExamShift.get();
@@ -83,7 +83,7 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
                 examShift.getHash(), examShift.getSalt());
         if (!passwordMatch) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn hoặc mật khẩu không đúng!");
+                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
         }
 
         Optional<StudentExamShift> studentExamShiftExist = studentExamShiftExtendRepository
@@ -128,6 +128,19 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
     public ResponseObject<?> getExamShiftByCode(String examShiftCode) {
         return new ResponseObject<>(examShiftStudentExtendRepository.getExamShiftByCode(examShiftCode),
                 HttpStatus.OK, "Lấy thông tin ca thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> getExamShiftPaperByExamShiftCode(String examShiftCode) {
+        Optional<ExamShift> existingExamShift = examShiftStudentExtendRepository
+                .findByExamShiftCode(examShiftCode);
+        if (existingExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                    "Phòng thi không tồn tại!");
+        }
+
+        return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+                HttpStatus.OK, "Lấy đề thi thành công!");
     }
 
 }

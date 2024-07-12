@@ -27,6 +27,10 @@ $(document).ready(function () {
 
     countStudentInExamShift();
 
+    $('#examShiftStart').click(function () {
+        examShiftStartSubmit();
+    });
+
 });
 
 let examShiftCode = $('#examShiftCodeCtl').text();
@@ -82,6 +86,10 @@ const connect = () => {
         stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
             showToastError(JSON.parse(response.body).message);
             getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/exam-shift-start", function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
         });
     });
 }
@@ -303,6 +311,35 @@ const getStudentRejoin = () => {
         }
     });
 }
+
+const examShiftStart = () => {
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start',
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                $('#examShiftPaper').text(responseBody?.data);
+            }
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi bắt đầu ca thi');
+        }
+    });
+};
+
+const examShiftStartSubmit = () => {
+    swal({
+        title: "Xác nhận bắt đầu ca thi",
+        text: "Phát đề thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willApprove) => {
+        if (willApprove) {
+            examShiftStart();
+        }
+    });
+};
 
 const openModalRemoveStudent = (studentId) => {
     $('#studentIdRemove').val(studentId);

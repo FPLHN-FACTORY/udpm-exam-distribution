@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftAndUserInfoRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.HDExamShiftService;
@@ -29,23 +28,15 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
-        HDExamShiftAndUserInfoRequest hdExamShiftAndUserInfoRequest = new HDExamShiftAndUserInfoRequest();
-        hdExamShiftAndUserInfoRequest.setStaffId(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
-        hdExamShiftAndUserInfoRequest.setDepartmentId(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID).toString());
-        hdExamShiftAndUserInfoRequest.setFacilityId(httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString());
-
         return hdExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
-               hdExamShiftExtendRepository.getExamShiftByRequest(examShiftCode, hdExamShiftAndUserInfoRequest).isPresent();
+               hdExamShiftExtendRepository.getExamShiftByRequest(examShiftCode,
+                       httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()).isPresent();
     }
 
     @Override
     public ResponseObject<?> getAllExamShift() {
-        HDExamShiftAndUserInfoRequest hdExamShiftAndUserInfoRequest = new HDExamShiftAndUserInfoRequest();
-        hdExamShiftAndUserInfoRequest.setStaffId(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
-        hdExamShiftAndUserInfoRequest.setDepartmentId(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID).toString());
-        hdExamShiftAndUserInfoRequest.setFacilityId(httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString());
         return new ResponseObject<>(hdExamShiftExtendRepository
-                .getAllExamShift(hdExamShiftAndUserInfoRequest),
+                .getAllExamShift(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()),
                 HttpStatus.OK, "Lấy danh sách ca thi thành công!");
     }
 

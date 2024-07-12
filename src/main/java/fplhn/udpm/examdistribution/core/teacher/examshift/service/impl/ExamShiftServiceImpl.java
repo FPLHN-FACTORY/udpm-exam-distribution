@@ -16,6 +16,7 @@ import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
@@ -123,6 +124,7 @@ public class ExamShiftServiceImpl implements ExamShiftService {
         examShift.setHash(password);
         examShift.setSalt(salt);
         examShift.setStatus(EntityStatus.ACTIVE);
+        examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
         examShiftExtendRepository.save(examShift);
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
@@ -268,6 +270,22 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
         return new ResponseObject<>(null, HttpStatus.OK,
                 "Từ chối sinh viên " + student.get().getName() + " thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> startExamShift(String examShiftCode) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+        if (examShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        }
+
+        examShift.get().setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
+
+        simpMessagingTemplate.convertAndSend("/topic/exam-shift-start",
+                new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
+
+        return new ResponseObject<>(examShift.get().getExamShiftCode(),
+                HttpStatus.OK, "Bắt đầu ca thi thành công!");
     }
 
 //    private ResponseObject<?> validateShift(String shift) {

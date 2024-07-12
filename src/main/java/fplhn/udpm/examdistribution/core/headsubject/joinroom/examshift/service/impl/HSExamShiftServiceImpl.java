@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.request.HSExamShiftAndInfoRequest;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.request.HSExamShiftServiceRequest;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.repository.HSExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service.HSExamShiftService;
@@ -9,6 +8,7 @@ import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class HSExamShiftServiceImpl implements HSExamShiftService {
 
     private final HSExamShiftExtendRepository hsExamShiftExtendRepository;
@@ -29,23 +30,15 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
-        HSExamShiftAndInfoRequest hsExamShiftAndInfoRequest = new HSExamShiftAndInfoRequest();
-        hsExamShiftAndInfoRequest.setStaffId(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
-        hsExamShiftAndInfoRequest.setDepartmentId(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID).toString());
-        hsExamShiftAndInfoRequest.setFacilityId(httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString());
-
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
-               hsExamShiftExtendRepository.getExamShiftByRequest(examShiftCode, hsExamShiftAndInfoRequest).isPresent();
+               hsExamShiftExtendRepository.getExamShiftByRequest(examShiftCode,
+                       httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()).isPresent();
     }
 
     @Override
     public ResponseObject<?> getAllExamShift() {
-        HSExamShiftAndInfoRequest hsExamShiftAndInfoRequest = new HSExamShiftAndInfoRequest();
-        hsExamShiftAndInfoRequest.setStaffId(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
-        hsExamShiftAndInfoRequest.setDepartmentId(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID).toString());
-        hsExamShiftAndInfoRequest.setFacilityId(httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString());
         return new ResponseObject<>(hsExamShiftExtendRepository
-                .getAllExamShift(hsExamShiftAndInfoRequest),
+                .getAllExamShift(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()),
                 HttpStatus.OK, "Lấy danh sách ca thi thành công!");
     }
 

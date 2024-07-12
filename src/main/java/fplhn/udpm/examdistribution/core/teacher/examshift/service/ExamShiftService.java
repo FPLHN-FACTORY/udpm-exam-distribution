@@ -23,4 +23,6 @@ public interface ExamShiftService {
 
     ResponseObject<?> refuseStudent(String examShiftCode, String studentId);
 
+    ResponseObject<?> startExamShift(String examShiftCode);
+
 }

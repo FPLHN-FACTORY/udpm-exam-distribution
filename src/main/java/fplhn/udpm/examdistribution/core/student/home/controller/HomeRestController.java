@@ -30,4 +30,9 @@ public class HomeRestController {
         return Helper.createResponseEntity(studentExamShiftService.getExamShiftByCode(examShiftCode));
     }
 
+    @GetMapping("/{examShiftCode}/paper")
+    public ResponseEntity<?> getExamShiftPaperByExamShiftCode(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(studentExamShiftService.getExamShiftPaperByExamShiftCode(examShiftCode));
+    }
+
 }
