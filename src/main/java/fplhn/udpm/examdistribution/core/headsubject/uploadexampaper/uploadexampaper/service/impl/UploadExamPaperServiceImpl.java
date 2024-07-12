@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
@@ -20,10 +21,12 @@ import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -31,12 +34,14 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -61,6 +66,8 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     private final UEPClassSubjectExtendRepository classSubjectRepository;
 
     private final GoogleDriveFileService googleDriveFileService;
+
+    private final RedisService redisService;
 
     private final EmailService emailService;
 
@@ -136,20 +143,37 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.BAD_REQUEST,
-                        "Không tìm thấy file"
+                        "Bạn chưa tải lên file"
                 );
             }
 
+            Optional<ExamPaper> examPaper = examPaperRepository.findByPath(fileId);
+
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + examPaper.get().getId();
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new FileResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Tìm thấy file thành công"
+                );
+            }
+
+            Resource resource = googleDriveFileService.loadFile(fileId);
+            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            redisService.set(redisKey, data);
+
             return new ResponseObject<>(
-                    googleDriveFileService.loadFile(fileId),
+                    new FileResponse(data, resource.getFilename()),
                     HttpStatus.OK,
                     "Tìm thấy file thành công"
             );
         } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Đề thi không tồn tại"
             );
         }
     }

@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping(MappingConstants.API_HEAD_SUBJECT_MANAGE_EXAM_RULE)
 @RequiredArgsConstructor
@@ -41,7 +39,7 @@ public class ExamRuleRestController {
     }
 
     @GetMapping("/file")
-    public ResponseEntity<?> getFile(GetFileRequest request) throws IOException {
+    public ResponseEntity<?> getFile(GetFileRequest request) {
         ResponseObject<?> responseObject = examRuleService.getFile(request);
         if (responseObject.getStatus().equals(HttpStatus.OK)) {
             FileResponse fileResponse = (FileResponse) responseObject.getData();

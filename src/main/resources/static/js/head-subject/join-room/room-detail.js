@@ -72,7 +72,6 @@ const getFirstSupervisorId = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const firstSupervisor = responseBody?.data;
-                console.log(firstSupervisor);
                 $('#first-supervisor-info-name').text(firstSupervisor.name + ' - ' + firstSupervisor.staffCode);
                 $('#first-supervisor-info-email').text(firstSupervisor.accountFe);
             }
@@ -90,7 +89,6 @@ const getSecondSupervisorId = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const secondSupervisor = responseBody?.data;
-                console.log(secondSupervisor);
                 $('#second-supervisor-info-name').text(secondSupervisor.name + ' - ' + secondSupervisor.staffCode);
                 $('#second-supervisor-info-email').text(secondSupervisor.accountFe);
                 $('#secondSupervisorColumn').removeAttr('hidden');

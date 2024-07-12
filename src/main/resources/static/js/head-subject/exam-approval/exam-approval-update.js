@@ -21,7 +21,6 @@ function handleApproval(idExam) {
                 type: "PUT",
                 url: url,
                 success: function (responseBody) {
-                    console.log(responseBody)
                     if (responseBody?.status === "OK") {
                         showToastSuccess(responseBody?.message)
                     }
@@ -54,20 +53,22 @@ function handleDelete(idExam) {
         },
     }).then((ok) => {
         if (ok) {
+            showLoading();
             let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL + '?examPaperId=' + idExam;
             $.ajax({
                 type: "DELETE",
                 url: url,
                 success: function (responseBody) {
-                    console.log(responseBody)
                     if (responseBody?.status === "OK") {
                         showToastSuccess(responseBody?.message)
                     }
                     clearFormSearch();
                     getExamPapers();
+                    hideLoading();
                 },
                 error: function (error) {
                     showToastError('Có lỗi xảy ra khi xóa đề!');
+                    hideLoading();
                 }
             });
         }

@@ -93,45 +93,54 @@ public class ExamRuleServiceImpl implements ExamRuleService {
     }
 
     @Override
-    public ResponseObject<?> getFile(GetFileRequest request) throws IOException {
-        Optional<Subject> isSubjectExist = subjectRepository.findById(request.getSubjectId());
-        if (isSubjectExist.isEmpty()) {
+    public ResponseObject<?> getFile(GetFileRequest request) {
+        try {
+            Optional<Subject> isSubjectExist = subjectRepository.findById(request.getSubjectId());
+            if (isSubjectExist.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này!"
+                );
+            }
+
+            Subject subject = isSubjectExist.get();
+            if (subject.getPathExamRule() == null || subject.getPathExamRule().isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Môn học này chưa được tải quy định đề thi"
+                );
+            }
+
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + request.getSubjectId();
+
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new FileResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "success"
+                );
+            }
+            Resource fileResponse = googleDriveFileService.loadFile(request.getFileId());
+            String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+            redisService.set(redisKey, data);
+
             return new ResponseObject<>(
-                    null,
-                    HttpStatus.NOT_FOUND,
-                    "Không tìm thấy môn học này!"
+                    new FileResponse(data, fileResponse.getFilename()),
+                    HttpStatus.OK,
+                    "success"
             );
-        }
-
-        Subject subject = isSubjectExist.get();
-        if (subject.getPathExamRule() == null || subject.getPathExamRule().isEmpty()) {
+        } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseObject<>(
-                    null,
-                    HttpStatus.NOT_FOUND,
-                    "Môn học này chưa được tải quy định đề thi"
-            );
-        }
-
-        String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + request.getFileId();
-
-        Object foundKeyRedis = redisService.get(redisKey);
-        if (foundKeyRedis != null) {
-            return new ResponseObject<>(
-                    new FileResponse(foundKeyRedis.toString(), "abc"),
+                    "Quy định thi không tồn tại",
                     HttpStatus.OK,
                     "success"
             );
         }
 
-        Resource fileResponse = googleDriveFileService.loadFile(request.getFileId());
-        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
-
-        redisService.set(redisKey, data);
-        return new ResponseObject<>(
-                new FileResponse(data, fileResponse.getFilename()),
-                HttpStatus.OK,
-                "success"
-        );
     }
 
 };

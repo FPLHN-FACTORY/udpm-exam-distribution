@@ -19,4 +19,7 @@ public interface AUExamPaperExtendRepository extends ExamPaperRepository {
             """)
     Optional<ExamPaper> findSampleExamPaperBySubjectId(String subjectId, String semesterId);
 
+
+    Optional<ExamPaper> findByPath(String fileId);
+
 }

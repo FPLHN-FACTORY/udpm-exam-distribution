@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EAExamPaperRepository extends ExamPaperRepository {
@@ -64,5 +65,7 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
 			AND ep.exam_paper_status LIKE 'WAITING_APPROVAL'
             """,nativeQuery = true)
     List<EAExamPaperCleanAfterSeventDayResponse> findAllExamPaperStatusAndCreatedDate(Long dateTimeOf7Day, Long now);
+
+    Optional<ExamPaper> findByPath(String fileId);
 
 }

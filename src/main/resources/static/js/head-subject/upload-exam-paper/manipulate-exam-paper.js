@@ -258,7 +258,6 @@ const handleSendEmailPublicExamPaper = (examPaperId) => {
         type: "POST",
         url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/send-email-public-exam-paper/" + examPaperId,
         success: function (responseBody) {
-            console.log(responseBody)
             showToastSuccess(responseBody?.message);
             fetchListExamPaper();
             hideLoading();

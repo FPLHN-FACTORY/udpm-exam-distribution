@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListExamPaperResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListMajorFacilityResponse;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository {
@@ -98,5 +100,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                  WHERE mf.status = 0 AND f.id = :facilityId AND df.id_department = :departmentId
             """, nativeQuery = true)
     List<ListMajorFacilityResponse> getMajorFacilityByDepartmentFacilityId(String facilityId, String departmentId);
+
+    Optional<ExamPaper> findByPath(String fileId);
 
 }
