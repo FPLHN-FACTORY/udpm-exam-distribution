@@ -1,6 +1,5 @@
 package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository;
 
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftAndUserInfoRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.response.HDAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.response.HDExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
@@ -26,20 +25,10 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	exam_shift es
             LEFT JOIN staff s ON
             	es.id_first_supervisor = s.id
-            LEFT JOIN class_subject cs ON
-            	es.id_subject_class = cs.id
-            LEFT JOIN subject s2 ON
-            	cs.id_subject = s2.id
-            LEFT JOIN department d ON
-            	s2.id_department = d.id
-            LEFT JOIN department_facility df ON
-            	d.id = df.id_department
             WHERE
-            	df.id_staff = :#{#hdExamShiftAndUserInfoRequest.staffId}
-            	AND df.id_department = :#{#hdExamShiftAndUserInfoRequest.departmentId}
-            	AND df.id_facility = :#{#hdExamShiftAndUserInfoRequest.facilityId}
+            	s.id_department_facility = :departmentFacilityId
             """, nativeQuery = true)
-    List<HDAllExamShiftResponse> getAllExamShift(HDExamShiftAndUserInfoRequest hdExamShiftAndUserInfoRequest);
+    List<HDAllExamShiftResponse> getAllExamShift(String departmentFacilityId);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 
@@ -51,22 +40,11 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	exam_shift es
             LEFT JOIN staff s ON
             	es.id_first_supervisor = s.id
-            LEFT JOIN class_subject cs ON
-            	es.id_subject_class = cs.id
-            LEFT JOIN subject s2 ON
-            	cs.id_subject = s2.id
-            LEFT JOIN department d ON
-            	s2.id_department = d.id
-            LEFT JOIN department_facility df ON
-            	d.id = df.id_department
             WHERE
                 es.exam_shift_code = :examShiftCode
-            	AND df.id_staff = :#{#hdExamShiftAndUserInfoRequest.staffId}
-            	AND df.id_department = :#{#hdExamShiftAndUserInfoRequest.departmentId}
-            	AND df.id_facility = :#{#hdExamShiftAndUserInfoRequest.facilityId}
+                AND s.id_department_facility = :departmentFacilityId
             """, nativeQuery = true)
-    Optional<HDExamShiftResponse> getExamShiftByRequest(String examShiftCode,
-                                    HDExamShiftAndUserInfoRequest hdExamShiftAndUserInfoRequest);
+    Optional<HDExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId);
 
     @Query(value = """
             SELECT

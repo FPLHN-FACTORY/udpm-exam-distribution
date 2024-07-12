@@ -59,4 +59,9 @@ public class ExamShiftRestController {
         return Helper.createResponseEntity(examShiftService.refuseStudent(examShiftCode, studentId));
     }
 
+    @PutMapping("/{examShiftCode}/start")
+    public ResponseEntity<?> startExamShift(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(examShiftService.startExamShift(examShiftCode));
+    }
+
 }

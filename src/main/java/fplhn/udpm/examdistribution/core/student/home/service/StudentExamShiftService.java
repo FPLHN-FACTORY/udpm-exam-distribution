@@ -15,4 +15,6 @@ public interface StudentExamShiftService {
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
+    ResponseObject<?> getExamShiftPaperByExamShiftCode(String examShiftCode);
+
 }

@@ -62,4 +62,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/exam-shift-start")
+    @SendTo("/topic/exam-shift-start")
+    public NotificationResponse notifyExamShiftStart(String message) {
+        return new NotificationResponse(message);
+    }
+
 }
