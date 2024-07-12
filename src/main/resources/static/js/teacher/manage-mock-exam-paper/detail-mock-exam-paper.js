@@ -109,7 +109,6 @@ const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và pag
 };
 
 const handleFetchMockExamPaper = (idMockExamPaper) => {
-    showLoading();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/file?idMockExamPaper=" + idMockExamPaper,
@@ -125,6 +124,7 @@ const handleFetchMockExamPaper = (idMockExamPaper) => {
             });
             hideLoading();
             $("#detailMockExamModal").modal("show");
+            hideLoading();
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -132,9 +132,9 @@ const handleFetchMockExamPaper = (idMockExamPaper) => {
             } else {
                 showToastError('Có lỗi xảy ra');
             }
+            hideLoading();
         }
     });
-    hideLoading();
 };
 
 function handleDetailMockExamPaper(idMockExamPaper) {
@@ -156,6 +156,42 @@ function formatDateTime(date) {
     const minutes = String(d.getMinutes()).padStart(2, "0");
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
+
+const handleDownloadExamPaper = (fileId) => {
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/download",
+        data: {
+            fileId: fileId,
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            const blob = new Blob([pdfData], {type: 'application/pdf'});
+            // Tạo đối tượng URL từ Blob
+            const url = URL.createObjectURL(blob);
+
+            // Tạo và nhấp vào liên kết để tải tệp
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'file.pdf'; // Đặt tên cho file tải về
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa đối tượng URL sau khi tải
+            URL.revokeObjectURL(url);
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
 
 const fetchMockExamPaper = (subjectId,
                             codeAndTeacher = null,
@@ -204,6 +240,10 @@ const fetchMockExamPaper = (subjectId,
                                    style="cursor: pointer; margin-left: 10px;"></i>
                                      
                                 </span>
+                                 <span onclick="handleDownloadExamPaper('${mockExamPaper.path}')" class="fs-4">
+                                <i class="fa-solid fa-download" 
+                                   style="cursor: pointer; margin-left: 10px;"></i>
+                                </span> 
                             </td>
                         </tr>`;
             });

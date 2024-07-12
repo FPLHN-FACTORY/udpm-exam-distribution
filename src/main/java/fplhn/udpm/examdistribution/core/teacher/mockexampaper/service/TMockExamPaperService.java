@@ -16,4 +16,6 @@ public interface TMockExamPaperService {
 
     ResponseObject<?> getFile(String idMockExamPaper) throws IOException;
 
+    ResponseObject<?> downLoad(String fileId);
+
 }
