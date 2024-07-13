@@ -5,13 +5,13 @@ $(document).ready(function () {
     onChangePageSize();
 
     //add event for form search
-    $('#subjectName').on("change", debounce(() => {
+    $('#findSubject').on("keyup", debounce(() => {
         fetchSearchSubject(1,
             $('#pageSize').val(),
             getGlobalParamsSearch());
     }));
 
-    $('#subjectCode').on("change", debounce(() => {
+    $('#subjectType').on("change", debounce(() => {
         fetchSearchSubject(1,
             $('#pageSize').val(),
             getGlobalParamsSearch());
@@ -29,20 +29,35 @@ $(document).ready(function () {
 const examDistributionInfor = getExamDistributionInfo();
 //END: Exam Distribution Information
 
+function getStatusType(type) {
+    switch (type) {
+        case 'TRADITIONAL':
+            return '<span class="tag tag-purple">Truyền thống</span>';
+        case 'ONLINE':
+            return '<span class="tag tag-success">Online</span>';
+        case 'BLEND':
+            return '<span class="tag tag-primary">Truyền thống kết hợp Online</span>';
+        case 'TRUC_TUYEN':
+            return '<span class="tag tag-warning">Trực tuyến</span>';
+        default:
+            return '<span class="tag tag-secondary">Không xác định</span>';
+    }
+}
+
 const fetchSearchSubject = (
     page = 1,
     size = $('#pageSize').val(),
     paramSearch = {
-        subjectCode: "",
-        subjectName: "",
+        findSubject: "",
+        subjectType: "",
         staffId: examDistributionInfor.userId
     },
 ) => {
     const params = {
         page: page,
         size: size,
-        subjectCode: paramSearch.subjectCode,
-        subjectName: paramSearch.subjectName,
+        findSubject: paramSearch.findSubject,
+        subjectType: paramSearch.subjectType,
         staffId: paramSearch.staffId
     };
 
@@ -75,14 +90,15 @@ const fetchSearchSubject = (
                             <td>${subject.subjectCode}</td>
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
-                            <td>${subject.subjectType}</td>
+                            <td>${getStatusType(subject.subjectType)}</td>
+                            <td>${subject.uploaded}/${subject.maxUpload}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamFile('${subject.id}','${subject.subjectCode}')" class="fs-4">
-                                    
-                                    <i class="fa-solid fa-upload"
-                                        style="cursor: pointer; margin-left: 10px;"
-                                    ></i>
-                                </span> 
+                                ${subject.uploaded >= subject.maxUpload ?
+                                 '': `<span onclick="handleOpenModalExamFile('${subject.id}','${subject.subjectCode}')" class="fs-4">
+                                <i class="fa-solid fa-upload"
+                                   style="cursor: pointer; margin-left: 10px;"
+                                ></i>
+                            </span>`}
                             </td>
                         </tr>`;
             });
@@ -99,15 +115,15 @@ const fetchSearchSubject = (
 
 const getGlobalParamsSearch = () => {
     return {
-        subjectCode: $("#subjectCode").val(),
-        subjectName: $("#subjectName").val(),
+        findSubject: $("#findSubject").val(),
+        subjectType: $("#subjectType").val(),
         staffId: examDistributionInfor.userId
     }
 }
 
 const resetGlobalParamsSearch = () => {
-    $("#subjectCode").val("");
-    $("#subjectName").val("");
+    $("#subjectType").val("");
+    $("#findSubject").val("");
 };
 
 const createPagination = (totalPages, currentPage) => {

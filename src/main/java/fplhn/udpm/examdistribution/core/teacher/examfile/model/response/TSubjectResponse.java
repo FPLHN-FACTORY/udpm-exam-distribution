@@ -15,4 +15,8 @@ public interface TSubjectResponse extends IsIdentify, HasOrderNumber {
 
     Long getCreatedDate();
 
+    Long getMaxUpload();
+
+    Long getUploaded();
+
 }
