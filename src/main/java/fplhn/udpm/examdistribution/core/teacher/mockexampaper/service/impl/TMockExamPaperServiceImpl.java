@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.teacher.mockexampaper.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TSubjectMockExamRequest;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TSemesterResponse;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMockExamPaperRepository;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMockExamSubjectRepository;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TSemesterRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,7 +51,21 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
 
     @Override
     public ResponseObject<?> getSemesters() {
-        return new ResponseObject<>(semesterRepository.getSemester(), HttpStatus.OK, "Lấy danh sách học kì thành công");
+        List<TSemesterResponse> semesters = semesterRepository.getSemester();
+        if (!semesters.isEmpty()) {
+            TSemesterResponse currentSemester = null;
+            for (int i =0 ;i < semesters.size(); i++) {
+                if (semesters.get(i).getId().equalsIgnoreCase(httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString())) {
+                    currentSemester = semesters.get(i);
+                    semesters.remove(i);
+                    break;
+                }
+            }
+            if (currentSemester!=null){
+                semesters.set(0,currentSemester);
+            }
+        }
+        return new ResponseObject<>(semesters, HttpStatus.OK, "Lấy danh sách học kì thành công");
     }
 
     @Override

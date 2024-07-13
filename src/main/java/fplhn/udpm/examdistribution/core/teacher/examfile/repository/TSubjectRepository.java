@@ -11,14 +11,19 @@ import org.springframework.data.jpa.repository.Query;
 public interface TSubjectRepository extends SubjectRepository {
 
     @Query(value = """
-            SELECT 	s.id AS id,
-            		ROW_NUMBER() OVER(
+            SELECT s.id AS id,
+                    ROW_NUMBER() OVER(
                     ORDER BY s.id DESC) AS orderNumber,
                     s.subject_code AS subjectCode,
                     s.name AS subjectName,
                     s.subject_type AS subjectType,
                     d.name AS departmentName,
-                    s.created_date AS createdDate
+                    s.created_date AS createdDate,
+                    au.max_upload AS maxUpload,
+                    (SELECT COUNT(ep.id)  
+                     FROM exam_paper ep
+                     JOIN subject s3 ON s3.id = ep.id_subject
+                     WHERE s3.id = s.id) AS uploaded
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
@@ -28,27 +33,31 @@ public interface TSubjectRepository extends SubjectRepository {
             WHERE au.id_staff LIKE :staffId
             AND (df.id = :departmentFacilityId)
             AND au.status = 0
-            AND (s.status = 0) 
+            AND (s.status = 0)
             AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
-            AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) 
-            AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+            AND (:#{#request.findSubject} IS NULL
+                     OR s.subject_code LIKE :#{"%" + #request.findSubject + "%"}
+                     OR s.name LIKE :#{"%" + #request.findSubject + "%"})
+            AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{#request.subjectType})
             """,
             countQuery = """
-            SELECT 	COUNT(s.id)
-            FROM subject s
-            JOIN department d ON s.id_department = d.id
-            JOIN department_facility df ON df.id_department = d.id
-            JOIN assign_uploader au ON au.id_subject = s.id
-            JOIN semester s2 ON s2.id = au.id_semester
-            JOIN block b ON b.id_semester = s2.id
-            WHERE au.id_staff LIKE :staffId
-            AND (df.id = :departmentFacilityId)
-            AND au.status = 0
-            AND (s.status = 0) 
-            AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
-            AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"})
-            AND (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
-            """, nativeQuery = true)
+                 SELECT 	COUNT(s.id)
+                 FROM subject s
+                 JOIN department d ON s.id_department = d.id
+                 JOIN department_facility df ON df.id_department = d.id
+                 JOIN assign_uploader au ON au.id_subject = s.id
+                 JOIN semester s2 ON s2.id = au.id_semester
+                 JOIN block b ON b.id_semester = s2.id
+                 WHERE au.id_staff LIKE :staffId
+                 AND (df.id = :departmentFacilityId)
+                 AND au.status = 0
+                 AND (s.status = 0) 
+                 AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
+                 AND (:#{#request.findSubject} IS NULL
+                          OR s.subject_code LIKE :#{"%" + #request.findSubject + "%"}
+                          OR s.name LIKE :#{"%" + #request.findSubject + "%"})
+                 AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{#request.subjectType})
+                 """, nativeQuery = true)
     Page<TSubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, TFindSubjectRequest request,String staffId);
 
 

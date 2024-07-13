@@ -33,12 +33,18 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" id="subjectCode" class="form-control">
+                                    <label for="findSubject">Mã/Tên môn học</label>
+                                    <input type="text" id="findSubject" style="height: 60%;" class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="subjectName">Tên môn học</label>
-                                    <input type="text" id="subjectName" class="form-control">
+                                    <label for="subjectType">Loại môn học</label>
+                                    <select id="subjectType" style="height: 60%;" class="form-select">
+                                        <option value="">-- Chọn loại môn học --</option>
+                                        <option value="TRADITIONAL">Truyền thống</option>
+                                        <option value="ONLINE">Online</option>
+                                        <option value="BLEND">Truyền thống kết hợp Online</option>
+                                        <option value="TRUC_TUYEN">Trực tuyến</option>
+                                    </select>
                                 </div>
                             </div>
                         </form>
@@ -57,6 +63,7 @@
                                     <td>Tên môn học</td>
                                     <td>Bộ môn</td>
                                     <td>Loại môn học</td>
+                                    <td>Đã upload</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
@@ -101,7 +108,7 @@
                     <div class="mb-3">
                         <label class="form-label">
                             <span class="text-danger"> * </span> Loại đề </label>
-                        <select class="form-select" id="exam-paper-type" required>
+                        <select class="form-select" style="height: 60%;" id="exam-paper-type" required>
                             <option value="">-- Chọn loại đề --</option>
                             <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
                             <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
@@ -111,7 +118,7 @@
                     <div class="mb-3">
                         <label class="form-label">
                             <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
-                        <select class="form-select" id="major-facility" required>
+                        <select class="form-select" style="height: 60%;" id="major-facility" required>
                             <option value="">-- Chuyên ngành - cơ sở --</option>
                         </select>
                         <div class="text-danger" id="major-facility-error"></div>
