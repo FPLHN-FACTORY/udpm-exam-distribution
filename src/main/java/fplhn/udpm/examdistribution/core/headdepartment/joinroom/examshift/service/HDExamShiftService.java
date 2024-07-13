@@ -16,4 +16,6 @@ public interface HDExamShiftService {
 
     ResponseObject<?> countStudentInExamShift(String examShiftCode);
 
+    ResponseObject<?> getPathByExamShiftCode(String examShiftCode);
+
 }

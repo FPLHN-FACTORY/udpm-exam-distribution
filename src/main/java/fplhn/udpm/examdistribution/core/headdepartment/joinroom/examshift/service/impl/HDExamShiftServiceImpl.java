@@ -69,4 +69,9 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
                 HttpStatus.OK, "Đếm số sinh viên trong phòng thi thành công!");
     }
 
+    @Override
+    public ResponseObject<?> getPathByExamShiftCode(String examShiftCode) {
+        return null;
+    }
+
 }
