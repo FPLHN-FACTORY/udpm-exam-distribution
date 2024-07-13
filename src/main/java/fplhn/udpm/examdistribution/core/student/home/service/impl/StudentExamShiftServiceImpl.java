@@ -3,12 +3,15 @@ package fplhn.udpm.examdistribution.core.student.home.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.student.examshift.repository.ExamShiftStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.student.home.model.request.StudentExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.home.repository.StudentExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.student.home.repository.StudentExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.student.home.service.StudentExamShiftService;
 import fplhn.udpm.examdistribution.core.student.student.repository.StudentExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.FileResourceResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
@@ -18,11 +21,14 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -37,7 +43,11 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
 
     private final StudentExamShiftExtendRepository studentExamShiftExtendRepository;
 
+    private final StudentExamPaperExtendRepository studentExamPaperExtendRepository;
+
     private final HttpSession httpSession;
+
+    private final GoogleDriveFileService googleDriveFileService;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -101,9 +111,19 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
                                 + " yêu cầu tham gia phòng thi!"));
                 return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                         HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
+            } else {
+                StudentExamShift studentExamShift = studentExamShiftExist.get();
+                studentExamShift.setId(studentExamShiftExist.get().getId());
+                studentExamShift.setStudent(existingStudent.get());
+                studentExamShift.setExamShift(examShift);
+                studentExamShift.setJoinTime(studentExamShiftRequest.getJoinTime());
+                studentExamShift.setExamStudentStatus(ExamStudentStatus.REGISTERED);
+                studentExamShift.setStatus(EntityStatus.ACTIVE);
+                studentExamShiftExtendRepository.save(studentExamShift);
+                return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+                        HttpStatus.OK, "Tham gia phòng thi thành công!");
             }
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Sinh viên đã ở trong phòng thi này rồi!");
+
         } else {
             StudentExamShift studentExamShift = new StudentExamShift();
             studentExamShift.setStudent(existingStudent.get());
@@ -131,15 +151,17 @@ public class StudentExamShiftServiceImpl implements StudentExamShiftService {
     }
 
     @Override
-    public ResponseObject<?> getExamShiftPaperByExamShiftCode(String examShiftCode) {
-        Optional<ExamShift> existingExamShift = examShiftStudentExtendRepository
-                .findByExamShiftCode(examShiftCode);
-        if (existingExamShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn tại!");
-        }
+    public ResponseObject<?> getPathByExamShiftCode(String examShiftCode) {
+        return new ResponseObject<>(studentExamPaperExtendRepository.getPathByExamShiftCode(examShiftCode),
+                HttpStatus.OK, "Lấy path đề thi thành công!");
+    }
 
-        return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+    @Override
+    public ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+        return new ResponseObject<>(
+                new FileResourceResponse(data, fileResponse.getFilename()),
                 HttpStatus.OK, "Lấy đề thi thành công!");
     }
 

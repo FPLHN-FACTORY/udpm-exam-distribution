@@ -6,6 +6,7 @@ import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -63,4 +64,22 @@ public interface ExamShiftExtendRepository extends ExamShiftRepository {
             	AND es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     Integer countStudentInExamShift(String examShiftCode);
+
+    @Query(value = """
+            SELECT
+            	ep.id
+            FROM
+            	exam_paper ep
+            JOIN subject s ON
+            	ep.id_subject = s.id
+            JOIN department d ON
+            	d.id = s.id_department
+            JOIN department_facility df ON
+            	d.id = df.id_department
+            WHERE
+            	df.id = :departmentFacilityId
+            	AND ep.id_subject = :subjectId
+            	AND ep.exam_paper_type = 'OFFICIAL_EXAM_PAPER'
+            """, nativeQuery = true)
+    List<String> getListIdExamPaper(String departmentFacilityId, String subjectId);
 }

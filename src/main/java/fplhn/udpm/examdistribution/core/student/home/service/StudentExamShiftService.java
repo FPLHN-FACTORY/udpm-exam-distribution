@@ -5,6 +5,7 @@ import fplhn.udpm.examdistribution.core.student.home.model.request.StudentExamSh
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import jakarta.validation.Valid;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public interface StudentExamShiftService {
@@ -15,6 +16,8 @@ public interface StudentExamShiftService {
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
-    ResponseObject<?> getExamShiftPaperByExamShiftCode(String examShiftCode);
+    ResponseObject<?> getPathByExamShiftCode(String examShiftCode);
+
+    ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) throws IOException;
 
 }
