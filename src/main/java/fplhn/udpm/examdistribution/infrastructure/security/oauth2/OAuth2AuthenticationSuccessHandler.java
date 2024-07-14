@@ -135,6 +135,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .departmentFacilityId(staff.getDepartmentFacility().getId())
                 .departmentName(staff.getDepartmentFacility().getDepartment().getName())
                 .facilityName(staff.getDepartmentFacility().getFacility().getId())
+                .facilityId(staff.getDepartmentFacility().getFacility().getId())
                 .userEmailFPT(staff.getAccountFpt())
                 .userEmailFe(staff.getAccountFe())
                 .userFullName(userInfo.getName())
