@@ -1,17 +1,9 @@
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:06,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:33,getSubjectAssigned,Lấy danh sách môn học,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:35,assignSubjectToStaff,Phân công môn học cho giảng viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:35,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:35,getSubjectAssigned,Lấy danh sách môn học,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:37,assignSubjectToStaff,Phân công môn học cho giảng viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:37,getSubjectAssigned,Lấy danh sách môn học,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:37,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:40,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:40,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 20:47:40,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:20:31,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:20:34,getSubjectAssigned,Lấy danh sách môn học,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:20:37,assignSubjectToStaff,Phân công môn học cho giảng viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:20:37,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:20:37,getSubjectAssigned,Lấy danh sách môn học,Chủ nhiệm bộ môn,INFO
-hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 21:30:43,getStaffAndHeadSubjects,Lấy danh sách nhân viên,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 23:16:19,assignSubject,Phân công môn học J_1 - Java 1 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 23:16:19,unassignSubject,Hủy phân công môn học J_2 - Java 2 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,14/07/2024 23:16:19,unassignSubject,Hủy phân công môn học TESST111 - TESST111 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:14:58,assignSubject,Phân công môn học J_2 - Java 2 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:14:58,assignSubject,Phân công môn học J_1 - Java 1 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:14:58,assignSubject,Phân công môn học TESST111 - TESST111 cho giảng viên manhnvph43516 - Nguyễn Vĩ Mạnh,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:18:53,assignSubject,Phân công môn học J_2 - Java 2 cho giảng viên nghiathph32178 - Trịnh Hiếu Nghĩa,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:18:53,assignSubject,Phân công môn học J_1 - Java 1 cho giảng viên nghiathph32178 - Trịnh Hiếu Nghĩa,Chủ nhiệm bộ môn,INFO
+hieunmph42056@fpt.edu.vn,0:0:0:0:0:0:0:1,15/07/2024 09:18:53,assignSubject,Phân công môn học TESST111 - TESST111 cho giảng viên nghiathph32178 - Trịnh Hiếu Nghĩa,Chủ nhiệm bộ môn,INFO

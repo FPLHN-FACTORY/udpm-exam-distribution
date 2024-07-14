@@ -32,6 +32,10 @@ $(document).ready(() => {
         handleResetSearchSubjectAssign();
     });
 
+    $('#btnShowHistoryLog').click(() => {
+        handleShowModalHistory();
+    });
+
 });
 
 // HEAD OF SUBJECT
@@ -381,3 +385,41 @@ const createPaginationAssignSubject = (totalPages, currentPage) => {
 const changePageAssignSubject = (page) => {
     getSubjectAssignForStaff(currentStaffId, page);
 }
+
+//HISTORY
+const getHistoryAssignSubject = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/history",
+        contentType: "application/json",
+        success: (responseBody) => {
+            if (responseBody?.data?.length === 0) {
+                $('#historyTableBody').html(`
+                    <tr>
+                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
+                    </tr>
+                `);
+                return;
+            }
+            const historyAssignSubjects = responseBody?.data?.data?.map((history, _) => {
+                return `
+                    <tr>
+                        <td>${history.orderNumber}</td>
+                        <td>${history.createDate}</td>
+                        <td>${history.mail + ' ' + history.content}</td>
+                        <td>${history.author}</td>
+                    </tr>
+                `;
+            });
+            $('#historyLogTableBody').html(historyAssignSubjects);
+        },
+        error: (error) => {
+            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
+        }
+    });
+};
+
+const handleShowModalHistory = () => {
+    getHistoryAssignSubject();
+    $('#viewHistoryLog').modal('show');
+};

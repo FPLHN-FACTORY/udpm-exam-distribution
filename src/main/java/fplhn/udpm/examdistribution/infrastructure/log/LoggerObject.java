@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Builder
 public class LoggerObject implements Serializable {
 
-    private int stt;
+    private int orderNumber;
 
     private String content;
 

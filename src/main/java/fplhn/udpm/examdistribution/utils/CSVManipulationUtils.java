@@ -68,7 +68,7 @@ public class CSVManipulationUtils {
                 loggerObject.setContent(record.get(4));
                 loggerObject.setAuthor(record.get(5));
                 loggerObject.setStatus(record.get(6));
-                loggerObject.setStt(reverseOrder ? count++ : count--);
+                loggerObject.setOrderNumber(reverseOrder ? count++ : count--);
                 list.add(loggerObject);
             }
         } catch (IOException e) {
@@ -212,16 +212,11 @@ public class CSVManipulationUtils {
     }
 
     public String getSwitchFacility() {
-        List<SimpleEntityProjection> facilities = (List<SimpleEntityProjection>) session.getAttribute("listCoSo");
-        if (facilities == null) {
-            facilities = facilityRepository.findAllSimpleEntity();
-        }
-
+        List<SimpleEntityProjection> facilities = facilityRepository.findAllSimpleEntity();
         String facilityId = (String) session.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID);
         if (facilityId == null) {
             throw new IllegalStateException("Facility ID không tồn tại trong session");
         }
-
         String facility = facilities.stream()
                 .filter(el -> el.getId().equals(facilityId))
                 .map(SimpleEntityProjection::getName)
@@ -258,8 +253,8 @@ public class CSVManipulationUtils {
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             try {
-                Files.createDirectories(path.getParent()); // Create parent directories if not exists
-                Files.createFile(path); // Create the file
+                Files.createDirectories(path.getParent());
+                Files.createFile(path);
             } catch (IOException e) {
                 e.printStackTrace(System.out);
             }
@@ -275,7 +270,7 @@ public class CSVManipulationUtils {
         return false;
     }
 
-    public void genFolderLogger() {
+    public void generateFolderLogger() {
         String pathFile = getPropertiesRead(ConfigurationsConstant.PATH_FILE_TEMPLATE);
         if (createFolder(pathFile)) {
             createFolder(pathFile + getPropertiesRead(ConfigurationsConstant.FOLDER_ACTOR_HEAD_DEPARTMENT));
