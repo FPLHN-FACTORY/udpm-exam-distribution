@@ -70,14 +70,11 @@ const getListHeadSubject = (
                     <tr>
                         <td>${staff.orderNumber}</td>
                         <td>${staff.staffCode}</td>
-                        <td>${staff.staffName}</td>
+                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">${staff.staffName}</td>
                         <td>${staff.accountFPT}</td>
                         <td>${staff.accountFE}</td>
                         <td>
-                            ${staff?.subjectsAssigned ?
-                    staff?.subjectsAssigned?.split(',')?.map((subject) => `<span class="badge bg-primary">${subject}</span>`).join('')
-                    : '<span class="badge bg-danger">Empty</span>'
-                }
+                            ${formatSubjectsAssigned(staff?.subjectsAssigned)}
                         </td>
                         <td>${staff?.semesterInfo ? staff?.semesterInfo : '<span class="badge bg-danger">Empty</span>'}</td>
                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
@@ -256,6 +253,12 @@ const handleListenSearchQuery = debounce(() => {
         query
     );
 }, 300);
+
+const formatSubjectsAssigned = (subjectsAssigned) => {
+    return subjectsAssigned
+        ? subjectsAssigned.split(',').map(subject => `<span class="badge bg-primary">${subject}</span>`).join('')
+        : '<span class="badge bg-danger">Empty</span>';
+};
 
 //SUBJECT
 const getSubjectAssignForStaff = (

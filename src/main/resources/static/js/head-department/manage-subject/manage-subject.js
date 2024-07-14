@@ -1,22 +1,52 @@
-$(document).ready(function () {
-    getSubjectsAssignWithHeadSubject();
-
-    $('#btnReassignStaffForSubject').on('click', assignStaffForSubject);
-
-    getAllSemesterAndSetDefaultCurrentSemester();
-
-});
-
 const userLoginInfo = getExamDistributionInfo();
+
+const searchFields = ['#subjectCode', '#subjectName', '#staffCodeSearch', '#staffNameSearch'];
+
+const currentPaginationParams = {
+    page: INIT_PAGINATION.page,
+    size: INIT_PAGINATION.size,
+    departmentFacilityId: userLoginInfo.departmentFacilityId,
+    semesterId: null,
+    subjectCode: null,
+    subjectName: null,
+    staffCode: null,
+    staffName: null,
+}
 
 let currentSubjectId = null;
 
-let currentSemesterId = null;
+$(document).ready(function () {
+
+    getAllSemesterAndSetDefaultCurrentSemester();
+
+    $('#btnReassignStaffForSubject').on('click', assignStaffForSubject);
+
+    $('#querySearchSemester').change((e) => {
+        currentSemesterId = e.target.value;
+        getSubjectsAssignWithHeadSubject(
+            currentPaginationParams.page,
+            currentPaginationParams.size,
+            currentPaginationParams.departmentFacilityId,
+            currentSemesterId,
+            currentPaginationParams?.subjectCode,
+            currentPaginationParams?.subjectName,
+            currentPaginationParams?.staffCode,
+            currentPaginationParams?.staffName
+        );
+    });
+
+
+    searchFields.forEach(field => {
+        $(field).on('input', handleListenSearchQuery);
+    });
+
+});
 
 const getSubjectsAssignWithHeadSubject = (
     page = INIT_PAGINATION.page,
     size = $('#pageSize').val() || INIT_PAGINATION.size,
-    departmentFacilityId = userLoginInfo.departmentFacilityId,
+    departmentFacilityId = null,
+    semesterId = null,
     subjectCode = null,
     subjectName = null,
     staffCode = null,
@@ -27,6 +57,7 @@ const getSubjectsAssignWithHeadSubject = (
         ApiConstant.API_HEAD_DEPARTMENT_MANAGE_SUBJECT,
         {
             departmentFacilityId,
+            semesterId,
             subjectCode,
             subjectName,
             staffCode,
@@ -149,7 +180,7 @@ const getStaffs = (
             departmentFacilityId: userLoginInfo.departmentFacilityId,
             subjectId: currentSubjectId,
             currentUserId: userLoginInfo.userId,
-            semesterId: currentSemesterId
+            semesterId: currentPaginationParams.semesterId
         }
     );
 
@@ -265,7 +296,16 @@ const assignStaffForSubject = () => {
         success: () => {
             showToastSuccess("Phân công trưởng môn thành công");
             $('#assignStaffForSubjectModal').modal('hide');
-            getSubjectsAssignWithHeadSubject();
+            getSubjectsAssignWithHeadSubject(
+                currentPaginationParams.page,
+                currentPaginationParams.size,
+                currentPaginationParams.departmentFacilityId,
+                currentPaginationParams.semesterId,
+                currentPaginationParams?.subjectCode,
+                currentPaginationParams?.subjectName,
+                currentPaginationParams?.staffCode,
+                currentPaginationParams?.staffName
+            );
         },
         error: (error) => {
             showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
@@ -274,7 +314,15 @@ const assignStaffForSubject = () => {
 };
 
 const changePage = (page) => {
-    getSubjectsAssignWithHeadSubject(page);
+    getSubjectsAssignWithHeadSubject(
+        page,
+        currentPaginationParams.size,
+        currentPaginationParams.semesterId,
+        currentPaginationParams?.subjectCode,
+        currentPaginationParams?.subjectName,
+        currentPaginationParams?.staffCode,
+        currentPaginationParams?.staffName
+    );
 }
 
 const changePageStaffAssignWithSubject = (page) => {
@@ -292,10 +340,38 @@ const getAllSemesterAndSetDefaultCurrentSemester = () => {
             });
             $('#querySearchSemester').html(semesters);
             $('#querySearchSemester').val(responseBody?.data[0]?.id);
-            currentSemesterId = responseBody?.data[0]?.id;
+            currentPaginationParams.semesterId = responseBody?.data[0]?.id;
+            getSubjectsAssignWithHeadSubject(
+                currentPaginationParams.page,
+                currentPaginationParams.size,
+                currentPaginationParams.departmentFacilityId,
+                responseBody?.data[0]?.id,
+                currentPaginationParams?.subjectCode,
+                currentPaginationParams?.subjectName,
+                currentPaginationParams?.staffCode,
+                currentPaginationParams?.staffName
+            );
         },
         error: (error) => {
             showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
         }
     });
-}
+};
+
+const handleListenSearchQuery = debounce(() => {
+    const subjectCode = $('#subjectCode').val();
+    const subjectName = $('#subjectName').val();
+    const staffCode = $('#staffCodeSearch').val();
+    const staffName = $('#staffNameSearch').val();
+    getSubjectsAssignWithHeadSubject(
+        currentPaginationParams.page,
+        currentPaginationParams.size,
+        currentPaginationParams.departmentFacilityId,
+        currentPaginationParams.semesterId,
+        subjectCode,
+        subjectName,
+        staffCode,
+        staffName
+    );
+}, 300);
+

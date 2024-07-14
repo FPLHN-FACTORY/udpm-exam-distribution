@@ -12,6 +12,9 @@ public class SubjectsStaffRequest extends PageableRequest {
     @NotNull(message = "ID bộ môn theo cơ sở không được để trống")
     private String departmentFacilityId;
 
+    @NotNull(message = "ID học kỳ không được để trống")
+    private String semesterId;
+
     private String subjectCode;
 
     private String subjectName;
