@@ -15,9 +15,13 @@ import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.log.LoggerObject;
+import fplhn.udpm.examdistribution.utils.CSVManipulationUtils;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +42,8 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
     private final HDSubjectExtendRepository hdSubjectExtendRepository;
 
     private final HDSemesterExtendRepository hdSemesterExtendRepository;
+
+    private final CSVManipulationUtils csvManipulationUtils;
 
     @Override
     public ResponseObject<?> getStaffAndHeadSubjects(@Valid HeadSubjectRequest request) {
@@ -96,9 +102,25 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
         assignedSubjects.forEach(subject -> assignSubject(subject, staff, semester));
         unassignedSubjects.forEach(subject -> unassignSubject(subject, staff, semester));
 
+
         return ResponseObject.successForward(
                 null,
                 "Phân công môn học cho giảng viên thành công"
+        );
+    }
+
+    public ResponseObject<?> getChangeHistory(int page, int size) {
+        String filePath = csvManipulationUtils.getSwitchFacility() + "head_department_logs.csv";
+        LoggerObject loggerObject = new LoggerObject();
+        loggerObject.setPathFile(filePath);
+        List<LoggerObject> listLogRaw = csvManipulationUtils.readFileCSV(loggerObject);
+        List<LoggerObject> pagedSanPhamList = listLogRaw.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+        return ResponseObject.successForward(
+                PageableObject.of(new PageImpl<>(pagedSanPhamList, PageRequest.of(page, size), pagedSanPhamList.size())),
+                "Lấy lịch sử thay đổi thành công"
         );
     }
 
@@ -130,11 +152,21 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
             newHeadSubjectBySemester.setStatus(EntityStatus.ACTIVE);
             hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
         }
+        logAction("Phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "assignSubject");
     }
 
     private void unassignSubject(Subject subject, Staff staff, Semester semester) {
         hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_IdAndStaff_Id(subject.getId(), semester.getId(), staff.getId())
                 .ifPresent(hdHeadSubjectBySemesterExtendRepository::delete);
+        logAction("Hủy phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "unassignSubject");
+    }
+
+    private void logAction(String content, String methodName) {
+        String filePath = csvManipulationUtils.getSwitchFacility() + "head_department_logs.csv";
+        csvManipulationUtils.createFile(filePath);
+        LoggerObject log = csvManipulationUtils.createLoggerObject(content, filePath, "INFO");
+        log.setMethod(methodName);
+        csvManipulationUtils.writerFileCSV(log);
     }
 
 }

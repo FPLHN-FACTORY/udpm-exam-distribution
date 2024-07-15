@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static fplhn.udpm.examdistribution.utils.Helper.createResponseEntity;
@@ -43,6 +44,14 @@ public class HosRestController {
     @GetMapping("/semester")
     public ResponseEntity<?> getSemesterInfo() {
         return createResponseEntity(commonHeadOfDepartmentService.getSemesterInfo());
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getChangeHistory(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "50") int size
+    ) {
+        return createResponseEntity(manageHeadSubjectService.getChangeHistory(page, size));
     }
 
 }

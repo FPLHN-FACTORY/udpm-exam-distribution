@@ -19,6 +19,8 @@ public class CustomUserCookie implements Serializable {
 
     private String facilityName;
 
+    private String facilityId;
+
     private String userEmailFPT;
 
     private String userEmailFe;

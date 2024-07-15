@@ -58,6 +58,12 @@
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-list"></i> Danh sách nhân viên</h4>
+                            <button
+                                    class="btn btn-secondary"
+                                    id="btnShowHistoryLog"
+                            >
+                                Lịch sử thao tác
+                            </button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
@@ -202,6 +208,62 @@
         </div>
     </div>
     <!--  Modal Assign Subject For Staff - Head Of Subject  -->
+    <!--  Modal View History Log  -->
+    <div
+            class="modal fade"
+            id="viewHistoryLog"
+            tabindex="-1"
+            aria-labelledby="viewHistoryLogLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewHistoryLogLabel">Lịch sử thao tác</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <td>STT</td>
+                                <td>Ngày tạo</td>
+                                <td>Nội dung</td>
+                                <td>Chức vụ</td>
+                            </tr>
+                            </thead>
+                            <tbody id="historyLogTableBody" class="table-group-divider">
+                            <tr>
+                                <td colspan="5" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <div class="d-flex align-items-center">
+                                <nav>
+                                    <ul class="pagination" id="paginationHistoryLog">
+                                    </ul>
+                                </nav>
+                            </div>
+                            <select class="form-select" id="pageSizeHistoryLog" style="width: 100px;">
+                                <option value="5">5 bản ghi / Trang</option>
+                                <option value="10">10 bản ghi / Trang</option>
+                                <option value="20">20 bản ghi / Trang</option>
+                                <option value="50">50 bản ghi / Trang</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  Modal View History Log  -->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>

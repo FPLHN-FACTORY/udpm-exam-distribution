@@ -38,3 +38,6 @@ out/
 
 ### Environments ###
 .env
+
+###CSV FILES###
+/src/main/resources/csv-logger/
