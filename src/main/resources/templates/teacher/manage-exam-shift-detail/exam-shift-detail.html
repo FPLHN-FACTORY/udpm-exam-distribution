@@ -8,7 +8,6 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/teacher/manage-exam-detail/exam-detail.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <title>Teacher - Trang chủ</title>
 </head>
@@ -128,9 +127,14 @@
                              aria-labelledby="exam-shift-paper-tab" tabindex="2">
                             <div class="p-4 bg-white rounded min-vh-100">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="examShiftStart">
-                                        Phát đề thi
-                                    </button>
+                                    <div>
+                                        <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="examShiftStart">
+                                            Phát đề thi
+                                        </button>
+                                        <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="completeExamShift" hidden>
+                                            Hoàn thành
+                                        </button>
+                                    </div>
                                     <div id="countdown"></div>
                                 </div>
                                 <div id="examShiftPaper">

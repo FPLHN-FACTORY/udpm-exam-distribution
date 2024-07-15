@@ -29,6 +29,12 @@ $(document).ready(function () {
         examPaperOpenSubmit();
     });
 
+    $('#completeExamShift').click(function () {
+        completeExamShift();
+    });
+
+    // checkOnline();
+
 });
 
 let examShiftCode = $('#examShiftCodeCtl').text();
@@ -213,7 +219,7 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
-            handleSendMessageStartToExt();
+            // handleSendMessageStartToExt();
         });
     });
 }
@@ -230,7 +236,7 @@ const startCountdown = (startTime, endTime) => {
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
             $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
         } else {
-            handleSendMessageEndTimeToExt();
+            // handleSendMessageEndTimeToExt();
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
             $('#openExamPaper').prop('hidden', false);
@@ -262,7 +268,18 @@ const handleSendMessageEndTimeToExt = () => {
     );
 };
 
-
+const updateExamPaperShiftStatus = () => {
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/' + examShiftCode + '/update-exam-student-status',
+        success: function (responseBody) {
+            window.location.href = ApiConstant.REDIRECT_STUDENT_HOME;
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
+        }
+    });
+}
 
 const examPaperOpenSubmit = () => {
     swal({
@@ -278,10 +295,38 @@ const examPaperOpenSubmit = () => {
     });
 };
 
+const completeExamShift = () => {
+    swal({
+        title: "Xác nhận hoàn thành ca thi",
+        text: "Hoàn thành ca thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willComplete) => {
+        if (willComplete) {
+            updateExamPaperShiftStatus();
+        }
+    });
+};
+
 const openModalOpenExamPaper = () => {
     $('#modifyPasswordOpen').val('');
     $(`#modifyPasswordOpenError`).text('');
     $(`#modifyPasswordOpen`).removeClass('is-invalid');
     $('#examPaperOpenModal').modal('show');
 }
+
+// const checkOnline = () => {
+//     setTimeout(doOnlineCheck, 1000);
+// };
+//
+// const doOnlineCheck = () => {
+//     console.log('onl', window.navigator.onLine)
+//     if (window.navigator.onLine) {
+//         showToastSuccess('Đã kết nối mạng');
+//     } else {
+//         showToastError('Mất kết nối mạng');
+//     }
+//     checkOnline();
+// };
 

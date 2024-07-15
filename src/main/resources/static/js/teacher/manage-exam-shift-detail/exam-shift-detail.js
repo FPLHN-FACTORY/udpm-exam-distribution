@@ -42,10 +42,12 @@ $(document).ready(function () {
         openModalStartExamShift();
     });
 
-    // examShiftStartSubmit();
-
     $('#modifyExamShiftStartButton').click(function () {
         examShiftStartSubmit();
+    });
+
+    $('#completeExamShift').click(function () {
+        completeExamShift();
     });
 
 });
@@ -358,7 +360,6 @@ const updateExamPaperShiftStatus = () => {
             showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
         }
     });
-
 }
 
 const updateExamShiftStatus = () => {
@@ -366,13 +367,12 @@ const updateExamShiftStatus = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/update-status',
         success: function (responseBody) {
-            showToastSuccess('Đã hết giờ làm bài thi!')
+            window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT;
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
         }
     });
-
 }
 
 const getPathFilePDFExamPaper = (examShiftCode) => {
@@ -576,9 +576,25 @@ const startCountdown = (startTime, endTime) => {
             $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
         } else {
             clearInterval(countdown);
-            updateExamPaperShiftStatus();
-            updateExamShiftStatus();
+            $('#examShiftStart').prop('hidden', true);
+            $('#completeExamShift').prop('hidden', false);
             $('#countdown').text("Đã kết thúc!");
+            showToastSuccess('Đã hết giờ làm bài thi!')
         }
     }, 1000);
 }
+
+const completeExamShift = () => {
+    swal({
+        title: "Xác nhận hoàn thành ca thi",
+        text: "Hoàn thành ca thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willComplete) => {
+        if (willComplete) {
+            updateExamPaperShiftStatus();
+            updateExamShiftStatus();
+        }
+    });
+};
