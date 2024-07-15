@@ -15,7 +15,7 @@ public enum Shift {
     CA7(LocalTime.of(0, 0), LocalTime.of(2, 0)),
     CA8(LocalTime.of(2, 30), LocalTime.of(4, 0)),
     CA9(LocalTime.of(4, 30), LocalTime.of(4, 45)),
-    CA10(LocalTime.of(5, 0), LocalTime.of(6, 30));
+    CA10(LocalTime.of(4, 50), LocalTime.of(6, 30));
 
     private final LocalTime startTime;
     private final LocalTime endTime;
