@@ -303,9 +303,9 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
             }
 
-            if (examShift.get().getSecondSupervisor() == null) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
-            }
+//            if (examShift.get().getSecondSupervisor() == null) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
+//            }
 
             String departmentFacilityId
                     = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
@@ -332,9 +332,9 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             String salt = PasswordUtils.generateSalt();
             String password = PasswordUtils.getSecurePassword(passwordExamPaperShift, salt);
 
-            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
-            }
+//            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
+//            }
 
             ExamPaperShift examPaperShift = new ExamPaperShift();
             examPaperShift.setExamShift(examShift.get());
