@@ -28,8 +28,7 @@ public interface AUStaffExtendRepository extends StaffRepository {
                             END AS isHasSampleExamPaper
                         FROM exam_paper AS ep
                         JOIN block b ON b.id = ep.id_block
-                        WHERE ep.id_staff_upload = :userId AND
-                              ep.id_subject = :#{#request.subjectId} AND
+                        WHERE ep.id_subject = :#{#request.subjectId} AND
                               b.id_semester = :semesterId AND
                               ep.exam_paper_type = "SAMPLE_EXAM_PAPER"
                     ) AS isHasSampleExamPaper,

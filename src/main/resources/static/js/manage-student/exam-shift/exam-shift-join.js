@@ -213,6 +213,7 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
+            handleSendMessageStartToExt();
         });
     });
 }
@@ -229,6 +230,7 @@ const startCountdown = (startTime, endTime) => {
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
             $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
         } else {
+            handleSendMessageEndTimeToExt();
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
             $('#openExamPaper').prop('hidden', false);
@@ -237,6 +239,30 @@ const startCountdown = (startTime, endTime) => {
         }
     }, 1000);
 }
+
+const handleSendMessageStartToExt = () => {
+    const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
+    chrome.runtime.sendMessage(
+        editorExtensionId,
+        { active: "onTracking" },
+        function (response) {
+            console.log(response);
+        }
+    );
+};
+
+const handleSendMessageEndTimeToExt = () => {
+    const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
+    chrome.runtime.sendMessage(
+        editorExtensionId,
+        { active: "stopTracking" },
+        function (response) {
+            console.log(response);
+        }
+    );
+};
+
+
 
 const examPaperOpenSubmit = () => {
     swal({

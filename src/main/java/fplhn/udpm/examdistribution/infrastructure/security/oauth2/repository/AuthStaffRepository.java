@@ -18,7 +18,8 @@ public interface AuthStaffRepository extends StaffRepository {
             JOIN facility f ON r.id_facility = f.id
             WHERE s.account_fpt = :emailFPT AND
                   f.id = :facilityId AND
-                  r.name = :role
+                  r.name = :role AND
+                  sr.status = 0
             LIMIT 1
             """, nativeQuery = true)
     Optional<Staff> getStaffByAccountFptAndFacilityId(String emailFPT, String facilityId, String role);

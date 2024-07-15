@@ -11,7 +11,7 @@ public enum Shift {
     CA3(LocalTime.of(12, 0), LocalTime.of(14, 0)),
     CA4(LocalTime.of(14, 5), LocalTime.of(16, 30)),
     CA5(LocalTime.of(17, 0), LocalTime.of(19, 0)),
-    CA6(LocalTime.of(19, 30), LocalTime.of(23, 30)),
+    CA6(LocalTime.of(19, 0), LocalTime.of(23, 30)),
     CA7(LocalTime.of(0, 0), LocalTime.of(2, 0)),
     CA8(LocalTime.of(2, 30), LocalTime.of(4, 0)),
     CA9(LocalTime.of(4, 30), LocalTime.of(4, 45)),

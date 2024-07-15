@@ -103,6 +103,7 @@ public final class MappingConstants {
     public static final String API_TEACHER_CLASS_SUBJECT = API_TEACHER_PREFIX + "/class-subjects";
     public static final String API_TEACHER_STAFF = API_TEACHER_PREFIX + "/staffs";
     public static final String API_TEACHER_EXAM_PAPER_SHIFT = API_TEACHER_PREFIX + "/exam-paper-shift";
+    public static final String API_TEACHER_TRACK_HISTORY = API_TEACHER_PREFIX + "/track-history";
 
     // Constants representing the full paths for various resources under student
     public static final String REDIRECT_STUDENT_HOME = STUDENT + "/home";
