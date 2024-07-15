@@ -9,6 +9,7 @@ import fplhn.udpm.examdistribution.core.student.exampapershift.repository.SExamP
 import fplhn.udpm.examdistribution.core.student.studentexamshift.repository.SStudentExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.student.home.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.student.student.repository.SStudentExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.exampapershift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
@@ -49,6 +50,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     private final SExamPaperExtendRepository sExamPaperExtendRepository;
 
     private final SExamPaperShiftRepository sExamPaperShiftRepository;
+
+    private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
 
     private final HttpSession httpSession;
 
@@ -130,6 +133,17 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             }
 
         } else {
+            String examPaperShiftId = tExamPaperShiftExtendRepository
+                    .findExamPaperShiftIdByExamShiftCode(examShift.getExamShiftCode());
+            if (examPaperShiftId != null) {
+                ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime > examPaperShift.getStartTime() + (1 * 60 * 1000)) {
+                    return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                            "Đã quá thời gian  thi!");
+                }
+            }
+
             StudentExamShift studentExamShift = new StudentExamShift();
             studentExamShift.setStudent(existingStudent.get());
             studentExamShift.setExamShift(examShift);
@@ -187,7 +201,27 @@ public class SExamShiftServiceImpl implements SExamShiftService {
 
     @Override
     public ResponseObject<?> updateExamStudentStatus(String examShiftCode) {
-        return null;
+        Optional<ExamShift> existingExamShift = sExamShiftExtendRepository
+                .findByExamShiftCode(examShiftCode);
+        if (existingExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Ca thi không tồn tại!");
+        }
+
+        Optional<StudentExamShift> studentExamShift = sStudentExamShiftExtendRepository
+                .findByExamShiftIdAndStudentId(existingExamShift.get().getId(),
+                        httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
+        if (studentExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Sinh viên không tồn tại trong ca thi!");
+        }
+
+        StudentExamShift studentExamShiftUpdate = studentExamShift.get();
+        studentExamShiftUpdate.setExamStudentStatus(ExamStudentStatus.DONE_EXAM);
+        sStudentExamShiftExtendRepository.save(studentExamShiftUpdate);
+
+        return new ResponseObject<>(null, HttpStatus.OK,
+                "Cập nhật trạng thái sinh viên trong ca thi thành công!");
     }
 
 }

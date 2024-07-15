@@ -164,29 +164,32 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
                     "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
         }
-
         ExamShift examShift = existingExamShift.get();
-        boolean passwordMatch = PasswordUtils
-                .verifyUserPassword(tJoinExamShiftRequest.getPasswordJoin(), examShift.getHash(), examShift.getSalt());
-        if (!passwordMatch) {
+
+        if (!PasswordUtils.verifyUserPassword(tJoinExamShiftRequest
+                .getPasswordJoin(), examShift.getHash(), examShift.getSalt())) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
                     "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
         }
 
-        Optional<Staff> existingStaff = tStaffExtendRepository
-                .findById(tJoinExamShiftRequest.getSecondSupervisorId());
+        if (examShift.getExamShiftStatus() == ExamShiftStatus.FINISHED) {
+            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã kết thúc!");
+        }
+
+        Optional<Staff> existingStaff = tStaffExtendRepository.findById(tJoinExamShiftRequest.getSecondSupervisorId());
         if (existingStaff.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Giám thị không tồn tại!");
+        }
+
+        if (tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getFirstSupervisor().getId())
+            || tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getSecondSupervisor().getId())) {
+            return new ResponseObject<>(examShift.getExamShiftCode(),
+                    HttpStatus.OK, "Tham gia phòng thi thành công!");
         }
 
         if (examShift.getSecondSupervisor() != null) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi đã đủ giám thị!");
         }
-
-//        if (examShift.getFirstSupervisor().getId().equals(existingStaff.get().getId())) {
-//            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                    "Giám thị " + existingStaff.get().getName() + " đang là giám thị 1 rồi!");
-//        }
 
         examShift.setSecondSupervisor(existingStaff.get());
         tExamShiftExtendRepository.save(examShift);
@@ -300,6 +303,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
             }
 
+            if (examShift.get().getSecondSupervisor() == null) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
+            }
+
             String departmentFacilityId
                     = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
             String subjectId = examShift.get().getClassSubject().getSubject().getId();
@@ -325,13 +332,17 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             String salt = PasswordUtils.generateSalt();
             String password = PasswordUtils.getSecurePassword(passwordExamPaperShift, salt);
 
+            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
+            }
+
             ExamPaperShift examPaperShift = new ExamPaperShift();
             examPaperShift.setExamShift(examShift.get());
             examPaperShift.setExamPaper(tExamPaperExtendRepository.getReferenceById(examPaperId));
             examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
             examPaperShift.setStatus(EntityStatus.ACTIVE);
             long startTime = System.currentTimeMillis();
-            long endTime = startTime + (60 * 1000);
+            long endTime = startTime + (2 * 60 * 1000);
             examPaperShift.setStartTime(startTime);
             examPaperShift.setEndTime(endTime);
             examPaperShift.setHash(password);

@@ -20,6 +20,7 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
+            <span th:text="${examShiftId}" hidden id="examShiftId"></span>
             <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
             <span th:text="${examPaperId}" hidden id="examPaperId"></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">

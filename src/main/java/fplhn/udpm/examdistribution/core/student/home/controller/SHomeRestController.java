@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,6 +66,11 @@ public class SHomeRestController {
     @PostMapping("/open")
     public ResponseEntity<?> openExamPaper(@RequestBody SOpenExamPaperRequest sOpenExamPaperRequest) {
         return Helper.createResponseEntity(sExamShiftService.openExamPaper(sOpenExamPaperRequest));
+    }
+
+    @PutMapping("/{examShiftCode}/update-exam-student-status")
+    public ResponseEntity<?> updateExamStudentStatus(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(sExamShiftService.updateExamStudentStatus(examShiftCode));
     }
 
 }
