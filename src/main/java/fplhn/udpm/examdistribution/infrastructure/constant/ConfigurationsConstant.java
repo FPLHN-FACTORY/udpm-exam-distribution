@@ -6,8 +6,6 @@ public final class ConfigurationsConstant {
     }
 
     public static final String PATH_FILE_TEMPLATE = "csv_logger_folder_template";
-    public static final String NAME_FILE_SEMESTER = "semester_csv";
-    public static final String NAME_FILE_SUBJECT = "subject_csv";
 
     public static final String FOLDER_ACTOR_HEAD_OFFICE = "actor_head_office";
     public static final String FOLDER_ACTOR_HEAD_DEPARTMENT = "actor_head_department";
