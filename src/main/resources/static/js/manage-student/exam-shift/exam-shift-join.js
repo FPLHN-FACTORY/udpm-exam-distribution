@@ -21,9 +21,18 @@ $(document).ready(function () {
 
     connect();
 
+    $('#openExamPaper').click(function () {
+        openModalOpenExamPaper();
+    });
+
+    $('#modifyExamPaperOpenButton').click(function () {
+        examPaperOpenSubmit();
+    });
+
 });
 
 let examShiftCode = $('#examShiftCodeCtl').text();
+let examPaperId = $('#examPaperId').text();
 let stompClient = null;
 
 const getExamShiftByCode = () => {
@@ -51,8 +60,12 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
         },
         success: function (responseBody) {
             if (responseBody?.data) {
-                const fileId = responseBody.data;
+                examPaperId = responseBody?.data?.id;
+                const fileId = responseBody?.data?.path;
+                const startTime = responseBody?.data?.startTime;
+                const endTime = responseBody?.data?.endTime;
                 fetchFilePDFExamPaper(fileId);
+                startCountdown(startTime, endTime);
             }
         },
         error: function (error) {
@@ -98,6 +111,34 @@ const fetchFilePDFExamPaper = (fileId) => {
     });
 };
 
+const openExamPaper = () => {
+    const openExamPaper = {
+        examPaperShiftId: examPaperId,
+        passwordOpen: $('#modifyPasswordOpen').val()
+    };
+    $.ajax({
+        type: "POST",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/open",
+        contentType: "application/json",
+        data: JSON.stringify(openExamPaper),
+        success: function (responseBody) {
+            if (responseBody?.status === "OK") {
+                $('#examPaperOpenModal').modal('hide');
+                $('#examShiftPaper').prop('hidden', false);
+                $('#openExamPaper').prop('hidden', true);
+                $('#completeExamShift').prop('hidden', false);
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+};
+
 // Render the page
 function renderPage(num) {
     pageRendering = true;
@@ -124,7 +165,7 @@ function renderPage(num) {
     $("#page-num").text(num);
 }
 
-const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
+const showViewAndPagingPdf = (totalPage) => {
     console.log(totalPage);
     $("#pdf-viewer").prop("hidden", false);
     if (totalPage > 1) {
@@ -170,9 +211,51 @@ const connect = () => {
         });
         stompClient.subscribe("/topic/exam-shift-start", function (response) {
             const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.data);
+            showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
         });
     });
+}
+
+const startCountdown = (startTime, endTime) => {
+    let endTimeDate = new Date(endTime).getTime();
+
+    let countdown = setInterval(function () {
+        let now = new Date().getTime();
+        let distanceToEnd = endTimeDate - now;
+
+        if (distanceToEnd > 0) {
+            let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
+            let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
+            $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
+        } else {
+            clearInterval(countdown);
+            showToastSuccess('Đã hết giờ làm bài thi!')
+            $('#openExamPaper').prop('hidden', false);
+            $('#countdown').prop('hidden', true);
+            $('#examShiftPaper').prop('hidden', true);
+        }
+    }, 1000);
+}
+
+const examPaperOpenSubmit = () => {
+    swal({
+        title: "Xác nhận mở đề thi",
+        text: "Mở đề thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willOpen) => {
+        if (willOpen) {
+            openExamPaper();
+        }
+    });
+};
+
+const openModalOpenExamPaper = () => {
+    $('#modifyPasswordOpen').val('');
+    $(`#modifyPasswordOpenError`).text('');
+    $(`#modifyPasswordOpen`).removeClass('is-invalid');
+    $('#examPaperOpenModal').modal('show');
 }
 
