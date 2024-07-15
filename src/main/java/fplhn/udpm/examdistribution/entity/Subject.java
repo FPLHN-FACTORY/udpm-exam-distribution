@@ -1,11 +1,13 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.entity.listener.SubjectListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
@@ -25,6 +27,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "subject")
+@EntityListeners(SubjectListener.class)
 public class Subject extends PrimaryEntity implements Serializable {
 
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
@@ -54,9 +57,5 @@ public class Subject extends PrimaryEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_department")
     private Department department;
-
-    @ManyToOne
-    @JoinColumn(name = "id_head_subject")
-    private Staff headSubject;
 
 }

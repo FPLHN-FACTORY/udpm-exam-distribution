@@ -129,7 +129,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="modifySemesterYear" class="form-label">Năm học</label>
-                            <input type="text" class="form-control" id="modifySemesterYear" required>
+                            <input type="number" class="form-control" id="modifySemesterYear" required>
                             <div class="invalid-feedback" id="semesterYearError"></div>
                         </div>
                         <div class="mb-3">
@@ -172,7 +172,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="modifySemesterYear" class="form-label">Năm học</label>
-                            <input type="text" class="form-control" id="modifySemesterYearUpdate" required>
+                            <input type="number" class="form-control" id="modifySemesterYearUpdate" required>
                             <div class="invalid-feedback" id="semesterYearErrorUpdate"></div>
                         </div>
                         <div class="mb-3">
@@ -268,6 +268,7 @@
         </div>
     </div>
     <!--Modal Modify Block-->
+
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -284,6 +285,7 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
-<script th:src="@{/js/manage-semester/semester.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/head-office/manage-semester/semester.js}"></script>
 </body>
 </html>

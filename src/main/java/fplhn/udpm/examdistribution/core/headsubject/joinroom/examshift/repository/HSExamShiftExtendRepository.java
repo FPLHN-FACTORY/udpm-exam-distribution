@@ -1,16 +1,48 @@
 package fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.repository;
 
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.response.HSAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.response.HSExamShiftResponse;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.ExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface HSExamShiftExtendRepository extends ExamShiftRepository {
+
+    @Query(value = """
+            SELECT
+            	es.id as id,
+            	es.exam_shift_code as examShiftCode,
+            	es.room as room,
+            	s.staff_code as codeFirstSupervisor,
+            	s.name as nameFirstSupervisor,
+            	es.status as status
+            FROM
+            	exam_shift es
+            LEFT JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            WHERE
+            	s.id_department_facility = :departmentFacilityId
+            """, nativeQuery = true)
+    List<HSAllExamShiftResponse> getAllExamShift(String departmentFacilityId);
+
+    @Query(value = """
+            SELECT
+            	es.id as id,
+            	es.exam_shift_code as examShiftCode
+            FROM
+            	exam_shift es
+            LEFT JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            WHERE
+                es.exam_shift_code = :examShiftCode
+                AND s.id_department_facility = :departmentFacilityId
+            """, nativeQuery = true)
+    Optional<HSExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 

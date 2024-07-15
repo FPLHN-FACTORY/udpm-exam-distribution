@@ -22,4 +22,9 @@ public class StudentRestController {
         return Helper.createResponseEntity(studentService.findAllStudentByExamShiftCode(examShiftCode));
     }
 
+    @GetMapping("/rejoin/{examShiftCode}")
+    public ResponseEntity<?> findAllStudentRejoinByExamShiftCode(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(studentService.findAllStudentRejoinByExamShiftCode(examShiftCode));
+    }
+
 }

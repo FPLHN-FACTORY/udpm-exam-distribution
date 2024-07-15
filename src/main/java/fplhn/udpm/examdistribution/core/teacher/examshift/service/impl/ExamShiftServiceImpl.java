@@ -4,31 +4,46 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.ClassSubjectTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.CreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.JoinExamShiftRequest;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.ExamPaperShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.FileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.ExamShiftExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.service.ExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.staff.repository.StaffTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.student.repository.StudentTeacherExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.studentexamshift.repository.StudentExamShiftTeacherExtendRepository;
 import fplhn.udpm.examdistribution.entity.ClassSubject;
+import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.config.GoogleDriveConfig;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +60,14 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     private final StudentTeacherExtendRepository studentTeacherExtendRepository;
 
+    private final TExamPaperExtendRepository tExamPaperExtendRepository;
+
+    private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
+
+    private final GoogleDriveFileService googleDriveFileService;
+
+    private final HttpSession httpSession;
+
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
@@ -55,11 +78,14 @@ public class ExamShiftServiceImpl implements ExamShiftService {
         }
 
         boolean isCurrentUserSupervisor
-                = examShift.get().getFirstSupervisor().getId().equals(SessionConstant.CURRENT_USER_ID)
-                || (examShift.get().getSecondSupervisor() != null
-                && examShift.get().getSecondSupervisor().getId().equals(SessionConstant.CURRENT_USER_ID));
+                = examShift.get().getFirstSupervisor().getId()
+                          .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString())
+                  || (examShift.get().getSecondSupervisor() != null
+                      && examShift.get().getSecondSupervisor().getId()
+                              .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString()));
 
-        if (!isCurrentUserSupervisor && SessionConstant.ROLE_LOGIN.equals("GIANG_VIEN")) {
+        if (!isCurrentUserSupervisor && httpSession
+                .getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("GIANG_VIEN")) {
             return false;
         }
 
@@ -116,6 +142,7 @@ public class ExamShiftServiceImpl implements ExamShiftService {
         examShift.setHash(password);
         examShift.setSalt(salt);
         examShift.setStatus(EntityStatus.ACTIVE);
+        examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
         examShiftExtendRepository.save(examShift);
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
@@ -130,8 +157,7 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     @Override
     public ResponseObject<?> joinExamShift(@Valid JoinExamShiftRequest joinExamShiftRequest) {
-        Optional<ExamShift> existingExamShift = examShiftExtendRepository
-                .findByExamShiftCode(joinExamShiftRequest.getExamShiftCodeJoin());
+        Optional<ExamShift> existingExamShift = findExamShiftByCode(joinExamShiftRequest.getExamShiftCodeJoin());
         if (existingExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
                     "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
@@ -179,30 +205,153 @@ public class ExamShiftServiceImpl implements ExamShiftService {
 
     @Override
     @Transactional
-    public ResponseObject<?> removeStudent(String examShiftCode, String studentId) {
-        Optional<ExamShift> examShift = examShiftExtendRepository.findByExamShiftCode(examShiftCode);
+    public ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
         if (examShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
         }
 
-        Optional<Student> student = studentTeacherExtendRepository.findById(studentId);
+        Optional<Student> student = findStudentById(studentId);
         if (student.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
         }
 
-        Optional<StudentExamShift> studentExamShift = studentExamShiftTeacherExtendRepository
-                .findByExamShiftIdAndStudentId(examShift.get().getId(), student.get().getId());
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
         if (studentExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
                     "Không có sinh viên trong phòng thi này!");
         }
 
-        studentExamShiftTeacherExtendRepository.deleteById(studentExamShift.get().getId());
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+        studentExamShift.get().setReason(reason);
 
         simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-kick",
                 new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi phòng thi!"));
 
         return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> approveStudent(String examShiftCode, String studentId) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+        if (examShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        }
+
+        Optional<Student> student = findStudentById(studentId);
+        if (student.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+        }
+
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
+        if (studentExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Không có sinh viên trong phòng thi này!");
+        }
+
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
+        studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
+
+        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-approve",
+                new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào phòng thi!"));
+
+        return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
+                "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> refuseStudent(String examShiftCode, String studentId) {
+        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+        if (examShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        }
+
+        Optional<Student> student = findStudentById(studentId);
+        if (student.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+        }
+
+        Optional<StudentExamShift> studentExamShift
+                = findStudentExamShift(examShift.get().getId(), student.get().getId());
+        if (studentExamShift.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                    "Không có sinh viên trong phòng thi này!");
+        }
+
+        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+        studentExamShiftTeacherExtendRepository.save(studentExamShift.get());
+
+        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-refuse",
+                new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
+
+        return new ResponseObject<>(null, HttpStatus.OK,
+                "Từ chối sinh viên " + student.get().getName() + " thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> startExamShift(String examShiftCode) {
+        try {
+            Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+            if (examShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+            }
+
+            String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+            String subjectId = examShift.get().getClassSubject().getSubject().getId();
+
+            List<String> getListIdExamPaper = examShiftExtendRepository.getListIdExamPaper(departmentFacilityId, subjectId);
+
+            Random random = new Random();
+            int index = random.nextInt(getListIdExamPaper.size());
+            String examPaperId = getListIdExamPaper.get(index);
+
+            Optional<ExamPaperShiftResponse> examPaperShiftOptional
+                    = tExamPaperShiftExtendRepository.findExamPaperShiftByExamShiftCode(examShiftCode);
+            if (examPaperShiftOptional.isPresent()) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã có đề thi rồi!");
+            }
+
+            ExamPaperShift examPaperShift = new ExamPaperShift();
+            examPaperShift.setExamShift(examShift.get());
+            examPaperShift.setExamPaper(tExamPaperExtendRepository.getReferenceById(examPaperId));
+            examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
+            examPaperShift.setStatus(EntityStatus.ACTIVE);
+
+            tExamPaperShiftExtendRepository.save(examPaperShift);
+
+            examShift.get().setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
+
+            simpMessagingTemplate.convertAndSend("/topic/exam-shift-start",
+                    new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
+
+            String fileId = tExamPaperExtendRepository.getReferenceById(examPaperId).getPath();
+
+            return new ResponseObject<>(fileId,
+                    HttpStatus.OK, "Bắt đầu ca thi thành công!");
+        } catch (Exception e) {
+            return new ResponseObject<>(null,
+                    HttpStatus.BAD_REQUEST, "Phát sinh lỗi khi bắt đầu ca thi!");
+        }
+    }
+
+    @Override
+    public ResponseObject<?> getPathByExamShiftCode(String examShiftCode) {
+        return new ResponseObject<>(tExamPaperExtendRepository.getPathByExamShiftCode(examShiftCode),
+                HttpStatus.OK, "Lấy path đề thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> getFile(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+        return new ResponseObject<>(
+                new FileResourceResponse(data, fileResponse.getFilename()),
+                HttpStatus.OK,
+                "Lấy đề thi thành công!"
+        );
     }
 
 //    private ResponseObject<?> validateShift(String shift) {
@@ -219,6 +368,18 @@ public class ExamShiftServiceImpl implements ExamShiftService {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mật khẩu không hợp lệ!");
         }
         return null;
+    }
+
+    private Optional<ExamShift> findExamShiftByCode(String examShiftCode) {
+        return examShiftExtendRepository.findByExamShiftCode(examShiftCode);
+    }
+
+    private Optional<Student> findStudentById(String studentId) {
+        return studentTeacherExtendRepository.findById(studentId);
+    }
+
+    private Optional<StudentExamShift> findStudentExamShift(String examShiftId, String studentId) {
+        return studentExamShiftTeacherExtendRepository.findByExamShiftIdAndStudentId(examShiftId, studentId);
     }
 
 }

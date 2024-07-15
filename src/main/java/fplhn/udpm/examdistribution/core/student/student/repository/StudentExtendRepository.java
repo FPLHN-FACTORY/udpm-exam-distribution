@@ -25,8 +25,29 @@ public interface StudentExtendRepository extends StudentRepository {
             JOIN exam_shift es ON
             	ses.id_exam_shift = es.id
             WHERE
-            	es.exam_shift_code = :examShiftCode
+                ses.exam_student_status IN(0, 1, 2)
+            	AND es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     List<StudentResponse> findAllStudentByExamShiftCode(String examShiftCode);
+
+    @Query(value = """
+            SELECT
+                s.id as id,
+            	s.name as name,
+            	s.student_code as studentCode,
+            	s.email as email,
+            	ses.join_time as joinTime
+            FROM
+            	student s
+            JOIN student_exam_shift ses
+                ON
+            	s.id = ses.id_student
+            JOIN exam_shift es ON
+            	ses.id_exam_shift = es.id
+            WHERE
+                ses.exam_student_status = 4
+            	AND es.exam_shift_code = :examShiftCode
+            """, nativeQuery = true)
+    List<StudentResponse> findAllStudentRejoinByExamShiftCode(String examShiftCode);
 
 }

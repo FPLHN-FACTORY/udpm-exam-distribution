@@ -67,7 +67,6 @@ const handleOpenChooseFilePdf = () => {
 };
 
 const handleConfirmUploadExamRule = () => {
-    console.log(getValueFileInput());
     if (getValueFileInput().size === 0 || getValueFileInput().name === "emptyFile") {
         showToastError("Nội quy thi chưa được tải");
     } else {
@@ -98,7 +97,6 @@ const handleUploadExamRule = () => {
     showLoading();
 
     const data = new FormData();
-    data.append("folderName", "ExamRule");
     data.append("file", getValueFileInput());
 
     $.ajax({

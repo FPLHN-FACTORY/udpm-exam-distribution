@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.utils;
 import fplhn.udpm.examdistribution.core.common.base.PageableRequest;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.infrastructure.constant.PaginationConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class Helper {
 
     public static String appendWildcard(String url) {

@@ -1,58 +1,17 @@
 package fplhn.udpm.examdistribution.core.headdepartment.managehos.repository;
 
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.StaffsBySubjectRequest;
-import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectAssignedRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectsStaffRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response.StaffsBySubjectResponse;
-import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response.SubjectAssignedResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response.SubjectsStaffResponse;
-import fplhn.udpm.examdistribution.entity.Staff;
-import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.repository.SubjectRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface HDSubjectExtendRepository extends SubjectRepository {
-
-    @Query(
-            value = """
-                    SELECT
-                         s.id AS id,
-                         s.subject_code AS subjectCode,
-                         s.name AS subjectName,
-                         s.subject_type AS subjectType,
-                         CASE WHEN s.id_head_subject = :#{#request.staffId} THEN 1 ELSE 0 END AS assigned
-                    FROM
-                         subject s
-                    LEFT JOIN department d ON s.id_department = d.id
-                    LEFT JOIN department_facility df ON d.id = df.id_department
-                    WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                        AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.subjectCode}, '%'))
-                        AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.subjectName}, '%'))
-                        AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE CONCAT('%', :#{#request.subjectType}, '%'))
-                    """,
-            countQuery = """
-                    SELECT COUNT(*)
-                    FROM subject s
-                    LEFT JOIN department d ON s.id_department = d.id
-                    LEFT JOIN department_facility df ON d.id = df.id_department
-                    WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                        AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.subjectCode}, '%'))
-                        AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.subjectName}, '%'))
-                        AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE CONCAT('%', :#{#request.subjectType}, '%'))
-                    """,
-            nativeQuery = true
-    )
-    Page<SubjectAssignedResponse> getSubjectAssigned(SubjectAssignedRequest request, Pageable pageable);
-
-    List<Subject> findByHeadSubject(Staff staff);
 
     @Query(
             value = """
@@ -62,35 +21,41 @@ public interface HDSubjectExtendRepository extends SubjectRepository {
                         s.subject_code AS subjectCode,
                         s.name AS subjectName,
                         s.subject_type AS subjectType,
-                        CONCAT(staff.staff_code, ' - ', staff.name) AS staffInChargeInfo
+                        CONCAT(st.staff_code, ' - ', st.name) AS staffInChargeInfo
                     FROM
                         subject s
-                    LEFT JOIN staff ON s.id_head_subject = staff.id
+                    LEFT JOIN head_subject_by_semester hsbs ON s.id = hsbs.id_subject AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN staff st ON hsbs.id_staff = st.id
                     LEFT JOIN department d ON s.id_department = d.id
                     LEFT JOIN department_facility df ON d.id = df.id_department
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
+                        AND (:#{#request.semesterId} IS NULL OR hsbs.id_semester = :#{#request.semesterId} OR hsbs.id_semester IS NULL)
                         AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.subjectCode}, '%'))
                         AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.subjectName}, '%'))
-                        AND (:#{#request.staffCode} IS NULL OR staff.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
-                        AND (:#{#request.staffName} IS NULL OR staff.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
+                        AND (:#{#request.staffCode} IS NULL OR st.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
+                        AND (:#{#request.staffName} IS NULL OR st.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
                     """,
             countQuery = """
-                    SELECT COUNT(*)
-                    FROM subject s
-                    LEFT JOIN staff ON s.id_head_subject = staff.id
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        subject s
+                    LEFT JOIN head_subject_by_semester hsbs ON s.id = hsbs.id_subject AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN staff st ON hsbs.id_staff = st.id
                     LEFT JOIN department d ON s.id_department = d.id
                     LEFT JOIN department_facility df ON d.id = df.id_department
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
+                        AND (:#{#request.semesterId} IS NULL OR hsbs.id_semester = :#{#request.semesterId} OR hsbs.id_semester IS NULL)
                         AND (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.subjectCode}, '%'))
                         AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.subjectName}, '%'))
-                        AND (:#{#request.staffCode} IS NULL OR staff.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
-                        AND (:#{#request.staffName} IS NULL OR staff.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
+                        AND (:#{#request.staffCode} IS NULL OR st.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
+                        AND (:#{#request.staffName} IS NULL OR st.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
                     """,
             nativeQuery = true
     )
-    Page<SubjectsStaffResponse> getSubjectsStaff(SubjectsStaffRequest request, Pageable pageable);
+    Page<SubjectsStaffResponse> getSubjectsStaff(Pageable pageable, SubjectsStaffRequest request);
 
     @Query(
             value = """
@@ -100,26 +65,34 @@ public interface HDSubjectExtendRepository extends SubjectRepository {
                         s.name AS staffName,
                         s.account_fpt AS accountFPT,
                         s.account_fe AS accountFE,
-                        IF(sub.id = :#{#request.subjectId} AND s.id = sub.id_head_subject, 1, 0) AS assigned
-                    FROM staff s
-                    LEFT JOIN subject sub ON s.id = sub.id_head_subject AND sub.id = :#{#request.subjectId}
-                    JOIN department_facility df ON s.id_department_facility = df.id
+                        MAX(CASE WHEN hsbs.id_subject = :#{#request.subjectId} THEN true ELSE false END) AS isHeadOfSubject
+                    FROM
+                        staff s
+                    LEFT JOIN head_subject_by_semester hsbs ON s.id = hsbs.id_staff AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN subject su ON hsbs.id_subject = su.id
+                    LEFT JOIN department_facility df ON s.id_department_facility = df.id
                     WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                        AND (:#{#request.staffCode} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
-                        AND (:#{#request.staffName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
+                        s.id != :#{#request.currentUserId}
+                        AND df.id = :#{#request.departmentFacilityId}
+                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%') OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
+                    GROUP BY
+                        s.id, s.staff_code, s.name, s.account_fpt, s.account_fe
                     """,
             countQuery = """
-                    SELECT COUNT(*)
-                    FROM staff s
-                    LEFT JOIN subject sub ON s.id = sub.id_head_subject AND sub.id = :#{#request.subjectId}
-                    JOIN department_facility df ON s.id_department_facility = df.id
+                    SELECT
+                        COUNT(DISTINCT s.id)
+                    FROM
+                        staff s
+                    LEFT JOIN head_subject_by_semester hsbs ON s.id = hsbs.id_staff AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN subject su ON hsbs.id_subject = su.id
+                    LEFT JOIN department_facility df ON s.id_department_facility = df.id
                     WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                        AND (:#{#request.staffCode} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.staffCode}, '%'))
-                        AND (:#{#request.staffName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.staffName}, '%'))
+                        s.id != :#{#request.currentUserId}
+                        AND df.id = :#{#request.departmentFacilityId}
+                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%') OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
                     """,
-            nativeQuery = true)
+            nativeQuery = true
+    )
     Page<StaffsBySubjectResponse> getStaffsBySubject(StaffsBySubjectRequest request, Pageable pageable);
 
 }

@@ -21,6 +21,8 @@ public interface ListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
     String getStatus();
 
+    Boolean getIsPublic();
+
     String getFacilityName();
 
     String getExamPaperType();

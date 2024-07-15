@@ -10,10 +10,30 @@ $(document).ready(function () {
         showToastError(kickExamShiftStudentSuccessMessage);
         localStorage.removeItem('kickExamShiftStudentSuccessMessage');
     }
+
+    connect();
 });
 
-const openModalStudentJoinExamShift = () => {
-    $('#examShiftJoinModal').modal('show');
+let messageType = null;
+
+const connect = () => {
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
+            messageType = 'rejoin';
+        });
+        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
+            showToastError('Bạn đã bị từ chối tham gia ca thi!');
+        });
+        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
+            let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
+            if (examShiftCodeRejoin) {
+                window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + examShiftCodeRejoin;
+                localStorage.removeItem('rejoinExamShiftCode');
+            }
+        });
+    });
 }
 
 const joinExamShift = () => {
@@ -23,6 +43,7 @@ const joinExamShift = () => {
         passwordJoin: $('#modifyPasswordJoin').val(),
         joinTime: new Date().getTime()
     }
+    localStorage.setItem('rejoinExamShiftCode', examShift.examShiftCodeJoin);
     $.ajax({
         type: "POST",
         url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/join',
@@ -31,8 +52,12 @@ const joinExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 $('#examShiftJoinModal').modal('hide');
-                localStorage.setItem('joinExamShiftStudentSuccessMessage', responseBody?.message);
-                window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + responseBody?.data;
+                if (messageType === 'rejoin') {
+                    showToastSuccess(responseBody?.message);
+                } else {
+                    localStorage.setItem('joinExamShiftStudentSuccessMessage', responseBody?.message);
+                    window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + responseBody?.data;
+                }
             }
         },
         error: function (error) {

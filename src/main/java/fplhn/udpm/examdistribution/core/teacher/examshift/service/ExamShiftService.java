@@ -5,6 +5,8 @@ import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.CreateEx
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.JoinExamShiftRequest;
 import jakarta.validation.Valid;
 
+import java.io.IOException;
+
 public interface ExamShiftService {
 
     boolean findUsersInExamShift(String examShiftCode);
@@ -17,6 +19,16 @@ public interface ExamShiftService {
 
     ResponseObject<?> countStudentInExamShift(String examShiftCode);
 
-    ResponseObject<?> removeStudent(String examShiftCode, String studentId);
+    ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason);
+
+    ResponseObject<?> approveStudent(String examShiftCode, String studentId);
+
+    ResponseObject<?> refuseStudent(String examShiftCode, String studentId);
+
+    ResponseObject<?> startExamShift(String examShiftCode);
+
+    ResponseObject<?> getPathByExamShiftCode(String examShiftCode);
+
+    ResponseObject<?> getFile(String file) throws IOException;
 
 }

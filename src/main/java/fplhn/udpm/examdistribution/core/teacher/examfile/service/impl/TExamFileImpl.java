@@ -4,15 +4,9 @@ import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
-import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TExamPaperRepository;
-import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TMajorFacilityRepository;
-import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TStaffRepository;
-import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TSubjectRepository;
+import fplhn.udpm.examdistribution.core.teacher.examfile.repository.*;
 import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileService;
-import fplhn.udpm.examdistribution.entity.ExamPaper;
-import fplhn.udpm.examdistribution.entity.MajorFacility;
-import fplhn.udpm.examdistribution.entity.Staff;
-import fplhn.udpm.examdistribution.entity.Subject;
+import fplhn.udpm.examdistribution.entity.*;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
@@ -28,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,6 +35,8 @@ public class TExamFileImpl implements TExamFileService {
 
     private final TMajorFacilityRepository majorFacilityRepository;
 
+    private final TAssignUploaderRepository assignUploaderRepository;
+
     private final TStaffRepository tStaffRepository;
 
     private final HttpSession httpSession;
@@ -50,7 +47,7 @@ public class TExamFileImpl implements TExamFileService {
     public ResponseObject<?> getAllSubject(String departmentFacilityId, TFindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, request,(String)httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
+                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, request, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
                 HttpStatus.OK,
                 "Lấy thành công danh sách môn học"
         );
@@ -67,13 +64,22 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
+        List<AssignUploader>assignUploaders = assignUploaderRepository.findAllBySubject_IdAndStaff_Id(subjectId,(String)httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
+        if (assignUploaders.isEmpty() ||tExamPaperRepository.getCountUploaded(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(), subjectId) >= assignUploaders.get(0).getMaxUpload()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Số lượng đề được upload đã đạt tối đa"
+            );
+        }
+
         Optional<MajorFacility> majorFacility = majorFacilityRepository.findById(request.getMajorFacilityId());
 
         Optional<Staff> staffs = tStaffRepository.findById((String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
 
         Optional<Subject> subject = subjectRepository.findById(subjectId);
 
-        System.out.println(request.getMajorFacilityId()+subjectId );
+        System.out.println(request.getMajorFacilityId() + subjectId);
         if (subject.isEmpty() || majorFacility.isEmpty() || staffs.isEmpty()) {
             return new ResponseObject<>(
                     null,
@@ -82,7 +88,8 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), request.getFolderName(), true);
+        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + subject.get().getName() + "/" + request.getFolderName() + "/" + request.getExamPaperType();
+        GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
         String fileId = googleDriveFileDTO.getId();
 
@@ -93,9 +100,14 @@ public class TExamFileImpl implements TExamFileService {
         examPaper.setExamPaperStatus(ExamPaperStatus.WAITING_APPROVAL);
         examPaper.setMajorFacility(majorFacility.get());
         examPaper.setSubject(subject.get());
-        examPaper.setExamPaperCode(subject.get().getSubjectCode() + CodeGenerator.generateRandomCode().substring(0, 3));
+        examPaper.setExamPaperCode(subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
         examPaper.setExamPaperCreatedDate(new Date().getTime());
         examPaper.setStaffUpload(staffs.get());
+        if (ExamPaperType.valueOf(request.getExamPaperType()) == ExamPaperType.MOCK_EXAM_PAPER) {
+            examPaper.setIsPublic(false);
+        } else {
+            examPaper.setIsPublic(true);
+        }
         examPaper.setStatus(EntityStatus.ACTIVE);
         tExamPaperRepository.save(examPaper);
 

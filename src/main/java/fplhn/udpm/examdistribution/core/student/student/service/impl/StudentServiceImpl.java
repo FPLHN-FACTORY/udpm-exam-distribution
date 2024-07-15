@@ -19,4 +19,11 @@ public class StudentServiceImpl implements StudentService {
                 .findAllStudentByExamShiftCode(examShiftCode),
                 HttpStatus.OK, "Lấy thông tin danh sách sinh viên thành công!");
     }
+
+    @Override
+    public ResponseObject<?> findAllStudentRejoinByExamShiftCode(String examShiftCode) {
+        return new ResponseObject<>(studentExtendRepository
+                .findAllStudentRejoinByExamShiftCode(examShiftCode),
+                HttpStatus.OK, "Lấy thông tin danh sách sinh viên chờ phê duyệt thành công!");
+    }
 }

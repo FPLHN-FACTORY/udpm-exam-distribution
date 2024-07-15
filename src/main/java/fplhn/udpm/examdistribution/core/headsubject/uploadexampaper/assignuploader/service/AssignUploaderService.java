@@ -2,8 +2,9 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploa
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.AssignUploaderRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindSubjectRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.CreateSampleExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindStaffRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindSubjectRequest;
 
 public interface AssignUploaderService {
 
@@ -12,5 +13,9 @@ public interface AssignUploaderService {
     ResponseObject<?> getAllStaff(String departmentFacilityId, FindStaffRequest request);
 
     ResponseObject<?> addOrDelAssignUploader(AssignUploaderRequest request);
+
+    ResponseObject<?> getFile(String fileId);
+
+    ResponseObject<?> createSampleExamPaper(CreateSampleExamPaperRequest request);
 
 }

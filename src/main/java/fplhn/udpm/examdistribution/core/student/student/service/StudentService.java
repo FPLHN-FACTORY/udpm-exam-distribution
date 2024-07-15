@@ -6,4 +6,6 @@ public interface StudentService {
 
     ResponseObject<?> findAllStudentByExamShiftCode(String examShiftCode);
 
+    ResponseObject<?> findAllStudentRejoinByExamShiftCode(String examShiftCode);
+
 }

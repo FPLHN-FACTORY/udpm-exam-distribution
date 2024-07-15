@@ -1,14 +1,22 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.AddExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
 import jakarta.validation.Valid;
 
 public interface UploadExamPaperService {
 
-    ResponseObject<?> getListSubject();
+    ResponseObject<?> getListSubject(String semesterId);
+
+    ResponseObject<?> getListCurrentSubject();
+
+    ResponseObject<?> getListSemester();
+
+    ResponseObject<?> getListBlock(String semesterId);
+
+    ResponseObject<?> getListStaff();
 
     ResponseObject<?> getAllExamPaper(ListExamPaperRequest request);
 
@@ -18,8 +26,10 @@ public interface UploadExamPaperService {
 
     ResponseObject<?> getListMajorFacility();
 
-    ResponseObject<?> addExamPaper(@Valid AddExamPaperRequest request);
+    ResponseObject<?> createExamPaper(@Valid CreateExamPaperRequest request);
 
     ResponseObject<?> updateExamPaper(@Valid UpdateExamPaperRequest request);
+
+    ResponseObject<?> sendEmailPublicExamPaper(String examPaperId);
 
 }

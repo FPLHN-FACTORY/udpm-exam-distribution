@@ -5,6 +5,8 @@ import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
 public interface SubjectResponse extends IsIdentify, HasOrderNumber {
 
+    String getFileId();
+
     String getSubjectCode();
 
     String getSubjectName();

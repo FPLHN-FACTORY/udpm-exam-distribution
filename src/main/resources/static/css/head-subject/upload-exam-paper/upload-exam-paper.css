@@ -2,7 +2,7 @@ canvas {
     display: block;
     margin: 0 auto;
 }
-#pdf-viewer {
+.pdf-viewer {
     border: 1px solid #999;
     width: 100%;
     height: 700px;
@@ -12,25 +12,13 @@ canvas {
     scrollbar-width: none;  /* Firefox */
 }
 
-#pdf-viewer::-webkit-scrollbar {
+.pdf-viewer::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
 }
 
-#pdf-viewer-detail {
+.form-max-upload{
     border: 1px solid #999;
-    width: 100%;
-    height: 750px;
-    overflow: auto;
-    border-radius: 10px;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    border-radius: 5px;
+    height: 30px;
 }
 
-#pdf-viewer-detail::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
-}
-
-.swiper-container {
-    width: 100%;
-    height: 70vh;
-}

@@ -14,4 +14,6 @@ public class HOStaffRequest extends PageableRequest {
 
     private String staffName;
 
+    private String departmentFacilityId;
+
 }

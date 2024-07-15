@@ -97,7 +97,7 @@ const handlePostOrPutExamPaper = () => {
         success: function (responseBody) {
             showToastSuccess(responseBody.message);
 
-            fetchListExamPaper(1, $('#pageSizeFirstPage').val(), getGlobalParamsSearchFirstPage());
+            fetchListExamPaper();
 
             closeModalExamPaper();
 
@@ -140,7 +140,7 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     handleResetFieldsError();
 
     if (status !== 3) {
-        handleFetchExamRule(fileId);
+        handleFetchExamRulePDF(fileId);
         if (status === 2) {
             setValueExamPaperType(examPaperType);
             setValueMajorFacilityId(majorFacilityId);
@@ -163,7 +163,7 @@ const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging kh
     }
 };
 
-const handleFetchExamRule = (fileId) => {
+const handleFetchExamRulePDF = (fileId) => {
     showLoading();
     $.ajax({
         type: "GET",
@@ -174,10 +174,9 @@ const handleFetchExamRule = (fileId) => {
         success: function (responseBody) {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
 
-            const blob = new Blob([pdfData], { type: 'application/pdf' });
-            const file = new File([blob], "exam_rule.pdf", { type: 'application/pdf' });
+            const blob = new Blob([pdfData], {type: 'application/pdf'});
+            const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
             setExamPaperFile(file);
-            console.log(file);
 
             renderPdfInView(pdfData);
 
@@ -216,6 +215,63 @@ const onChangeChoosePDFFile = () => {
     });
 };
 onChangeChoosePDFFile();
+
+const handleDownloadExamPaper = (fileId) => {
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/file",
+        data: {
+            fileId: fileId,
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            const blob = new Blob([pdfData], {type: 'application/pdf'});
+            // Tạo đối tượng URL từ Blob
+            const url = URL.createObjectURL(blob);
+
+            // Tạo và nhấp vào liên kết để tải tệp
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'file.pdf'; // Đặt tên cho file tải về
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa đối tượng URL sau khi tải
+            URL.revokeObjectURL(url);
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
+
+const handleSendEmailPublicExamPaper = (examPaperId) => {
+    showLoading();
+    $.ajax({
+        type: "POST",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/send-email-public-exam-paper/" + examPaperId,
+        success: function (responseBody) {
+            showToastSuccess(responseBody?.message);
+            fetchListExamPaper();
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
 
 // Render the page
 const renderPdfInView = (data) => {
@@ -281,6 +337,8 @@ $("#next-page").on("click", function () {
 
 const showViewByStatus = (status) => {
     $("#examPaperTitle").text(status === 1 ? "Chi tiết đề thi" : status === 2 ? "Cập nhật đề thi" : status === 3 ? "Thêm đề thi" : "")
+
+    $("#paging-pdf").prop("hidden", true);
 
     $("#view-add-edit").prop("hidden", !(status === 2 || status === 3));
     $("#modal-footer").prop("hidden", !(status === 2 || status === 3));

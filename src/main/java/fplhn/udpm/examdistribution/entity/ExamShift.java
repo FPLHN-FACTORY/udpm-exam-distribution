@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,5 +57,9 @@ public class ExamShift extends PrimaryEntity implements Serializable {
 
     @Column(name = "salt")
     private String salt;
+
+    @Column(name = "exam_shift_status")
+    @Enumerated(EnumType.STRING)
+    private ExamShiftStatus examShiftStatus;
 
 }

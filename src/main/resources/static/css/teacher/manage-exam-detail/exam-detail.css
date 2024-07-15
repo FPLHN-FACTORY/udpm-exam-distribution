@@ -1,0 +1,17 @@
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+#pdf-viewer {
+    border: 1px solid #999;
+    width: 100%;
+    height: 1000px;
+    overflow: auto;
+    border-radius: 10px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#pdf-viewer::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}

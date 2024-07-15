@@ -1,11 +1,12 @@
 package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.HDExamShiftService;
 import fplhn.udpm.examdistribution.entity.ExamShift;
-import fplhn.udpm.examdistribution.utils.PasswordUtils;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -23,22 +24,32 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
+    private final HttpSession httpSession;
+
+    @Override
+    public boolean getExamShiftByRequest(String examShiftCode) {
+        return hdExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
+               hdExamShiftExtendRepository.getExamShiftByRequest(examShiftCode,
+                       httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()).isPresent();
+    }
+
+    @Override
+    public ResponseObject<?> getAllExamShift() {
+        return new ResponseObject<>(hdExamShiftExtendRepository
+                .getAllExamShift(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()),
+                HttpStatus.OK, "Lấy danh sách ca thi thành công!");
+    }
+
     @Override
     public ResponseObject<?> joinExamShift(HDExamShiftRequest joinRoomRequest) {
         Optional<ExamShift> existingExamShift = hdExamShiftExtendRepository
                 .findByExamShiftCode(joinRoomRequest.getExamShiftCodeJoin());
         if (existingExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
+                    "Phòng thi không tồn tại!");
         }
 
         ExamShift examShift = existingExamShift.get();
-        boolean passwordMatch = PasswordUtils
-                .verifyUserPassword(joinRoomRequest.getPasswordJoin(), examShift.getHash(), examShift.getSalt());
-        if (!passwordMatch) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
-        }
 
         simpMessagingTemplate.convertAndSend("/topic/head-department-exam-shift-join",
                 "Chủ nhiệm bộ môn đã tham gia phòng thi " + examShift.getExamShiftCode());
@@ -56,6 +67,11 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
     public ResponseObject<?> countStudentInExamShift(String examShiftCode) {
         return new ResponseObject<>(hdExamShiftExtendRepository.countStudentInExamShift(examShiftCode),
                 HttpStatus.OK, "Đếm số sinh viên trong phòng thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> getPathByExamShiftCode(String examShiftCode) {
+        return null;
     }
 
 }

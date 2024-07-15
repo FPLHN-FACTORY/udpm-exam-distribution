@@ -17,4 +17,8 @@ public interface StaffResponse extends IsIdentify, HasOrderNumber {
 
     Integer getIsAssigned();
 
+    Integer getMaxUpload();
+
+    Integer getIsHasSampleExamPaper();
+
 }

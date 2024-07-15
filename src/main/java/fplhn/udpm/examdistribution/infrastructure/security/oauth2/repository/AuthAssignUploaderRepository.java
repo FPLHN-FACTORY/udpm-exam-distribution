@@ -13,9 +13,11 @@ public interface AuthAssignUploaderRepository extends AssignUploaderRepository {
     @Query("""
             SELECT au
             FROM AssignUploader au
-            WHERE au.staff.id = :userId
+            WHERE
+                au.staff.id = :userId AND
+                au.semester.id = :semesterId
             ORDER BY au.createdDate LIMIT 1
             """)
-    Optional<AssignUploader> findByStaffId(String userId);
+    Optional<AssignUploader> findByStaffId(String userId, String semesterId);
 
 }
