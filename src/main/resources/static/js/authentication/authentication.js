@@ -36,13 +36,13 @@ const handleRedirectGoogleLogin = async (status) => {
     const origin = window.location.origin;
     const redirectUrl = `${origin}${ApiConstant.REDIRECT_AUTHENTICATION_AUTHOR_SWITCH}?role=${mapping.role}&redirect_uri=${mapping.redirect}&facility_id=${mapping.facility}`;
 
-    if (mapping.role === "SINH_VIEN") {
-        const installed = await checkExtensionInstalled();
-        if (!installed) {
-            showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
-            return;
-        }
-    }
+    // if (mapping.role === "SINH_VIEN") {
+    //     const installed = await checkExtensionInstalled();
+    //     if (!installed) {
+    //         showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
+    //         return;
+    //     }
+    // }
 
     window.location.href = redirectUrl;
 };
