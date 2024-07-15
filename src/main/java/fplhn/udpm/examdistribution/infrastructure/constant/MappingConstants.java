@@ -110,5 +110,6 @@ public final class MappingConstants {
     // Constants representing the full paths for various resources under teacher
     public static final String API_STUDENT_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift";
     public static final String API_STUDENT_JOIN_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift/join";
+    public static final String API_STUDENT_TRACKER = API_STUDENT_PREFIX + "/tracker";
 
 }
