@@ -18,7 +18,7 @@ public class HSExamShiftController {
 
     @GetMapping
     public String viewJoinRoom() {
-        return "/head-subject/join-room/join-room";
+        return "head-subject/join-room/room";
     }
 
     @GetMapping("/{examShiftCode}")
