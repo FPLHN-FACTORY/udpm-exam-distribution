@@ -11,7 +11,7 @@ public class AssignUploaderController {
 
     @GetMapping
     public String viewAssignUploader() {
-        return "/head-subject/upload-exam-paper/upload-exam-paper";
+        return "head-subject/upload-exam-paper/upload-exam-paper";
     }
 
 }

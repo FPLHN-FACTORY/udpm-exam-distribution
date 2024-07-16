@@ -32,12 +32,12 @@ public class AuthenticationController {
 
     @GetMapping(MappingConstants.REDIRECT_AUTHENTICATION_FORBIDDEN)
     public String forbiddenPage() {
-        return "/error/403";
+        return "error/403";
     }
 
     @GetMapping(MappingConstants.REDIRECT_AUTHENTICATION_UNAUTHORIZE)
     public String unAuthorizePage() {
-        return "/error/401";
+        return "error/401";
     }
 
 }

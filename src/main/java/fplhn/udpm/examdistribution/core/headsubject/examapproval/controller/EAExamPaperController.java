@@ -11,7 +11,7 @@ public class EAExamPaperController {
 
     @GetMapping
     public String viewExamApproval() {
-        return "/head-subject/exam-approval/exam-approval";
+        return "head-subject/exam-approval/exam-approval";
     }
 
 }

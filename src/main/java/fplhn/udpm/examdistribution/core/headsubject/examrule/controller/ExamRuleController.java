@@ -11,7 +11,7 @@ public class ExamRuleController {
 
     @GetMapping
     public String viewExamRule() {
-        return "/head-subject/exam-rule/exam-rule";
+        return "head-subject/exam-rule/exam-rule";
     }
 
 }

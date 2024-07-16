@@ -18,7 +18,7 @@ public class HSExamShiftController {
 
     @GetMapping
     public String viewJoinRoom() {
-        return "head-subject/join-room/room";
+        return "head-subject/join-room/join-room";
     }
 
     @GetMapping("/{examShiftCode}")
@@ -27,7 +27,7 @@ public class HSExamShiftController {
             return "error/404";
         }
         model.addAttribute("examShiftCodeCtl", examShiftCode);
-        return "/head-subject/room-detail/room-detail";
+        return "head-subject/room-detail/room-detail";
     }
 
 }
