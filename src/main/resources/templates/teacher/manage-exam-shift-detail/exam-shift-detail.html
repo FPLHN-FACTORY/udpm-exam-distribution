@@ -8,7 +8,6 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/teacher/manage-exam-detail/exam-detail.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <title>Teacher - Trang chủ</title>
 </head>
@@ -127,9 +126,17 @@
                         <div class="tab-pane fade" id="exam-shift-paper" role="tabpanel"
                              aria-labelledby="exam-shift-paper-tab" tabindex="2">
                             <div class="p-4 bg-white rounded min-vh-100">
-                                <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="examShiftStart">
-                                    Phát đề thi
-                                </button>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="examShiftStart">
+                                            Phát đề thi
+                                        </button>
+                                        <button class="btn btn-secondary mb-3" data-bs-toggle="modal" id="completeExamShift" hidden>
+                                            Hoàn thành
+                                        </button>
+                                    </div>
+                                    <div id="countdown"></div>
+                                </div>
                                 <div id="examShiftPaper">
                                     <div id="pdf-viewer" hidden>
                                         <canvas id="pdf-canvas"></canvas>
@@ -184,6 +191,35 @@
     </div>
     <!-- Modal Remove Student -->
 
+    <!--Modal Start ExamShift -->
+    <div class="modal fade" id="examShiftStartModal" tabindex="-1" aria-labelledby="examShiftStartModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examShiftStartModalLabel">Đặt mật khẩu đề thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="startExamShiftForm">
+                        <div class="mb-3">
+                            <label for="modifyPasswordStart" class="form-label">Mật khẩu đề thi</label>
+                            <input type="password" class="form-control" id="modifyPasswordStart" required>
+                            <div class="invalid-feedback" id="passwordStartError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modifyExamShiftStartButton">Phát đề</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Start ExamShift -->
+
     <!-- The toggle theme button -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
@@ -202,10 +238,10 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/loading.js}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
-<script th:src="@{/js/manage-exam-shift-detail/exam-shift-detail.js}"></script>
+<script th:src="@{/js/teacher/manage-exam-shift-detail/exam-shift-detail.js}"></script>
 </body>
 </html>

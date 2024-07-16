@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -87,11 +88,19 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
         Staff staff = staffOptional.get();
         Semester semester = semesterOptional.get();
 
-        List<Subject> allSubjects = hdSubjectExtendRepository.findAllById(List.of(request.getAssignedSubjectIds()));
+        List<Subject> allSubjects = new ArrayList<>();
+        if (request.getAssignedSubjectIds().length > 0) {
+            allSubjects.addAll(hdSubjectExtendRepository.findAllById(List.of(request.getAssignedSubjectIds())));
+        } else {
+            allSubjects.addAll(hdSubjectExtendRepository.findAll());
+        }
         allSubjects.addAll(hdSubjectExtendRepository.findAllById(List.of(request.getUnassignedSubjectIds())));
 
         List<Subject> assignedSubjects = allSubjects.stream()
-                .filter(subject -> Arrays.stream(request.getAssignedSubjectIds()).anyMatch(id -> id.equals(subject.getId())))
+                .filter(subject -> Arrays
+                        .stream(request.getAssignedSubjectIds())
+                        .anyMatch(id -> id.equals(subject.getId()))
+                )
                 .toList();
 
         List<Subject> unassignedSubjects = allSubjects.stream()
@@ -125,7 +134,8 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
     }
 
     private void assignSubject(Subject subject, Staff staff, Semester semester) {
-        hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_Id(subject.getId(), semester.getId())
+        hdHeadSubjectBySemesterExtendRepository.
+                findBySubject_IdAndSemester_Id(subject.getId(), semester.getId())
                 .ifPresent(existingAssignment -> {
                     if (!existingAssignment.getStaff().getId().equals(staff.getId())) {
                         existingAssignment.setStaff(staff);
