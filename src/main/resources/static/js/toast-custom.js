@@ -1,10 +1,10 @@
 const showToastError = (message) => {
     Toastify({
         text: message,
-        className: "toastify-custom-error",
-        backgroundColor: "#990000",
         style: {
-            color: "#ff6666"
+            background: "white",
+            color: "black",
+            borderLeft: "4px solid red",
         },
         close: true,
         duration: 2000
@@ -14,7 +14,11 @@ const showToastError = (message) => {
 const showToastSuccess = (message) => {
     Toastify({
         text: message,
-        className: "toastify-custom-error",
+        style: {
+            background: "white",
+            color: "black",
+            borderLeft: "4px solid green",
+        },
         close: true,
         duration: 2000
     }).showToast();
