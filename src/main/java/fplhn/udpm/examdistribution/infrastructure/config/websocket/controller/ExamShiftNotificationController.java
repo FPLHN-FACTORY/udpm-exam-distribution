@@ -68,4 +68,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/track-student")
+    @SendTo("/topic/track-student")
+    public NotificationResponse notifyTrackStudent(String message) {
+        return new NotificationResponse(message);
+    }
+
 }
