@@ -1,3 +1,4 @@
+const examDistributionInfo = getExamDistributionInfo();
 const pdfjsLib = window["pdfjs-dist/build/pdf"];
 let pdfDoc = null;
 let pageNum = 1;
@@ -71,53 +72,6 @@ const getExamShiftByCode = () => {
     })
 }
 
-
-const connect = () => {
-    const socket = new SockJS("/ws");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        stompClient.subscribe("/topic/exam-shift", function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getSecondSupervisorId();
-        });
-        stompClient.subscribe("/topic/student-exam-shift", function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            countStudentInExamShift();
-            getStudents();
-            getStudentRejoin();
-        });
-        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            countStudentInExamShift();
-            getStudents();
-            getStudentRejoin();
-        });
-        stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getStudentRejoin();
-        });
-        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getStudentRejoin();
-            getStudents();
-            countStudentInExamShift();
-        });
-        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
-            showToastError(JSON.parse(response.body).message);
-            getStudentRejoin();
-        });
-        stompClient.subscribe("/topic/exam-shift-start", function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-        });
-        stompClient.subscribe("/topic/track-student", function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-            getStudents();
-        });
-    });
-}
-
 const getFirstSupervisorId = () => {
     $.ajax({
         type: "GET",
@@ -142,6 +96,7 @@ const getSecondSupervisorId = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const secondSupervisor = responseBody?.data;
+                secondSupervisorId = secondSupervisor.id;
                 $('#second-supervisor-info-name').text(secondSupervisor.name + ' - ' + secondSupervisor.staffCode);
                 $('#second-supervisor-info-email').text(secondSupervisor.accountFe);
                 $('#secondSupervisorColumn').removeAttr('hidden');
@@ -348,8 +303,6 @@ const examShiftStart = () => {
         data: passwordStart,
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start',
         success: function (responseBody) {
-            fetchFilePDFExamPaper(responseBody?.data?.fileId);
-            startCountdown(responseBody?.data?.startTime, responseBody?.data?.endTime);
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -360,6 +313,53 @@ const examShiftStart = () => {
         }
     });
 };
+
+const connect = () => {
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe("/topic/exam-shift", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getSecondSupervisorId();
+        });
+        stompClient.subscribe("/topic/student-exam-shift", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            countStudentInExamShift();
+            getStudents();
+            getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            countStudentInExamShift();
+            getStudents();
+            getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getStudentRejoin();
+            getStudents();
+            countStudentInExamShift();
+        });
+        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
+            showToastError(JSON.parse(response.body).message);
+            getStudentRejoin();
+        });
+        stompClient.subscribe("/topic/exam-shift-start", function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
+            getPathFilePDFExamPaper(examShiftCode);
+        });
+        stompClient.subscribe("/topic/track-student", function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
+            getStudents();
+        });
+    });
+}
 
 const updateExamPaperShiftStatus = () => {
     $.ajax({
@@ -395,7 +395,10 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
         },
         success: function (responseBody) {
             if (responseBody?.data) {
-                const fileId = responseBody?.data;
+                const fileId = responseBody?.data?.path;
+                const startTime = responseBody?.data?.startTime;
+                const endTime = responseBody?.data?.endTime;
+                startCountdown(startTime, endTime);
                 fetchFilePDFExamPaper(fileId);
             }
         },

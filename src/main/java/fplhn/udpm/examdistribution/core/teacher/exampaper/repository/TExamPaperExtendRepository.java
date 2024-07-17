@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.exampaper.repository;
 
+import fplhn.udpm.examdistribution.core.teacher.exampaper.model.response.TExamPaperShiftInfoAndPathResponse;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,10 @@ public interface TExamPaperExtendRepository extends ExamPaperRepository {
 
     @Query(value = """
             SELECT
-            	ep.`path`
+                eps.id as id,
+            	ep.`path` as path,
+             	eps.start_time as startTime,
+             	eps.end_time as endTime
             FROM
             	exam_paper ep
             JOIN exam_paper_shift eps ON
@@ -19,6 +23,6 @@ public interface TExamPaperExtendRepository extends ExamPaperRepository {
             WHERE
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
-    String getPathByExamShiftCode(String examShiftCode);
+    TExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 
 }

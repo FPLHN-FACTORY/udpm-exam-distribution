@@ -72,7 +72,7 @@ public class TExamShiftRestController {
 
     @GetMapping("/path")
     public ResponseEntity<?> getPathByExamShiftCode(@RequestParam(name = "examShiftCode") String examShiftCode) {
-        ResponseObject<?> responseObject = tExamShiftService.getPathByExamShiftCode(examShiftCode);
+        ResponseObject<?> responseObject = tExamShiftService.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode);
         return Helper.createResponseEntity(responseObject);
     }
 

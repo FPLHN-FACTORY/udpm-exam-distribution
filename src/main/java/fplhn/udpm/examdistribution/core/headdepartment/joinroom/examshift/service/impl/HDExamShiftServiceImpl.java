@@ -5,14 +5,23 @@ import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.HDExamShiftService;
 import fplhn.udpm.examdistribution.entity.ExamShift;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Service
@@ -20,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HDExamShiftServiceImpl implements HDExamShiftService {
 
+    private static final Logger log = LoggerFactory.getLogger(HDExamShiftServiceImpl.class);
     private final HDExamShiftExtendRepository hdExamShiftExtendRepository;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -35,8 +45,18 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
 
     @Override
     public ResponseObject<?> getAllExamShift() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDateTime startOfDay = currentDate.atStartOfDay();
+        ZonedDateTime zonedDateTime = startOfDay.atZone(ZoneId.systemDefault());
+        Instant instant = zonedDateTime.toInstant();
+        Long currentTimeMillis = instant.toEpochMilli();
+
+        Shift currentShift = Shift.getCurrentShift();
+        String currentShiftString = currentShift.toString();
         return new ResponseObject<>(hdExamShiftExtendRepository
-                .getAllExamShift(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()),
+                .getAllExamShift(httpSession.getAttribute(
+                                SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString(),
+                        currentTimeMillis, currentShiftString),
                 HttpStatus.OK, "Lấy danh sách ca thi thành công!");
     }
 
@@ -47,6 +67,11 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
         if (existingExamShift.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT,
                     "Phòng thi không tồn tại!");
+        }
+
+        if (existingExamShift.get().getExamShiftStatus().equals(ExamShiftStatus.FINISHED)) {
+            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                    "Ca thi đã kết thúc!");
         }
 
         ExamShift examShift = existingExamShift.get();
