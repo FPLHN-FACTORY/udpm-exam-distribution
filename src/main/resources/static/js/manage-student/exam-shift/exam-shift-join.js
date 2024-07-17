@@ -40,7 +40,7 @@ $(document).ready(function () {
 let examShiftCode = $('#examShiftCodeCtl').text();
 let examPaperId = $('#examPaperId').text();
 let stompClient = null;
-const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
+const editorExtensionId = "mfjgckbmeakcekilcamhpjglhkiaanol";
 
 const getExamShiftByCode = () => {
     $.ajax({
@@ -237,12 +237,12 @@ const startCountdown = (startTime, endTime) => {
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
             $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
         } else {
-            handleSendMessageEndTimeToExt();
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
             $('#openExamPaper').prop('hidden', false);
             $('#countdown').prop('hidden', true);
             $('#examShiftPaper').prop('hidden', true);
+            handleSendMessageEndTimeToExt();
         }
     }, 1000);
 }

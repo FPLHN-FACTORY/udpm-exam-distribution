@@ -11,7 +11,10 @@ import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShiftTrack;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,15 +35,19 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
+    private final HttpSession httpSession;
+
     @Override
     public ResponseObject<?> checkExamShiftIsValid(CheckRoomIsValidRequest request) {
-        Object examShiftInfo = examShiftTrackExtendRepository.getExamShiftInfo(request);
+        String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
+        Long currentTime = new Date().getTime() - 900000;
+        Object examShiftInfo = examShiftTrackExtendRepository.getExamShiftInfo(request, blockId, currentTime);
 
         if (examShiftInfo == null) {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Ca thi không hợp lệ");
         } else {
             return new ResponseObject<>(
-                    examShiftTrackExtendRepository.getExamShiftInfo(request),
+                    examShiftInfo,
                     HttpStatus.OK,
                     "Exam Shift hợp lệ"
             );
@@ -49,28 +56,53 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
 
     @Override
     public ResponseObject<?> saveTrackUrl(SaveTrackUrlRequest request) {
+        if (request.getUrl().length() < EntityProperties.LENGTH_URL) {
 
-        Optional<Student> studentOptional = studentRepository.getStudentsByEmail(request.getEmail());
-        Optional<ExamShift> examShiftOptional = examShiftRepository.getExamShiftByExamShiftCode(request.getRoomCode());
 
-        StudentExamShiftTrack studentExamShiftTrack = new StudentExamShiftTrack();
-        studentExamShiftTrack.setStudent(studentOptional.get());
-        studentExamShiftTrack.setExamShift(examShiftOptional.get());
-        studentExamShiftTrack.setTimeViolation(new Date().getTime());
-        studentExamShiftTrack.setUrl(request.getUrl());
-        studentExamShiftTrack.setStatus(EntityStatus.ACTIVE);
+            Optional<Student> studentOptional = studentRepository.getStudentsByEmail(request.getEmail());
+            Optional<ExamShift> examShiftOptional = examShiftRepository.getExamShiftByExamShiftCode(request.getRoomCode());
 
-        examShiftTrackExtendRepository.save(studentExamShiftTrack);
+            if (studentOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy sinh viên này"
+                );
+            }
 
-        String messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã đã bật 1 tab khác";
-        simpMessagingTemplate.convertAndSend("/topic/track-student",
-                new NotificationResponse(messageTrack));
+            if (examShiftOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy ca thi này"
+                );
+            }
 
-        return new ResponseObject<>(
-                null,
-                HttpStatus.OK,
-                "Lưu dữ liệu thành công"
-        );
+            StudentExamShiftTrack studentExamShiftTrack = new StudentExamShiftTrack();
+            studentExamShiftTrack.setStudent(studentOptional.get());
+            studentExamShiftTrack.setExamShift(examShiftOptional.get());
+            studentExamShiftTrack.setTimeViolation(new Date().getTime());
+            studentExamShiftTrack.setUrl(request.getUrl());
+            studentExamShiftTrack.setStatus(EntityStatus.ACTIVE);
+
+            examShiftTrackExtendRepository.save(studentExamShiftTrack);
+
+            String messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã đã bật 1 tab khác";
+            simpMessagingTemplate.convertAndSend("/topic/track-student",
+                    new NotificationResponse(messageTrack));
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Lưu dữ liệu thành công"
+            );
+        } else {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Quá độ dài url quá dài"
+            );
+        }
     }
 
 }

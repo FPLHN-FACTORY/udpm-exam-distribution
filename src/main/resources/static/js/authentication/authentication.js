@@ -14,7 +14,7 @@ const getListMappingScreenConstant = () => {
     ]
 }
 
-const extensionId = "dmdccbaohooloinlamfebaijhhpeegne";
+const extensionId = "mfjgckbmeakcekilcamhpjglhkiaanol";
 
 const checkExtensionInstalled = async () => {
     try {

@@ -40,7 +40,7 @@ public class Staff extends PrimaryEntity implements Serializable {
     @Nationalized
     private String accountFpt;
 
-    @Column(name = "picture", length = EntityProperties.LENGTH_NAME)
+    @Column(name = "picture", length = EntityProperties.LENGTH_PICTURE)
     private String picture;
 
     @ManyToOne

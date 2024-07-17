@@ -19,11 +19,18 @@ public interface AuthStaffRepository extends StaffRepository {
             WHERE s.account_fpt = :emailFPT AND
                   f.id = :facilityId AND
                   r.name = :role AND
-                  sr.status = 0
+                  sr.status = 0 AND
+                  s.status = 0
             LIMIT 1
             """, nativeQuery = true)
     Optional<Staff> getStaffByAccountFptAndFacilityId(String emailFPT, String facilityId, String role);
 
+    @Query("""
+            SELECT s
+            FROM Staff s
+            WHERE s.status = 0 AND
+                  s.accountFpt = :emailFPT
+            """)
     Optional<Staff> getStaffByAccountFpt(String emailFPT);
 
 }

@@ -67,8 +67,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
             Subject putSubject = subjectRepository.getReferenceById(subjectId);
 
-            System.out.println(putSubject.getPathExamRule().isEmpty());
-            if (putSubject.getPathExamRule() != null && !putSubject.getPathExamRule().isEmpty()) {
+            if (putSubject.getPathExamRule() != null) {
                 googleDriveFileService.deleteById(putSubject.getPathExamRule());
             }
 

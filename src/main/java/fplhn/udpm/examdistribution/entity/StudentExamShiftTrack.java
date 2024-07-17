@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -34,7 +35,7 @@ public class StudentExamShiftTrack extends PrimaryEntity implements Serializable
     @Column(name = "time_violation")
     private Long timeViolation;
 
-    @Column(name = "url")
+    @Column(name = "url", length = EntityProperties.LENGTH_URL)
     private String url;
 
 }
