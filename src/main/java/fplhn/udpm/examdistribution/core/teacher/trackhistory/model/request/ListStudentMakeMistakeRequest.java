@@ -5,8 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ListStudentTrackRequest {
+public class ListStudentMakeMistakeRequest {
 
-    
+    private String examShiftCode;
+
+    private String studentId;
 
 }

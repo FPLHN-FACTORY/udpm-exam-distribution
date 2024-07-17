@@ -11,4 +11,9 @@ public interface HDStudentResponse extends IsIdentify {
     String getEmail();
 
     Long getJoinTime();
+
+    String getPicture();
+
+    Integer getIsViolation();
+
 }

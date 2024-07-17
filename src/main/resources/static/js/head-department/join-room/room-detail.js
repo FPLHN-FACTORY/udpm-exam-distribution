@@ -123,6 +123,7 @@ const getStudents = () => {
         type: "GET",
         url: ApiConstant.API_HEAD_DEPARTMENT_STUDENT + '/' + examShiftCode,
         success: function (responseBody) {
+            console.log(responseBody);
             if (responseBody?.data) {
                 const students = responseBody?.data;
                 $('#studentsContainer').empty();
@@ -131,10 +132,10 @@ const getStudents = () => {
                 students.forEach((student, index) => {
                     const col = $(`
                         <div class="col-3">
-                            <div class="bg-white p-4 shadow rounded min-vh-30 w-30 position-relative">
+                            <div class="${student.isViolation === 0 ? "bg-danger" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
                                 <div class="user-box">
                                     <div class="avatar-lg">
-                                        <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
+                                        <img src="${student.picture}"
                                          alt="image profile"
                                          class="avatar-img rounded"/>
                                     </div>

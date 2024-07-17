@@ -110,6 +110,11 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
         });
+        stompClient.subscribe("/topic/track-student", function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
+            getStudents();
+        });
     });
 }
 
@@ -234,10 +239,10 @@ const getStudents = () => {
                 students.forEach((student, index) => {
                     const col = $(`
                         <div class="col-3">
-                            <div class="bg-white p-4 shadow rounded min-vh-30 w-30 position-relative">
+                            <div class="${student.isViolation === 0 ? "bg-danger" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
                                 <div class="user-box">
                                     <div class="avatar-lg">
-                                        <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
+                                        <img src="${student.picture}"
                                          alt="image profile"
                                          class="avatar-img rounded"/>
                                     </div>
@@ -248,6 +253,12 @@ const getStudents = () => {
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         <button class="btn position-absolute top-0 end-0 p-2 fs-3" 
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
+                                        ${student.isViolation === 0 ?
+                                            `<button class="btn position-absolute bottom-0 end-0 p-2 fs-3">
+                                                <i class="fa-regular fa-rectangle-list"></i>
+                                            </button>` :
+                                            ""
+                                        }
                                     </div>
                                 </div>
                             </div>
