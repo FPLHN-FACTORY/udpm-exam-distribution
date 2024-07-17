@@ -202,7 +202,7 @@ const getStaffs = (
                                   class="colorinput-input"
                                 />
                                 <span
-                                  class="colorinput-color bg-secondary"
+                                  class="colorinput-color bg-dark"
                                 ></span>
                               </label>
                             </div>

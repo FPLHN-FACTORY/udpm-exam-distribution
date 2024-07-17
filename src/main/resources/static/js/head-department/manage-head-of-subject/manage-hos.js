@@ -260,7 +260,7 @@ const handleListenSearchQuery = debounce(() => {
 
 const formatSubjectsAssigned = (subjectsAssigned) => {
     return subjectsAssigned
-        ? subjectsAssigned.split(',').map(subject => `<span class="badge bg-primary">${subject}</span>`).join('')
+        ? subjectsAssigned.split(',').map(subject => `<span class="badge bg-warning">${subject}</span>`).join('')
         : '<span class="badge bg-danger">Empty</span>';
 };
 
@@ -312,7 +312,7 @@ const getSubjectAssignForStaff = (
                                   class="colorinput-input"
                                 />
                                 <span
-                                  class="colorinput-color bg-secondary"
+                                  class="colorinput-color bg-dark"
                                 ></span>
                               </label>
                             </div>
