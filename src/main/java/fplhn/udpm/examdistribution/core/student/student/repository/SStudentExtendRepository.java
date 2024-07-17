@@ -16,19 +16,38 @@ public interface SStudentExtendRepository extends StudentRepository {
             	s.name as name,
             	s.student_code as studentCode,
             	s.email as email,
-            	ses.join_time as joinTime
-            FROM
-            	student s
-            JOIN student_exam_shift ses
-                ON
-            	s.id = ses.id_student
-            JOIN exam_shift es ON
-            	ses.id_exam_shift = es.id
+            	ses.join_time as joinTime,
+            	s.picture AS picture,
+            	(
+            	    SELECT
+            	        CASE
+            	            WHEN COUNT(sest.id > 0) THEN 0
+            	            ELSE 1
+            	        END
+            	    FROM student_exam_shift_track sest
+            	    WHERE sest.id_student = s.id
+            	) AS isViolation
+            FROM student s
+            JOIN student_exam_shift ses ON s.id = ses.id_student
+            JOIN exam_shift es ON ses.id_exam_shift = es.id
+            JOIN class_subject cs ON cs.id = es.id_subject_class
             WHERE
                 ses.exam_student_status IN(0, 1, 2)
-            	AND es.exam_shift_code = :examShiftCode
+            	AND es.exam_shift_code = :examShiftCode AND
+            	    cs.id_block = :blockId
+            """,countQuery = """
+            SELECT
+                COUNT(s.id)
+            FROM student s
+            JOIN student_exam_shift ses ON s.id = ses.id_student
+            JOIN exam_shift es ON ses.id_exam_shift = es.id
+            JOIN class_subject cs ON cs.id = es.id_subject_class
+            WHERE
+                ses.exam_student_status IN(0, 1, 2)
+            	AND es.exam_shift_code = :examShiftCode AND
+            	    cs.id_block = :blockId
             """, nativeQuery = true)
-    List<SStudentResponse> findAllStudentByExamShiftCode(String examShiftCode);
+    List<SStudentResponse> findAllStudentByExamShiftCode(String examShiftCode, String blockId);
 
     @Query(value = """
             SELECT

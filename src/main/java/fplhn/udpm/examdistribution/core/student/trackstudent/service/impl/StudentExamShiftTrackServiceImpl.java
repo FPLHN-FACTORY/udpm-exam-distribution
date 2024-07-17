@@ -10,9 +10,11 @@ import fplhn.udpm.examdistribution.core.student.trackstudent.service.StudentExam
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShiftTrack;
+import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,6 +29,8 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
     private final SESTStudentExtendRepository studentRepository;
 
     private final SESTExamShiftExtendRepository examShiftRepository;
+
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public ResponseObject<?> checkExamShiftIsValid(CheckRoomIsValidRequest request) {
@@ -57,6 +61,10 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
         studentExamShiftTrack.setStatus(EntityStatus.ACTIVE);
 
         examShiftTrackExtendRepository.save(studentExamShiftTrack);
+
+        String messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã đã bật 1 tab khác";
+        simpMessagingTemplate.convertAndSend("/topic/track-student",
+                new NotificationResponse(messageTrack));
 
         return new ResponseObject<>(
                 null,

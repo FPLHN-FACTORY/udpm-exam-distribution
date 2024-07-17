@@ -40,6 +40,7 @@ $(document).ready(function () {
 let examShiftCode = $('#examShiftCodeCtl').text();
 let examPaperId = $('#examPaperId').text();
 let stompClient = null;
+const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
 
 const getExamShiftByCode = () => {
     $.ajax({
@@ -219,7 +220,7 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
-            // handleSendMessageStartToExt();
+            handleSendMessageStartToExt();
         });
     });
 }
@@ -236,7 +237,7 @@ const startCountdown = (startTime, endTime) => {
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
             $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
         } else {
-            // handleSendMessageEndTimeToExt();
+            handleSendMessageEndTimeToExt();
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
             $('#openExamPaper').prop('hidden', false);
@@ -247,7 +248,6 @@ const startCountdown = (startTime, endTime) => {
 }
 
 const handleSendMessageStartToExt = () => {
-    const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
     chrome.runtime.sendMessage(
         editorExtensionId,
         { active: "onTracking" },
@@ -258,7 +258,6 @@ const handleSendMessageStartToExt = () => {
 };
 
 const handleSendMessageEndTimeToExt = () => {
-    const editorExtensionId = "dmdccbaohooloinlamfebaijhhpeegne";
     chrome.runtime.sendMessage(
         editorExtensionId,
         { active: "stopTracking" },
