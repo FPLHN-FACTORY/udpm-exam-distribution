@@ -41,7 +41,7 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
     public ResponseObject<?> checkExamShiftIsValid(CheckRoomIsValidRequest request) {
         String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
         Long currentTime = new Date().getTime() - 900000;
-        Object examShiftInfo = examShiftTrackExtendRepository.getExamShiftInfo(request, blockId, currentTime);
+        Object examShiftInfo = examShiftTrackExtendRepository.getExamShiftInfo(request, blockId);
 
         if (examShiftInfo == null) {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Ca thi không hợp lệ");

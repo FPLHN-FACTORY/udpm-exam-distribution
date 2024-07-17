@@ -198,7 +198,7 @@ const getStudents = () => {
                 students.forEach((student, index) => {
                     const col = $(`
                         <div class="col-3">
-                            <div class="${student.isViolation === 0 ? "bg-danger" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
+                            <div class="${student.isViolation === 0 ? "bg-warning" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
                                 <div class="user-box">
                                     <div class="avatar-lg">
                                         <img src="${student.picture}"
@@ -210,14 +210,14 @@ const getStudents = () => {
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
-                                        <button class="btn position-absolute top-0 end-0 p-2 fs-3" 
+                                        <button class="btn position-absolute top-0 end-0 p-2 fs-3 lh-1" 
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
                                         ${student.isViolation === 0 ?
-                        `<button onclick="handleOpenModalStudentViolation('${student.id}')" class="btn position-absolute bottom-0 end-0 p-2 fs-3">
+                                            `<button onclick="handleOpenModalStudentViolation('${student.id}')" class="btn position-absolute bottom-0 end-0 p-2 fs-3">
                                                 <i class="fa-regular fa-rectangle-list"></i>
                                              </button>` :
-                        ""
-                    }
+                                            ""
+                                        }
                                     </div>
                                 </div>
                             </div>
