@@ -11,8 +11,4 @@ public class TStartExamShiftResponse {
 
     private String fileId;
 
-    private Long startTime;
-
-    private Long endTime;
-
 }

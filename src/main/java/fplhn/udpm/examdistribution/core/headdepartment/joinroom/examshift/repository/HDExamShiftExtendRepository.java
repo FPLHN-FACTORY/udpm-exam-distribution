@@ -20,15 +20,18 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.room as room,
             	s.staff_code as codeFirstSupervisor,
             	s.name as nameFirstSupervisor,
-            	es.status as status
+            	es.exam_shift_status as status
             FROM
             	exam_shift es
-            LEFT JOIN staff s ON
+            JOIN staff s ON
             	es.id_first_supervisor = s.id
             WHERE
             	s.id_department_facility = :departmentFacilityId
+            	AND es.exam_date >= :currentDate
+                AND es.shift = :currentShift
+                AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
             """, nativeQuery = true)
-    List<HDAllExamShiftResponse> getAllExamShift(String departmentFacilityId);
+    List<HDAllExamShiftResponse> getAllExamShift(String departmentFacilityId, Long currentDate, String currentShift);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 
