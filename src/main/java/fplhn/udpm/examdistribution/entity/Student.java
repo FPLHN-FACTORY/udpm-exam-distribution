@@ -31,7 +31,7 @@ public class Student extends PrimaryEntity implements Serializable {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "picture", length = EntityProperties.LENGTH_NAME)
+    @Column(name = "picture", length = EntityProperties.LENGTH_PICTURE)
     private String picture;
 
 }

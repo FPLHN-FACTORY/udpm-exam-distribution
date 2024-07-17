@@ -37,6 +37,8 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             	exam_shift es
             LEFT JOIN student_exam_shift ses ON
             	es.id = ses.id_exam_shift
+            LEFT JOIN exam_paper_shift eps ON
+                eps.id_exam_shift = es.id
             LEFT JOIN student st ON
             	st.id = ses.id_student
             LEFT JOIN class_subject cs ON
@@ -44,7 +46,10 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             LEFT JOIN subject subj ON
             	subj.id = cs.id_subject
             WHERE es.exam_shift_code = :#{#request.roomCode} AND
-                  st.email = :#{#request.email}
+                  st.email = :#{#request.email} AND
+                  cs.id_block = :blockId AND
+                  es.exam_shift_status = 'IN_PROGRESS' AND
+                  eps.start_time <= :currentTime
             """, countQuery = """
             SELECT
             	COUNT(es.id)
@@ -52,6 +57,8 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             	exam_shift es
             LEFT JOIN student_exam_shift ses ON
             	es.id = ses.id_exam_shift
+            LEFT JOIN exam_paper_shift eps ON
+                eps.id_exam_shift = es.id
             LEFT JOIN student st ON
             	st.id = ses.id_student
             LEFT JOIN class_subject cs ON
@@ -59,8 +66,11 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             LEFT JOIN subject subj ON
             	subj.id = cs.id_subject
             WHERE es.exam_shift_code = :#{#request.roomCode} AND
-                  st.email = :#{#request.email}
+                  st.email = :#{#request.email} AND
+                  cs.id_block = :blockId AND
+                  es.exam_shift_status = 'IN_PROGRESS' AND
+                  eps.start_time <= :currentTime
             """, nativeQuery = true)
-    ExamShiftInfoResponse getExamShiftInfo(CheckRoomIsValidRequest request);
+    ExamShiftInfoResponse getExamShiftInfo(CheckRoomIsValidRequest request, String blockId, Long currentTime);
 
 }

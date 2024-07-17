@@ -1,6 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.trackhistory.controller;
 
-import fplhn.udpm.examdistribution.core.teacher.trackhistory.model.request.ListStudentMakeMistakeRequest;
+import fplhn.udpm.examdistribution.core.teacher.trackhistory.model.request.ListViolationStudentRequest;
 import fplhn.udpm.examdistribution.core.teacher.trackhistory.service.TTrackHistoryService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -18,8 +18,8 @@ public class TTrackHistoryRestController {
     private final TTrackHistoryService trackHistoryService;
 
     @GetMapping
-    public ResponseEntity<?> getListStudentMakeMistake(ListStudentMakeMistakeRequest request) {
-        return Helper.createResponseEntity(trackHistoryService.getListStudentMakeMistake(request));
+    public ResponseEntity<?> getListViolationStudent(ListViolationStudentRequest request) {
+        return Helper.createResponseEntity(trackHistoryService.getListViolationStudent(request));
     }
 
 }

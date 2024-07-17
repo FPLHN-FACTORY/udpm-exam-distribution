@@ -90,6 +90,7 @@ const ApiConstant = {
     API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
     API_TEACHER_STAFF: "/api/v1/teacher/staffs",
     API_TEACHER_EXAM_PAPER_SHIFT: "/api/v1/teacher/exam-paper-shift",
+    API_TEACHER_TRACK_HISTORY: "/api/v1/teacher/track-history",
 
     // Constants representing the redirect paths for various resources under student
     REDIRECT_STUDENT_HOME: "/student/home",

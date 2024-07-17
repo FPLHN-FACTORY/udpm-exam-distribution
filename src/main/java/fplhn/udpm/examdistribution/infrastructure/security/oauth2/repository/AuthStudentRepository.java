@@ -13,7 +13,8 @@ public interface AuthStudentRepository extends StudentRepository {
     @Query("""
             SELECT s
             FROM Student s
-            WHERE s.email = :email AND s.status = 0
+            WHERE s.email = :email AND
+                  s.status = 0
             """)
     Optional<Student> isStudentExist(String email);
 

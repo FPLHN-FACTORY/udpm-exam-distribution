@@ -15,7 +15,9 @@ public interface AuthAssignUploaderRepository extends AssignUploaderRepository {
             FROM AssignUploader au
             WHERE
                 au.staff.id = :userId AND
-                au.semester.id = :semesterId
+                au.semester.id = :semesterId AND
+                au.status = 0 AND
+                au.staff.status = 0
             ORDER BY au.createdDate LIMIT 1
             """)
     Optional<AssignUploader> findByStaffId(String userId, String semesterId);
