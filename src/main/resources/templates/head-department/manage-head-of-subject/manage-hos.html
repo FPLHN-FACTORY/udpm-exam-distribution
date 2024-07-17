@@ -59,14 +59,14 @@
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-list"></i> Danh sách nhân viên</h4>
                             <button
-                                    class="btn btn-secondary"
                                     id="btnShowHistoryLog"
-                            >
-                                Lịch sử thao tác
+                                    type="button"
+                                    class="btn"
+                                    style="background-color: var(--common-button-color); color: white;">Lịch sử thao tác
                             </button>
                         </div>
                         <div class="table-responsive mt-4">
-                            <table class="table table-bordered">
+                            <table class="ant-table">
                                 <thead>
                                 <tr>
                                     <td>STT</td>
@@ -157,7 +157,9 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-4">
-                            <button class="btn btn-secondary" id="btnSearchSubjectAssign">Tìm kiếm</button>
+                            <button class="btn" id="btnSearchSubjectAssign"
+                                    style="background-color: var(--common-button-color); color: white;">Tìm kiếm
+                            </button>
                             <button class="btn ms-3" id="btnResetSearchSubjectAssign"
                                     style="background-color: var(--common-button-color); color: white;">Làm mới
                             </button>
@@ -166,7 +168,7 @@
                     <!-- Filter -->
                     <!-- Table -->
                     <div class="table-responsive mt-4">
-                        <table class="table table-bordered">
+                        <table class="ant-table">
                             <thead>
                             <tr>
                                 <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Thuộc quản lý</td>
@@ -202,7 +204,14 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="btnAssignSubjectForStaff">Phân công</button>
+                    <button
+                            type="button"
+                            class="btn"
+                            style="background-color: var(--common-button-color); color: white;"
+                            id="btnAssignSubjectForStaff"
+                    >
+                        Phân công
+                    </button>
                 </div>
             </div>
         </div>
@@ -224,7 +233,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive mt-4">
-                        <table class="table table-bordered">
+                        <table class="ant-table">
                             <thead>
                             <tr>
                                 <td>STT</td>

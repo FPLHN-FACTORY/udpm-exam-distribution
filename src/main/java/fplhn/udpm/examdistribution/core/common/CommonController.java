@@ -14,7 +14,7 @@ public class CommonController {
 
     @GetMapping(MappingConstants.HEAD_DEPARTMENT)
     public String viewHeadDepartment() {
-        return "redirect:/head-department/manage-head-of-subjects";
+        return "redirect:/head-department/join-room";
     }
 
     @GetMapping(MappingConstants.HEAD_SUBJECT)
