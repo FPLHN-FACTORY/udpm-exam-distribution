@@ -48,8 +48,7 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             WHERE es.exam_shift_code = :#{#request.roomCode} AND
                   st.email = :#{#request.email} AND
                   cs.id_block = :blockId AND
-                  es.exam_shift_status = 'IN_PROGRESS' AND
-                  eps.start_time <= :currentTime
+                  (es.exam_shift_status != 'FINISHED')
             """, countQuery = """
             SELECT
             	COUNT(es.id)
@@ -68,9 +67,8 @@ public interface SESTStudentExamShiftTrackExtendRepository extends StudentExamSh
             WHERE es.exam_shift_code = :#{#request.roomCode} AND
                   st.email = :#{#request.email} AND
                   cs.id_block = :blockId AND
-                  es.exam_shift_status = 'IN_PROGRESS' AND
-                  eps.start_time <= :currentTime
+                  (es.exam_shift_status != 'FINISHED')
             """, nativeQuery = true)
-    ExamShiftInfoResponse getExamShiftInfo(CheckRoomIsValidRequest request, String blockId, Long currentTime);
+    ExamShiftInfoResponse getExamShiftInfo(CheckRoomIsValidRequest request, String blockId);
 
 }

@@ -11,6 +11,7 @@ import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.Aut
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthBlockRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.response.BlockAndSemesterIdResponse;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomStudentCookie;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomUserCookie;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.OAuth2UserInfo;
@@ -149,7 +150,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, student.getId());
-
+        this.setBlockAndSessionId();
         student.setPicture(userInfo.getPicture());
         authStudentRepository.save(student);
     }
@@ -166,6 +167,17 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         staff.setPicture(userInfo.getPicture());
         authStaffRepository.save(staff);
 
+        BlockAndSemesterIdResponse blockAndSessionId = this.setBlockAndSessionId();
+
+        Optional<AssignUploader> isAssignUploaderIsExist = assignUploaderRepository.findByStaffId(staff.getId(), blockAndSessionId.getSemesterId());
+        if (isAssignUploaderIsExist.isPresent()) {
+            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "TRUE");
+        } else {
+            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "FALSE");
+        }
+    }
+
+    private BlockAndSemesterIdResponse setBlockAndSessionId() {
         String blockId = "";
         Long now = new Date().getTime();
         for (Block block : blockRepository.findAll()) {
@@ -179,12 +191,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         httpSession.setAttribute(SessionConstant.CURRENT_BLOCK_ID, blockId);
         httpSession.setAttribute(SessionConstant.CURRENT_SEMESTER_ID, semesterId);
 
-        Optional<AssignUploader> isAssignUploaderIsExist = assignUploaderRepository.findByStaffId(staff.getId(), semesterId);
-        if (isAssignUploaderIsExist.isPresent()) {
-            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "TRUE");
-        } else {
-            httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "FALSE");
-        }
+        return new BlockAndSemesterIdResponse(blockId, semesterId);
     }
 
 }
