@@ -35,7 +35,7 @@ function handleApproval() {
                 },
                 confirm: {
                     text: "Phê duyệt",
-                    className: "btn btn-secondary",
+                    className: "btn btn-black",
                 },
             },
         }).then((ok) => {
@@ -95,7 +95,7 @@ function handleDelete(idExam) {
             },
             confirm: {
                 text: "Xóa",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((ok) => {

@@ -228,7 +228,7 @@ const confirmCreateSemester = (id) => {
             },
             confirm: {
                 text: "Thêm",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -313,7 +313,7 @@ const confirmUpdateSemester = (id) => {
             },
             confirm: {
                 text: "Lưu",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -352,7 +352,7 @@ const confirmChangeStatusSemester = (semesterId) => {
             },
             confirm: {
                 text: "Thay đổi",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {
@@ -375,7 +375,7 @@ const confirmUpdateBlock = (id) => {
             },
             confirm: {
                 text: "Lưu",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -459,7 +459,7 @@ const confirmCreateBlock = () => {
             },
             confirm: {
                 text: "Thêm",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -537,7 +537,7 @@ const confirmChangeStatusBlock = (blockId) => {
             },
             confirm: {
                 text: "Thay đổi",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {

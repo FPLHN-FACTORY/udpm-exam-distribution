@@ -22,14 +22,14 @@ const setStateSubjectIdDetail = (value) => {
 
 //END: setter
 
-function handleDetail(path){
+function handleDetail(subjectId) {
     handleSolveViewWhenOpenModalDetail();
 
     //reset laij page 1
     pageNumDetail = 1;
-    handleFetchExamRule(path);
+    handleFetchSampleExam(subjectId);
 
-    $("#detailExamApprovalModal").modal("show");
+    $("#detailSampleExamModal").modal("show");
 }
 
 const handleSolveViewWhenOpenModalDetail = () => { // ẩn đi view pdf và paging của nó
@@ -44,11 +44,11 @@ const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và pag
     }
 };
 
-const handleFetchExamRule = (path) => {
+const handleFetchSampleExam = (subjectId) => {
     showLoading();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL + "/file?path="+path,
+        url: ApiConstant.API_TEACHER_EXAM_FILE + "/sample-exam-paper/" + subjectId,
         success: function (responseBody) {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             pdfjsLibDetail
@@ -70,6 +70,58 @@ const handleFetchExamRule = (path) => {
                 showToastError('Có lỗi xảy ra');
             }
             hideLoading();
+        }
+    });
+};
+
+const handleDownloadExamPaper = (subjectId) => {
+    swal({
+        title: "Xác nhận download đề thi mẫu?",
+        text: "Bạn chắc chắn muốn download đề thi mẫu không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Download",
+                className: "btn btn-black",
+            },
+        },
+    }).then((ok) => {
+        if (ok) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_TEACHER_EXAM_FILE + "/sample-exam-paper/" + subjectId,
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    // Tạo đối tượng URL từ Blob
+                    const url = URL.createObjectURL(blob);
+
+                    // Tạo và nhấp vào liên kết để tải tệp
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf'; // Đặt tên cho file tải về
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Xóa đối tượng URL sau khi tải
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
         }
     });
 };

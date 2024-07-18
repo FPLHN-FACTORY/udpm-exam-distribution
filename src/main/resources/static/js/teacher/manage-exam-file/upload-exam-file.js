@@ -132,7 +132,7 @@ const handleUploadExamFile = () => {
                 },
                 confirm: {
                     text: "Tải lên",
-                    className: "btn btn-secondary",
+                    className: "btn btn-black",
                 },
             },
         }).then((ok) => {

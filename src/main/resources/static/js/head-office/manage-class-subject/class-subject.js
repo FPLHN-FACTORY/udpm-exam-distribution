@@ -523,7 +523,7 @@ function submitDownload() {
                 },
                 confirm: {
                     text: "Tải",
-                    className: "btn btn-secondary",
+                    className: "btn btn-black",
                 },
             },
         }).then((willDelete) => {

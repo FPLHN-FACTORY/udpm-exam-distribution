@@ -85,6 +85,14 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
 
             Optional<ExamPaper> examPaper = examApprovalRepository.findByPath(fileId);
 
+            if (examPaper.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.OK,
+                        "Không tìm thấy đề thi"
+                );
+            }
+
             String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER_APPROVAL + examPaper.get().getId();
             Object redisValue = redisService.get(redisKey);
             if (redisValue != null) {
