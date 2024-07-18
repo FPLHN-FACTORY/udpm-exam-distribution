@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
-import fplhn.udpm.examdistribution.entity.listener.SubjectListener;
+import fplhn.udpm.examdistribution.infrastructure.listener.SubjectListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectType;

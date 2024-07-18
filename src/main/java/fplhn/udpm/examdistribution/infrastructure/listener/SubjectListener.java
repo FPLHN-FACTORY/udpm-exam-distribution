@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.entity.listener;
+package fplhn.udpm.examdistribution.infrastructure.listener;
 
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
