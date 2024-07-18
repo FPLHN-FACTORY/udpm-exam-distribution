@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
-import fplhn.udpm.examdistribution.entity.listener.ExamPaperListener;
+import fplhn.udpm.examdistribution.infrastructure.listener.ExamPaperListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import jakarta.persistence.Column;
