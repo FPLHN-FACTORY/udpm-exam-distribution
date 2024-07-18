@@ -1,8 +1,7 @@
 $(document).ready(function () {
+    fetchDepartments();
 
     getSubjects();
-
-    fetchDepartments();
 
     $('#filterForm').on('submit', function (e) {
         e.preventDefault();
