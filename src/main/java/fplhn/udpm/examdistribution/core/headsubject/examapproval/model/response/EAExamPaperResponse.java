@@ -4,7 +4,6 @@ public interface EAExamPaperResponse {
 
     String getId();
     String getExamPaperCode();
-    String getExamPaperType();
     String getExamPaperStatus();
     String getPath();
     String getCreatedExamPaperDate();

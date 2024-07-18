@@ -107,16 +107,6 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">
-                            <span class="text-danger"> * </span> Loại đề </label>
-                        <select class="form-select" style="height: 60%;" id="exam-paper-type" required>
-                            <option value="">-- Chọn loại đề --</option>
-                            <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
-                            <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
-                        </select>
-                        <div class="text-danger" id="exam-paper-type-error"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
                             <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
                         <select class="form-select" style="height: 60%;" id="major-facility" required>
                             <option value="">-- Chuyên ngành - cơ sở --</option>
@@ -130,8 +120,9 @@
                             <button class="btn btn-secondary" onclick="handleOpenChooseFilePdf()">
                                 <i class="fas fa-file-excel"></i> Chọn đề thi
                             </button>
-                            <input type="file" id="file-pdf-input" hidden accept="application/msword,text/plain,.doc, .docx, .xls, .xlsx,
-                            .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.ms-powerpoint,application/pdf"/>
+                            <!--                            <input type="file" id="file-pdf-input" hidden accept="application/msword,text/plain,.doc, .docx, .xls, .xlsx,-->
+                            <!--                            .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.ms-powerpoint,application/pdf"/>-->
+                            <input type="file" id="file-pdf-input" hidden accept="application/pdf"/>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -151,7 +142,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="text-center d-flex justify-content-end gap-3">
-                        <button type="button" id="btn-upload-exam-file" onclick="handleUploadExamRule()"
+                        <button type="button" id="btn-upload-exam-file" onclick="handleUploadExamFile()"
                                 class="btn btn-secondary">Tải đề lên
                         </button>
                     </div>

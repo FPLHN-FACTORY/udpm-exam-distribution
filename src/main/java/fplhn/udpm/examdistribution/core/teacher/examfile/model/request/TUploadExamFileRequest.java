@@ -12,8 +12,6 @@ public class TUploadExamFileRequest {
 
     private String folderName;
 
-    private String examPaperType;
-
     private String majorFacilityId;
 
 }

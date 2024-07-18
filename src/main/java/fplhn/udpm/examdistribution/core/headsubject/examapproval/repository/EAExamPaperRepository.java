@@ -19,12 +19,11 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
     @Query(value = """
             SELECT ep.id AS id,
             	   ep.exam_paper_code AS examPaperCode,
-            	   ep.exam_paper_type AS examPaperType,
             	   ep.exam_paper_status AS examPaperStatus,
             	   ep.path AS path,
             	   ep.created_exam_paper_date AS createdExamPaperDate,
             	   CONCAT(subj.subject_code, ' - ',subj.name) AS subjectName,
-            	   s.staff_code AS staffUpload
+            	   CONCAT(s.staff_code,' - ',s.name) AS staffUpload
             FROM exam_paper ep
             JOIN head_subject_by_semester hsbs ON hsbs.id_subject = ep.id_subject
             JOIN block b ON b.id = ep.id_block
@@ -35,9 +34,8 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
                   hsbs.id_semester = :semesterId AND
                   b.id_semester = :semesterId AND
                   ep.status = 0 AND 
-                  (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"}) AND
                   (:#{#request.idSubject} IS NULL OR subj.id LIKE :#{"%" + #request.idSubject + "%"}) AND
-                  (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
+                  (:#{#request.staffUploadCode} IS NULL OR CONCAT(s.staff_code,' - ',s.name) LIKE :#{"%" + #request.staffUploadCode + "%"})
             """,countQuery = """
             SELECT COUNT(ep.id)
             FROM exam_paper ep
@@ -50,9 +48,8 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
                   hsbs.id_semester = :semesterId AND
                   b.id_semester = :semesterId AND
                   ep.status = 0 AND 
-                  (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE :#{"%" + #request.examPaperType + "%"}) AND
                   (:#{#request.idSubject} IS NULL OR subj.id LIKE :#{"%" + #request.idSubject + "%"}) AND
-                  (:#{#request.staffUploadCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffUploadCode + "%"})
+                  (:#{#request.staffUploadCode} IS NULL OR CONCAT(s.staff_code,' - ',s.name) LIKE :#{"%" + #request.staffUploadCode + "%"})
             """
             , nativeQuery = true)
     Page<EAExamPaperResponse> getExamApprovals(Pageable pageable, EAExamPaperRequest request, String idHeadSubject, String semesterId);

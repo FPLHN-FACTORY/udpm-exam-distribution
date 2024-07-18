@@ -93,12 +93,18 @@ const fetchSearchSubject = (
                             <td>${getStatusType(subject.subjectType)}</td>
                             <td>${subject.uploaded}/${subject.maxUpload}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                ${subject.uploaded >= subject.maxUpload ?
-                                 '': `<span onclick="handleOpenModalExamFile('${subject.id}','${subject.subjectCode}')" class="fs-4">
+                                ${subject.uploaded >= subject.maxUpload ? '' : `
+                                <span onclick="handleOpenModalExamFile('${subject.id}','${subject.subjectCode}')" 
+                                class="fs-4">
                                 <i class="fa-solid fa-upload"
                                    style="cursor: pointer; margin-left: 10px;"
                                 ></i>
-                            </span>`}
+                                </span>`}  
+                                <span onclick="handleShowSampleExam('${subject.id}','${subject.subjectCode}')" class="fs-4">
+                                <i class="fa-solid fa-eye"
+                                   style="cursor: pointer; margin-left: 10px;"
+                                ></i>
+                            </span>
                             </td>
                         </tr>`;
             });

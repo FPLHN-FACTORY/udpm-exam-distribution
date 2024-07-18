@@ -20,10 +20,11 @@ public interface TSubjectRepository extends SubjectRepository {
                     d.name AS departmentName,
                     s.created_date AS createdDate,
                     au.max_upload AS maxUpload,
-                    (SELECT COUNT(ep.id)  
+                    (SELECT COUNT(ep.id)
                      FROM exam_paper ep
                      JOIN subject s3 ON s3.id = ep.id_subject
-                     WHERE s3.id = s.id) AS uploaded
+                     WHERE s3.id = s.id
+                    AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)) AS uploaded
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
@@ -41,7 +42,7 @@ public interface TSubjectRepository extends SubjectRepository {
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{#request.subjectType})
             """,
             countQuery = """
-                 SELECT 	COUNT(s.id)
+                 SELECT COUNT(s.id)
                  FROM subject s
                  JOIN department d ON s.id_department = d.id
                  JOIN department_facility df ON df.id_department = d.id

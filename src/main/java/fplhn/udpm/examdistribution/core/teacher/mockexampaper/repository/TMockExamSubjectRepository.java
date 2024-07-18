@@ -27,8 +27,7 @@ public interface TMockExamSubjectRepository extends SubjectRepository {
             AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
             AND (:#{#request.subjectAndDepartment} IS NULL
                      OR (d.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
-                     OR (s.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
-                     OR (s.subject_code LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
+                     OR (CONCAT(s.subject_code, ' - ',s.name) LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
             AND (:#{#request.subjectStatus} IS NULL OR s.subject_status LIKE :#{"%" + #request.subjectStatus + "%"})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})
@@ -44,8 +43,7 @@ public interface TMockExamSubjectRepository extends SubjectRepository {
             AND (SELECT UNIX_TIMESTAMP(NOW(3)) * 1000) BETWEEN b.start_time AND b.end_time
             AND (:#{#request.subjectAndDepartment} IS NULL
                      OR (d.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
-                     OR (s.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
-                     OR (s.subject_code LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
+                     OR (CONCAT(s.subject_code, ' - ',s.name) LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
             AND (:#{#request.subjectStatus} IS NULL OR s.subject_status LIKE :#{"%" + #request.subjectStatus + "%"})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})

@@ -12,11 +12,21 @@ $(document).ready(function () {
 //START: state
 let isFirstRender = false;
 let stateSemesterIdNow = "";
+let startMajorFacilityUpload = `<div class="mb-3" id="major-facility-container">
+                        <label class="form-label">
+                            <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
+                        <select class="form-select" style="height: 60%;" id="major-facility-upload" required>`;
+let middleMajorFacilityUpload = ``;
+let endMajorFacilityUpload = `
+                        </select>
+                        <div class="text-danger" id="major-facility-upload-error"></div>
+                    </div>`;
 //END: state
 
 //START: getter
 const getIsFirstRender = () => isFirstRender;
 const getStateSemesterIdNow = () => stateSemesterIdNow;
+const getMiddleMajorFacilityUpload = () => middleMajorFacilityUpload;
 //END: getter
 
 //START: setter
@@ -26,7 +36,9 @@ const setIsFirstRender = (value) => {
 const setStateSemesterIdNow = (value) => {
     stateSemesterIdNow = value;
 };
-
+const setMiddleMajorFacilityUpload = (value) => {
+    middleMajorFacilityUpload = value;
+};
 const setValueSemester = (value) => {
     $("#semesterId").val(value);
 };
@@ -455,6 +467,7 @@ const handleFetchMajorFacility = () => {
             });
             majorFacility.unshift('<option value="">-- Chuyên ngành - Cơ sở --</option>');
             $("#major-facility").html(majorFacility);
+            setMiddleMajorFacilityUpload(majorFacility);
             hideLoading();
         },
         error: function (error) {

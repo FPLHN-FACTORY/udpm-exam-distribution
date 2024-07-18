@@ -10,8 +10,6 @@ public class EAExamPaperRequest extends PageableRequest {
 
     private String idSubject;
 
-    private String examPaperType;
-
     private String staffUploadCode;
 
 }
