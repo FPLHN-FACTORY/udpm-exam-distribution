@@ -65,7 +65,7 @@ const handlePostOrPutExamPaperConfirm = () => {
             },
             confirm: {
                 text: "Xác nhận",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {

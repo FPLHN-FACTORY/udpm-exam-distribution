@@ -100,11 +100,17 @@ const fetchSearchSubject = (
                                    style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </span>`}  
-                                <span onclick="handleShowSampleExam('${subject.id}','${subject.subjectCode}')" class="fs-4">
+                                <span onclick="handleDetail('${subject.id}')" class="fs-4">
                                 <i class="fa-solid fa-eye"
                                    style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                             </span>
+                            <span onclick="handleDownloadExamPaper('${subject.id}')" class="fs-4">
+                                <i class="fa-solid fa-download"
+                                   style="cursor: pointer; margin-left: 10px;"
+                                ></i>
+                            </span>
+                            <i ></i>
                             </td>
                         </tr>`;
             });

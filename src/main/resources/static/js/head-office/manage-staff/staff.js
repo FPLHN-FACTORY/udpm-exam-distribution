@@ -85,7 +85,7 @@ $(document).ready(function () {
                     },
                     confirm: {
                         text: messUp,
-                        className: "btn btn-secondary",
+                        className: "btn btn-black",
                     },
                 },
             }).then((confirm) => {
@@ -376,7 +376,7 @@ function handleDelete(staffId, staffName) {
             },
             confirm: {
                 text: "Xóa",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {

@@ -111,7 +111,7 @@ function handleDelete(idRole,roleName) {
             },
             confirm: {
                 text: "Xóa",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {

@@ -2,8 +2,10 @@ package fplhn.udpm.examdistribution.core.teacher.examfile.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSampleExamPaperResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TAssignUploaderRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TBlockRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TExamPaperRepository;
@@ -18,15 +20,20 @@ import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.*;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +57,8 @@ public class TExamFileImpl implements TExamFileService {
     private final TExamPaperRepository tExamPaperRepository;
 
     private final TBlockRepository blockRepository;
+
+    private final RedisService redisService;
 
     @Override
     public ResponseObject<?> getAllSubject(String departmentFacilityId, TFindSubjectRequest request) {
@@ -133,6 +142,40 @@ public class TExamFileImpl implements TExamFileService {
     @Override
     public ResponseObject<?> getMajorFacilityByDepartmentFacility(String departmentFacilityId) {
         return new ResponseObject<>(majorFacilityRepository.getMajorFacilityByIdFacility(departmentFacilityId), HttpStatus.OK, "Lấy danh sách chuyên ngành theo cơ sở thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> getSampleExamPaper(String subjectId) {
+        try {
+            List<TSampleExamPaperResponse> examPaper = tExamPaperRepository.getSampleExamPaper(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString(), subjectId);
+            if (examPaper.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.BAD_REQUEST,
+                        "Không tìm thấy đề thi thử"
+                );
+            }
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_SAMPLE_EXAM_PAPER + examPaper.get(0).getId();
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new FileResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Tìm thấy đề thi thành công"
+                );
+            }
+
+            Resource resource= googleDriveFileService.loadFile(examPaper.get(0).getPath());
+            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            redisService.set(redisKey, data);
+            return new ResponseObject<>(
+                    new FileResponse(data,resource.getFilename()), HttpStatus.OK, "Lấy đề thi mẫu thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Có lỗi xảy ra khi lấy đề thi thử"
+            );
+        }
     }
 
 }

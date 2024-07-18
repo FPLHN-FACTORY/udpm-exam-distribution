@@ -297,7 +297,7 @@ const confirmUpdateFacility = () =>
             },
             confirm: {
                 text: "Lưu",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willUpdate) => {
@@ -320,7 +320,7 @@ const confirmCreateFacility = () => {
             },
             confirm: {
                 text: "Thêm",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -343,7 +343,7 @@ const confirmDelete = (id) => {
             },
             confirm: {
                 text: "Thay đổi",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willDelete) => {
@@ -432,7 +432,7 @@ const confirmCreateFacilityChild = () => {
             },
             confirm: {
                 text: "Thêm",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {
@@ -455,7 +455,7 @@ const confirmUpdateFacilityChild = () => {
             },
             confirm: {
                 text: "Lưu",
-                className: "btn btn-secondary",
+                className: "btn btn-black",
             },
         },
     }).then((willCreate) => {

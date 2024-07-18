@@ -117,7 +117,7 @@
                         <label class="form-label">
                             <span class="text-danger"> * </span> Đề thi </label>
                         <div>
-                            <button class="btn btn-secondary" onclick="handleOpenChooseFilePdf()">
+                            <button class="btn btn-black" onclick="handleOpenChooseFilePdf()">
                                 <i class="fas fa-file-excel"></i> Chọn đề thi
                             </button>
                             <!--                            <input type="file" id="file-pdf-input" hidden accept="application/msword,text/plain,.doc, .docx, .xls, .xlsx,-->
@@ -130,8 +130,8 @@
                             <canvas id="pdf-canvas"></canvas>
                         </div>
                         <div id="paging-pdf" hidden class="mt-3">
-                            <button class="btn btn-secondary" id="prev-page">Previous</button>
-                            <button class="btn btn-secondary" id="next-page">Next</button>
+                            <button class="btn btn-black" id="prev-page">Previous</button>
+                            <button class="btn btn-black" id="next-page">Next</button>
                             <p>Page: <span id="page-num"></span> / <span id="total-page"></span></p>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                 <div class="modal-footer">
                     <div class="text-center d-flex justify-content-end gap-3">
                         <button type="button" id="btn-upload-exam-file" onclick="handleUploadExamFile()"
-                                class="btn btn-secondary">Tải đề lên
+                                class="btn btn-black">Tải đề lên
                         </button>
                     </div>
                 </div>
@@ -152,13 +152,13 @@
     </div>
     <!-- Modal Upload Exam File -->
 
-    <!-- Modal Upload Exam File -->
-    <div class="modal modal-xl fade" id="detailExamFileModal" tabindex="-1" aria-labelledby="detailExamFileModalLabel"
-         aria-hidden="true">
+    <!-- Modal Detail Sample Exam Paper -->
+    <div class="modal modal-xl fade" id="detailSampleExamModal" tabindex="-1"
+         aria-labelledby="detailExamRuleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tải đề thi</h5>
+                    <h5 class="modal-title">Chi tiết đề mẫu</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -166,15 +166,15 @@
                         <canvas id="pdf-canvas-detail"></canvas>
                     </div>
                     <div id="paging-pdf-detail" class="mt-3" hidden>
-                        <button class="btn btn-secondary" id="prev-page-detail">Previous</button>
-                        <button class="btn btn-secondary" id="next-page-detail">Next</button>
+                        <button class="btn btn-primary" id="prev-page-detail">Previous</button>
+                        <button class="btn btn-primary" id="next-page-detail">Next</button>
                         <p>Page: <span id="page-num-detail"></span> / <span id="total-page-detail"></span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal Upload Exam File -->
+    <!-- Modal Detail Sample Exam Paper -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -196,5 +196,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script th:src="@{/js/teacher/manage-exam-file/exam-file.js}"></script>
 <script th:src="@{/js/teacher/manage-exam-file/upload-exam-file.js}"></script>
+<script th:src="@{/js/teacher/manage-exam-file/detail-sample-exam.js}"></script>
 </body>
 </html>
