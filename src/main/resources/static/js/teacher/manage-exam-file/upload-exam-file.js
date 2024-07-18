@@ -40,7 +40,6 @@ const setValueFileInput = (value) => {
 };
 
 const clearValueFileInput = () => {
-    $("#exam-paper-type").val('');
     $("#file-pdf-input").val('');
     $('#major-facility').html('<option value="">Chọn chuyên ngành - cơ sở</option>');
     examFile = new File([], "emptyFile");
@@ -106,13 +105,6 @@ const handleOpenChooseFilePdf = () => {
 function validateInput() {
     let check = 0 ;
 
-    if ($("#exam-paper-type").val()?.length === 0 ){
-        $("#exam-paper-type-error").text('Hãy chọn loại đề.');
-        check = 1;
-    }else {
-        $("#exam-paper-type-error").text('');
-    }
-
     if ($("#major-facility").val()?.length === 0 ){
         $("#major-facility-error").text('Hãy chọn chuyên ngành - cơ sở.');
         check = 1;
@@ -124,7 +116,7 @@ function validateInput() {
 
 }
 
-const handleUploadExamRule = () => {
+const handleUploadExamFile = () => {
 
     if (validateInput()){
         $("#examFileModal").modal("hide");
@@ -149,7 +141,6 @@ const handleUploadExamRule = () => {
                 const data = new FormData();
                 data.append("folderName", getStateSubjectCode());
                 data.append("file", getValueFileInput());
-                data.append("examPaperType", $("#exam-paper-type").val());
                 data.append("majorFacilityId", getStateMajorFacilityId());
 
                 $.ajax({

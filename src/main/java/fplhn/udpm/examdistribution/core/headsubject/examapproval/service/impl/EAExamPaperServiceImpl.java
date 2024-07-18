@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.examapproval.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamApprovalRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.response.EAExamPaperCleanAfterSeventDayResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EAExamPaperRepository;
@@ -11,6 +12,7 @@ import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -112,8 +114,8 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> approvalExam(String examPaperId) {
-        Optional<ExamPaper> examPaper = examApprovalRepository.findById(examPaperId);
+    public ResponseObject<?> approvalExam(EAExamApprovalRequest request) {
+        Optional<ExamPaper> examPaper = examApprovalRepository.findById(request.getExamPaperId());
         if (examPaper.isEmpty()) {
             return new ResponseObject<>(null,
                     HttpStatus.BAD_REQUEST,
@@ -121,6 +123,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
             );
         }
         examPaper.get().setExamPaperStatus(ExamPaperStatus.IN_USE);
+        examPaper.get().setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
         examApprovalRepository.save(examPaper.get());
         return new ResponseObject<>(
                 null,

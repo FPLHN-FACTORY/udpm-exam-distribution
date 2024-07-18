@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.examapproval.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamApprovalRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.service.EAExamPaperService;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
@@ -10,13 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -53,8 +48,8 @@ public class EAExamPaperRestController {
     }
 
     @PutMapping
-    public ResponseEntity<?> approval(@RequestParam(value = "examPaperId", defaultValue = "0") String examPaperId) {
-        return Helper.createResponseEntity(hsExamApprovalService.approvalExam(examPaperId));
+    public ResponseEntity<?> approval(@RequestBody EAExamApprovalRequest request) {
+        return Helper.createResponseEntity(hsExamApprovalService.approvalExam(request));
     }
 
     @DeleteMapping

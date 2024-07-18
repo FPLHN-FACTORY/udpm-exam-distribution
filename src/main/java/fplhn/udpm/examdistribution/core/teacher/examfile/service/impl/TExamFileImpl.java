@@ -18,10 +18,7 @@ import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
-import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.*;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.servlet.http.HttpSession;
@@ -75,6 +72,14 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
+        if (request.getFile().getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Đề thi không được lớn hơn 5MB"
+            );
+        }
+
         List<AssignUploader> assignUploaders = assignUploaderRepository.findAllBySubject_IdAndStaff_Id(subjectId, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
         if (assignUploaders.isEmpty() || tExamPaperRepository.getCountUploaded(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(), subjectId) >= assignUploaders.get(0).getMaxUpload()) {
             return new ResponseObject<>(
@@ -98,7 +103,7 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + subject.get().getName() + "/" + request.getFolderName() + "/" + request.getExamPaperType();
+        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + subject.get().getName() + "/" + request.getFolderName();
         GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
         String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
 
@@ -107,7 +112,6 @@ public class TExamFileImpl implements TExamFileService {
         ExamPaper examPaper = new ExamPaper();
         examPaper.setId(CodeGenerator.generateRandomCode());
         examPaper.setPath(fileId);
-        examPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
         examPaper.setExamPaperStatus(ExamPaperStatus.WAITING_APPROVAL);
         examPaper.setMajorFacility(majorFacility.get());
         examPaper.setSubject(subject.get());
@@ -115,11 +119,7 @@ public class TExamFileImpl implements TExamFileService {
         examPaper.setExamPaperCreatedDate(new Date().getTime());
         examPaper.setStaffUpload(staffs.get());
         examPaper.setBlock(blockRepository.getReferenceById(blockId));
-        if (ExamPaperType.valueOf(request.getExamPaperType()) == ExamPaperType.MOCK_EXAM_PAPER) {
-            examPaper.setIsPublic(false);
-        } else {
-            examPaper.setIsPublic(true);
-        }
+        examPaper.setIsPublic(false);
         examPaper.setStatus(EntityStatus.ACTIVE);
         tExamPaperRepository.save(examPaper);
 

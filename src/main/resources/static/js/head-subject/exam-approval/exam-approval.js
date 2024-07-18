@@ -6,19 +6,15 @@ $(document).ready(function () {
 
     //add event for form search
     $("#subject-find").on("change", debounce(() => {
-        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#exam-type-find").val(),$("#staff-upload-find").val().trim());
-    }));
-
-    $("#exam-type-find").on("change", debounce(() => {
-        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#exam-type-find").val(),$("#staff-upload-find").val().trim());
+        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#staff-upload-find").val().trim());
     }));
 
     $("#staff-upload-find").on("keyup", debounce(() => {
-        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#exam-type-find").val(),$("#staff-upload-find").val().trim());
+        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#staff-upload-find").val().trim());
     }));
 
     $('#pageSize').on("change", () => {
-        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#exam-type-find").val(),$("#staff-upload-find").val().trim());
+        getExamPapers(1, $('#pageSize').val(),$("#subject-find").val(),$("#staff-upload-find").val().trim());
     });
 
 });
@@ -29,14 +25,12 @@ const examDistributionInfor = getExamDistributionInfo();
 //END: Exam Distribution Information
 
 function changePage(newCurrentPage) {
-    getExamPapers(newCurrentPage, $('#pageSize').val(),$("#subject-find").val(),$("#exam-type-find").val(),$("#staff-upload-find").val().trim());
+    getExamPapers(newCurrentPage, $('#pageSize').val(),$("#subject-find").val(),$("#staff-upload-find").val().trim());
 }
 
 function clearFormSearch() {
 
     $("#subject-find").val('');
-
-    $("#exam-type-find").val('');
 
     $("#staff-upload-find").val('');
 
@@ -138,14 +132,12 @@ function getExamPapers(
     page = 1,
     size = $('#pageSize').val(),
     idSubject = null,
-    examPaperType = null,
     staffUploadCode = null
 ) {
     const params = {
         page: page,
         size: size,
         idSubject: idSubject,
-        examPaperType: examPaperType,
         staffUploadCode: staffUploadCode
     };
 
@@ -175,14 +167,13 @@ function getExamPapers(
                 return `<tr>
                             <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
                             <td>${exam.examPaperCode}</td>
-                            <td>${getStatusBadge(exam.examPaperType)}</td>
                             <td>${exam.subjectName}</td>
                             <td>${exam.staffUpload}</td>
                             <td>${formatDateTime(exam.createdExamPaperDate)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                            <a> 
                                 <i
-                                    onclick="handleApproval('${exam.id}')"
+                                    onclick="handleOpenModalExamApproval('${exam.id}')"
                                     class="fa-solid fa-square-check"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>

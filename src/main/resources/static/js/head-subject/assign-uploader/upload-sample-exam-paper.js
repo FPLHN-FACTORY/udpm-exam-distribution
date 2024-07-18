@@ -183,35 +183,53 @@ const showViewSEPByStatus = (status) => {
     $("#paging-pdf-sep").prop("hidden", true);
 
     $("#sampleExamPaperTitle").text(status === 1 ? "Tải đề thi mẫu" : "Chi tiết đề thi mẫu");
+    if (status === 1) {
+        if ($('#major-facility-container').length === 0) {  // Kiểm tra nếu phần tử chưa tồn tại
+            let majorFacilityUpload = startMajorFacilityUpload+getMiddleMajorFacilityUpload()+endMajorFacilityUpload;
+            $('#modal-body-upload').prepend(majorFacilityUpload);
+        }
+    } else {
+        $('#major-facility-container').remove();
+    }
 };
 
 const handleUploadSampleExamPaperConfirm = () => {
-    swal({
-        title: "Xác nhận",
-        text: "Bạn có chắc muốn tải lên đề thi mẫu cho môn học này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
+    let check = true;
+    if ($('#major-facility-upload').val()?.trim().length === 0) {
+        check = false;
+        $('#major-facility-upload-error').text("Chọn chuyên ngành - cơ sở");
+    } else {
+        $('#major-facility-upload-error').text('');
+    }
+    if (check) {
+        swal({
+            title: "Xác nhận",
+            text: "Bạn có chắc muốn tải lên đề thi mẫu cho môn học này không?",
+            type: "warning",
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: "Hủy",
+                    className: "btn btn-black",
+                },
+                confirm: {
+                    text: "Xác nhận",
+                    className: "btn btn-secondary",
+                },
             },
-            confirm: {
-                text: "Xác nhận",
-                className: "btn btn-secondary",
-            },
-        },
-    }).then((willDelete) => {
-        if (willDelete) {
-            handleUploadSampleExamPaper();
-        }
-    });
+        }).then((willDelete) => {
+            if (willDelete) {
+                handleUploadSampleExamPaper();
+            }
+        });
+    }
 };
 
 const handleUploadSampleExamPaper = () => {
     const data = new FormData();
     data.append("subjectId", getStateValueCurrentSubjectId())
     data.append("file", getStateValueInputSampleExamPaper());
+    data.append("majorFacilityId", $('#major-facility-upload').val());
 
     showLoading();
     $.ajax({

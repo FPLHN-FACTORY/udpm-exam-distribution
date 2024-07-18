@@ -24,7 +24,8 @@
             <div class="p-4">
                 <ul class="nav nav-underline mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link text-secondary active" id="pills-upload-exam-paper-tab" data-bs-toggle="pill"
+                        <button class="nav-link text-secondary active" id="pills-upload-exam-paper-tab"
+                                data-bs-toggle="pill"
                                 data-bs-target="#pills-upload-exam-paper" type="button" role="tab"
                                 aria-controls="pills-home"
                                 aria-selected="false">
@@ -96,7 +97,9 @@
                                         </div>
                                     </div>
                                     <div class="text-center mt-4">
-                                        <button onclick="handleSearchListExamPaper()" type="button" class="btn btn-secondary">Tìm kiếm</button>
+                                        <button onclick="handleSearchListExamPaper()" type="button"
+                                                class="btn btn-secondary">Tìm kiếm
+                                        </button>
                                         <button
                                                 onclick="handleClearSearchListExamPaper()"
                                                 type="reset"
@@ -125,12 +128,13 @@
                                                 <td>Môn</td>
                                                 <td>Chuyên ngành</td>
                                                 <td>Loại đề thi</td>
-                                                <td>Người tải</td>
+                                                <td>Giảng viên upload</td>
                                                 <td>Ngày tạo</td>
                                                 <td>Trạng thái</td>
                                                 <td>Cơ sở</td>
                                                 <td
-                                                        style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                                        style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành
+                                                    động
                                                 </td>
                                             </tr>
                                             </thead>
@@ -348,7 +352,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button onclick="handleOpenModalAssignUploaderAgain()" type="button" class="btn" data-bs-dismiss="modal" style="background-color: var(--common-button-color); color: white;">Đóng
+                    <button onclick="handleOpenModalAssignUploaderAgain()" type="button" class="btn"
+                            data-bs-dismiss="modal" style="background-color: var(--common-button-color); color: white;">
+                        Đóng
                     </button>
                     <button onclick="handleAssignUploader()" type="button" class="btn btn-secondary">Thêm</button>
                 </div>
@@ -358,24 +364,25 @@
     <!-- Modal MaxUpload -->
 
     <!-- Modal Upload Sample Exam Paper -->
-    <div class="modal modal-xl fade" id="sampleExamPaperModal" tabindex="-1" aria-labelledby="sampleExamPaperModalLabel" aria-hidden="true">
+    <div class="modal modal-xl fade" id="sampleExamPaperModal" tabindex="-1" aria-labelledby="sampleExamPaperModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="sampleExamPaperTitle">Quản lý quy định phòng thi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="text-center" id="button-upload-sep">
-                        <input type="file" id="file-pdf-input-sep" hidden accept="application/pdf"/>
-                        <button onclick="openInputChooseFileFdf()" type="button" class="btn btn-secondary">
-                            <i class="fa-solid fa-file-import"></i>
-                            Upload
-                        </button>
-                        <button onclick="handleUploadSampleExamPaperConfirm()" type="button" class="btn btn-secondary">
-                            <i class="fa-solid fa-upload"></i>
-                            Tải đề mẫu
-                        </button>
+                <div class="modal-body" id="modal-body-upload">
+                    <div class="mb-3" id="button-upload-sep">
+                        <label class="form-label">
+                            <span class="text-danger"> * </span> Chọn đề mẫu </label>
+                        <div>
+                            <button onclick="openInputChooseFileFdf()" type="button" class="btn btn-secondary">
+                                <i class="fa-solid fa-file-import"></i>
+                                Upload
+                            </button>
+                            <input type="file" id="file-pdf-input-sep" hidden accept="application/pdf"/>
+                        </div>
                     </div>
                     <div class="mt-4">
                         <div class="pdf-viewer" id="pdf-viewer-sep" hidden>
@@ -386,6 +393,18 @@
                             <button class="btn btn-secondary" id="next-page-sep">Next</button>
                             <p>Page: <span id="page-num-sep"></span> / <span id="total-page-sep"></span></p>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được
+                            trống!</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center d-flex justify-content-end gap-3">
+                        <button onclick="handleUploadSampleExamPaperConfirm()" type="button" class="btn btn-secondary">
+                            <i class="fa-solid fa-upload"></i>
+                            Tải đề mẫu
+                        </button>
                     </div>
                 </div>
             </div>
