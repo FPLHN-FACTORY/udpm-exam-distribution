@@ -30,11 +30,15 @@
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" id="subjectCode" name="subjectCode" class="form-control">
+                                    <input type="text" id="subjectCode" name="subjectCode" class="form-control"
+                                           placeholder="Nhập mã môn học"
+                                    >
                                 </div>
                                 <div class="col form-group">
                                     <label for="subjectName">Tên môn học</label>
-                                    <input type="text" id="subjectName" name="subjectName" class="form-control">
+                                    <input type="text" id="subjectName" name="subjectName" class="form-control"
+                                           placeholder="Nhập tên môn học"
+                                    >
                                 </div>
                                 <div class="col form-group">
                                     <label for="departmentId">Bộ môn</label>
@@ -45,7 +49,13 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="subjectType">Loại môn học</label>
-                                    <input type="text" id="subjectType" name="subjectType" class="form-control">
+                                    <select id="subjectType" name="subjectType" class="form-select">
+                                        <option value="">Chọn loại môn học</option>
+                                        <option value="TRADITIONAL">Traditional</option>
+                                        <option value="ONLINE">Online</option>
+                                        <option value="BLEND">Blend</option>
+                                        <option value="TRUC_TUYEN">Trực tuyến</option>
+                                    </select>
                                 </div>
                                 <div class="col form-group">
                                     <label for="startDate">Ngày bắt đầu</label>
@@ -53,7 +63,9 @@
                                 </div>
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
+                                <button type="submit" class="btn"
+                                        style="background-color: var(--common-button-color); color: white;">Tìm kiếm
+                                </button>
                                 <button
                                         type="reset"
                                         class="btn"
@@ -71,15 +83,16 @@
                         <div class="d-flex justify-content-between mt-4">
                             <h4>Danh sách môn học</h4>
                             <button
-                                    class="btn btn-secondary"
+                                    class="btn"
                                     data-bs-toggle="modal"
                                     onclick="openModalAddSubject()"
+                                    style="background-color: var(--common-button-color); color: white;"
                             >
                                 Thêm Môn Học
                             </button>
                         </div>
                         <div class="table-responsive mt-4">
-                            <table class="table table-bordered">
+                            <table class="ant-table">
                                 <thead>
                                 <tr>
                                     <td>STT</td>
@@ -135,18 +148,30 @@
                         <input type="hidden" id="subjectId">
                         <div class="mb-3">
                             <label for="modifySubjectCode" class="form-label">Mã môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectCode" required>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="modifySubjectCode"
+                                    required
+                                    placeholder="Nhập mã môn học (VD: IT001)"
+                            >
                             <div class="invalid-feedback" id="subjectCodeError"></div>
                         </div>
                         <div class="mb-3">
                             <label for="modifySubjectName" class="form-label">Tên môn học</label>
-                            <input type="text" class="form-control" id="modifySubjectName" required>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="modifySubjectName"
+                                    required
+                                    placeholder="Nhập tên môn học (VD: Lập trình Java)"
+                            >
                             <div class="invalid-feedback" id="subjectNameError"></div>
                         </div>
                         <div class="mb-3">
                             <label for="modifyDepartmentId" class="form-label">Bộ môn</label>
                             <select class="form-select" id="modifyDepartmentId" required>
-                                <option value="">Chọn bộ môn</option>
+                                <option value="">---Chọn bộ môn---</option>
                             </select>
                             <div class="invalid-feedback" id="departmentIdError"></div>
                         </div>
@@ -172,7 +197,10 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-secondary" id="modifySubjectButton">Lưu</button>
+                    <button type="button" class="btn"
+                            style="background-color: var(--common-button-color); color: white;"
+                            id="modifySubjectButton">Lưu
+                    </button>
                 </div>
             </div>
         </div>

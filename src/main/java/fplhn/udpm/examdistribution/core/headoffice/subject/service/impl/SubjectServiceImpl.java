@@ -33,7 +33,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseObject<?> getAllSubject(SubjectRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
+        Pageable pageable = Helper.createPageable(request, "id");
         return new ResponseObject<>(
                 PageableObject.of(subjectExtendRepository.getAllSubject(pageable, request)),
                 HttpStatus.OK,
@@ -57,6 +57,7 @@ public class SubjectServiceImpl implements SubjectService {
         Subject subject = new Subject();
         subject.setName(request.getSubjectName());
         subject.setSubjectCode(request.getSubjectCode());
+        subject.setDepartment(department.get());
         subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));
         subject.setSubjectCode(request.getSubjectCode());
         subject.setCreatedTime(System.currentTimeMillis());
