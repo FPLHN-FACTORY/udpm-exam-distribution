@@ -25,18 +25,14 @@ import java.io.Serializable;
 public class SubjectGroup extends PrimaryEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "id_subject")
-    private Subject subject;
-
-    @ManyToOne
     @JoinColumn(name = "id_department_facility")
     private DepartmentFacility departmentFacility;
 
-    @ManyToOne
-    @JoinColumn(name = "id_staff")
-    private Staff staff;
-
     @Column(name = "attach_role_name", length = EntityProperties.LENGTH_NAME)
     private String attachRoleName;
+
+    @ManyToOne
+    @JoinColumn(name = "id_semester")
+    private Semester semester;
 
 }

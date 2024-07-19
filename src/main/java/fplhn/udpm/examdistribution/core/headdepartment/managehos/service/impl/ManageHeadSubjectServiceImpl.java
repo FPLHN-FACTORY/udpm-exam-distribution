@@ -10,14 +10,11 @@ import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDHe
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageHeadSubjectService;
-import fplhn.udpm.examdistribution.entity.HeadSubjectBySemester;
 import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
-import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.log.LoggerObject;
 import fplhn.udpm.examdistribution.utils.CSVManipulationUtils;
-import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static fplhn.udpm.examdistribution.utils.Helper.createPageable;
 
 @Service
 @Validated
@@ -48,17 +47,16 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
 
     @Override
     public ResponseObject<?> getStaffAndHeadSubjects(@Valid HeadSubjectRequest request) {
-//        return new ResponseObject<>(
-//                PageableObject.of(
-//                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
-//                                Helper.createPageable(request, "id"),
-//                                request
-//                        )
-//                ),
-//                HttpStatus.OK,
-//                "Lấy danh sách nhân viên thành công"
-//        );
-        return null;
+        return new ResponseObject<>(
+                PageableObject.of(
+                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
+                                createPageable(request, "id"),
+                                request
+                        )
+                ),
+                HttpStatus.OK,
+                "Lấy danh sách nhân viên thành công"
+        );
     }
 
     @Override

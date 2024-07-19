@@ -1,63 +1,69 @@
 package fplhn.udpm.examdistribution.core.headdepartment.managehos.repository;
 
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.HeadSubjectRequest;
-import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.request.SubjectAssignedRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response.HeadSubjectResponse;
-import fplhn.udpm.examdistribution.core.headdepartment.managehos.model.response.SubjectAssignedResponse;
-import fplhn.udpm.examdistribution.entity.HeadSubjectBySemester;
 import fplhn.udpm.examdistribution.repository.HeadSubjectBySemesterRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 
 @Repository
 public interface HDHeadSubjectBySemesterExtendRepository extends HeadSubjectBySemesterRepository {
 
-//    @Query(
-//            value = """
-//                    SELECT
-//                        ROW_NUMBER() OVER (ORDER BY s.id DESC) as orderNumber,
-//                        s.id as id,
-//                        s.staff_code as staffCode,
-//                        s.name as staffName,
-//                        s.account_fe as accountFE,
-//                        s.account_fpt as accountFpt,
-//                        GROUP_CONCAT(DISTINCT CONCAT(sb.subject_code, ' - ', sb.name) SEPARATOR ', ') as subjectsAssigned,
-//                        MAX(CONCAT(se.name, ' - ', se.year)) as semesterInfo
-//                    FROM
-//                        staff s
-//                    LEFT JOIN department_facility df ON s.id_department_facility = df.id
-//                    LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_staff = s.id AND hsbs.id_semester = :#{#request.semesterId}
-//                    LEFT JOIN subject sb ON hsbs.id_subject = sb.id
-//                    LEFT JOIN semester se ON hsbs.id_semester = se.id
-//                    WHERE
-//                        df.id = :#{#request.departmentFacilityId} AND s.id != :#{#request.currentUserId}
-//                        AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.account_fe LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))
-//                    GROUP BY s.id, s.staff_code, s.name, s.account_fe, s.account_fpt
-//                    """,
-//            countQuery = """
-//                    SELECT
-//                        COUNT(DISTINCT s.id)
-//                    FROM
-//                        staff s
-//                    LEFT JOIN department_facility df ON s.id_department_facility = df.id
-//                    WHERE
-//                        df.id = :#{#request.departmentFacilityId} AND s.id != :#{#request.currentUserId}
-//                        AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.account_fe LIKE CONCAT('%', :#{#request.q}, '%'))
-//                        AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))
-//                    """,
-//            nativeQuery = true
-//    )
-//    Page<HeadSubjectResponse> getHeadSubjects(Pageable pageable, HeadSubjectRequest request);
+    @Query(
+            value = """
+                    SELECT
+                        ROW_NUMBER() OVER (ORDER BY s.id DESC) as orderNumber,
+                        s.id as id,
+                        s.staff_code as staffCode,
+                        s.name as staffName,
+                        s.account_fe as accountFE,
+                        s.account_fpt as accountFpt,
+                        sg.attach_role_name as roleName,
+                        MAX(CONCAT(se.name, ' - ', se.year)) as semesterInfo
+                    FROM
+                        staff s
+                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
+                    LEFT JOIN department_facility df ON sdf.id_department_facility = df.id
+                    LEFT JOIN subject_group sg ON s.id = sg.id_staff
+                    LEFT JOIN head_subject_by_semester hsbs ON  s.id = hsbs.id_staff AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN semester se ON hsbs.id_semester = se.id
+                    LEFT JOIN staff_role sr ON s.id = sr.id_staff
+                    LEFT JOIN role r ON sr.id_role = r.id
+                    WHERE
+                        df.id = :#{#request.departmentFacilityId} AND s.id != :#{#request.currentUserId}
+                        AND r.code = 'TRUONG_MON'
+                        AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.account_fe LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))
+                    GROUP BY s.id, s.staff_code, s.name, s.account_fe, s.account_fpt, sg.attach_role_name
+                    """,
+            countQuery = """
+                    SELECT
+                        COUNT(DISTINCT s.id)
+                    FROM
+                        staff s
+                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
+                    LEFT JOIN department_facility df ON sdf.id_department_facility = df.id
+                    LEFT JOIN subject_group sg ON s.id = sg.id_staff
+                    LEFT JOIN head_subject_by_semester hsbs ON  s.id = hsbs.id_staff AND hsbs.id_semester = :#{#request.semesterId}
+                    LEFT JOIN semester se ON hsbs.id_semester = se.id
+                    LEFT JOIN staff_role sr ON s.id = sr.id_staff
+                    LEFT JOIN role r ON sr.id_role = r.id
+                    WHERE
+                        df.id = :#{#request.departmentFacilityId} AND s.id != :#{#request.currentUserId}
+                        AND r.code = 'TRUONG_MON'
+                        AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.account_fe LIKE CONCAT('%', :#{#request.q}, '%'))
+                        AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))
+                    """,
+            nativeQuery = true
+    )
+    Page<HeadSubjectResponse> getHeadSubjects(Pageable pageable, HeadSubjectRequest request);
 //
 //
 //    @Query(

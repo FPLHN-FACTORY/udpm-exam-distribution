@@ -13,7 +13,7 @@ public interface HeadSubjectResponse extends IsIdentify, HasOrderNumber {
 
     String getAccountFE();
 
-    String getSubjectsAssigned();
+    String getRoleName();
 
     String getSemesterInfo();
 

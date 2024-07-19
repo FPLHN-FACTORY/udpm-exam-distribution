@@ -78,7 +78,7 @@ const getListHeadSubject = (
                         <td>${staff.accountFPT}</td>
                         <td>${staff.accountFE}</td>
                         <td>
-                            ${formatSubjectsAssigned(staff?.subjectsAssigned)}
+                            ${formatSubjectsAssigned(staff?.roleName)}
                         </td>
                         <td>${staff?.semesterInfo ? staff?.semesterInfo : '<span class="badge bg-danger">Empty</span>'}</td>
                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
