@@ -10,14 +10,11 @@ import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDHe
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.repository.HDSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.managehos.service.ManageHeadSubjectService;
-import fplhn.udpm.examdistribution.entity.HeadSubjectBySemester;
 import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
-import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.log.LoggerObject;
 import fplhn.udpm.examdistribution.utils.CSVManipulationUtils;
-import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
