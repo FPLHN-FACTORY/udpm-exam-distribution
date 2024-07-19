@@ -12,30 +12,34 @@ public interface UEPSubjectExtendRepository extends SubjectRepository {
 
     @Query(value = """
             SELECT
-            	subj.id AS id,
-            	subj.name AS name
+            	s.id AS id,
+            	s.name AS name
             FROM
             	head_subject_by_semester hsbs
-            JOIN subject subj ON
-            	hsbs.id_subject = subj.id
-            JOIN staff st ON
-            	st.id = hsbs.id_staff
+            JOIN subject_group sg ON
+            	hsbs.id_subject_group = sg.id
+            JOIN subject s ON
+                s.id = sg.id_subject
             WHERE
-            	st.id = :userId AND
-            	hsbs.id_semester = :semesterId
+                sg.id_staff = :userId AND
+                hsbs.id_semester = :semesterId AND
+                sg.id_department_facility = :departmentFacilityId AND
+                sg.status = 0
             """, countQuery = """
             SELECT
             	COUNT(hsbs.id)
             FROM
             	head_subject_by_semester hsbs
-            JOIN subject subj ON
-            	hsbs.id_subject = subj.id
-            JOIN staff st ON
-            	st.id = hsbs.id_staff
+            JOIN subject_group sg ON
+            	hsbs.id_subject_group = sg.id
+            JOIN subject s ON
+                s.id = sg.id_subject
             WHERE
-            	st.id = :userId AND
-            	hsbs.id_semester = :semesterId
+                sg.id_staff = :userId AND
+                hsbs.id_semester = :semesterId AND
+                sg.id_department_facility = :departmentFacilityId AND
+                sg.status = 0
             """, nativeQuery = true)
-    List<ListSubjectResponse> getListSubject(String userId, String semesterId);
+    List<ListSubjectResponse> getListSubject(String userId, String departmentFacilityId, String semesterId);
 
 }

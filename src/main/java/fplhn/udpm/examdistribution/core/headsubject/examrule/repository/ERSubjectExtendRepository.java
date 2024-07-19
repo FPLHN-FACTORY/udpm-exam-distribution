@@ -13,43 +13,38 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
 
     @Query(value = """
             SELECT
-            	s.id AS id,
-            	ROW_NUMBER() OVER(
-            ORDER BY
-            	hsbs.id DESC) AS orderNumber,
-            	s.subject_code AS subjectCode,
-            	s.name AS subjectName,
-            	s.subject_type AS subjectType,
-            	d.name AS departmentName,
-            	s.created_date AS createdDate,
-            	s.path_exam_rule AS fileId
+                s.id AS id,
+                ROW_NUMBER() OVER(
+                    ORDER BY hsbs.id DESC
+                ) AS orderNumber,
+                s.subject_code AS subjectCode,
+                s.name AS subjectName,
+                s.subject_type AS subjectType,
+                d.name AS departmentName,
+                s.created_date AS createdDate,
+                s.path_exam_rule AS fileId
             FROM
-            	head_subject_by_semester hsbs
-            JOIN staff st ON
-                st.id = hsbs.id_staff
+                head_subject_by_semester hsbs
             JOIN subject_group sg ON
-            	hsbs.id_subject_group = sg.id
+                hsbs.id_subject_group = sg.id
             JOIN subject s ON
                 s.id = sg.id_subject
             JOIN department d ON
-            	s.id_department = d.id
+                s.id_department = d.id
             WHERE
                 sg.id_staff = :#{#request.staffId} AND
-                st.id = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0 AND
                 (
-                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                    (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
+                    (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                 )
             """,
             countQuery = """
                     SELECT 	COUNT(hsbs.id)
                     FROM
                         head_subject_by_semester hsbs
-                    JOIN staff st ON
-                        st.id = hsbs.id_staff
                     JOIN subject_group sg ON
                         hsbs.id_subject_group = sg.id
                     JOIN subject s ON
@@ -58,15 +53,14 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                         s.id_department = d.id
                     WHERE
                         sg.id_staff = :#{#request.staffId} AND
-                        st.id = :#{#request.staffId} AND
                         hsbs.id_semester = :semesterId AND
                         sg.id_department_facility = :departmentFacilityId AND
                         sg.status = 0 AND
                         (
-                            (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                            (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                            (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
+                            (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                         )
-                    """, nativeQuery = true)
+                            """, nativeQuery = true)
     Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, String semesterId, FindSubjectRequest request);
 
 }

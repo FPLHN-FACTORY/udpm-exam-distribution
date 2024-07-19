@@ -7,9 +7,20 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignupload
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindStaffRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.request.FindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.*;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUAssignUploaderExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUBlockExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUExamPaperExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUMajorFacilityExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUSemesterExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUStaffExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.repository.AUSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.service.AssignUploaderService;
-import fplhn.udpm.examdistribution.entity.*;
+import fplhn.udpm.examdistribution.entity.AssignUploader;
+import fplhn.udpm.examdistribution.entity.Block;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
+import fplhn.udpm.examdistribution.entity.MajorFacility;
+import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
@@ -225,7 +236,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             }
 
             Optional<MajorFacility> majorFacility = majorFacilityExtendRepository.findById(request.getMajorFacilityId());
-            if (majorFacility.isEmpty()){
+            if (majorFacility.isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,

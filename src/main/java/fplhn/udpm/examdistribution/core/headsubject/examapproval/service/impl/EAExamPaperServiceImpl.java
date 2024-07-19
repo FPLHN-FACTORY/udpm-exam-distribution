@@ -50,10 +50,11 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     public ResponseObject<?> getExamApprovals(EAExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         return new ResponseObject<>(
                 examApprovalRepository.getExamApprovals(
                         pageable, request, httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(),
-                        semesterId
+                        semesterId, departmentFacilityId
                 ),
                 HttpStatus.OK,
                 "Lấy danh sách đề thi cần phê duyệt thành công"

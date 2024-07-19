@@ -14,7 +14,7 @@ public interface AUStaffExtendRepository extends StaffRepository {
     @Query(value = """
             SELECT  s.id AS id,
                     ROW_NUMBER() OVER(
-                    ORDER BY s.id DESC) AS orderNumber,
+                    ORDER BY sdf.id DESC) AS orderNumber,
                     s.name AS name,
                     s.staff_code AS staffCode,
                     s.account_fe AS accountFE,
@@ -55,13 +55,11 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     		subj.id = :#{#request.subjectId} AND
                     		st.id = s.id
                     ) AS isAssigned
-            FROM staff s
-            LEFT JOIN department_facility df ON df.id = s.id_department_facility
-            LEFT JOIN department d ON d.id = df.id_department
-            LEFT JOIN facility f ON f.id = df.id_facility
-            WHERE (s.status = 0) AND
-                  (s.id_department_facility = :departmentFacilityId) AND
-                  (s.id != :userId)
+            FROM staff_department_facility sdf
+            LEFT JOIN staff s ON s.id = sdf.id_staff
+            WHERE sdf.id_department_facility = :departmentFacilityId AND
+                  sdf.id_staff <> :userId AND
+                  sdf.status = 0
             AND (
                  (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                  (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -72,14 +70,12 @@ public interface AUStaffExtendRepository extends StaffRepository {
                 )
             """,
             countQuery = """
-                    SELECT COUNT(s.id)
-                    FROM staff s
-                    LEFT JOIN department_facility df ON df.id = s.id_department_facility
-                    LEFT JOIN department d ON d.id = df.id_department
-                    LEFT JOIN facility f ON f.id = df.id_facility
-                    WHERE (s.status = 0) AND
-                          (s.id_department_facility = :departmentFacilityId) AND
-                          (s.id != :userId)
+                    SELECT COUNT(sdf.id)
+                    FROM staff_department_facility sdf
+                    LEFT JOIN staff s ON s.id = sdf.id_staff
+                    WHERE sdf.id_department_facility = :departmentFacilityId AND
+                          sdf.id_staff <> :userId AND
+                          sdf.status = 0
                     AND (
                          (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                          (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -88,7 +84,7 @@ public interface AUStaffExtendRepository extends StaffRepository {
                          (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
                          (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
                         )
-                    """,
+                            """,
             nativeQuery = true)
     Page<StaffResponse> getAllStaff(Pageable pageable, String departmentFacilityId, FindStaffRequest request, String userId, String semesterId);
 

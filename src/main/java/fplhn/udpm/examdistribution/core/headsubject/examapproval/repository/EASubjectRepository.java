@@ -31,15 +31,12 @@ public interface EASubjectRepository extends SubjectRepository {
             	s.id as subjectId
             FROM
             	head_subject_by_semester hsbs
-            JOIN staff st ON
-                st.id = hsbs.id_staff
             JOIN subject_group sg ON
             	hsbs.id_subject_group = sg.id
             JOIN subject s ON
                 s.id = sg.id_subject
             WHERE
                 sg.id_staff = :staffId AND
-                st.id = :staffId AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0
@@ -48,15 +45,12 @@ public interface EASubjectRepository extends SubjectRepository {
             	COUNT(hsbs.id)
             FROM
             	head_subject_by_semester hsbs
-            JOIN staff st ON
-                st.id = hsbs.id_staff
             JOIN subject_group sg ON
             	hsbs.id_subject_group = sg.id
             JOIN subject s ON
                 s.id = sg.id_subject
             WHERE
                 sg.id_staff = :staffId AND
-                st.id = :staffId AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0
