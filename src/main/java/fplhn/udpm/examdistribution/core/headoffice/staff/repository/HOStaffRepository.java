@@ -25,7 +25,8 @@ public interface HOStaffRepository extends StaffRepository {
                             s.account_fpt AS accountFpt,
                             COALESCE(CONCAT(d.name, ' - ', f.name),'Không có bộ môn') AS departmentFacilityName
                     FROM staff s
-                    LEFT JOIN department_facility df on df.id = s.id_department_facility
+                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
+                    LEFT JOIN department_facility df on df.id = sdf.id_department_facility
                     LEFT JOIN department d ON d.id = df.id_department
                     LEFT JOIN facility f ON f.id = df.id_facility
                     WHERE s.status = 0
@@ -38,7 +39,8 @@ public interface HOStaffRepository extends StaffRepository {
             countQuery = """
                     SELECT COUNT(*)
                     FROM staff s
-                    LEFT JOIN department_facility df on df.id = s.id_department_facility
+                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
+                    LEFT JOIN department_facility df on df.id = sdf.id_department_facility
                     LEFT JOIN department d ON d.id = df.id_department
                     LEFT JOIN facility f ON f.id = df.id_facility
                     WHERE s.status = 0
@@ -60,7 +62,8 @@ public interface HOStaffRepository extends StaffRepository {
                     df.id AS departmentFacilityId,
                     COALESCE(CONCAT(d.name, ' - ', f.name),'Không có bộ môn') AS departmentFacilityName
             FROM staff s
-            LEFT JOIN department_facility df ON df.id = s.id_department_facility
+            LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
+            LEFT JOIN department_facility df ON df.id = sdf.id_department_facility
             LEFT JOIN department d ON d.id = df.id_department
             LEFT JOIN facility f ON f.id = df.id_facility
             WHERE s.id LIKE :id

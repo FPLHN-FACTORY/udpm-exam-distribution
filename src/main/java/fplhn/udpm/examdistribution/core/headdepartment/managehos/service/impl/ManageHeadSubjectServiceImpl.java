@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static fplhn.udpm.examdistribution.utils.Helper.createPageable;
+
 @Service
 @Validated
 @RequiredArgsConstructor
@@ -45,17 +47,16 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
 
     @Override
     public ResponseObject<?> getStaffAndHeadSubjects(@Valid HeadSubjectRequest request) {
-//        return new ResponseObject<>(
-//                PageableObject.of(
-//                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
-//                                Helper.createPageable(request, "id"),
-//                                request
-//                        )
-//                ),
-//                HttpStatus.OK,
-//                "Lấy danh sách nhân viên thành công"
-//        );
-        return null;
+        return new ResponseObject<>(
+                PageableObject.of(
+                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
+                                createPageable(request, "id"),
+                                request
+                        )
+                ),
+                HttpStatus.OK,
+                "Lấy danh sách nhân viên thành công"
+        );
     }
 
     @Override

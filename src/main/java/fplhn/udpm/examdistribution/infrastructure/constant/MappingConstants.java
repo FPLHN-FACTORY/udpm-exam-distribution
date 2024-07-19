@@ -39,6 +39,7 @@ public final class MappingConstants {
 
     // Constants representing the redirect paths for various resources under head department
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
+    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP = HEAD_DEPARTMENT + "/subject-group";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT = HEAD_DEPARTMENT + "/manage-subjects";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = HEAD_DEPARTMENT + "/join-room";
 
@@ -67,6 +68,7 @@ public final class MappingConstants {
     // Constants representing the full paths for various resources under head department
     public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP = API_HEAD_DEPARTMENT_PREFIX + "/subject-group";
     public static final String API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = API_HEAD_DEPARTMENT_PREFIX + "/join-room";
     public static final String API_HEAD_DEPARTMENT_STAFF = API_HEAD_DEPARTMENT_PREFIX + "/staffs";
     public static final String API_HEAD_DEPARTMENT_STUDENT = API_HEAD_DEPARTMENT_PREFIX + "/students";

@@ -1,10 +1,10 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
-import fplhn.udpm.examdistribution.infrastructure.listener.SubjectListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectType;
+import fplhn.udpm.examdistribution.infrastructure.listener.SubjectListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -57,5 +57,9 @@ public class Subject extends PrimaryEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_department")
     private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "id_subject_group")
+    private SubjectGroup subjectGroup;
 
 }
