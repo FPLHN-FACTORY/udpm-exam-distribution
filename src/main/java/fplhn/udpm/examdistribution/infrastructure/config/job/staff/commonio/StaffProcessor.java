@@ -68,7 +68,7 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
                 staff.get(0).setName(item.getName());
                 staff.get(0).setAccountFpt(item.getAccountFpt());
                 staff.get(0).setAccountFe(item.getAccountFe());
-                staff.get(0).setDepartmentFacility(departmentFacilities.get(0));
+//                staff.get(0).setDepartmentFacility(departmentFacilities.get(0));
                 staff.get(0).setStatus(EntityStatus.ACTIVE);
                 return new TranferStaffRole(staff.get(0), roles.get(0));
             }
@@ -79,7 +79,7 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
             staffNew.setName(item.getName());
             staffNew.setAccountFpt(item.getAccountFpt());
             staffNew.setAccountFe(item.getAccountFe());
-            staffNew.setDepartmentFacility(departmentFacilities.get(0));
+//            staffNew.setDepartmentFacility(departmentFacilities.get(0));
             staffNew.setStatus(EntityStatus.ACTIVE);
             return new TranferStaffRole(staffNew, roles.get(0));
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 package fplhn.udpm.examdistribution.core.authentication.repository;
 
-import fplhn.udpm.examdistribution.core.authentication.model.ListFacilityResponse;
+import fplhn.udpm.examdistribution.core.authentication.model.response.ListFacilityResponse;
 import fplhn.udpm.examdistribution.repository.FacilityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

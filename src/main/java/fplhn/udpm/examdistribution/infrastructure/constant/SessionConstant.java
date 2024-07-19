@@ -14,6 +14,8 @@ public class SessionConstant {
 
     public static final String CURRENT_USER_DEPARTMENT_FACILITY_ID = "current_department_facility_id";
 
+    public static final String CURRENT_USER_MAJOR_FACILITY_ID = "current_major_facility_id";
+
     public static final String CURRENT_USER_ROLE = "current_user_role";
 
     public static final String CURRENT_USER_IS_ASSIGN_UPLOADER = "current_user_is_assign_uploader";
@@ -28,8 +30,8 @@ public class SessionConstant {
 
     public static final String REDIRECT_LOGIN = "redirect_login";
 
-    public static final String FACILITY_ID_LOGIN = "facility_id_login";
-
     public static final String IS_STUDENT = "is_student";
+
+    public static final String ERROR_MESSAGE = "Tài khoản không được phép đăng nhập vào hệ thống!";
 
 }

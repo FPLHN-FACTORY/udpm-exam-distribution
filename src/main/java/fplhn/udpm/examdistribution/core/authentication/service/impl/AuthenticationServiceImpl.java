@@ -26,7 +26,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void authorSwitch(String role, String redirectUri, String facilityId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         httpSession.setAttribute(SessionConstant.ROLE_LOGIN, role);
         httpSession.setAttribute(SessionConstant.REDIRECT_LOGIN, redirectUri);
-        httpSession.setAttribute(SessionConstant.FACILITY_ID_LOGIN, facilityId);
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, facilityId);
 
         response.sendRedirect(MappingConstants.REDIRECT_GOOGLE_AUTHORIZATION);
     }

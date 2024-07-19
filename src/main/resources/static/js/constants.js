@@ -130,7 +130,10 @@ const getExamDistributionInfo = () => {
     return {
         userRole: examDistributionInfo?.userRole || null,
         departmentFacilityId: examDistributionInfo?.departmentFacilityId || null,
+        majorFacilityId: examDistributionInfo?.majorFacilityId || null,
+        departmentId: examDistributionInfo?.departmentId || null,
         departmentName: examDistributionInfo?.departmentName || null,
+        facilityId: examDistributionInfo?.facilityId || null,
         facilityName: examDistributionInfo?.facilityName || null,
         userEmailFPT: examDistributionInfo?.userEmailFPT || null,
         userEmailFe: examDistributionInfo?.userEmailFe || null,
