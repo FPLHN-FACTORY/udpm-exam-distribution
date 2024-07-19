@@ -11,7 +11,8 @@ import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Role;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
-import fplhn.udpm.examdistribution.repository.StaffRoleRepository;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import org.springframework.data.domain.Pageable;
@@ -80,42 +81,55 @@ public class HORoleServiceImpl implements HORoleService {
     public ResponseObject<?> saveRole(HOSaveRoleRequest roleRequest) {
         Optional<Facility> facility = facilityRepository.findById(roleRequest.getIdFacility());
         if (facility.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Facility not found");
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cơ sở không tồn tại");
         }
+
+        // Chuyển role name chuỗi thành chữ hoa
+        String upperCaseString = roleRequest.getRoleName().toUpperCase();
+
+        // Loại bỏ dấu
+        String normalizedString = Normalizer.normalize(upperCaseString, Normalizer.Form.NFD);
+        String withoutAccentString = normalizedString.replaceAll("\\p{M}", "");
+
+        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
+        String roleCode = withoutAccentString.replaceAll("\\s+", "_");
+
         //create role
         if (roleRequest.getRoleId() == null || roleRequest.getRoleId().isEmpty()) {
             Role role = new Role();
             role.setId(CodeGenerator.generateRandomCode());
+            role.setCode(roleCode.trim());
             role.setName(roleRequest.getRoleName());
             role.setFacility(facility.isPresent() ? facility.get() : null);
             role.setStatus(EntityStatus.ACTIVE);
-            if (roleRepository.findAllByNameAndFacility_Id(roleRequest.getRoleName(), roleRequest.getIdFacility()).isEmpty()) {
+            if (roleRepository.findAllByCodeAndFacility_Id(roleCode.trim(), roleRequest.getIdFacility()).isEmpty()) {
                 roleRepository.save(role);
-                return new ResponseObject<>(null, HttpStatus.CREATED, "Role added successfully");
+                return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm chức vụ thành công");
             } else {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Role already exists");
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Chức vụ đã tồn tại");
             }
         }
         //update role
         else {
-            Role role = roleRepository.findById(roleRequest.getRoleId()).orElse(null);
-            if (role == null) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Role not found");
+            Optional<Role> role = roleRepository.findById(roleRequest.getRoleId());
+            if (role.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy chức vụ");
             } else {
-                role.setName(roleRequest.getRoleName().trim());
-                role.setFacility(facility.isPresent() ? facility.get() : null);
-                List<Role> optionalRole = roleRepository.findAllByNameAndFacility_Id(roleRequest.getRoleName(), roleRequest.getIdFacility());
+                role.get().setCode(roleCode.trim());
+                role.get().setName(roleRequest.getRoleName().trim());
+                role.get().setFacility(facility.isPresent() ? facility.get() : null);
+                List<Role> optionalRole = roleRepository.findAllByCodeAndFacility_Id(roleCode.trim(), roleRequest.getIdFacility());
                 if (optionalRole.isEmpty()) {
-                    roleRepository.save(role);
-                    return new ResponseObject<>(null, HttpStatus.OK, "Role updated successfully");
+                    roleRepository.save(role.get());
+                    return new ResponseObject<>(null, HttpStatus.OK, "Update chức vụ thành công");
                 } else {
                     for (Role role1 : optionalRole) {
-                        if (role1.getId().equals(role.getId())) {
-                            roleRepository.save(role);
-                            return new ResponseObject<>(null, HttpStatus.OK, "Role updated successfully");
+                        if (role1.getId().equals(role.get().getId())) {
+                            roleRepository.save(role.get());
+                            return new ResponseObject<>(null, HttpStatus.OK, "Update chức vụ thành công");
                         }
                     }
-                    return new ResponseObject<>(null, HttpStatus.CONFLICT, "Role already exists");
+                    return new ResponseObject<>(null, HttpStatus.CONFLICT, "Chức vụ đã tồn tại");
                 }
             }
         }

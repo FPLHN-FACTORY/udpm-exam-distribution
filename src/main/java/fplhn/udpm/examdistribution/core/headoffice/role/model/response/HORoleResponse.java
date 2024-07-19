@@ -6,6 +6,8 @@ public interface HORoleResponse {
 
     String getIdRole();
 
+    String getRoleCode();
+
     String getFacilityName();
 
 }

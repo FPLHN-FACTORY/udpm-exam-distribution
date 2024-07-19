@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     getRolesByStaffId();
 
-    getFacilities();
+    // getFacilities();
 
 });
 
@@ -19,8 +19,6 @@ function getDetailStaff() {
         url: api,
         success: function (responseBody) {
             const detail = responseBody?.data;
-            $('#titlePage').text(' ' + detail?.staffCode);
-            $('#titleTable').text(' ' + detail?.staffCode);
             $('#titlePageModal').text(' ' + detail?.staffCode);
             $('#infoCode').text(detail?.staffCode);
             $('#infoName').text(detail?.name);
@@ -73,6 +71,7 @@ function getRolesByStaffId() {
                          <td colspan="8" style="text-align: center;">Nhân viên này không có chức vụ nào</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.map((role, index) => {
@@ -191,6 +190,7 @@ function getAllRoles(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.content?.map((role, index) => {

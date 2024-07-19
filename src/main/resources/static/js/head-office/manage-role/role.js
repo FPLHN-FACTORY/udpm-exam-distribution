@@ -31,12 +31,6 @@ $(document).ready(function () {
             $('#modifyRoleNameError').text('Tên chức vụ không được trống!')
         } else if (roleName?.trim().length > 250) {
             $('#modifyRoleNameError').text('Tên chức vụ không được lớn hơn 250 ký tự!')
-        } else if (/\s/.test(roleName)) {
-            check = false;
-            $('#modifyRoleNameError').text('Tên chức vụ không được chứa khoảng trắng!');
-        } else if (/[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơưẠ-ỹ]/.test(roleName)) {
-            check = false;
-            $('#modifyRoleNameError').text('Tên chức vụ không được chứa dấu!');
         } else {
             $('#modifyRoleNameError').text('')
         }
@@ -124,11 +118,13 @@ function getRoles(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.content?.map((role, index) => {
                 return `<tr>
                             <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
+                            <td>${role.roleCode}</td>  
                             <td>${role.roleName}</td>  
                             <td>${role.facilityName}</td>  
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">

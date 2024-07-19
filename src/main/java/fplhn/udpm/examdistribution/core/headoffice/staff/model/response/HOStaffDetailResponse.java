@@ -11,9 +11,5 @@ public interface HOStaffDetailResponse {
     String getAccountFe();
 
     String getAccountFpt();
-
-    String getDepartmentFacilityId();
-
-    String getDepartmentFacilityName();
-
+ 
 }

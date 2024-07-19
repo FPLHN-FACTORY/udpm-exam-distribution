@@ -75,6 +75,7 @@ const getFacilitis = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const facilities = responseBody?.data?.data?.map((facility, index) => {
@@ -554,6 +555,7 @@ const getFacilityChild = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const facilityChilds = responseBody?.data?.data?.map((facilityChild, index) => {

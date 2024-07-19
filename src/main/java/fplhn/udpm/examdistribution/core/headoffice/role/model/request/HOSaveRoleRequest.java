@@ -19,7 +19,6 @@ public class HOSaveRoleRequest {
 
     @NotBlank(message = "Role name cannot be blank")
     @Size(max = 100, message = "Role name must be less than 100 characters")
-    @Pattern(regexp = "^[^\\s\\p{M}]+$", message = "Role name cannot contain whitespace or diacritical marks")
     private String roleName;
 
     @NotBlank(message = "Facility cannot be blank")

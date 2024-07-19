@@ -21,9 +21,9 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quản lý chức vụ của nhân viên <span id="titlePage" class="text-secondary"></span></h2>
+                    <h2>Quản lý chức vụ / bộ môn / chuyên ngành </h2>
                 </div>
-                <div class="p-4">
+                <div class="p-4 d-grid gap-5">
                     <!-- Infomation  -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
                         <h3 class="m-portlet__head-text">
@@ -34,27 +34,22 @@
                                 <div class="col form-group">
                                     <label for="infoCode">Mã</label>
                                     <span id="infoCode" name="infoCode"
-                                          class="form-control text-secondary border border-secondary text-truncate"></span>
+                                          class="form-control text-black border border-secondary text-truncate"></span>
                                 </div>
                                 <div class="col form-group">
                                     <label for="infoName">Tên</label>
                                     <span id="infoName" name="infoName"
-                                          class="form-control text-secondary border border-secondary text-truncate"></span>
-                                </div>
-                                <div class="col form-group">
-                                    <label for="infoDepartmentFacility">Bộ môn theo cơ sở</label>
-                                    <span id="infoDepartmentFacility" name="infoDepartmentFacility"
-                                          class="form-control text-secondary border border-secondary text-truncate "></span>
+                                          class="form-control text-black border border-secondary text-truncate"></span>
                                 </div>
                                 <div class="col form-group">
                                     <label for="infoEmailFPT">Email FPT</label>
                                     <span id="infoEmailFPT" name="infoEmailFPT"
-                                          class="form-control text-secondary border border-secondary text-truncate"></span>
+                                          class="form-control text-black border border-secondary text-truncate"></span>
                                 </div>
                                 <div class="col form-group">
                                     <label for="infoEmailFE">Email FE</label>
                                     <span id="infoEmailFE" name="infoEmailFE"
-                                          class="form-control text-secondary border border-secondary text-truncate"></span>
+                                          class="form-control text-black border border-secondary text-truncate"></span>
                                 </div>
                             </div>
                         </div>
@@ -62,9 +57,39 @@
                     <!-- Infomation -->
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
-                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ <span id="titleTable"
-                                                                                         class="text-secondary"></span>
-                            </h4>
+                            <h4><i class="fa-solid fa-list"></i> Danh sách bộ môn, chuyên ngành theo cơ sở </h4>
+                            <button
+                                    class="btn btn-black"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalAddRole()"
+                            >
+                                Thêm bộ môn chuyên ngành
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên chức vụ</td>
+                                    <td>Tên cơ sở</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="majorFacilityTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Subject Major -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ </h4>
                             <button
                                     class="btn btn-black"
                                     data-bs-toggle="modal"
@@ -104,7 +129,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="roleModalLabel">Thêm chức vụ nhân viên <span id="titlePageModal"
-                                                                                             class="text-secondary"></span>
+                                                                                             class="text-black"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

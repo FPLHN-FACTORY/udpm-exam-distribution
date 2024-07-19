@@ -135,6 +135,7 @@ const fetchSearchDepartmentFacility = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const departmentFacility = responseData.map((departmentFacility, index) => {
@@ -451,6 +452,7 @@ const getMajorFacilities = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const majorFacilities = responseBody?.data?.majorFacilities?.data?.map((majorFacility, index) => {

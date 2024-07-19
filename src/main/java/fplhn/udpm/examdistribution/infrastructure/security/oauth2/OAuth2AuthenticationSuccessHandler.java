@@ -3,7 +3,6 @@ package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.Staff;
-import fplhn.udpm.examdistribution.entity.StaffDepartmentFacility;
 import fplhn.udpm.examdistribution.entity.StaffMajorFacility;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;

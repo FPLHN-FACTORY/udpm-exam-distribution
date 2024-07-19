@@ -74,6 +74,7 @@ const getSubjects = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const subjects = responseBody?.data?.data?.map((subject, index) => {

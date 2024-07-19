@@ -1,14 +1,13 @@
 package fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository;
 
-import fplhn.udpm.examdistribution.entity.StaffDepartmentFacility;
-import fplhn.udpm.examdistribution.repository.StaffDepartmentFacilityRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface AuthStaffDepartmentFacilityRepository extends StaffDepartmentFacilityRepository {
+public interface AuthStaffDepartmentFacilityRepository extends JpaRepository<StaffDepartmentFacility, String> {
 
     @Query("""
             SELECT sdf
