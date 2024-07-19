@@ -18,7 +18,7 @@ public interface AuthStaffRepository extends StaffRepository {
             JOIN facility f ON r.id_facility = f.id
             WHERE s.account_fpt = :emailFPT AND
                   f.id = :facilityId AND
-                  r.name = :role AND
+                  r.code = :role AND
                   sr.status = 0 AND
                   s.status = 0
             LIMIT 1

@@ -25,9 +25,10 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
             	   CONCAT(subj.subject_code, ' - ',subj.name) AS subjectName,
             	   CONCAT(s.staff_code,' - ',s.name) AS staffUpload
             FROM exam_paper ep
-            JOIN head_subject_by_semester hsbs ON hsbs.id_subject = ep.id_subject
+            JOIN subject_group sg ON sg.id_subject = ep.id_subject
+            JOIN head_subject_by_semester hsbs ON hsbs.id_subject_group = sg.id
             JOIN block b ON b.id = ep.id_block
-            JOIN subject subj ON subj.id = hsbs.id_subject
+            JOIN subject subj ON subj.id = sg.id_subject
             JOIN staff s ON s.id = hsbs.id_staff
             WHERE ep.exam_paper_status = 'WAITING_APPROVAL' AND
                   hsbs.id_staff = :idHeadSubject AND
@@ -39,9 +40,10 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
             """,countQuery = """
             SELECT COUNT(ep.id)
             FROM exam_paper ep
-            JOIN head_subject_by_semester hsbs ON hsbs.id_subject = ep.id_subject
+            JOIN subject_group sg ON sg.id_subject = ep.id_subject
+            JOIN head_subject_by_semester hsbs ON hsbs.id_subject_group = sg.id
             JOIN block b ON b.id = ep.id_block
-            JOIN subject subj ON subj.id = hsbs.id_subject
+            JOIN subject subj ON subj.id = sg.id_subject
             JOIN staff s ON s.id = hsbs.id_staff
             WHERE ep.exam_paper_status = 'WAITING_APPROVAL' AND
                   hsbs.id_staff = :idHeadSubject AND

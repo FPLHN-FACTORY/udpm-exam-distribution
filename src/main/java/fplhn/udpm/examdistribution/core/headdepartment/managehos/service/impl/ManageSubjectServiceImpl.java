@@ -48,39 +48,39 @@ public class ManageSubjectServiceImpl implements ManageSubjectService {
 
     @Override
     public ResponseObject<?> reassignSubjectToStaff(ReassignHeadOfSubjectRequest request) {
-        Optional<HeadSubjectBySemester> headSubjectBySemester = hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_Id(
-                request.getSubjectId(),
-                request.getCurrentSemesterId()
-        );
-
-        Optional<Staff> staffOptional = hdStaffExtendRepository.findById(request.getStaffId());
-        if (staffOptional.isEmpty()) {
-            return new ResponseObject<>(
-                    null,
-                    HttpStatus.NOT_FOUND,
-                    "Không tìm thấy nhân viên"
-            );
-        }
-
-
-        if (headSubjectBySemester.isPresent()) {
-            headSubjectBySemester.get().setStaff(staffOptional.get());
-            hdHeadSubjectBySemesterExtendRepository.save(headSubjectBySemester.get());
-        } else {
-            HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
-            newHeadSubjectBySemester.setSubject(hdSubjectExtendRepository.getReferenceById(request.getSubjectId()));
-            newHeadSubjectBySemester.setSemester(hdSemesterExtendRepository.getReferenceById(request.getCurrentSemesterId()));
-            newHeadSubjectBySemester.setStaff(staffOptional.get());
-            newHeadSubjectBySemester.setStatus(EntityStatus.ACTIVE);
-            hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
-        }
-
-        return new ResponseObject<>(
-                null,
-                HttpStatus.OK,
-                "Phân công giáo viên cho môn học thành công"
-        );
-
+//        Optional<HeadSubjectBySemester> headSubjectBySemester = hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_Id(
+//                request.getSubjectId(),
+//                request.getCurrentSemesterId()
+//        );
+//
+//        Optional<Staff> staffOptional = hdStaffExtendRepository.findById(request.getStaffId());
+//        if (staffOptional.isEmpty()) {
+//            return new ResponseObject<>(
+//                    null,
+//                    HttpStatus.NOT_FOUND,
+//                    "Không tìm thấy nhân viên"
+//            );
+//        }
+//
+//
+//        if (headSubjectBySemester.isPresent()) {
+//            headSubjectBySemester.get().setStaff(staffOptional.get());
+//            hdHeadSubjectBySemesterExtendRepository.save(headSubjectBySemester.get());
+//        } else {
+//            HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
+//            newHeadSubjectBySemester.setSubject(hdSubjectExtendRepository.getReferenceById(request.getSubjectId()));
+//            newHeadSubjectBySemester.setSemester(hdSemesterExtendRepository.getReferenceById(request.getCurrentSemesterId()));
+//            newHeadSubjectBySemester.setStaff(staffOptional.get());
+//            newHeadSubjectBySemester.setStatus(EntityStatus.ACTIVE);
+//            hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
+//        }
+//
+//        return new ResponseObject<>(
+//                null,
+//                HttpStatus.OK,
+//                "Phân công giáo viên cho môn học thành công"
+//        );
+        return null;
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
             	s.id AS id,
             	ROW_NUMBER() OVER(
             ORDER BY
-            	s.id DESC) AS orderNumber,
+            	hsbs.id DESC) AS orderNumber,
             	s.subject_code AS subjectCode,
             	s.name AS subjectName,
             	s.subject_type AS subjectType,
@@ -24,37 +24,49 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
             	s.created_date AS createdDate,
             	s.path_exam_rule AS fileId
             FROM
-            	subject s
+            	head_subject_by_semester hsbs
+            JOIN staff st ON
+                st.id = hsbs.id_staff
+            JOIN subject_group sg ON
+            	hsbs.id_subject_group = sg.id
+            JOIN subject s ON
+                s.id = sg.id_subject
             JOIN department d ON
             	s.id_department = d.id
-            JOIN department_facility df ON
-            	df.id_department = d.id
-            JOIN head_subject_by_semester hsbs ON
-            	hsbs.id_subject = s.id
-            JOIN staff st ON
-            	st.id = hsbs.id_staff
             WHERE
-                df.id = :departmentFacilityId AND
-                
+                sg.id_staff = :#{#request.staffId} AND
                 st.id = :#{#request.staffId} AND
-                s.status = 0 AND
-                :#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"} AND
-                :#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"}
+                hsbs.id_semester = :semesterId AND
+                sg.id_department_facility = :departmentFacilityId AND
+                sg.status = 0 AND
+                (
+                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
+                    (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                )
             """,
             countQuery = """
-                    SELECT 	COUNT(s.id)
-                    FROM subject s
-                    JOIN department d ON s.id_department = d.id
-                    JOIN department_facility df ON df.id_department = d.id
-                    JOIN head_subject_by_semester hsbs ON hsbs.id_subject = s.id
-                    JOIN staff st ON st.id = hsbs.id_staff
+                    SELECT 	COUNT(hsbs.id)
+                    FROM
+                        head_subject_by_semester hsbs
+                    JOIN staff st ON
+                        st.id = hsbs.id_staff
+                    JOIN subject_group sg ON
+                        hsbs.id_subject_group = sg.id
+                    JOIN subject s ON
+                        s.id = sg.id_subject
+                    JOIN department d ON
+                        s.id_department = d.id
                     WHERE
-                        (df.id = :departmentFacilityId) AND
-                        (st.id = :#{#request.staffId}) AND
-                        (s.status = 0) AND
-                        (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
-                        (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                        sg.id_staff = :#{#request.staffId} AND
+                        st.id = :#{#request.staffId} AND
+                        hsbs.id_semester = :semesterId AND
+                        sg.id_department_facility = :departmentFacilityId AND
+                        sg.status = 0 AND
+                        (
+                            (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE :#{"%" + #request.subjectCode + "%"}) AND
+                            (:#{#request.subjectName} IS NULL OR s.name LIKE :#{"%" + #request.subjectName + "%"})
+                        )
                     """, nativeQuery = true)
-    Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, FindSubjectRequest request);
+    Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, String semesterId, FindSubjectRequest request);
 
 }

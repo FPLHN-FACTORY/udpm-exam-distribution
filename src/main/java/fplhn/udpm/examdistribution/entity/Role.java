@@ -31,4 +31,8 @@ public class Role extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_facility")
     private Facility facility;
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    @Nationalized
+    private String code;
+
 }
