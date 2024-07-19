@@ -48,29 +48,31 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
 
     @Override
     public ResponseObject<?> getStaffAndHeadSubjects(@Valid HeadSubjectRequest request) {
-        return new ResponseObject<>(
-                PageableObject.of(
-                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
-                                Helper.createPageable(request, "id"),
-                                request
-                        )
-                ),
-                HttpStatus.OK,
-                "Lấy danh sách nhân viên thành công"
-        );
+//        return new ResponseObject<>(
+//                PageableObject.of(
+//                        hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(
+//                                Helper.createPageable(request, "id"),
+//                                request
+//                        )
+//                ),
+//                HttpStatus.OK,
+//                "Lấy danh sách nhân viên thành công"
+//        );
+        return null;
     }
 
     @Override
     public ResponseObject<?> getSubjectAssigned(@Valid SubjectAssignedRequest request) {
-        return new ResponseObject<>(
-                PageableObject.of(hdHeadSubjectBySemesterExtendRepository.getSubjectAssigned(
-                                Helper.createPageable(request, "id"),
-                                request
-                        )
-                ),
-                HttpStatus.OK,
-                "Lấy danh sách môn học thành công"
-        );
+//        return new ResponseObject<>(
+//                PageableObject.of(hdHeadSubjectBySemesterExtendRepository.getSubjectAssigned(
+//                                Helper.createPageable(request, "id"),
+//                                request
+//                        )
+//                ),
+//                HttpStatus.OK,
+//                "Lấy danh sách môn học thành công"
+//        );
+        return null;
     }
 
     @Override
@@ -134,41 +136,41 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
     }
 
     private void assignSubject(Subject subject, Staff staff, Semester semester) {
-        hdHeadSubjectBySemesterExtendRepository.
-                findBySubject_IdAndSemester_Id(subject.getId(), semester.getId())
-                .ifPresent(existingAssignment -> {
-                    if (!existingAssignment.getStaff().getId().equals(staff.getId())) {
-                        existingAssignment.setStaff(staff);
-                        hdHeadSubjectBySemesterExtendRepository.save(existingAssignment);
-                    }
-                });
-
-        Optional<HeadSubjectBySemester> existingAssignmentForSameStaff =
-                hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_IdAndStaff_Id(
-                        subject.getId(),
-                        semester.getId(),
-                        staff.getId()
-                );
-
-        if (existingAssignmentForSameStaff.isPresent()) {
-            HeadSubjectBySemester headSubjectBySemester = existingAssignmentForSameStaff.get();
-            headSubjectBySemester.setStatus(EntityStatus.ACTIVE);
-            hdHeadSubjectBySemesterExtendRepository.save(headSubjectBySemester);
-        } else {
-            HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
-            newHeadSubjectBySemester.setSubject(subject);
-            newHeadSubjectBySemester.setSemester(semester);
-            newHeadSubjectBySemester.setStaff(staff);
-            newHeadSubjectBySemester.setStatus(EntityStatus.ACTIVE);
-            hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
-        }
-        logAction("Phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "assignSubject");
+//        hdHeadSubjectBySemesterExtendRepository.
+//                findBySubject_IdAndSemester_Id(subject.getId(), semester.getId())
+//                .ifPresent(existingAssignment -> {
+//                    if (!existingAssignment.getStaff().getId().equals(staff.getId())) {
+//                        existingAssignment.setStaff(staff);
+//                        hdHeadSubjectBySemesterExtendRepository.save(existingAssignment);
+//                    }
+//                });
+//
+//        Optional<HeadSubjectBySemester> existingAssignmentForSameStaff =
+//                hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_IdAndStaff_Id(
+//                        subject.getId(),
+//                        semester.getId(),
+//                        staff.getId()
+//                );
+//
+//        if (existingAssignmentForSameStaff.isPresent()) {
+//            HeadSubjectBySemester headSubjectBySemester = existingAssignmentForSameStaff.get();
+//            headSubjectBySemester.setStatus(EntityStatus.ACTIVE);
+//            hdHeadSubjectBySemesterExtendRepository.save(headSubjectBySemester);
+//        } else {
+//            HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
+//            newHeadSubjectBySemester.setSubject(subject);
+//            newHeadSubjectBySemester.setSemester(semester);
+//            newHeadSubjectBySemester.setStaff(staff);
+//            newHeadSubjectBySemester.setStatus(EntityStatus.ACTIVE);
+//            hdHeadSubjectBySemesterExtendRepository.save(newHeadSubjectBySemester);
+//        }
+//        logAction("Phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "assignSubject");
     }
 
     private void unassignSubject(Subject subject, Staff staff, Semester semester) {
-        hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_IdAndStaff_Id(subject.getId(), semester.getId(), staff.getId())
-                .ifPresent(hdHeadSubjectBySemesterExtendRepository::delete);
-        logAction("Hủy phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "unassignSubject");
+//        hdHeadSubjectBySemesterExtendRepository.findBySubject_IdAndSemester_IdAndStaff_Id(subject.getId(), semester.getId(), staff.getId())
+//                .ifPresent(hdHeadSubjectBySemesterExtendRepository::delete);
+//        logAction("Hủy phân công môn học " + subject.getSubjectCode() + " - " + subject.getName() + " cho giảng viên " + staff.getStaffCode() + " - " + staff.getName(), "unassignSubject");
     }
 
     private void logAction(String content, String methodName) {
