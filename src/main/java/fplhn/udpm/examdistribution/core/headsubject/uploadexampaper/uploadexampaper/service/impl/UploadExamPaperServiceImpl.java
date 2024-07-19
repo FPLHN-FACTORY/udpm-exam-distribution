@@ -76,9 +76,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     @Override
     public ResponseObject<?> getListSubject(String semesterId) {
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         return new ResponseObject<>(
-                subjectRepository.getListSubject(userId, semesterId),
+                subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công"
         );
@@ -89,9 +89,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
 
         String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         return new ResponseObject<>(
-                subjectRepository.getListSubject(userId, semesterId),
+                subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công"
         );
@@ -129,8 +129,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     public ResponseObject<?> getAllExamPaper(ListExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, ExamPaperStatus.WAITING_APPROVAL.toString())),
+                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, ExamPaperStatus.WAITING_APPROVAL.toString())),
                 HttpStatus.OK,
                 "Lấy thành công danh sách đề thi"
         );
@@ -212,10 +213,11 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     @Override
     public ResponseObject<?> getListMajorFacility() {
         try {
-            String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
-            String departmentId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID).toString();
+            String majorFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString();
+            String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+            String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
             return new ResponseObject<>(
-                    examPaperRepository.getMajorFacilityByDepartmentFacilityId(facilityId, departmentId),
+                    examPaperRepository.getMajorFacilityByDepartmentFacilityId(majorFacilityId, staffId, semesterId),
                     HttpStatus.OK,
                     "Lấy thành công danh sách chuyên ngành cơ sở"
             );

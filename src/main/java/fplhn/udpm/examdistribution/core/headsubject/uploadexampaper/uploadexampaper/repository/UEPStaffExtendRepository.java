@@ -11,22 +11,22 @@ import java.util.List;
 public interface UEPStaffExtendRepository extends StaffRepository {
 
     @Query(value = """
-            SELECT DISTINCT
+            SELECT
             	st.id AS id,
             	CONCAT(st.name, "-", st.staff_code) AS name
-            FROM
-            	staff st
+            FROM staff_department_facility sdf
+            JOIN staff st ON st.id = sdf.id_staff
             WHERE
-            	st.status = 0 AND
-            	st.id_department_facility = :departmentFacilityId
+                sdf.id_department_facility = :departmentFacilityId AND
+                sdf.status = 0
             """,countQuery = """
             SELECT
-            	COUNT(DISTINCT st.id)
-            FROM
-            	staff st
+            	COUNT(sdf.id)
+            FROM staff_department_facility sdf
+            JOIN staff st ON st.id = sdf.id_staff
             WHERE
-            	st.status = 0 AND
-            	st.id_department_facility = :departmentFacilityId
+                sdf.id_department_facility = :departmentFacilityId AND
+                sdf.status = 0
             """, nativeQuery = true)
     List<ListStaffResponse> getListStaff(String departmentFacilityId);
 
