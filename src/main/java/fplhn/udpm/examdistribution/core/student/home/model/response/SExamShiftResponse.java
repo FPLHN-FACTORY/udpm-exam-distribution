@@ -6,4 +6,6 @@ public interface SExamShiftResponse extends IsIdentify {
 
     String getExamShiftCode();
 
+    String getPathExamRule();
+
 }

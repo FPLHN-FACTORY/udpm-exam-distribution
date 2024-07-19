@@ -17,13 +17,19 @@
         <div class="main-header">
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
-        <div class="container">
-            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
-                <div class="shadow p-4 bg-white rounded">
-                    <button class="btn btn-black" data-bs-toggle="modal" onclick="openModalAddExamShift()">
+        <div class="container" style="position: relative;">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100"
+                 style="background-image: url('https://xuongthuchanh.poly.edu.vn/assets/defaultProject-5d310d32.png'); background-size: cover;">
+                <div class="buttons-overlay"
+                     style="position: absolute; top: 50px; right: 50px; transform: translateY(0%);">
+                    <button class="btn p-5" data-bs-toggle="modal"
+                            style="background-color: var(--common-button-color); color: white;"
+                            onclick="openModalAddExamShift()">
                         Tạo phòng thi
                     </button>
-                    <button class="btn btn-black" data-bs-toggle="modal" onclick="openModalJoinExamShift()">
+                    <button class="btn p-5" data-bs-toggle="modal"
+                            style="background-color: var(--common-button-color); color: white;"
+                            onclick="openModalJoinExamShift()">
                         Tham gia phòng thi
                     </button>
                 </div>
@@ -38,7 +44,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="examShiftModalLabel">Thêm phòng thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addExamShiftForm">
@@ -91,7 +98,10 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-black" id="modifyExamShiftButton">Tạo phòng thi</button>
+                    <button type="button" class="btn"
+                            style="background-color: var(--common-button-color); color: white;"
+                            id="modifyExamShiftButton">Tạo phòng thi
+                    </button>
                 </div>
             </div>
         </div>
@@ -105,7 +115,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="examShiftJoinModalLabel">Tham gia phòng thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="joinExamShiftForm">
@@ -125,7 +136,10 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-black" id="modifyExamShiftJoinButton">Tham gia</button>
+                    <button type="button" class="btn"
+                            style="background-color: var(--common-button-color); color: white;"
+                            id="modifyExamShiftJoinButton">Tham gia
+                    </button>
                 </div>
             </div>
         </div>

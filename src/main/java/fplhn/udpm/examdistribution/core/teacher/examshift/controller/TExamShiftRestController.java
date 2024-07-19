@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.teacher.examshift.controller;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.service.TExamShiftService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -81,6 +82,20 @@ public class TExamShiftRestController {
         ResponseObject<?> responseObject = tExamShiftService.getFile(fileId);
         if (responseObject.getStatus().equals(HttpStatus.OK)) {
             TFileResourceResponse fileResponse = (TFileResourceResponse) responseObject.getData();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition",
+                            "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileResponse.getData());
+        }
+        return Helper.createResponseEntity(responseObject);
+    }
+
+    @GetMapping("/file-exam-rule")
+    public ResponseEntity<?> getFileExamRule(@RequestParam(name = "fileId") String fileId) throws IOException {
+        ResponseObject<?> responseObject = tExamShiftService.getFileExamRule(fileId);
+        if (responseObject.getStatus().equals(HttpStatus.OK)) {
+            TExamRuleResourceResponse fileResponse = (TExamRuleResourceResponse) responseObject.getData();
             return ResponseEntity.ok()
                     .header("Content-Disposition",
                             "attachment; filename=\"" + fileResponse.getFileName() + "\"")

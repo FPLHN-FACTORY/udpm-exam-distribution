@@ -7,6 +7,27 @@ const scale = 1.5;
 const $pdfCanvas = $("#pdf-canvas")[0];
 const ctx = $pdfCanvas.getContext("2d");
 
+let pdfDocExamRule = null;
+let pageNumExamRule = 1;
+let pageRenderingExamRule = false;
+let pageNumPendingExamRule = null;
+const scaleExamRule = 1.5;
+const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
+const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
+
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+});
+
+document.onkeydown = (e) => {
+    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+
+    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+        e.preventDefault();
+        return false;
+    }
+}
+
 $(document).ready(function () {
 
     getExamShiftByCode();
@@ -33,9 +54,46 @@ $(document).ready(function () {
         completeExamShift();
     });
 
+    $('#examRuleOpen').click(function () {
+        openModalExamRule();
+    });
+
+    let devToolsOpen = false;
+    let originalBodyContent = '';
+
+    function detectDevTools() {
+        const threshold = 160;
+        if ((window.outerWidth - window.innerWidth) > threshold || (window.outerHeight - window.innerHeight) > threshold) {
+            if (!devToolsOpen) {
+                devToolsOpen = true;
+                displayDevToolsMessage();
+            }
+        } else {
+            if (devToolsOpen) {
+                devToolsOpen = false;
+                removeDevToolsMessage();
+            }
+        }
+    }
+
+    function displayDevToolsMessage() {
+        originalBodyContent = document.body.innerHTML;
+        document.body.innerHTML = '<h1>DevTools đang mở!</h1>';
+    }
+
+    function removeDevToolsMessage() {
+        document.body.innerHTML = originalBodyContent;
+    }
+
+    setInterval(detectDevTools, 1000);
+
     // checkOnline();
 
 });
+
+const openModalExamRule = () => {
+    $('#examRuleOpenModal').modal('show');
+}
 
 let examShiftCode = $('#examShiftCodeCtl').text();
 let examPaperId = $('#examPaperId').text();
@@ -50,6 +108,7 @@ const getExamShiftByCode = () => {
             if (responseBody?.data) {
                 const examShift = responseBody?.data;
                 $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+                fetchFilePDFExamRule(examShift.pathExamRule);
             }
         },
         error: function (error) {
@@ -204,6 +263,94 @@ $("#next-page").on("click", function () {
     queueRenderPage(pageNum);
 });
 
+//file-exam-rule
+const fetchFilePDFExamRule = (fileId) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + "/file-exam-rule",
+        data: {
+            fileId: fileId
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            pdfjsLib
+                .getDocument({data: pdfData})
+                .promise.then(function (pdfDoc_) {
+                pdfDocExamRule = pdfDoc_;
+                $("#total-page-exam-rule").text(pdfDocExamRule.numPages);
+
+                renderPageExamRule(pageNumExamRule);
+                showViewAndPagingPdfExamRule(pdfDocExamRule.numPages);
+            });
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+};
+
+// Render the page
+function renderPageExamRule(num) {
+    pageRenderingExamRule = true;
+    pdfDocExamRule.getPage(num).then(function (page) {
+        const viewport = page.getViewport({scale: scaleExamRule});
+        $pdfCanvasExamRule.height = viewport.height;
+        $pdfCanvasExamRule.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctxExamRule,
+            viewport: viewport,
+        };
+        const renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function () {
+            pageRenderingExamRule = false;
+            if (pageNumPendingExamRule !== null) {
+                renderPage(pageNumPendingExamRule);
+                pageNumPendingExamRule = null;
+            }
+        });
+    });
+
+    $("#page-num-exam-rule").text(num);
+}
+
+const showViewAndPagingPdfExamRule = (totalPage) => {
+    $("#pdf-viewer-exam-rule").prop("hidden", false);
+    if (totalPage > 1) {
+        $("#paging-pdf-exam-rule").prop("hidden", false);
+    }
+};
+
+function queueRenderPageExamRule(num) {
+    if (pageRenderingExamRule) {
+        pageRenderingExamRule = num;
+    } else {
+        renderPageExamRule(num);
+    }
+}
+
+$("#prev-page-exam-rule").on("click", function () {
+    if (pageNumExamRule <= 1) {
+        return;
+    }
+    pageNumExamRule--;
+    queueRenderPageExamRule(pageNumExamRule);
+});
+
+$("#next-page-exam-rule").on("click", function () {
+    if (pageNumExamRule >= pdfDocExamRule.numPages) {
+        return;
+    }
+    pageNumExamRule++;
+    queueRenderPageExamRule(pageNumExamRule);
+});
+//file-exam-rule
+
 const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
@@ -250,7 +397,7 @@ const startCountdown = (startTime, endTime) => {
 const handleSendMessageStartToExt = () => {
     chrome.runtime.sendMessage(
         editorExtensionId,
-        { active: "onTracking" },
+        {active: "onTracking"},
         function (response) {
             console.log(response);
         }
@@ -260,7 +407,7 @@ const handleSendMessageStartToExt = () => {
 const handleSendMessageEndTimeToExt = () => {
     chrome.runtime.sendMessage(
         editorExtensionId,
-        { active: "stopTracking" },
+        {active: "stopTracking"},
         function (response) {
             console.log(response);
         }

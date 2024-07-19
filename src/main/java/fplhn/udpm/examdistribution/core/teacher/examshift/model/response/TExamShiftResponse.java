@@ -6,4 +6,6 @@ public interface TExamShiftResponse extends IsIdentify {
 
     String getExamShiftCode();
 
+    String getPathExamRule();
+
 }

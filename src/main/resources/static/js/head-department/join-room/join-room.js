@@ -80,7 +80,7 @@ const getExamShifts = () => {
                 examShifts.forEach((examShift, index) => {
                     const col = $(`
                         <div class="col-3" onclick="joinExamShiftSubmit('${examShift.examShiftCode}')">
-                            <div class="btn-label-info p-2 shadow rounded min-vh-30">
+                            <div class="btn-label-warning p-2 shadow rounded min-vh-30">
                                 <div class="user-box">
                                     <div class="u-text">
                                         <h3>${examShift.examShiftCode}</h3>

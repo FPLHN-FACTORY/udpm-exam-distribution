@@ -8,6 +8,14 @@ const scale = 1.5;
 const $pdfCanvas = $("#pdf-canvas")[0];
 const ctx = $pdfCanvas.getContext("2d");
 
+let pdfDocExamRule = null;
+let pageNumExamRule = 1;
+let pageRenderingExamRule = false;
+let pageNumPendingExamRule = null;
+const scaleExamRule = 1.5;
+const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
+const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
+
 $(document).ready(function () {
 
     getExamShiftByCode();
@@ -67,6 +75,7 @@ const getExamShiftByCode = () => {
             if (responseBody?.data) {
                 const examShift = responseBody?.data;
                 $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+                fetchFilePDFExamRule(examShift.pathExamRule);
             }
         },
         error: function (error) {
@@ -383,7 +392,7 @@ const getStudentRejoin = () => {
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
-                                        <button class="btn-label-secondary" 
+                                        <button class="btn-label-warning" 
                                                 onclick="approveStudentSubmit('${student.id}')">
                                                 Phê duyệt
                                         </button>
@@ -621,6 +630,95 @@ $("#next-page").on("click", function () {
     pageNum++;
     queueRenderPage(pageNum);
 });
+
+//file-exam-rule
+const fetchFilePDFExamRule = (fileId) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + "/file-exam-rule",
+        data: {
+            fileId: fileId
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            pdfjsLib
+                .getDocument({data: pdfData})
+                .promise.then(function (pdfDoc_) {
+                pdfDocExamRule = pdfDoc_;
+                $("#total-page-exam-rule").text(pdfDocExamRule.numPages);
+
+                renderPageExamRule(pageNumExamRule);
+                showViewAndPagingPdfExamRule(pdfDocExamRule.numPages);
+            });
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
+
+// Render the page
+function renderPageExamRule(num) {
+    pageRenderingExamRule = true;
+    pdfDocExamRule.getPage(num).then(function (page) {
+        const viewport = page.getViewport({scale: scaleExamRule});
+        $pdfCanvasExamRule.height = viewport.height;
+        $pdfCanvasExamRule.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctxExamRule,
+            viewport: viewport,
+        };
+        const renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function () {
+            pageRenderingExamRule = false;
+            if (pageNumPendingExamRule !== null) {
+                renderPage(pageNumPendingExamRule);
+                pageNumPendingExamRule = null;
+            }
+        });
+    });
+
+    $("#page-num-exam-rule").text(num);
+}
+
+const showViewAndPagingPdfExamRule = (totalPage) => {
+    $("#pdf-viewer-exam-rule").prop("hidden", false);
+    if (totalPage > 1) {
+        $("#paging-pdf-exam-rule").prop("hidden", false);
+    }
+};
+
+function queueRenderPageExamRule(num) {
+    if (pageRenderingExamRule) {
+        pageRenderingExamRule = num;
+    } else {
+        renderPageExamRule(num);
+    }
+}
+
+$("#prev-page-exam-rule").on("click", function () {
+    if (pageNumExamRule <= 1) {
+        return;
+    }
+    pageNumExamRule--;
+    queueRenderPageExamRule(pageNumExamRule);
+});
+
+$("#next-page-exam-rule").on("click", function () {
+    if (pageNumExamRule >= pdfDocExamRule.numPages) {
+        return;
+    }
+    pageNumExamRule++;
+    queueRenderPageExamRule(pageNumExamRule);
+});
+//file-exam-rule
 
 const examShiftStartSubmit = () => {
     swal({

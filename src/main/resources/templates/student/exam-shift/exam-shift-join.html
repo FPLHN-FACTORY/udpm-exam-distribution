@@ -28,7 +28,9 @@
                     <h2 id="examShiftCode">Phòng thi - Mã tham gia: </h2>
                     <div>
                         <button
-                                class="btn btn-black"
+                                class="btn"
+                                style="background-color: var(--common-button-color); color: white;"
+                                id="examRuleOpen"
                         >
                             Nội quy phòng thi
                         </button>
@@ -38,10 +40,16 @@
                     <div class="p-4 bg-white rounded min-vh-100">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <button class="btn btn-black" data-bs-toggle="modal" id="openExamPaper" hidden>
+                                <button class="btn" data-bs-toggle="modal" id="openExamPaper"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                        hidden
+                                >
                                     Mở đề thi
                                 </button>
-                                <button class="btn btn-black" data-bs-toggle="modal" id="completeExamShift" hidden>
+                                <button class="btn" data-bs-toggle="modal" id="completeExamShift"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                        hidden
+                                >
                                     Hoàn thành
                                 </button>
                             </div>
@@ -52,8 +60,16 @@
                                 <canvas id="pdf-canvas"></canvas>
                             </div>
                             <div id="paging-pdf" hidden class="mt-3">
-                                <button class="btn btn-black" id="prev-page">Previous</button>
-                                <button class="btn btn-black" id="next-page">Next</button>
+                                <button class="btn" id="prev-page"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Previous
+                                </button>
+                                <button class="btn" id="next-page"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Next
+                                </button>
                                 <p>Page: <span id="page-num"></span> / <span id="total-page"></span></p>
                             </div>
                         </div>
@@ -85,12 +101,58 @@
                     <button type="button" class="btn" data-bs-dismiss="modal"
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
-                    <button type="button" class="btn btn-black" id="modifyExamPaperOpenButton">Mở đề</button>
+                    <button type="button" class="btn" id="modifyExamPaperOpenButton"
+                            style="background-color: var(--common-button-color); color: white;"
+                    >
+                        Mở đề
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     <!--Modal Open ExamPaper -->
+
+    <!--Modal Open ExamRule -->
+    <div class="modal fade" id="examRuleOpenModal" tabindex="-1" aria-labelledby="examRuleOpenModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 1400px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examRuleOpenModalLabel">Nội quy phòng thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-white rounded min-vh-100">
+                        <div id="examShiftRule">
+                            <div id="pdf-viewer-exam-rule" hidden>
+                                <canvas id="pdf-canvas-exam-rule"></canvas>
+                            </div>
+                            <div id="paging-pdf-exam-rule" hidden class="mt-3">
+                                <button class="btn" id="prev-page-exam-rule"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Previous
+                                </button>
+                                <button class="btn" id="next-page-exam-rule"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Next
+                                </button>
+                                <p>Page: <span id="page-num-exam-rule"></span> / <span id="total-page-exam-rule"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Open ExamRule -->
 
     <!-- The toggle theme button -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
@@ -106,6 +168,7 @@
 <script th:src="@{/js/sidebar-track.js}"></script>
 <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
 <script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/js/devtools.js}"></script>
 <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
