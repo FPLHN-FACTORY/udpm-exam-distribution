@@ -13,13 +13,17 @@ public class CustomUserCookie implements Serializable {
 
     private String userRole;
 
+    private String majorFacilityId;
+
     private String departmentFacilityId;
+
+    private String departmentId;
 
     private String departmentName;
 
-    private String facilityName;
-
     private String facilityId;
+
+    private String facilityName;
 
     private String userEmailFPT;
 

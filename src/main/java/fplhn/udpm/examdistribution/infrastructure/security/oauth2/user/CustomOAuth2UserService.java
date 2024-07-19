@@ -26,15 +26,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final AuthStudentRepository authStudentRepository;
 
-    private static final String errorMessage = "Tài khoản không được phép đăng nhập vào hệ thống!";
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         this.clearSession();
         OAuth2User user = super.loadUser(userRequest);
         OAuth2UserInfo userInfo = new OAuth2UserInfo(user.getAttributes());
 
-        String facilityId = (String) httpSession.getAttribute(SessionConstant.FACILITY_ID_LOGIN);
+        String facilityId = (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID);
         String role = (String) httpSession.getAttribute(SessionConstant.ROLE_LOGIN);
 
         if (role.equalsIgnoreCase("SINH_VIEN")) {
@@ -48,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             Optional<Staff> isStaffExist = authStaffRepository.getStaffByAccountFptAndFacilityId(userInfo.getEmail(), facilityId, role);
             if (isStaffExist.isEmpty()) {
-                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, errorMessage);
+                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_MESSAGE);
             }
         }
 
@@ -73,7 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
             authStudentRepository.save(putStudent);
         } else {
-            httpSession.setAttribute(SessionConstant.ERROR_LOGIN, errorMessage);
+            httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_MESSAGE);
         }
     }
 

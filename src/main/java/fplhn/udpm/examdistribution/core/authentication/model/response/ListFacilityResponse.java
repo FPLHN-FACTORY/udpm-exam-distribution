@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.authentication.model;
+package fplhn.udpm.examdistribution.core.authentication.model.response;
 
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
