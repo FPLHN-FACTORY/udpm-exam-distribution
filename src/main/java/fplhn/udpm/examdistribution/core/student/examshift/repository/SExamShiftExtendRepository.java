@@ -16,10 +16,16 @@ public interface SExamShiftExtendRepository extends ExamShiftRepository {
     @Query(value = """
             SELECT
             	es.id as id,
-            	es.exam_shift_code as examShiftCode
+            	es.exam_shift_code as examShiftCode,
+            	s.path_exam_rule as pathExamRule
             FROM
             	exam_shift es
-            WHERE es.exam_shift_code = :examShiftCode
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s ON
+            	cs.id_subject = s.id
+            WHERE
+            	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     SExamShiftResponse getExamShiftByCode(String examShiftCode);
 

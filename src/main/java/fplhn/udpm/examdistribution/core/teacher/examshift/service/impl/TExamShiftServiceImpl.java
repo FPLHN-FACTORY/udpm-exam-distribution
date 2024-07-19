@@ -5,6 +5,7 @@ import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.TClassSu
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.exampapershift.model.response.TExamPaperShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TStartExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamShiftExtendRepository;
@@ -182,7 +183,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         }
 
         if (tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getFirstSupervisor().getId())
-            && (examShift.getSecondSupervisor() != null
+            && (examShift.getSecondSupervisor() == null
                 || tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getSecondSupervisor().getId()))) {
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.OK, "Tham gia phòng thi thành công!");
@@ -386,6 +387,18 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 new TFileResourceResponse(data, fileResponse.getFilename()),
                 HttpStatus.OK,
                 "Lấy đề thi thành công!"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getFileExamRule(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+        return new ResponseObject<>(
+                new TExamRuleResourceResponse(data, fileResponse.getFilename()),
+                HttpStatus.OK,
+                "Lấy file quy định thi thành công!"
         );
     }
 

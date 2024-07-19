@@ -31,6 +31,8 @@ public interface TExamShiftService {
 
     ResponseObject<?> getFile(String file) throws IOException;
 
+    ResponseObject<?> getFileExamRule(String file) throws IOException;
+
     ResponseObject<?> updateStatusExamShift(String examShiftCode);
 
 }
