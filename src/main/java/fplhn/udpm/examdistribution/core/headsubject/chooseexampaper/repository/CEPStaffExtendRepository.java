@@ -14,19 +14,21 @@ public interface CEPStaffExtendRepository extends StaffRepository {
             SELECT
             	st.id AS id,
             	CONCAT(st.name, "-", st.staff_code) AS name
-            FROM staff_department_facility sdf
-            JOIN staff st ON st.id = sdf.id_staff
+            FROM staff_major_facility smf
+            JOIN major_facility mf ON mf.id = smf.id_major_facility
+            JOIN staff st ON st.id = smf.id_staff
             WHERE
-                sdf.id_department_facility = :departmentFacilityId AND
-                sdf.status = 0
+                mf.id_department_facility = :departmentFacilityId AND
+                smf.status = 0
             """, countQuery = """
             SELECT
             	COUNT(sdf.id)
-            FROM staff_department_facility sdf
-            JOIN staff st ON st.id = sdf.id_staff
+            FROM staff_major_facility smf
+            JOIN major_facility mf ON mf.id = smf.id_major_facility
+            JOIN staff st ON st.id = smf.id_staff
             WHERE
-                sdf.id_department_facility = :departmentFacilityId AND
-                sdf.status = 0
+                mf.id_department_facility = :departmentFacilityId AND
+                smf.status = 0
             """, nativeQuery = true)
     List<CEPListStaffResponse> getListStaff(String departmentFacilityId);
 
