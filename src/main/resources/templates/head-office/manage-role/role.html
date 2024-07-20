@@ -32,8 +32,8 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="roleName">Tên chức vụ</label>
-                                    <input type="text" id="roleName" name="roleName" class="form-control">
+                                    <label for="roleName">Chức vụ</label>
+                                    <input type="text" id="roleName" name="roleName" class="form-control" placeholder="Nhập từ khóa tìm kiếm(Mã chức vụ / Tên chức vụ)">
                                 </div>
                                 <div class="col form-group">
                                     <label for="idFacility">Cơ sở</label>
@@ -62,6 +62,7 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã chức vụ</td>
                                     <td>Tên chức vụ</td>
                                     <td>Tên cơ sở</td>
                                     <td
@@ -109,7 +110,7 @@
                         <input type="hidden" id="roleId">
                         <div class="mb-3">
                             <label for="modifyRoleName" class="form-label"><span class="text-danger"> * </span>Tên chức
-                                vụ (VD: GIANG_VIEN)</label>
+                                vụ (VD: Giảng viên)</label>
                             <input type="text" class="form-control" id="modifyRoleName" required>
                             <div class="text-danger" id="modifyRoleNameError"></div>
                         </div>

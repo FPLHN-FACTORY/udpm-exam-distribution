@@ -161,6 +161,7 @@ function getExamPapers(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const examPapers = responseBody?.data?.content?.map((exam, index) => {

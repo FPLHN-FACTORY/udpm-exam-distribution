@@ -83,8 +83,6 @@ public class HOStaffServiceImpl implements HOStaffService {
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());
         staff.setAccountFpt(staffRequest.getAccountFpt());
-        Optional<DepartmentFacility> departmentFacility = departmentFacilityRepo.findById(staffRequest.getDepartmentFacilityId());
-//        staff.setDepartmentFacility(departmentFacility.isPresent() ? departmentFacility.get() : null);
         staffRepo.save(staff);
         return new ResponseObject<>(null, HttpStatus.CREATED, "create staff successfully");
     }
@@ -107,8 +105,6 @@ public class HOStaffServiceImpl implements HOStaffService {
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());
         staff.setAccountFpt(staffRequest.getAccountFpt());
-        Optional<DepartmentFacility> departmentFacility = departmentFacilityRepo.findById(staffRequest.getDepartmentFacilityId());
-//        staff.setDepartmentFacility(departmentFacility.isPresent() ? departmentFacility.get() : null);
         staffRepo.save(staff);
         return new ResponseObject<>(null, HttpStatus.OK, "create staff successfully");
     }

@@ -66,6 +66,7 @@ const getListHeadSubject = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
 
@@ -297,6 +298,7 @@ const getSubjectAssignForStaff = (
                          <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const subjectAssigneds = responseBody?.data?.data.map((subject, _) => {
@@ -399,6 +401,7 @@ const getHistoryAssignSubject = () => {
                          <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const historyAssignSubjects = responseBody?.data?.data?.map((history, _) => {

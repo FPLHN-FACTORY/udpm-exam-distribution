@@ -35,6 +35,4 @@ public class HOSaveStaffRequest {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@fpt\\.edu\\.vn$", message = "Must be a valid email ending with @fpt.edu.vn")
     private String accountFpt;
 
-    private String departmentFacilityId;
-
 }

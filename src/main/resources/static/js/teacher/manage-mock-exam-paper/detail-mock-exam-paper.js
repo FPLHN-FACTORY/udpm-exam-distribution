@@ -225,6 +225,7 @@ const fetchMockExamPaper = (subjectId,
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const mockExamPapers = responseData.map(function (mockExamPaper, index) {

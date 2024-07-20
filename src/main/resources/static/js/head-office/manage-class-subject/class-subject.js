@@ -78,6 +78,7 @@ const getClassSubjects = (
                          <td colspan="9" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const classSubjects = responseBody?.data?.data?.map((classSubject, index) => {

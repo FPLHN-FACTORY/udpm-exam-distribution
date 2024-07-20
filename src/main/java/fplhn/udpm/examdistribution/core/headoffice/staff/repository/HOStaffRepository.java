@@ -22,33 +22,26 @@ public interface HOStaffRepository extends StaffRepository {
                             s.name AS name,
                             s.staff_code AS staffCode,
                             s.account_fe AS accountFE,
-                            s.account_fpt AS accountFpt,
-                            COALESCE(CONCAT(d.name, ' - ', f.name),'Không có bộ môn') AS departmentFacilityName
+                            s.account_fpt AS accountFpt
                     FROM staff s
-                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
-                    LEFT JOIN department_facility df on df.id = sdf.id_department_facility
-                    LEFT JOIN department d ON d.id = df.id_department
-                    LEFT JOIN facility f ON f.id = df.id_facility
                     WHERE s.status = 0
-                    AND (:#{#req.q} IS NULL OR s.name LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.account_fe LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.account_fpt LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.departmentFacilityId} IS NULL OR df.id = :#{#req.departmentFacilityId})
+                    AND (:#{#req.searchQuery} IS NULL 
+                             OR :#{#req.searchQuery} LIKE ''
+                             OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
                     """,
             countQuery = """
                     SELECT COUNT(*)
                     FROM staff s
-                    LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
-                    LEFT JOIN department_facility df on df.id = sdf.id_department_facility
-                    LEFT JOIN department d ON d.id = df.id_department
-                    LEFT JOIN facility f ON f.id = df.id_facility
                     WHERE s.status = 0
-                    AND (:#{#req.q} IS NULL OR s.name LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.account_fe LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.q} IS NULL OR s.account_fpt LIKE CONCAT('%',:#{#req.q},'%'))
-                    AND (:#{#req.departmentFacilityId} IS NULL OR df.id = :#{#req.departmentFacilityId})
+                    AND (:#{#req.searchQuery} IS NULL 
+                             OR :#{#req.searchQuery} LIKE ''
+                             OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                             OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
                     """,
             nativeQuery = true)
     Page<HOStaffResonpse> getStaffs(Pageable pageable, HOStaffRequest req);
@@ -58,14 +51,8 @@ public interface HOStaffRepository extends StaffRepository {
                     s.name AS name,
                     s.staff_code AS staffCode,
                     s.account_fe AS accountFE,
-                    s.account_fpt AS accountFpt,
-                    df.id AS departmentFacilityId,
-                    COALESCE(CONCAT(d.name, ' - ', f.name),'Không có bộ môn') AS departmentFacilityName
+                    s.account_fpt AS accountFpt
             FROM staff s
-            LEFT JOIN staff_department_facility sdf ON s.id = sdf.id_staff
-            LEFT JOIN department_facility df ON df.id = sdf.id_department_facility
-            LEFT JOIN department d ON d.id = df.id_department
-            LEFT JOIN facility f ON f.id = df.id_facility
             WHERE s.id LIKE :id
             """, nativeQuery = true)
     Optional<HOStaffDetailResponse> getStaff(String id);

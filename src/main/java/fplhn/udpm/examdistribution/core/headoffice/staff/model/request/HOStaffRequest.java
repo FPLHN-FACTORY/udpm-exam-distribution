@@ -8,12 +8,7 @@ import lombok.Setter;
 @Setter
 public class HOStaffRequest extends PageableRequest {
 
-    private String accountFptOrFe;
-
-    private String staffCode;
-
-    private String staffName;
-
-    private String departmentFacilityId;
+    private String searchQuery;
+    private String searchQueryy;
 
 }

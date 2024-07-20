@@ -4,13 +4,11 @@ $(document).ready(function () {
 
     getStaffs();
 
-    getAllDepartmentFacility();
-
     $('#pageSize').on("change", () => {
-        getStaffs(1, $('#pageSize').val(), $('#searchStaffCode').val()?.trim(), $('#searchName').val()?.trim(), $('#searchAccountFptOrFe').val()?.trim());
+        getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim());
     });
 
-    handleAddEvent([$('#searchQuery'), $('#searchDepartmentFacility')])
+    handleAddEvent([$('#searchQuery')]);
 
     $('#modifyStaffButton').on('click', function () {
         let check = true;
@@ -117,8 +115,7 @@ function saveStaff() {
         name: $('#modifyName').val().trim(),
         staffCode: $('#modifyStaffCode').val().trim(),
         accountFpt: $('#modifyAccountFPT').val().trim(),
-        accountFe: $('#modifyAccountFE').val().trim(),
-        departmentFacilityId: $('#modifydepartmentFacility').val()
+        accountFe: $('#modifyAccountFE').val().trim()
     }
     let url = ApiConstant.API_HEAD_OFFICE_STAFF;
     let type = 'post';
@@ -155,7 +152,7 @@ function clearFormSearch() {
     $('#searchStaffCode').val('');
     $('#searchName').val('');
     $('#searchAccountFptOrFe').val('');
-    getStaffs(1, $('#pageSize').val(), $('#searchStaffCode').val()?.trim(), $('#searchName').val()?.trim(), $('#searchAccountFptOrFe').val()?.trim());
+    getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim());
 }
 
 function handleAddEvent(listDom) {
@@ -164,33 +161,21 @@ function handleAddEvent(listDom) {
             getStaffs(
                 1,
                 $('#pageSize').val(),
-                $('#searchQuery').val()?.trim(),
-                $('#searchDepartmentFacility').val(),
+                $('#searchQuery').val()?.trim()
             );
-        }, 1000));
-
-        listDom[i].on("change", debounce(() => {
-            getStaffs(
-                1,
-                $('#pageSize').val(),
-                $('#searchQuery').val()?.trim(),
-                $('#searchDepartmentFacility').val(),
-            );
-        }, 1000));
+        }, 500));
     }
 }
 
 function getStaffs(
     page = 1,
     size = $('#pageSize').val(),
-    query = $('#searchQuery').val()?.trim(),
-    departmentFacilityId = $('#searchDepartmentFacility').val()?.trim(),
+    query = $('#searchQuery').val()?.trim()
 ) {
     const url = getUrlParameters(ApiConstant.API_HEAD_OFFICE_STAFF, {
         page: page,
         size: size,
-        q: query,
-        departmentFacilityId: departmentFacilityId
+        searchQuery: query
     })
     $.ajax({
         type: "GET",
@@ -202,6 +187,7 @@ function getStaffs(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const staffs = responseBody?.data?.content?.map((staff, index) => {
@@ -211,7 +197,6 @@ function getStaffs(
                             <td>${staff.name}</td>
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
-                            <td>${staff.departmentFacilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                            <a  >
                                 <i
@@ -297,7 +282,7 @@ const createPagination = (totalPages, currentPage) => {
 }
 
 function changePage(newCurrentPage) {
-    getStaffs(newCurrentPage, $('#pageSize').val(), $('#searchStaffCode').val()?.trim(), $('#searchName').val()?.trim(), $('#searchAccountFptOrFe').val()?.trim());
+    getStaffs(newCurrentPage, $('#pageSize').val(),$('#searchQuery').val()?.trim());
 }
 
 function openModalAddStaff() {
@@ -310,13 +295,11 @@ function openModalAddStaff() {
     $('#modifyAccountFPTError').text('');
     $('#modifyAccountFE').val('');
     $('#modifyAccountFEError').text('');
-    getAllDepartmentFacility();
     $('#staffModalLabel').text('Thêm nhân viên');
     $('#modifyStaffModal').modal('show');
 }
 
 const openModalUpdateStaff = async (staffId) => {
-    await getAllDepartmentFacility();
     let url = ApiConstant.API_HEAD_OFFICE_STAFF + '/' + staffId;
     await $.ajax({
         type: "GET",
@@ -332,7 +315,6 @@ const openModalUpdateStaff = async (staffId) => {
             $('#modifyAccountFPTError').text('');
             $('#modifyAccountFE').val(detail?.accountFe);
             $('#modifyAccountFEError').text('');
-            $('#modifydepartmentFacility').val(detail?.departmentFacilityId)
             $('#staffModalLabel').text('Sửa nhân viên');
             $('#modifyStaffModal').modal('show');
         },
@@ -342,26 +324,6 @@ const openModalUpdateStaff = async (staffId) => {
     });
 
 }
-
-function getAllDepartmentFacility() {
-    let url = ApiConstant.API_HEAD_OFFICE_STAFF + '/departments-facilities';
-    $.ajax({
-        type: "GET",
-        url: url,
-        success: function (responseBody) {
-            const departmentFacilities = responseBody?.data?.map((df) => {
-                return `<option value="${df.departmentFacilityId}">${df.departmentFacilityName}</option>`
-            });
-            departmentFacilities.unshift('<option value="">Chọn bộ môn - cơ sở</option>');
-            $('#modifydepartmentFacility').html(departmentFacilities);
-            $('#searchDepartmentFacility').html(departmentFacilities);
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn cơ sở!');
-        }
-    });
-}
-
 
 function handleDelete(staffId, staffName) {
     swal({
@@ -432,6 +394,7 @@ function changeFile(input) {
 
     const file = input.files[0];
     const fileType = file.type;
+    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
 
     const acceptType = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -442,6 +405,12 @@ function changeFile(input) {
         showToastError("Định dạng tệp tin không hợp lệ.");
         return;
     }
+
+    if (file.size > maxSize) {
+        showToastError("Kích thước tệp tin không được vượt quá 50MB.");
+        return;
+    }
+
     $('#upload-box-name').text(file.name);
     $('#upload-box-size').text(convertSize(file.size));
 

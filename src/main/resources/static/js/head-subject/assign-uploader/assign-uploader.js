@@ -68,6 +68,7 @@ const fetchSearchSubject = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const subjects = responseData.map(subject => {
@@ -392,6 +393,7 @@ const fetchSearchStaff = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const staffs = responseData.map(staff => {

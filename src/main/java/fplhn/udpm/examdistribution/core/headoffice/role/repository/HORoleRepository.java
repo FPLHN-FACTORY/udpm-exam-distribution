@@ -17,24 +17,35 @@ public interface HORoleRepository extends RoleRepository {
     @Query(value = """
             SELECT r.name as roleName,
                    r.id as idRole,
+                   r.code as roleCode,
                    f.name as facilityName
             FROM exam_distribution.role r
             LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
             WHERE r.status = 0
-            AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-            AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+            AND (:#{#hoRoleRequest.roleName} IS NULL 
+                     OR :#{#hoRoleRequest.roleName} LIKE '' 
+                     OR r.name LIKE %:#{#hoRoleRequest.roleName}%
+                     OR r.code LIKE %:#{#hoRoleRequest.roleName}%)
+            AND (:#{#hoRoleRequest.idFacility} IS NULL 
+                     OR :#{#hoRoleRequest.idFacility} LIKE '' 
+                     OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
             """,
             countQuery = """
                     SELECT COUNT(*)
                     FROM exam_distribution.role r
                     LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
                     WHERE r.status = 0
-                    AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-                    AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+                    AND (:#{#hoRoleRequest.roleName} IS NULL 
+                             OR :#{#hoRoleRequest.roleName} LIKE '' 
+                             OR r.name LIKE %:#{#hoRoleRequest.roleName}%
+                             OR r.code LIKE %:#{#hoRoleRequest.roleName}%)
+                    AND (:#{#hoRoleRequest.idFacility} IS NULL 
+                             OR :#{#hoRoleRequest.idFacility} LIKE '' 
+                             OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
                     """,
             nativeQuery = true)
     Page<HORoleResponse> getAllRole(Pageable pageable, HORoleRequest hoRoleRequest);
 
-    List<Role> findAllByNameAndFacility_Id(String name,String facilityId);
+    List<Role> findAllByCodeAndFacility_Id(String code,String facilityId);
 
 }

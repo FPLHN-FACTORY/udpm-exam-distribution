@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.impl
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.UploadStaffService;
+import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -45,6 +46,9 @@ public class UploadStaffServiceImpl implements UploadStaffService {
     @Override
     public String save(MultipartFile file) {
         try {
+            if (file.getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
+                throw new RuntimeException("File không được quá 50MB!");
+            }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String fileExtension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
             String newFileName = generateUUIDFromTimestamp(timestamp) + fileExtension;

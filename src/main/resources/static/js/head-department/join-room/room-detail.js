@@ -218,6 +218,7 @@ const fetchListViolationStudent = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
+$('#pagination').empty();
                 return;
             }
             const violations = responseData.map((violation, index) => {
