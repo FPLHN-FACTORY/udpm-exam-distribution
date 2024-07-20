@@ -31,24 +31,9 @@ public class UploadExamPaperRestController {
 
     private final UploadExamPaperService uploadExamPaperService;
 
-    @GetMapping("/subject/{semesterId}")
-    public ResponseEntity<?> getListSubject(@PathVariable String semesterId) {
-        return Helper.createResponseEntity(uploadExamPaperService.getListSubject(semesterId));
-    }
-
     @GetMapping("/current-subject")
     public ResponseEntity<?> getListCurrentSubject() {
         return Helper.createResponseEntity(uploadExamPaperService.getListCurrentSubject());
-    }
-
-    @GetMapping("/semester")
-    public ResponseEntity<?> getListSemester() {
-        return Helper.createResponseEntity(uploadExamPaperService.getListSemester());
-    }
-
-    @GetMapping("/block/{semesterId}")
-    public ResponseEntity<?> getListBlock(@PathVariable String semesterId) {
-        return Helper.createResponseEntity(uploadExamPaperService.getListBlock(semesterId));
     }
 
     @GetMapping("/major-facility")

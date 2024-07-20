@@ -8,10 +8,6 @@ import lombok.Setter;
 @Setter
 public class ListExamPaperRequest extends PageableRequest {
 
-    private String semesterId;
-
-    private String blockId;
-
     private String subjectId;
 
     private String staffId;
