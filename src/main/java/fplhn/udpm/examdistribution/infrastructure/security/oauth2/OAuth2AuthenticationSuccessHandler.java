@@ -9,7 +9,6 @@ import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthAssignUploaderRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthBlockRepository;
-import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffDepartmentFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffMajorFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
@@ -44,8 +43,6 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final AuthAssignUploaderRepository assignUploaderRepository;
 
     private final AuthBlockRepository blockRepository;
-
-    private final AuthStaffDepartmentFacilityRepository staffDepartmentFacilityRepository;
 
     private final AuthStaffMajorFacilityRepository staffMajorFacilityRepository;
 
@@ -111,13 +108,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
             String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
 
-            Optional<StaffDepartmentFacility> staffDepartmentFacilityOptional = staffDepartmentFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
             Optional<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
 
-            if (staffDepartmentFacilityOptional.isEmpty() || staffMajorFacilityOptional.isEmpty()) {
+            if (staffMajorFacilityOptional.isEmpty()) {
                 this.errorAuthentication(request, response);
             } else {
-                CustomUserCookie userCookie = buildStaffCookie(staffDepartmentFacilityOptional.get(), staffMajorFacilityOptional.get(), currentStaff, role, userInfo);
+                CustomUserCookie userCookie = buildStaffCookie(staffMajorFacilityOptional.get(), currentStaff, role, userInfo);
                 String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
                 CookieUtils.addCookie(
@@ -145,16 +141,16 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .build();
     }
 
-    private CustomUserCookie buildStaffCookie(StaffDepartmentFacility staffDepartmentFacility, StaffMajorFacility staffMajorFacility, Staff staff, String role, OAuth2UserInfo userInfo) throws IOException {
-        setCurrentUserInformationSession(staffDepartmentFacility, staffMajorFacility, userInfo, staff, role);
+    private CustomUserCookie buildStaffCookie(StaffMajorFacility staffMajorFacility, Staff staff, String role, OAuth2UserInfo userInfo) throws IOException {
+        setCurrentUserInformationSession(staffMajorFacility, userInfo, staff, role);
         return CustomUserCookie.builder()
                 .userId(staff.getId())
-                .departmentFacilityId(staffDepartmentFacility.getDepartmentFacility().getId())
+                .departmentFacilityId(staffMajorFacility.getMajorFacility().getDepartmentFacility().getId())
                 .majorFacilityId(staffMajorFacility.getMajorFacility().getId())
-                .departmentId(staffDepartmentFacility.getDepartmentFacility().getDepartment().getId())
-                .departmentName(staffDepartmentFacility.getDepartmentFacility().getDepartment().getName())
-                .facilityId(staffDepartmentFacility.getDepartmentFacility().getFacility().getId())
-                .facilityName(staffDepartmentFacility.getDepartmentFacility().getFacility().getName())
+                .departmentId(staffMajorFacility.getMajorFacility().getDepartmentFacility().getDepartment().getId())
+                .departmentName(staffMajorFacility.getMajorFacility().getDepartmentFacility().getDepartment().getName())
+                .facilityId(staffMajorFacility.getMajorFacility().getDepartmentFacility().getFacility().getId())
+                .facilityName(staffMajorFacility.getMajorFacility().getDepartmentFacility().getFacility().getName())
                 .userEmailFPT(staff.getAccountFpt())
                 .userEmailFe(staff.getAccountFe())
                 .userFullName(userInfo.getName())
@@ -173,14 +169,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         authStudentRepository.save(student);
     }
 
-    private void setCurrentUserInformationSession(StaffDepartmentFacility staffDepartmentFacility, StaffMajorFacility staffMajorFacility, OAuth2UserInfo userInfo, Staff staff, String role) {
+    private void setCurrentUserInformationSession(StaffMajorFacility staffMajorFacility, OAuth2UserInfo userInfo, Staff staff, String role) {
         httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, staff.getId());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID, staffDepartmentFacility.getDepartmentFacility().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID, staffMajorFacility.getMajorFacility().getDepartmentFacility().getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID, staffMajorFacility.getMajorFacility().getId());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, staffDepartmentFacility.getDepartmentFacility().getDepartment().getId());
-        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, staffDepartmentFacility.getDepartmentFacility().getFacility().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_ID, staffMajorFacility.getMajorFacility().getDepartmentFacility().getDepartment().getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, staffMajorFacility.getMajorFacility().getDepartmentFacility().getFacility().getId());
         httpSession.setAttribute(SessionConstant.CURRENT_USER_ROLE, role);
 
         staff.setPicture(userInfo.getPicture());
