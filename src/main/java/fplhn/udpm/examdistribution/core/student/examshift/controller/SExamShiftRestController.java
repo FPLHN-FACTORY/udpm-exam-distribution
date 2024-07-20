@@ -1,9 +1,9 @@
-package fplhn.udpm.examdistribution.core.student.home.controller;
+package fplhn.udpm.examdistribution.core.student.examshift.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.student.exampaper.model.request.SOpenExamPaperRequest;
-import fplhn.udpm.examdistribution.core.student.home.model.request.SExamShiftRequest;
-import fplhn.udpm.examdistribution.core.student.home.service.SExamShiftService;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -25,7 +25,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping(MappingConstants.API_STUDENT_EXAM_SHIFT)
 @RequiredArgsConstructor
-public class SHomeRestController {
+public class SExamShiftRestController {
 
     private final SExamShiftService sExamShiftService;
 

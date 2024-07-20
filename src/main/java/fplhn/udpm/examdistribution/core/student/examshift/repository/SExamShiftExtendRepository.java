@@ -1,6 +1,6 @@
 package fplhn.udpm.examdistribution.core.student.examshift.repository;
 
-import fplhn.udpm.examdistribution.core.student.home.model.response.SExamShiftResponse;
+import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -190,6 +190,11 @@ b, .b, strong, .strong {
   .text-danger:hover, .text-danger a:hover {
     color: #F25961 !important; }
 
+.text-white, .text-white a {
+  color: #FFFFFF !important; }
+.text-white:hover, .text-white a:hover {
+  color: #FFFFFF !important; }
+
 label {
   color: #495057 !important;
   font-size: 14px !important; }

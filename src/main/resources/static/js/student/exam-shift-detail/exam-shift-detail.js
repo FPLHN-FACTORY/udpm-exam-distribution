@@ -15,20 +15,22 @@ const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
 
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault()
-});
-
-document.onkeydown = (e) => {
-    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
-
-    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
-        e.preventDefault();
-        return false;
-    }
-}
+// document.addEventListener('contextmenu', (e) => {
+//     e.preventDefault()
+// });
+//
+// document.onkeydown = (e) => {
+//     const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+//
+//     if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+//         e.preventDefault();
+//         return false;
+//     }
+// }
 
 $(document).ready(function () {
+
+    // detectDevTools();
 
     getExamShiftByCode();
 
@@ -58,38 +60,17 @@ $(document).ready(function () {
         openModalExamRule();
     });
 
-    let devToolsOpen = false;
-    let originalBodyContent = '';
-
-    function detectDevTools() {
-        const threshold = 160;
-        if ((window.outerWidth - window.innerWidth) > threshold || (window.outerHeight - window.innerHeight) > threshold) {
-            if (!devToolsOpen) {
-                devToolsOpen = true;
-                displayDevToolsMessage();
-            }
-        } else {
-            if (devToolsOpen) {
-                devToolsOpen = false;
-                removeDevToolsMessage();
-            }
-        }
-    }
-
-    function displayDevToolsMessage() {
-        originalBodyContent = document.body.innerHTML;
-        document.body.innerHTML = '<h1>DevTools đang mở!</h1>';
-    }
-
-    function removeDevToolsMessage() {
-        document.body.innerHTML = originalBodyContent;
-    }
-
-    setInterval(detectDevTools, 1000);
-
     // checkOnline();
 
 });
+
+const detectDevTools = () => {
+    if (devtools.isOpen) {
+        while (true) {
+            console.log("Access denied");
+        }
+    }
+}
 
 const openModalExamRule = () => {
     $('#examRuleOpenModal').modal('show');
@@ -267,7 +248,7 @@ $("#next-page").on("click", function () {
 const fetchFilePDFExamRule = (fileId) => {
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_TEACHER_EXAM_SHIFT + "/file-exam-rule",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/file-exam-rule",
         data: {
             fileId: fileId
         },
@@ -361,7 +342,7 @@ const connect = () => {
         });
         stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
             localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
-            window.location.href = ApiConstant.REDIRECT_STUDENT_HOME;
+            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         });
         stompClient.subscribe("/topic/exam-shift-start", function (response) {
             const responseBody = JSON.parse(response.body);
@@ -419,7 +400,7 @@ const updateExamPaperShiftStatus = () => {
         type: "PUT",
         url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/' + examShiftCode + '/update-exam-student-status',
         success: function (responseBody) {
-            window.location.href = ApiConstant.REDIRECT_STUDENT_HOME;
+            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
