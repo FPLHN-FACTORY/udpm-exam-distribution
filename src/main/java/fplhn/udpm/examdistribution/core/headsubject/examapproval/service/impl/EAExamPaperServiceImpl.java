@@ -14,9 +14,8 @@ import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisServ
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
-import jakarta.servlet.http.HttpSession;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -34,13 +33,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EAExamPaperServiceImpl implements EAExamPaperService {
 
-    private final Long SEVEN_DAY = 604800000L;
-
     private final EAExamPaperRepository examApprovalRepository;
 
     private final EASubjectRepository subjectRepository;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     private final GoogleDriveFileService googleDriveFileService;
 
@@ -49,11 +46,11 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     @Override
     public ResponseObject<?> getExamApprovals(EAExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 examApprovalRepository.getExamApprovals(
-                        pageable, request, httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(),
+                        pageable, request, sessionHelper.getCurrentUserId(),
                         semesterId, departmentFacilityId
                 ),
                 HttpStatus.OK,
@@ -63,7 +60,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
 
     @Override
     public ResponseObject<?> getSubjects(String departmentFacilityId, String staffId) {
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 subjectRepository.getAllSubjects(
                         departmentFacilityId, staffId, semesterId
@@ -170,6 +167,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanExamPaper() {
+        Long SEVEN_DAY = 604800000L;
         List<EAExamPaperCleanAfterSeventDayResponse> examPapers = examApprovalRepository.findAllExamPaperStatusAndCreatedDate(SEVEN_DAY, new Date().getTime());
         for (EAExamPaperCleanAfterSeventDayResponse examPaper : examPapers) {
             try {

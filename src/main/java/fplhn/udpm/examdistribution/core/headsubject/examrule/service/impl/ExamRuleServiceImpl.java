@@ -13,9 +13,8 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFi
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
-import jakarta.servlet.http.HttpSession;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -36,14 +35,14 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
     private final RedisService redisService;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     @Override
     public ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, semesterId, request)),
                 HttpStatus.OK,

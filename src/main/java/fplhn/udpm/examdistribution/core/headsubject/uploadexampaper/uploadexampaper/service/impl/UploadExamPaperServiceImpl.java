@@ -29,6 +29,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -68,14 +69,14 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     private final EmailService emailService;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     @Override
     public ResponseObject<?> getListCurrentSubject() {
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
 
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
@@ -85,7 +86,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     @Override
     public ResponseObject<?> getListStaff() {
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 staffRepository.getListStaff(departmentFacilityId),
                 HttpStatus.OK,
@@ -96,9 +97,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     @Override
     public ResponseObject<?> getAllExamPaper(ListExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString())),
                 HttpStatus.OK,
@@ -182,9 +183,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     @Override
     public ResponseObject<?> getListMajorFacility() {
         try {
-            String majorFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString();
-            String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-            String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String majorFacilityId = sessionHelper.getCurrentUserMajorFacilityId();
+            String semesterId = sessionHelper.getCurrentSemesterId();
+            String staffId = sessionHelper.getCurrentUserId();
             return new ResponseObject<>(
                     examPaperRepository.getMajorFacilityByDepartmentFacilityId(majorFacilityId, staffId, semesterId),
                     HttpStatus.OK,
@@ -256,7 +257,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
-            String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String userId = sessionHelper.getCurrentUserId();
             String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
@@ -378,9 +379,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
-            String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
+            String blockId = sessionHelper.getCurrentBlockId();
             String subjectId = optionalExamPaper.get().getSubject().getId();
-            String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
             String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
 
             if (listEmailStaff.length == 0) {

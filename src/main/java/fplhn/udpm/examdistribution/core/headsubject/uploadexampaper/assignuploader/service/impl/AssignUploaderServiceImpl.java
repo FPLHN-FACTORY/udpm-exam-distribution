@@ -29,10 +29,9 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
-import jakarta.servlet.http.HttpSession;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -67,12 +66,12 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
 
     private final RedisService redisService;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     @Override
     public ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, semesterId, request)),
                 HttpStatus.OK,
@@ -83,8 +82,8 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
     @Override
     public ResponseObject<?> getAllStaff(String departmentFacilityId, FindStaffRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 PageableObject.of(staffExtendRepository.getAllStaff(pageable, departmentFacilityId, request, userId, semesterId)),
                 HttpStatus.OK,
@@ -122,7 +121,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             );
         }
 
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         Optional<ExamPaper> examPaperOptional = examPaperExtendRepository.findSampleExamPaperBySubjectId(isSubjectExist.get().getId(), semesterId);
         if (examPaperOptional.isEmpty()) {
             return new ResponseObject<>(
@@ -244,7 +243,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
                 );
             }
 
-            String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+            String semesterId = sessionHelper.getCurrentSemesterId();
             Optional<ExamPaper> examPaperOptional = examPaperExtendRepository.findSampleExamPaperBySubjectId(isSubjectExist.get().getId(), semesterId);
             if (examPaperOptional.isPresent()) {
                 ExamPaper examPaper = examPaperOptional.get();
@@ -283,7 +282,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
                 );
             }
 
-            String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String userId = sessionHelper.getCurrentUserId();
             String folderName = "SampleExam/" + isSubjectExist.get().getSubjectCode();
 
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);

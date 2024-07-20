@@ -6,6 +6,7 @@ import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.repositor
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.service.HSExamShiftService;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +27,19 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
                hsExamShiftExtendRepository.getExamShiftByRequest(examShiftCode,
-                       httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()).isPresent();
+                       sessionHelper.getCurrentUserDepartmentFacilityId()).isPresent();
     }
 
     @Override
     public ResponseObject<?> getAllExamShift() {
         return new ResponseObject<>(hsExamShiftExtendRepository
-                .getAllExamShift(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString()),
+                .getAllExamShift(sessionHelper.getCurrentUserDepartmentFacilityId()),
                 HttpStatus.OK, "Lấy danh sách ca thi thành công!");
     }
 

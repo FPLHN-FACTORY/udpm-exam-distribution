@@ -33,6 +33,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -78,12 +79,12 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
     private final EmailService emailService;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     @Override
     public ResponseObject<?> getListSubject(String semesterId) {
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
@@ -93,10 +94,9 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
     @Override
     public ResponseObject<?> getListCurrentSubject() {
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
+        String semesterId = sessionHelper.getCurrentSemesterId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
@@ -124,7 +124,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
     @Override
     public ResponseObject<?> getListStaff() {
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         return new ResponseObject<>(
                 staffRepository.getListStaff(departmentFacilityId),
                 HttpStatus.OK,
@@ -135,9 +135,9 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     @Override
     public ResponseObject<?> getAllExamPaper(CEPListExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String userId = sessionHelper.getCurrentUserId();
+        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
                 PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString(), ExamPaperType.SAMPLE_EXAM_PAPER.toString())),
                 HttpStatus.OK,
@@ -221,9 +221,9 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     @Override
     public ResponseObject<?> getListMajorFacility() {
         try {
-            String majorFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString();
-            String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
-            String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String majorFacilityId = sessionHelper.getCurrentUserMajorFacilityId();
+            String semesterId = sessionHelper.getCurrentSemesterId();
+            String staffId = sessionHelper.getCurrentUserId();
             return new ResponseObject<>(
                     examPaperRepository.getMajorFacilityByDepartmentFacilityId(majorFacilityId, staffId, semesterId),
                     HttpStatus.OK,
@@ -295,7 +295,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            String userId = sessionHelper.getCurrentUserId();
             String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
@@ -417,11 +417,11 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
+            String blockId = sessionHelper.getCurrentBlockId();
             String subjectId = optionalExamPaper.get().getSubject().getId();
-            String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
-            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
 
+            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
             if (listEmailStaff.length == 0) {
                 return new ResponseObject<>(
                         null,
@@ -462,7 +462,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             );
         }
 
-        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
+        String semesterId = sessionHelper.getCurrentSemesterId();
 
         Optional<Semester> semesterOptional = semesterRepository.findSemesterById(semesterId);
         if (semesterOptional.isEmpty()) {
@@ -473,7 +473,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             );
         }
 
-        String majorFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString();
+        String majorFacilityId = sessionHelper.getCurrentUserMajorFacilityId();
         Optional<ExamPaperBySemester> isExamPaperBySemesterExist = chooseExamPaperRepository.findByExamPaperIdAndSemesterId(examPaperId, semesterId, majorFacilityId);
 
         if (isExamPaperBySemesterExist.isEmpty()) {

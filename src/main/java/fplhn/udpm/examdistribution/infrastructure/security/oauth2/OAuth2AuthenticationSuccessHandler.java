@@ -2,13 +2,16 @@ package fplhn.udpm.examdistribution.infrastructure.security.oauth2;
 
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.Block;
+import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffMajorFacility;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.Role;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthAssignUploaderRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthBlockRepository;
+import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffMajorFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStaffRepository;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.repository.AuthStudentRepository;
@@ -22,12 +25,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -44,6 +50,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final AuthBlockRepository blockRepository;
 
+    private final AuthFacilityRepository facilityRepository;
+
     private final AuthStaffMajorFacilityRepository staffMajorFacilityRepository;
 
     private static final int COOKIE_EXPIRE = 7200;
@@ -59,17 +67,17 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         if (httpSession.getAttribute(SessionConstant.ERROR_LOGIN) != null) {
             new DefaultRedirectStrategy().sendRedirect(request, response, "/");
         } else {
-            this.setCookie(request, response, authentication, userInfo);
+            this.setSessionAndCookie(request, response, authentication, userInfo);
         }
     }
 
-    private void setCookie(HttpServletRequest request, HttpServletResponse response, Authentication authentication, OAuth2UserInfo userInfo) throws IOException {
+    private void setSessionAndCookie(HttpServletRequest request, HttpServletResponse response, Authentication authentication, OAuth2UserInfo userInfo) throws IOException {
         String isStudentSession = (String) httpSession.getAttribute(SessionConstant.IS_STUDENT);
 
         if (SessionConstant.IS_STUDENT.equalsIgnoreCase(isStudentSession)) {
-            handleStudentSession(request, response, authentication, userInfo);
+            this.handleStudentSession(request, response, authentication, userInfo);
         } else {
-            handleStaffSession(request, response, authentication, userInfo);
+            this.handleStaffSession(request, response, authentication, userInfo);
         }
     }
 
@@ -104,16 +112,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             this.errorAuthentication(request, response);
         } else {
             Staff currentStaff = optionalStaff.get();
-            String role = authentication.getAuthorities().toString();
 
-            String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
+            Collection<? extends GrantedAuthority> role = authentication.getAuthorities();
+            List<String> roleNames = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
 
-            Optional<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
-
-            if (staffMajorFacilityOptional.isEmpty()) {
-                this.errorAuthentication(request, response);
-            } else {
-                CustomUserCookie userCookie = buildStaffCookie(staffMajorFacilityOptional.get(), currentStaff, role, userInfo);
+            if (roleNames.get(0).equalsIgnoreCase(Role.BAN_DAO_TAO.toString())) {
+                CustomUserCookie userCookie = buildStaffAdminCookie(currentStaff, role.toString(), userInfo);
                 String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
                 CookieUtils.addCookie(
@@ -126,12 +132,33 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 );
 
                 this.successAuthentication(request, response);
+            } else {
+                String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
+                Optional<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
+
+                if (staffMajorFacilityOptional.isEmpty()) {
+                    this.errorAuthentication(request, response);
+                } else {
+                    CustomUserCookie userCookie = buildStaffCookie(staffMajorFacilityOptional.get(), currentStaff, role.toString(), userInfo);
+                    String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
+
+                    CookieUtils.addCookie(
+                            response,
+                            CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName(),
+                            base64Encoded,
+                            COOKIE_EXPIRE,
+                            false,
+                            false
+                    );
+
+                    this.successAuthentication(request, response);
+                }
             }
         }
     }
 
     private CustomStudentCookie buildStudentCookie(Student student, String role, OAuth2UserInfo userInfo) {
-        setCurrentStudentInformationSession(userInfo, student);
+        this.setCurrentStudentInformationSession(userInfo, student);
         return CustomStudentCookie.builder()
                 .userEmail(userInfo.getEmail())
                 .userId(student.getId())
@@ -142,7 +169,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private CustomUserCookie buildStaffCookie(StaffMajorFacility staffMajorFacility, Staff staff, String role, OAuth2UserInfo userInfo) throws IOException {
-        setCurrentUserInformationSession(staffMajorFacility, userInfo, staff, role);
+        this.setCurrentUserInformationSession(staffMajorFacility, userInfo, staff, role);
         return CustomUserCookie.builder()
                 .userId(staff.getId())
                 .departmentFacilityId(staffMajorFacility.getMajorFacility().getDepartmentFacility().getId())
@@ -157,6 +184,24 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .userPicture(userInfo.getPicture())
                 .userRole(role)
                 .isAssignUploader(httpSession.getAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER).toString())
+                .build();
+    }
+
+    private CustomUserCookie buildStaffAdminCookie(Staff staff, String role, OAuth2UserInfo userInfo) throws IOException {
+        this.setCurrentUserAdminInformationSession(userInfo, staff, role);
+
+        String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
+        Optional<Facility> facilityOptional = facilityRepository.findFacilityById(facilityId);
+
+        return CustomUserCookie.builder()
+                .userId(staff.getId())
+                .facilityId(facilityOptional.get().getId())
+                .facilityName(facilityOptional.get().getName())
+                .userEmailFPT(staff.getAccountFpt())
+                .userEmailFe(staff.getAccountFe())
+                .userFullName(userInfo.getName())
+                .userPicture(userInfo.getPicture())
+                .userRole(role)
                 .build();
     }
 
@@ -190,6 +235,17 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         } else {
             httpSession.setAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER, "FALSE");
         }
+    }
+
+    private void setCurrentUserAdminInformationSession(OAuth2UserInfo userInfo, Staff staff, String role) {
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_EMAIL, userInfo.getEmail());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_PICTURE, userInfo.getPicture());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_ID, staff.getId());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_FACILITY_ID, httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString());
+        httpSession.setAttribute(SessionConstant.CURRENT_USER_ROLE, role);
+
+        staff.setPicture(userInfo.getPicture());
+        authStaffRepository.save(staff);
     }
 
     private BlockAndSemesterIdResponse setBlockAndSessionId() {
