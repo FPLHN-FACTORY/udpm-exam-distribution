@@ -8,13 +8,7 @@ import jakarta.validation.Valid;
 
 public interface UploadExamPaperService {
 
-    ResponseObject<?> getListSubject(String semesterId);
-
     ResponseObject<?> getListCurrentSubject();
-
-    ResponseObject<?> getListSemester();
-
-    ResponseObject<?> getListBlock(String semesterId);
 
     ResponseObject<?> getListStaff();
 

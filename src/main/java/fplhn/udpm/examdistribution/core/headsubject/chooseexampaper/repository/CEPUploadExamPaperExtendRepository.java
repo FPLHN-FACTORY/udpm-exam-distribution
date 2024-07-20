@@ -62,6 +62,7 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              JOIN facility f ON
              	f.id = df.id_facility
              WHERE ep.exam_paper_status <> :examPaperStatus AND
+                   ep.exam_paper_type <> :examPaperType AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
                    ep.status = 0 AND
@@ -93,6 +94,7 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              JOIN facility f ON
              	f.id = df.id_facility
              WHERE ep.exam_paper_status <> :examPaperStatus AND
+                   ep.exam_paper_type <> :examPaperType AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
                    ep.status = 0 AND
@@ -103,7 +105,7 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))
             """, nativeQuery = true)
-    Page<CEPListExamPaperResponse> getListExamPaper(Pageable pageable, CEPListExamPaperRequest request, String userId, String departmentFacilityId, String semesterId, String examPaperStatus);
+    Page<CEPListExamPaperResponse> getListExamPaper(Pageable pageable, CEPListExamPaperRequest request, String userId, String departmentFacilityId, String semesterId, String examPaperStatus, String examPaperType);
 
     @Query(value = """ 
                  SELECT

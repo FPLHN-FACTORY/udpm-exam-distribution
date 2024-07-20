@@ -1,17 +1,13 @@
 $(document).ready(function () {
     fetchListCurrentSubject();
     handleFetchMajorFacility();
-    fetchListSemester();
     fetchListStaff();
 
-    onChangeSemesterToFetchBlockAndSubject();
-
+    fetchListExamPaper();
     onChangePageSizeFirstTab();
 });
 //----------------------------------------------------------------------------------------------------------------------
 //START: state
-let isFirstRender = false;
-let stateSemesterIdNow = "";
 let startMajorFacilityUpload = `<div class="mb-3" id="major-facility-container">
                         <label class="form-label">
                             <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
@@ -24,26 +20,12 @@ let endMajorFacilityUpload = `
 //END: state
 
 //START: getter
-const getIsFirstRender = () => isFirstRender;
-const getStateSemesterIdNow = () => stateSemesterIdNow;
 const getMiddleMajorFacilityUpload = () => middleMajorFacilityUpload;
 //END: getter
 
 //START: setter
-const setIsFirstRender = (value) => {
-    isFirstRender = value;
-};
-const setStateSemesterIdNow = (value) => {
-    stateSemesterIdNow = value;
-};
 const setMiddleMajorFacilityUpload = (value) => {
     middleMajorFacilityUpload = value;
-};
-const setValueSemester = (value) => {
-    $("#semesterId").val(value);
-};
-const setValueBlock = (value) => {
-    $("#blockId").val(value);
 };
 const setValueSubject = (value) => {
     $("#subjectId").val(value);
@@ -60,8 +42,6 @@ const setValueExamPaperTypeFirstPage = (value) => {
 
 const getGlobalParamsSearchFirstPage = () => {
     return {
-        semesterId: $("#semesterId").val(),
-        blockId: $("#blockId").val(),
         subjectId: $("#subjectId").val(),
         staffId: $("#staffId").val(),
         examPaperType: $("#examPaperTypeId").val(),
@@ -69,8 +49,6 @@ const getGlobalParamsSearchFirstPage = () => {
 };
 
 const clearGlobalParamsSearchFirstPage = () => {
-    setValueSemester(getStateSemesterIdNow());
-    setValueBlock("");
     setValueSubject("");
     setValueStaff("");
     setValueExamPaperTypeFirstPage("");
@@ -88,82 +66,7 @@ const fetchListCurrentSubject = () => {
             });
             subjects.unshift('<option value="">--Chọn môn học--</option>');
             $('#exam-paper-subject').html(subjects);
-        },
-        error: function (error) {
-            const messageErr = error?.responseJSON?.message;
-            if (messageErr) {
-                showToastError(messageErr);
-            } else {
-                showToastError("Có lỗi xảy ra");
-            }
-        }
-    });
-};
-
-const fetchListSubject = (semesterId) => {
-    $.ajax({
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/subject/" + semesterId,
-        method: "GET",
-        success: function (responseBody) {
-            const subjects = responseBody?.data?.map((item) => {
-                return `<option value="${item.id}">${item.name}</option>`
-            });
-            subjects.unshift('<option value="">--Chọn môn học--</option>');
             $('#subjectId').html(subjects);
-        },
-        error: function (error) {
-            const messageErr = error?.responseJSON?.message;
-            if (messageErr) {
-                showToastError(messageErr);
-            } else {
-                showToastError("Có lỗi xảy ra");
-            }
-        }
-    });
-};
-
-const fetchListSemester = () => {
-    $.ajax({
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/semester",
-        method: "GET",
-        success: function (responseBody) {
-            const listData = responseBody?.data;
-            const semesters = listData?.map((item) => {
-                return `<option value="${item.id}">${item.name}</option>`
-            });
-            $('#semesterId').html(semesters);
-
-            if (!getIsFirstRender()) {
-                selectSemesterNowAndFetchBlockAndSubject(listData);
-            }
-        },
-        error: function (error) {
-            const messageErr = error?.responseJSON?.message;
-            if (messageErr) {
-                showToastError(messageErr);
-            } else {
-                showToastError("Có lỗi xảy ra");
-            }
-        }
-    });
-};
-
-const fetchListBlock = (idSemester) => {
-    $.ajax({
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/block/" + idSemester,
-        method: "GET",
-        success: function (responseBody) {
-            const listBlocks = responseBody?.data;
-            const blocks = listBlocks?.map((item) => {
-                return `<option value="${item.id}">${item.name}</option>`
-            });
-            blocks.unshift('<option value="">--Chọn block--</option>');
-            $('#blockId').html(blocks);
-
-            if (!getIsFirstRender()) {
-                selectBlockNow(listBlocks);
-                setIsFirstRender(true);
-            }
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;
@@ -198,54 +101,6 @@ const fetchListStaff = () => {
     });
 };
 //----------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------
-const selectSemesterNowAndFetchBlockAndSubject = (listSemester) => {
-    const now = new Date().getTime();
-    let isFoundSemester = false;
-    listSemester.forEach(item => {
-        if (item.startTime < now && now < item.endTime) {
-            setValueSemester(item.id);
-            setStateSemesterIdNow(item.id);
-
-            fetchListBlock(item.id);
-            fetchListSubject(item.id);
-
-            isFoundSemester = true;
-        }
-    });
-
-    if (!isFoundSemester) {
-        showToastError("Không tìm thấy học kỳ hiện tại");
-    }
-};
-
-const onChangeSemesterToFetchBlockAndSubject = () => {
-    $("#semesterId").on("change", () => {
-        const idSemester = $("#semesterId").val();
-        fetchListBlock(idSemester);
-        fetchListSubject(idSemester);
-    });
-};
-
-const selectBlockNow = (listBlock) => {
-    const now = new Date().getTime();
-
-    let isFoundBlock = false;
-    listBlock.forEach(item => {
-        if (item.startTime < now && now < item.endTime) {
-            setValueBlock(item.id);
-            fetchListExamPaper();
-
-            isFoundBlock = true;
-        }
-    });
-
-    if (!isFoundBlock) {
-        showToastError("Không tìm thấy block hiện tại");
-    }
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 

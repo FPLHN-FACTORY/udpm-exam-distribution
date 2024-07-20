@@ -139,7 +139,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
         String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
         return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString())),
+                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString(), ExamPaperType.SAMPLE_EXAM_PAPER.toString())),
                 HttpStatus.OK,
                 "Lấy thành công danh sách đề thi"
         );
@@ -375,6 +375,9 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             googleDriveFileService.deleteById(oldFileId);
 
             putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
+            if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
+                putExamPaper.setIsPublic(false);
+            }
             putExamPaper.setMajorFacility(isMajorFacilityExist.get());
             putExamPaper.setSubject(isSubjectExist.get());
             examPaperRepository.save(putExamPaper);

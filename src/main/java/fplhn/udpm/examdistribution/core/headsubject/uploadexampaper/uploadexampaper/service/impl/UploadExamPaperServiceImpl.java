@@ -9,7 +9,6 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampa
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPBlockExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPClassSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPMajorFacilityExtendRepository;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPUploadExamPaperExtendRepository;
@@ -59,8 +58,6 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     private final UEPStaffExtendRepository staffRepository;
 
-    private final UEPSemesterExtendRepository semesterRepository;
-
     private final UEPBlockExtendRepository blockRepository;
 
     private final UEPClassSubjectExtendRepository classSubjectRepository;
@@ -74,17 +71,6 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     private final HttpSession httpSession;
 
     @Override
-    public ResponseObject<?> getListSubject(String semesterId) {
-        String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
-        return new ResponseObject<>(
-                subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
-                HttpStatus.OK,
-                "Lấy danh sách môn học thành công"
-        );
-    }
-
-    @Override
     public ResponseObject<?> getListCurrentSubject() {
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
 
@@ -94,24 +80,6 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công"
-        );
-    }
-
-    @Override
-    public ResponseObject<?> getListSemester() {
-        return new ResponseObject<>(
-                semesterRepository.getListSemester(),
-                HttpStatus.OK,
-                "Lấy danh sách học kỳ thành công"
-        );
-    }
-
-    @Override
-    public ResponseObject<?> getListBlock(String semesterId) {
-        return new ResponseObject<>(
-                blockRepository.getListBlock(semesterId),
-                HttpStatus.OK,
-                "Lấy danh sách block thành công"
         );
     }
 
@@ -130,8 +98,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         String userId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
         String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        String semesterId = httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString();
         return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, ExamPaperStatus.WAITING_APPROVAL.toString())),
+                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString())),
                 HttpStatus.OK,
                 "Lấy thành công danh sách đề thi"
         );
@@ -267,13 +236,13 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
-            ExamPaper putExamPaper = new ExamPaper();
+            ExamPaper postExamPaper = new ExamPaper();
 
             Long now = new Date().getTime();
             boolean isFoundBlock = false;
             for (Block block : blockRepository.findAll()) {
                 if (block.getStartTime() <= now && now <= block.getEndTime()) {
-                    putExamPaper.setBlock(block);
+                    postExamPaper.setBlock(block);
                     isFoundBlock = true;
                     break;
                 }
@@ -291,19 +260,19 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
-            putExamPaper.setPath(googleDriveFileDTO.getId());
-            putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
-            putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
-            putExamPaper.setMajorFacility(isMajorFacilityExist.get());
-            putExamPaper.setSubject(isSubjectExist.get());
-            putExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
-            putExamPaper.setExamPaperCreatedDate(new Date().getTime());
-            putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
-            putExamPaper.setStatus(EntityStatus.ACTIVE);
+            postExamPaper.setPath(googleDriveFileDTO.getId());
+            postExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
+            postExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
+            postExamPaper.setMajorFacility(isMajorFacilityExist.get());
+            postExamPaper.setSubject(isSubjectExist.get());
+            postExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
+            postExamPaper.setExamPaperCreatedDate(new Date().getTime());
+            postExamPaper.setStaffUpload(staffRepository.findById(userId).get());
+            postExamPaper.setStatus(EntityStatus.ACTIVE);
             if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
-                putExamPaper.setIsPublic(false);
+                postExamPaper.setIsPublic(false);
             }
-            examPaperRepository.save(putExamPaper);
+            examPaperRepository.save(postExamPaper);
 
             return new ResponseObject<>(
                     null,
@@ -367,6 +336,9 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             googleDriveFileService.deleteById(oldFileId);
 
             putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
+            if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
+                putExamPaper.setIsPublic(false);
+            }
             putExamPaper.setMajorFacility(isMajorFacilityExist.get());
             putExamPaper.setSubject(isSubjectExist.get());
             examPaperRepository.save(putExamPaper);

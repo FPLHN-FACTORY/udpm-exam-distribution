@@ -183,6 +183,8 @@ const showViewSEPByStatus = (status) => {
     $("#paging-pdf-sep").prop("hidden", true);
 
     $("#sampleExamPaperTitle").text(status === 1 ? "Tải đề thi mẫu" : "Chi tiết đề thi mẫu");
+
+    $('#major-facility-upload-error').text('');
     if (status === 1) {
         if ($('#major-facility-container').length === 0) {  // Kiểm tra nếu phần tử chưa tồn tại
             let majorFacilityUpload = startMajorFacilityUpload+getMiddleMajorFacilityUpload()+endMajorFacilityUpload;

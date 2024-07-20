@@ -32,14 +32,16 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	CONCAT(st.name, "-", st.staff_code) AS staffName,
              	f.name AS facilityName,
              	mf.id AS majorFacilityId
-             FROM
-                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                 sg.id = hsbs.id_subject_group
-            JOIN subject subj ON
-             	subj.id_subject_group = sg.id
+            FROM
+                exam_paper_by_semester epbs
             JOIN exam_paper ep ON
-                 ep.id_subject = subj.id
+                 ep.id = epbs.id_exam_paper
+            JOIN subject subj ON
+             	subj.id = ep.id_subject
+            JOIN subject_group sg ON
+                sg.id = subj.id_subject_group
+            JOIN head_subject_by_semester hsbs ON
+                hsbs.id_subject_group = sg.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
              JOIN major m ON
@@ -53,24 +55,25 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              WHERE ep.exam_paper_status <> :examPaperStatus AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
+                   epbs.id_semester = :semesterId AND
                    ep.status = 0 AND
-                   hsbs.status = 0 AND
-                   (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
-                   (:#{#request.blockId} IS NULL OR ep.id_block LIKE CONCAT('%', TRIM(:#{#request.blockId}) ,'%')) AND
+                   epbs.status = 0 AND
                    (:#{#request.subjectId} IS NULL OR subj.id LIKE CONCAT('%', TRIM(:#{#request.subjectId}) ,'%')) AND
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))
             """,countQuery = """
             SELECT
-             	COUNT(hsbs.id)
-             FROM
-                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                 sg.id = hsbs.id_subject_group
-            JOIN subject subj ON
-             	subj.id_subject_group = sg.id
+             	COUNT(epbs.id)
+            FROM
+                exam_paper_by_semester epbs
             JOIN exam_paper ep ON
-                 ep.id_subject = subj.id
+                 ep.id = epbs.id_exam_paper
+            JOIN subject subj ON
+             	subj.id = ep.id_subject
+            JOIN subject_group sg ON
+                sg.id = subj.id_subject_group
+            JOIN head_subject_by_semester hsbs ON
+                hsbs.id_subject_group = sg.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
              JOIN major m ON
@@ -84,15 +87,14 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              WHERE ep.exam_paper_status <> :examPaperStatus AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
+                   epbs.id_semester = :semesterId AND
                    ep.status = 0 AND
-                   hsbs.status = 0 AND
-                   (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
-                   (:#{#request.blockId} IS NULL OR ep.id_block LIKE CONCAT('%', TRIM(:#{#request.blockId}) ,'%')) AND
+                   epbs.status = 0 AND
                    (:#{#request.subjectId} IS NULL OR subj.id LIKE CONCAT('%', TRIM(:#{#request.subjectId}) ,'%')) AND
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))
             """, nativeQuery = true)
-    Page<ListExamPaperResponse> getListExamPaper(Pageable pageable, ListExamPaperRequest request, String userId, String departmentFacilityId, String examPaperStatus);
+    Page<ListExamPaperResponse> getListExamPaper(Pageable pageable, ListExamPaperRequest request, String userId, String departmentFacilityId, String semesterId,String examPaperStatus);
 
     @Query(value = """ 
                  SELECT
