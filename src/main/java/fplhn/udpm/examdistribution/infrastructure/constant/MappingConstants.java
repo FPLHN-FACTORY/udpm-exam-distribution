@@ -48,6 +48,7 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL = HEAD_SUBJECT + "/exam-approval";
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE = HEAD_SUBJECT + "/exam-rule";
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM = HEAD_SUBJECT + "/join-room";
+    public static final String REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER = HEAD_SUBJECT + "/choose-exam-paper";
 
     // Constants representing the full paths for various resources under head office
     public static final String API_HEAD_OFFICE_SUBJECT = API_HEAD_OFFICE_PREFIX + "/subjects";
@@ -81,6 +82,7 @@ public final class MappingConstants {
     public static final String API_HEAD_SUBJECT_MANAGE_JOIN_ROOM = API_HEAD_SUBJECT_PREFIX + "/join-room";
     public static final String API_HEAD_SUBJECT_STAFF = API_HEAD_SUBJECT_PREFIX + "/staffs";
     public static final String API_HEAD_SUBJECT_STUDENT = API_HEAD_SUBJECT_PREFIX + "/students";
+    public static final String API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER = API_HEAD_SUBJECT_PREFIX + "/choose-exam-paper";
 
     public static final String REDIRECT_GOOGLE_AUTHORIZATION = "/oauth2/authorization/google";
     public static final String AUTHENTICATION = "/authentication";
