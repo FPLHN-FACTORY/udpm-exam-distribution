@@ -58,8 +58,4 @@ public class Subject extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_department")
     private Department department;
 
-    @ManyToOne
-    @JoinColumn(name = "id_subject_group")
-    private SubjectGroup subjectGroup;
-
 }

@@ -12,6 +12,7 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/common/tag.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
 </head>
 <body>
@@ -108,7 +109,7 @@
             </div>
         </div>
     </div>
-    <!--  Modal Assign Subject For Staff - Head Of Subject  -->
+    <!--  Modal Assign Subject Group For Staff - Head Of Subject  -->
     <div
             class="modal fade"
             id="modifyAssignSubjectForStaff"
@@ -116,7 +117,7 @@
             aria-labelledby="modifyAssignSubjectForStaffLabel"
             aria-hidden="true"
     >
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modifyAssignSubjectForStaffLabel">Phân công môn học cho trưởng môn</h5>
@@ -124,57 +125,14 @@
                 </div>
                 <div class="modal-body">
                     <!-- Filter -->
-                    <div class="shadow p-4 bg-white rounded mb-4">
-                        <div class="d-flex justify-content-between mt-4">
-                            <h4>Lọc dữ liệu</h4>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" class="form-control" id="subjectCode"
-                                           placeholder="Nhập mã môn học">
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="subjectName">Tên môn học</label>
-                                    <input type="text" class="form-control" id="subjectName"
-                                           placeholder="Nhập tên môn học">
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="subjectType">Hình thức học</label>
-                                    <select class="form-select" id="subjectType">
-                                        <option value="">Chọn hình thức môn học</option>
-                                        <option value="TRADITIONAL">Traditional</option>
-                                        <option value="ONLINE">Online</option>
-                                        <option value="BLEND">Blend</option>
-                                        <option value="TRUC_TUYEN">Trực tuyến</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-4">
-                            <button class="btn" id="btnSearchSubjectAssign"
-                                    style="background-color: var(--common-button-color); color: white;">Tìm kiếm
-                            </button>
-                            <button class="btn ms-3" id="btnResetSearchSubjectAssign"
-                                    style="background-color: var(--common-button-color); color: white;">Làm mới
-                            </button>
-                        </div>
-                    </div>
                     <!-- Filter -->
                     <!-- Table -->
                     <div class="table-responsive mt-4">
                         <table class="ant-table">
                             <thead>
                             <tr>
-                                <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Thuộc quản lý</td>
-                                <td>Mã môn học</td>
-                                <td>Tên môn học</td>
-                                <td>Hình thức học</td>
+                                <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Phân công quản lý</td>
+                                <td>Tên chức vụ - nhóm môn</td>
                             </tr>
                             </thead>
                             <tbody id="subjectAssignedTableBody" class="table-group-divider">
@@ -216,7 +174,7 @@
             </div>
         </div>
     </div>
-    <!--  Modal Assign Subject For Staff - Head Of Subject  -->
+    <!--  Modal Assign Subject Group For Staff - Head Of Subject  -->
     <!--  Modal View History Log  -->
     <div
             class="modal fade"

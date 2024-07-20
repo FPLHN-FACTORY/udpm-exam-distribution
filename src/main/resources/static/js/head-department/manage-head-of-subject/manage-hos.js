@@ -4,48 +4,23 @@ let currentStaffId = null;
 let currentSemesterId = null;
 
 $(document).ready(() => {
-
     getAllSemesterAndSetDefaultCurrentSemester();
 
     $('#querySearchSemester').change((e) => {
         currentSemesterId = e.target.value;
-        getListHeadSubject(
-            INIT_PAGINATION.page,
-            INIT_PAGINATION.size,
-            currentSemesterId
-        );
+        getListHeadSubject(INIT_PAGINATION.page, INIT_PAGINATION.size, currentSemesterId);
     });
 
-    $('#btnAssignSubjectForStaff').click(() => {
-        saveAssignSubjectForStaff();
-    });
+    $('#btnAssignSubjectForStaff').click(saveAssignSubjectGroupForStaff);
+    $('#querySearchStaff').on('input', handleListenSearchQuery);
+    $('#btnSearchSubjectAssign').click(handleSearchSubjectAssign);
+    $('#btnResetSearchSubjectAssign').click(handleResetSearchSubjectAssign);
+    $('#btnShowHistoryLog').click(handleShowModalHistory);
 
-    $('#querySearchStaff').on('input', () => {
-        handleListenSearchQuery();
-    });
-
-    $('#btnSearchSubjectAssign').click(() => {
-        handleSearchSubjectAssign();
-    });
-
-    $('#btnResetSearchSubjectAssign').click(() => {
-        handleResetSearchSubjectAssign();
-    });
-
-    $('#btnShowHistoryLog').click(() => {
-        handleShowModalHistory();
-    });
-
+    handleCheckAssignSubjectGroup();
 });
 
-// HEAD OF SUBJECT
-const getListHeadSubject = (
-    page = INIT_PAGINATION.page,
-    size = INIT_PAGINATION.size,
-    semesterId = null,
-    query = null,
-) => {
-
+const getListHeadSubject = (page = INIT_PAGINATION.page, size = INIT_PAGINATION.size, semesterId = null, query = null) => {
     const url = getUrlParameters(ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS, {
         page,
         size,
@@ -60,169 +35,74 @@ const getListHeadSubject = (
         url: url,
         contentType: "application/json",
         success: (responseBody) => {
-            if (responseBody?.data?.data?.length === 0) {
-                $('#manageHOSTableBody').html(`
-                    <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
-                    </tr>
-                `);
-$('#pagination').empty();
+            const data = responseBody?.data?.data || [];
+            if (data.length === 0) {
+                $('#manageHOSTableBody').html('<tr><td colspan="8" style="text-align: center;">Không có dữ liệu</td></tr>');
+                $('#pagination').empty();
                 return;
             }
 
-            const staffs = responseBody?.data?.data.map((staff, _) => {
-                return `
-                    <tr>
-                        <td>${staff.orderNumber}</td>
-                        <td>${staff.staffCode}</td>
-                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">${staff.staffName}</td>
-                        <td>${staff.accountFPT}</td>
-                        <td>${staff.accountFE}</td>
-                        <td>
-                            ${formatSubjectsAssigned(staff?.roleName)}
-                        </td>
-                        <td>${staff?.semesterInfo ? staff?.semesterInfo : '<span class="badge bg-danger">Empty</span>'}</td>
-                       <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                           <a 
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="top" 
-                                title="Phân công môn học"
-                                onclick="showModalModifyAssignSubject(
-                                    '${staff.id}', 
-                                    '${staff.staffName}',
-                                    '${staff.staffCode}'
-                                    )"
-                           >
-                                <i 
-                                    class="fa-solid fa-eye"
-                                    style="cursor: pointer; margin-left: 10px;"
-                                ></i>
-                           </a>
-                       </td>
-                    </tr>
-                `;
-            });
+            const staffs = data.map(staff => `
+                <tr>
+                    <td>${staff.orderNumber}</td>
+                    <td>${staff.staffCode}</td>
+                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">${staff.staffName}</td>
+                    <td>${staff.accountFPT}</td>
+                    <td>${staff.accountFE}</td>
+                    <td>
+                        <span class="tag tag-warning">${staff.roleName}</span>
+                    </td>
+                    <td>${staff.semesterInfo ? ('<span class="tag tag-warning">' + staff.semesterInfo + '</span>') : '<span class="tag tag-warning">Empty</span>'}</td>
+                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Phân công môn học"
+                           onclick="showModalModifyAssignSubject('${staff.id}', '${staff.staffName}', '${staff.staffCode}')">
+                            <i class="fa-solid fa-eye" style="cursor: pointer; margin-left: 10px;"></i>
+                        </a>
+                    </td>
+                </tr>`).join('');
+
             $('#manageHOSTableBody').html(staffs);
-            const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
-            createPagination(totalPages, page);
+            createPagination(responseBody?.data?.totalPages || 1, page);
         },
-        error: (error) => {
-            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
-        }
-    })
+        error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
+    });
 };
 
 const createPagination = (totalPages, currentPage) => {
     let paginationHtml = '';
 
-    if (currentPage > 1) {
-        paginationHtml += `
-                     <li class="page-item">
-                        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">
-                            Trước
-                        </a>
-                     </li>`;
-    } else {
-        paginationHtml += `
-                <li class="page-item disabled">
-                    <a class="page-link" href="#">
-                        Trước
-                    </a>
-                </li>
-        `;
-    }
+    paginationHtml += currentPage > 1 ? `
+        <li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Trước</a></li>`
+        : `<li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>`;
 
     for (let i = 1; i <= totalPages; i++) {
-        if (i === currentPage) {
-            paginationHtml += `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`;
-        } else {
-            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
-        }
+        paginationHtml += i === currentPage ? `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`
+            : `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
     }
 
-    if (currentPage < totalPages) {
-        paginationHtml += `
-                <li class="page-item">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">
-                          Sau
-                    </a>
-                </li>
-`;
-    } else {
-        paginationHtml += `
-            <li class="page-item disabled">
-                <a class="page-link" href="#">
-                    Sau
-                </a>
-            </li>
-`;
-    }
+    paginationHtml += currentPage < totalPages ? `
+        <li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Sau</a></li>`
+        : `<li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>`;
 
     $('#pagination').html(paginationHtml);
-}
+};
 
 const handleSearchSubjectAssign = () => {
-    const subjectCode = $('#subjectCode').val();
-    const subjectName = $('#subjectName').val();
-    const subjectType = $('#subjectType').val();
-    getSubjectAssignForStaff(currentStaffId, INIT_PAGINATION.page, INIT_PAGINATION.size, subjectCode, subjectName, subjectType);
-}
+    getSubjectGroupAssignForStaff(currentStaffId, INIT_PAGINATION.page, INIT_PAGINATION.size, $('#subjectCode').val(), $('#subjectName').val(), $('#subjectType').val());
+};
 
 const handleResetSearchSubjectAssign = () => {
-    $('#subjectCode').val('');
-    $('#subjectName').val('');
-    $('#subjectType').val('');
-    getSubjectAssignForStaff(currentStaffId);
-}
+    $('#subjectCode, #subjectName, #subjectType').val('');
+    getSubjectGroupAssignForStaff(currentStaffId);
+};
 
-const changePage = (page) => {
-    getListHeadSubject(page);
-}
+const changePage = (page) => getListHeadSubject(page);
 
 const showModalModifyAssignSubject = (staffId, staffName, staffCode) => {
     currentStaffId = staffId;
     $('#modifyAssignSubjectForStaffLabel').text(`Phân công môn học cho giảng viên: ${staffCode} - ${staffName}`);
-    getSubjectAssignForStaff(staffId);
+    getSubjectGroupAssignForStaff(staffId);
     $('#modifyAssignSubjectForStaff').modal('show');
-}
-
-const saveAssignSubjectForStaff = () => {
-    const assignedSubjectIds = [];
-    const unassignedSubjectIds = [];
-    $('.colorinput-input').each((_, subject) => {
-        const subjectId = $(subject).data('subject-id');
-        if ($(subject).is(':checked')) {
-            assignedSubjectIds.push(subjectId);
-        } else {
-            unassignedSubjectIds.push(subjectId);
-        }
-    });
-
-    const data = {
-        staffId: currentStaffId,
-        assignedSubjectIds,
-        unassignedSubjectIds,
-        semesterId: currentSemesterId,
-    };
-
-    $.ajax({
-        type: "POST",
-        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/subject-assigned",
-        contentType: "application/json",
-        data: JSON.stringify(data),
-        success: (responseBody) => {
-            showToastSuccess(responseBody?.message || "Cập nhật phân công môn học thành công");
-            getSubjectAssignForStaff(currentStaffId);
-            getListHeadSubject(
-                INIT_PAGINATION.page,
-                INIT_PAGINATION.size,
-                currentSemesterId
-            );
-        },
-        error: (error) => {
-            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
-        }
-    });
 };
 
 const getAllSemesterAndSetDefaultCurrentSemester = () => {
@@ -231,194 +111,132 @@ const getAllSemesterAndSetDefaultCurrentSemester = () => {
         url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/semester",
         contentType: "application/json",
         success: (responseBody) => {
-            const semesters = responseBody?.data?.map((semester, _) => {
-                return `<option value="${semester.id}">${semester.semesterInfo}</option>`;
-            });
+            const semesters = responseBody?.data?.map(semester => `<option value="${semester.id}">${semester.semesterInfo}</option>`).join('');
             $('#querySearchSemester').html(semesters);
             $('#querySearchSemester').val(responseBody?.data[0]?.id);
-            getListHeadSubject(
-                INIT_PAGINATION.page,
-                INIT_PAGINATION.size,
-                responseBody?.data[0]?.id,
-            );
             currentSemesterId = responseBody?.data[0]?.id;
+            getListHeadSubject(INIT_PAGINATION.page, INIT_PAGINATION.size, currentSemesterId);
         },
-        error: (error) => {
-            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
-        }
+        error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
     });
-}
-
-const handleListenSearchQuery = debounce(() => {
-    const query = $('#querySearchStaff').val();
-    getListHeadSubject(
-        INIT_PAGINATION.page,
-        INIT_PAGINATION.size,
-        currentSemesterId,
-        query
-    );
-}, 300);
-
-const formatSubjectsAssigned = (subjectsAssigned) => {
-    return subjectsAssigned
-        ? subjectsAssigned.split(',').map(subject => `<span class="badge bg-warning">${subject}</span>`).join('')
-        : '<span class="badge bg-danger">Empty</span>';
 };
 
-//SUBJECT
-const getSubjectAssignForStaff = (
-    staffId,
-    page = INIT_PAGINATION.page,
-    size = INIT_PAGINATION.size,
-    subjectCode = null,
-    subjectName = null,
-    subjectType = null,
-) => {
+const handleListenSearchQuery = debounce(() => {
+    getListHeadSubject(INIT_PAGINATION.page, INIT_PAGINATION.size, currentSemesterId, $('#querySearchStaff').val());
+}, 300);
 
-    const params = {
+const getSubjectGroupAssignForStaff = (staffId, page = INIT_PAGINATION.page, size = INIT_PAGINATION.size, attachRoleName = null) => {
+    const url = getUrlParameters(ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/subject-group", {
         page,
         size,
         staffId,
-        subjectCode,
-        subjectName,
-        subjectType,
-        departmentFacilityId: examDistributionInfo.departmentFacilityId,
-    };
-
-    const url = getUrlParameters(ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/subject-assigned", params);
+        attachRoleName
+    });
 
     $.ajax({
         type: "GET",
         url: url,
         contentType: "application/json",
         success: (responseBody) => {
-            if (responseBody?.data?.data?.length === 0) {
-                $('#subjectAssignedTableBody').html(`
-                    <tr>
-                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
-                    </tr>
-                `);
-$('#pagination').empty();
+            const data = responseBody?.data?.data || [];
+            if (data.length === 0) {
+                $('#subjectAssignedTableBody').html('<tr><td colspan="4" style="text-align: center;">Không có dữ liệu</td></tr>');
+                $('#pagination').empty();
                 return;
             }
-            const subjectAssigneds = responseBody?.data?.data.map((subject, _) => {
-                return `
-                    <tr>
-                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <div class="col-auto">
-                              <label class="colorinput">
-                                <input
-                                  name="color"
-                                  data-subject-id="${subject.id}" ${subject.assigned === 1 ? 'checked' : ''}
-                                  type="checkbox"
-                                  class="colorinput-input"
-                                />
-                                <span
-                                  class="colorinput-color bg-dark"
-                                ></span>
-                              </label>
-                            </div>
-                        </td>
-                        <td>${subject.subjectCode}</td>
-                        <td>${subject.subjectName}</td>
-                        <td>${subject.subjectType}</td>
-                    </tr>
-                `;
-            });
-            $('#subjectAssignedTableBody').html(subjectAssigneds);
-            const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
-            createPaginationAssignSubject(totalPages, page);
+
+            const subjectGroupAssigneds = data.map(subjectGroup => `
+                <tr>
+                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
+                        <div class="col-auto">
+                            <label class="colorinput">
+                                <input name="color" data-subject-id="${subjectGroup.id}" ${subjectGroup.assigned === 1 ? 'checked' : ''} type="checkbox" class="colorinput-input"/>
+                                <span class="colorinput-color bg-dark"></span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>${subjectGroup.attachRoleName}</td>
+                </tr>`).join('');
+
+            $('#subjectAssignedTableBody').html(subjectGroupAssigneds);
+            createPaginationAssignSubject(responseBody?.data?.totalPages || 1, page);
         },
-        error: (error) => {
-            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
-        }
+        error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
+    });
+};
+
+const saveAssignSubjectGroupForStaff = () => {
+    const data = {
+        staffId: currentStaffId,
+        semesterId: currentSemesterId,
+        subjectGroupId: $('input[name="color"]:checked').data('subject-id')
+    };
+
+    $.ajax({
+        type: "POST",
+        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/subject-assigned",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: (responseBody) => {
+            showToastSuccess(responseBody?.message || "Cập nhật phân công nhóm môn học thành công");
+            getSubjectGroupAssignForStaff(currentStaffId);
+            getListHeadSubject(INIT_PAGINATION.page, INIT_PAGINATION.size, currentSemesterId);
+        },
+        error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
     });
 };
 
 const createPaginationAssignSubject = (totalPages, currentPage) => {
     let paginationHtml = '';
 
-    if (currentPage > 1) {
-        paginationHtml += `
-                     <li class="page-item">
-                        <a class="page-link" href="#" onclick="changePageAssignSubject(${currentPage - 1})">
-                            Trước
-                        </a>
-                     </li>`;
-    } else {
-        paginationHtml += `
-                <li class="page-item disabled">
-                    <a class="page-link" href="#">
-                        Trước
-                    </a>
-                </li>
-        `;
-    }
+    paginationHtml += currentPage > 1 ? `
+        <li class="page-item"><a class="page-link" href="#" onclick="changePageAssignSubject(${currentPage - 1})">Trước</a></li>`
+        : `<li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>`;
 
     for (let i = 1; i <= totalPages; i++) {
-        if (i === currentPage) {
-            paginationHtml += `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`;
-        } else {
-            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="changePageAssignSubject(${i})">${i}</a></li>`;
-        }
+        paginationHtml += i === currentPage ? `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`
+            : `<li class="page-item"><a class="page-link" href="#" onclick="changePageAssignSubject(${i})">${i}</a></li>`;
     }
 
-    if (currentPage < totalPages) {
-        paginationHtml += `
-                <li class="page-item">
-                    <a class="page-link" href="#" onclick="changePageAssignSubject(${currentPage + 1})">
-                          Sau
-                    </a>
-                </li>
-`;
-    } else {
-        paginationHtml += `
-            <li class="page-item disabled">
-                <a class="page-link" href="#">
-                    Sau
-                </a>
-            </li>
-`;
-    }
+    paginationHtml += currentPage < totalPages ? `
+        <li class="page-item"><a class="page-link" href="#" onclick="changePageAssignSubject(${currentPage + 1})">Sau</a></li>`
+        : `<li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>`;
 
     $('#paginationSubjectAssigned').html(paginationHtml);
-}
+};
 
-const changePageAssignSubject = (page) => {
-    getSubjectAssignForStaff(currentStaffId, page);
-}
+const changePageAssignSubject = (page) => getSubjectGroupAssignForStaff(currentStaffId, page);
 
-//HISTORY
+const handleCheckAssignSubjectGroup = () => {
+    $(document).on('click', '.colorinput-input', function () {
+        $('.colorinput-input').not(this).prop('checked', false);
+    });
+};
+
 const getHistoryAssignSubject = () => {
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/history",
         contentType: "application/json",
         success: (responseBody) => {
-            if (responseBody?.data?.length === 0) {
-                $('#historyTableBody').html(`
-                    <tr>
-                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
-                    </tr>
-                `);
-$('#pagination').empty();
+            const data = responseBody?.data || [];
+            if (data.length === 0) {
+                $('#historyTableBody').html('<tr><td colspan="4" style="text-align: center;">Không có dữ liệu</td></tr>');
+                $('#pagination').empty();
                 return;
             }
-            const historyAssignSubjects = responseBody?.data?.data?.map((history, _) => {
-                return `
-                    <tr>
-                        <td>${history.orderNumber}</td>
-                        <td>${history.createDate}</td>
-                        <td>${history.mail + ' ' + history.content}</td>
-                        <td>${history.author}</td>
-                    </tr>
-                `;
-            });
+
+            const historyAssignSubjects = data.map(history => `
+                <tr>
+                    <td>${history.orderNumber}</td>
+                    <td>${history.createDate}</td>
+                    <td>${history.mail + ' ' + history.content}</td>
+                    <td>${history.author}</td>
+                </tr>`).join('');
+
             $('#historyLogTableBody').html(historyAssignSubjects);
         },
-        error: (error) => {
-            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
-        }
+        error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
     });
 };
 
