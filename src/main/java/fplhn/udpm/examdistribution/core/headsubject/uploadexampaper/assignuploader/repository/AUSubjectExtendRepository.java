@@ -29,41 +29,41 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
             	d.name AS departmentName,
             	s.created_date AS createdDate
             FROM
-            	head_subject_by_semester hsbs
+                head_subject_by_semester hsbs
             JOIN subject_group sg ON
-            	hsbs.id_subject_group = sg.id
+                hsbs.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sg.id_subject
+                s.id_subject_group = sg.id
             JOIN department d ON
-            	s.id_department = d.id
+                s.id_department = d.id
             WHERE
-                sg.id_staff = :#{#request.staffId} AND
+                hsbs.id_staff = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0 AND
                 (
-                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}) ,'%')) AND
-                    (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}) ,'%'))
+                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
+                    (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                 )
             """,
             countQuery = """
             SELECT COUNT(hsbs.id)
             FROM
-            	head_subject_by_semester hsbs
+                head_subject_by_semester hsbs
             JOIN subject_group sg ON
-            	hsbs.id_subject_group = sg.id
+                hsbs.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sg.id_subject
+                s.id_subject_group = sg.id
             JOIN department d ON
-            	s.id_department = d.id
+                s.id_department = d.id
             WHERE
-                sg.id_staff = :#{#request.staffId} AND
+                hsbs.id_staff = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0 AND
                 (
-                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}) ,'%')) AND
-                    (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}) ,'%'))
+                    (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
+                    (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                 )
                     """, nativeQuery = true)
     Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, String semesterId, FindSubjectRequest request);
