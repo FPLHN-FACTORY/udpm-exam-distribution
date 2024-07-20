@@ -8,17 +8,13 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/manage-student/manage-exam-detail/exam-detail.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
-    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <title>Student - Trang chủ</title>
 </head>
 <body>
 <div class="wrapper">
-    <div th:insert="~{fragment/sidebar/sidebar-student :: sidebar-student}"></div>
-    <div class="main-panel">
-        <div class="main-header">
-            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
-        </div>
+    <div class="main-panel" style="width: 100%;">
+        <div th:insert="~{fragment/header/common-header-student :: common-header-student}"></div>
         <div class="container">
             <span th:text="${examShiftId}" hidden id="examShiftId"></span>
             <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
@@ -173,10 +169,11 @@
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/loading.js}"></script>
+<!--<script th:src="@{/js/devtools.js}"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
-<script th:src="@{/js/manage-student/exam-shift/exam-shift-join.js}"></script>
+<script th:src="@{/js/student/exam-shift-detail/exam-shift-detail.js}"></script>
 </body>
 </html>

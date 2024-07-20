@@ -1,6 +1,6 @@
-package fplhn.udpm.examdistribution.core.student.home.controller;
+package fplhn.udpm.examdistribution.core.student.examshift.controller;
 
-import fplhn.udpm.examdistribution.core.student.home.service.SExamShiftService;
+import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(MappingConstants.REDIRECT_STUDENT_HOME)
-public class SHomeController {
+@RequestMapping(MappingConstants.REDIRECT_STUDENT_EXAM_SHIFT)
+public class SExamShiftController {
 
     private final SExamShiftService studentExamShiftService;
 
     @GetMapping
     public String viewHome() {
-        return "student/home/student-home";
+        return "student/exam-shift/exam-shift";
     }
 
     @GetMapping("/{examShiftCode}")
@@ -27,7 +27,7 @@ public class SHomeController {
             return "error/404";
         }
         model.addAttribute("examShiftCodeCtl", examShiftCode);
-        return "student/exam-shift/exam-shift-join";
+        return "student/exam-shift-detail/exam-shift-detail";
     }
 
 }

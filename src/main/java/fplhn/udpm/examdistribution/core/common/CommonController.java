@@ -29,7 +29,7 @@ public class CommonController {
 
     @GetMapping(MappingConstants.STUDENT)
     public String viewStudent() {
-        return "redirect:/student/home";
+        return "redirect:/student/exam-shift";
     }
 
 }

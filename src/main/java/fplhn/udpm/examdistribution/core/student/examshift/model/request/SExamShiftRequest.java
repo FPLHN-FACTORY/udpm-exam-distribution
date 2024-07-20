@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.student.home.model.request;
+package fplhn.udpm.examdistribution.core.student.examshift.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

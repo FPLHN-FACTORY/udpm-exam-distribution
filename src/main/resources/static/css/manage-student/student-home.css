@@ -4,7 +4,7 @@ section {
     align-items: center;
     min-height: 100vh;
     width: 100%;
-    background: url("https://wallpapers.com/images/hd/all-white-folded-paper-strips-background-m3suujs4ekgv932g.jpg") no-repeat;
+    background: url(../../assets/image/bg-simple.jpg) no-repeat;
     background-position: center;
     background-size: cover;
 }
@@ -13,7 +13,7 @@ section {
     position: relative;
     width: 400px;
     height: 450px;
-    background: transparent;
+    background: #393536;
     border: none;
     border-radius: 20px;
     backdrop-filter: blur(15px) brightness(80%);
@@ -36,7 +36,6 @@ h2 {
 }
 
 .inputbox label {
-    color: #fff;
     position: absolute;
     top: 50%;
     left: 5px;

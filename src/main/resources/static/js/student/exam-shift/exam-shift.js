@@ -29,7 +29,7 @@ const connect = () => {
         stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
             let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
             if (examShiftCodeRejoin) {
-                window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + examShiftCodeRejoin;
+                window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
                 localStorage.removeItem('rejoinExamShiftCode');
             }
         });
@@ -56,7 +56,7 @@ const joinExamShift = () => {
                     showToastSuccess(responseBody?.message);
                 } else {
                     localStorage.setItem('joinExamShiftStudentSuccessMessage', responseBody?.message);
-                    window.location.href = ApiConstant.REDIRECT_STUDENT_HOME + '/' + responseBody?.data;
+                    window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + responseBody?.data;
                 }
             }
         },

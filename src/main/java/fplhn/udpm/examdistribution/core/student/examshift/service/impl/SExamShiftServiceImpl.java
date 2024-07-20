@@ -1,13 +1,13 @@
-package fplhn.udpm.examdistribution.core.student.home.service.impl;
+package fplhn.udpm.examdistribution.core.student.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.student.home.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
 import fplhn.udpm.examdistribution.core.student.exampaper.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.exampaper.repository.SExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.student.exampapershift.repository.SExamPaperShiftRepository;
 import fplhn.udpm.examdistribution.core.student.studentexamshift.repository.SStudentExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.student.home.service.SExamShiftService;
+import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.student.student.repository.SStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.exampapershift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
