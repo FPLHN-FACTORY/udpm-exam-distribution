@@ -40,6 +40,7 @@ const ApiConstant = {
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/head-subject/exam-approval",
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/head-subject/exam-rule",
     REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
+    REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
 
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
@@ -71,6 +72,7 @@ const ApiConstant = {
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
     API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
     API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",
+    API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",
