@@ -28,11 +28,11 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
             JOIN subject_group sg ON
                 hsbs.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sg.id_subject
+                s.id_subject_group = sg.id
             JOIN department d ON
                 s.id_department = d.id
             WHERE
-                sg.id_staff = :#{#request.staffId} AND
+                hsbs.id_staff = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
                 sg.id_department_facility = :departmentFacilityId AND
                 sg.status = 0 AND
@@ -48,11 +48,11 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                     JOIN subject_group sg ON
                         hsbs.id_subject_group = sg.id
                     JOIN subject s ON
-                        s.id = sg.id_subject
+                        s.id_subject_group = sg.id
                     JOIN department d ON
                         s.id_department = d.id
                     WHERE
-                        sg.id_staff = :#{#request.staffId} AND
+                        hsbs.id_staff = :#{#request.staffId} AND
                         hsbs.id_semester = :semesterId AND
                         sg.id_department_facility = :departmentFacilityId AND
                         sg.status = 0 AND
@@ -60,7 +60,7 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                             (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
                             (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                         )
-                            """, nativeQuery = true)
+                                    """, nativeQuery = true)
     Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, String semesterId, FindSubjectRequest request);
 
 }

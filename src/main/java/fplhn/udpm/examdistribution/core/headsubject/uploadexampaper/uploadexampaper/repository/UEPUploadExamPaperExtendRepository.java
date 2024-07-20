@@ -34,14 +34,14 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	mf.id AS majorFacilityId
              FROM
                  head_subject_by_semester hsbs
-             JOIN subject_group sg ON
+            JOIN subject_group sg ON
                  sg.id = hsbs.id_subject_group
-             JOIN exam_paper ep ON
-                 ep.id_subject = sg.id_subject
+            JOIN subject subj ON
+             	subj.id_subject_group = sg.id
+            JOIN exam_paper ep ON
+                 ep.id_subject = subj.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
-             JOIN subject subj ON
-             	subj.id = ep.id_subject
              JOIN major m ON
              	m.id = mf.id_major
              JOIN staff st ON
@@ -52,7 +52,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	f.id = df.id_facility
              WHERE ep.exam_paper_status <> :examPaperStatus AND
                    mf.id_department_facility = :departmentFacilityId AND
-                   sg.id_staff = :userId AND
+                   hsbs.id_staff = :userId AND
                    ep.status = 0 AND
                    hsbs.status = 0 AND
                    (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
@@ -65,14 +65,14 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	COUNT(hsbs.id)
              FROM
                  head_subject_by_semester hsbs
-             JOIN subject_group sg ON
+            JOIN subject_group sg ON
                  sg.id = hsbs.id_subject_group
-             JOIN exam_paper ep ON
-                 ep.id_subject = sg.id_subject
+            JOIN subject subj ON
+             	subj.id_subject_group = sg.id
+            JOIN exam_paper ep ON
+                 ep.id_subject = subj.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
-             JOIN subject subj ON
-             	subj.id = ep.id_subject
              JOIN major m ON
              	m.id = mf.id_major
              JOIN staff st ON
@@ -83,7 +83,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	f.id = df.id_facility
              WHERE ep.exam_paper_status <> :examPaperStatus AND
                    mf.id_department_facility = :departmentFacilityId AND
-                   sg.id_staff = :userId AND
+                   hsbs.id_staff = :userId AND
                    ep.status = 0 AND
                    hsbs.status = 0 AND
                    (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
