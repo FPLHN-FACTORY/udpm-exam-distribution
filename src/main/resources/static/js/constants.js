@@ -65,6 +65,7 @@ const ApiConstant = {
     API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/api/v1/head-department/join-room",
     API_HEAD_DEPARTMENT_STAFF: "/api/v1/head-department/staffs",
     API_HEAD_DEPARTMENT_STUDENT: "/api/v1/head-department/students",
+    API_HEAD_DEPARTMENT_FILE: "/api/v1/head-department/file",
 
     // Constants representing the full paths for various resources under head subject
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",

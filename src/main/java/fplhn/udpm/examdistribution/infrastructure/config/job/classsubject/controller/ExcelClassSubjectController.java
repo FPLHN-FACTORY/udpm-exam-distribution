@@ -7,13 +7,19 @@ import fplhn.udpm.examdistribution.infrastructure.config.upload.FileUploadServic
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.infrastructure.constant.SemesterName;
 import fplhn.udpm.examdistribution.utils.Helper;
+import lombok.Setter;
 import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -25,10 +31,10 @@ public class ExcelClassSubjectController {
 
     private final ExcelFileClassSubjectService exportExcelClassSubjectService;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired, onParam_ = @Qualifier("fileUploadServiceImpl"))
     private FileUploadService storageService;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     private ExcelFileClassSubjectToDatabaseJobLauncher jobLauncher;
 
     public ExcelClassSubjectController(ExcelFileClassSubjectService exportExcelClassSubjectService) {
