@@ -14,6 +14,7 @@ import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.Helper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class HOStaffServiceImpl implements HOStaffService {
 
     private final HOStaffRepository staffRepo;
@@ -46,15 +48,6 @@ public class HOStaffServiceImpl implements HOStaffService {
     private final HOStaffDepartmentFacilityRepository departmentFacilityRepo;
 
     private final HOStaffRoleRepository staffRoleRepo;
-
-    private final DFFacilityExtendRepository facilityRepo;
-
-    public HOStaffServiceImpl(HOStaffRepository staffRepo, HOStaffDepartmentFacilityRepository departmentFacilityRepo, HOStaffRoleRepository staffRoleRepo , DFFacilityExtendRepository facilityRepo) {
-        this.staffRepo = staffRepo;
-        this.departmentFacilityRepo = departmentFacilityRepo;
-        this.staffRoleRepo = staffRoleRepo;
-        this.facilityRepo = facilityRepo;
-    }
 
     @Override
     public ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest) {
@@ -74,39 +67,54 @@ public class HOStaffServiceImpl implements HOStaffService {
 
     @Override
     public ResponseObject<?> createStaff(HOSaveStaffRequest staffRequest) {
+
         Staff staff = new Staff();
+
         staff.setName(staffRequest.getName());
-        if (!staffRepo.findByStaffCode(staffRequest.getStaffCode()).isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "staff code already exists");
+
+        List<Staff> staffList = staffRepo.findByStaffCode(staffRequest.getStaffCode());
+
+        if (!staffList.isEmpty() && staffList.get(0).getStatus() == EntityStatus.ACTIVE) {
+            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Mã nhân viên đã tồn tại");
         }
+
         staff.setStatus(EntityStatus.ACTIVE);
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());
         staff.setAccountFpt(staffRequest.getAccountFpt());
         staffRepo.save(staff);
-        return new ResponseObject<>(null, HttpStatus.CREATED, "create staff successfully");
+
+        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm nhân viên thành công");
     }
 
     @Override
     public ResponseObject<?> updateStaff(HOSaveStaffRequest staffRequest) {
+
         Optional<Staff> staffOptional = staffRepo.findById(staffRequest.getId());
+
         if (staffOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "staff not found");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy nhân viên");
         }
+
         Staff staff = staffOptional.get();
         staff.setId(staffRequest.getId());
         staff.setName(staffRequest.getName());
         List<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
-        if (!checkStaff.isEmpty() && !checkStaff.get(0).getId().equalsIgnoreCase(staffRequest.getStaffCode())) {
+
+        if (!checkStaff.isEmpty() &&
+            !checkStaff.get(0).getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
+            checkStaff.get(0).getStatus() == EntityStatus.ACTIVE ){
             if (!staff.getId().equals(checkStaff.get(0).getId())) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "staff code is conflict with other staff");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã nhân viên đã tồn tại");
             }
         }
+
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());
         staff.setAccountFpt(staffRequest.getAccountFpt());
         staffRepo.save(staff);
-        return new ResponseObject<>(null, HttpStatus.OK, "create staff successfully");
+
+        return new ResponseObject<>(null, HttpStatus.OK, "Sửa nhân viên thành công");
     }
 
     @Override

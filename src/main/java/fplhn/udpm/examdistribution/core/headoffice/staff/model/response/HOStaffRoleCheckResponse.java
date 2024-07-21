@@ -4,6 +4,8 @@ public interface HOStaffRoleCheckResponse {
 
     String getRoleName();
 
+    String getRoleCode();
+
     String getIdRole();
 
     String getFacilityName();

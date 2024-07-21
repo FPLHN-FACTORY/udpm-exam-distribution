@@ -33,9 +33,6 @@ $(document).ready(function () {
         } else if (modifyStaffCode.trim().length > 50) {
             check = false;
             $('#modifyStaffCodeError').text('Mã nhân viên không được lớn hơn 50 ký tự!');
-        } else if (/\s/.test(modifyStaffCode)) {
-            check = false;
-            $('#modifyStaffCodeError').text('Mã nhân viên không được chứa khoảng trắng!');
         } else {
             $('#modifyStaffCodeError').text('');
         }
@@ -138,12 +135,15 @@ function saveStaff() {
             $('#modifyStaffModal').modal('hide');
         },
         error: function (error) {
-            if (error?.responseJSON?.status === 'CONFLICT') {
-                showToastError("Mã nhân viên đã tồn tại!");
+            if (error?.responseJSON?.length > 0) {
+                error.responseJSON.forEach(err => {
+                    $(`#${err.fieldError}Error`).text(err.message);
+                });
             } else {
-                showToastError('Có lỗi xảy ra khi lưu nhân viên!');
+                let mess = error?.responseJSON?.message
+                    ? error?.responseJSON?.message : 'Có lỗi xảy ra khi lưu nhân viên';
+                showToastError(mess);
             }
-
         }
     });
 }
@@ -187,7 +187,7 @@ function getStaffs(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const staffs = responseBody?.data?.content?.map((staff, index) => {
@@ -198,7 +198,7 @@ $('#pagination').empty();
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                           <a  >
+                           <a>
                                 <i
                                     onclick="openModalUpdateStaff('${staff.id}')"
                                     class="fas fa-pen-nib"

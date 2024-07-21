@@ -4,6 +4,7 @@ import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRe
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.response.HOStaffDetailResponse;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.response.HOStaffResonpse;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.repository.StaffRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,5 +59,7 @@ public interface HOStaffRepository extends StaffRepository {
     Optional<HOStaffDetailResponse> getStaff(String id);
 
     List<Staff> findByStaffCode(String staffCode);
+
+    Optional<Staff> findByIdAndStatus(String id, EntityStatus status);
 
 }

@@ -12,9 +12,9 @@ import fplhn.udpm.examdistribution.entity.Role;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import java.text.Normalizer;
-import java.util.regex.Pattern;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HORoleServiceImpl implements HORoleService {
 
     private final HORoleRepository roleRepository;
@@ -30,12 +31,6 @@ public class HORoleServiceImpl implements HORoleService {
     private final HORoleFacilityRepository facilityRepository;
 
     private final HORoleStaffRepository staffRoleRepository;
-
-    public HORoleServiceImpl(HORoleRepository roleRepository, HORoleFacilityRepository facilityRepository, HORoleStaffRepository staffRoleRepository) {
-        this.roleRepository = roleRepository;
-        this.facilityRepository = facilityRepository;
-        this.staffRoleRepository = staffRoleRepository;
-    }
 
     @Override
     public ResponseObject<?> getAllRole(HORoleRequest roleRequest) {
@@ -102,10 +97,19 @@ public class HORoleServiceImpl implements HORoleService {
             role.setName(roleRequest.getRoleName());
             role.setFacility(facility.isPresent() ? facility.get() : null);
             role.setStatus(EntityStatus.ACTIVE);
-            if (roleRepository.findAllByCodeAndFacility_Id(roleCode.trim(), roleRequest.getIdFacility()).isEmpty()) {
+
+            List<Role> roles = roleRepository.findAllByCodeAndFacility_Id(roleCode.trim(), roleRequest.getIdFacility());
+
+            if (roles.isEmpty()) {
                 roleRepository.save(role);
                 return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm chức vụ thành công");
             } else {
+                if (roleRepository.findAllByCodeAndFacility_IdAndStatus(roleCode.trim(), roleRequest.getIdFacility(),EntityStatus.ACTIVE).isEmpty()) {
+                    Role r = roleRepository.findAllByCodeAndFacility_IdAndStatus(roleCode.trim(), roleRequest.getIdFacility(),EntityStatus.INACTIVE).get(0);
+                    r.setStatus(EntityStatus.ACTIVE);
+                    roleRepository.save(r);
+                    return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm chức vụ thành công");
+                }
                 return new ResponseObject<>(null, HttpStatus.CONFLICT, "Chức vụ đã tồn tại");
             }
         }

@@ -19,6 +19,7 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
 
     @Query(value = """
             SELECT r.name AS roleName,
+                   r.name AS roleCode,
                    r.id AS idRole,
                    f.name AS facilityName
             FROM staff_role sr
@@ -41,6 +42,7 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
     @Query(value = """ 
             SELECT r.name AS roleName,
                    r.id AS idRole,
+                   r.code AS roleCode,
                    f.name AS facilityName,
                    CASE
                    WHEN r.id IN (SELECT sr.id_role FROM exam_distribution.staff_role sr 
@@ -52,16 +54,26 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
                   FROM exam_distribution.role r
                   LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
                   WHERE r.status = 0
-                  AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-                  AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+                  AND (:#{#hoRoleRequest.roleName} IS NULL 
+                           OR :#{#hoRoleRequest.roleName} LIKE '' 
+                           OR r.name LIKE %:#{#hoRoleRequest.roleName}%
+                           OR r.code LIKE %:#{#hoRoleRequest.roleName}%)
+                  AND (:#{#hoRoleRequest.idFacility} IS NULL 
+                           OR :#{#hoRoleRequest.idFacility} LIKE '' 
+                           OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
                   ORDER BY r.last_modified_date desc
               """, countQuery = """
                       SELECT COUNT(*)
                       FROM exam_distribution.role r
                       LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
                       WHERE r.status = 0
-                      AND (:#{#hoRoleRequest.roleName} IS NULL OR :#{#hoRoleRequest.roleName} LIKE '' OR r.name LIKE %:#{#hoRoleRequest.roleName}%)
-                      AND (:#{#hoRoleRequest.idFacility} IS NULL OR :#{#hoRoleRequest.idFacility} LIKE '' OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
+                      AND (:#{#hoRoleRequest.roleName} IS NULL 
+                               OR :#{#hoRoleRequest.roleName} LIKE '' 
+                               OR r.name LIKE %:#{#hoRoleRequest.roleName}%
+                               OR r.code LIKE %:#{#hoRoleRequest.roleName}%)
+                      AND (:#{#hoRoleRequest.idFacility} IS NULL 
+                               OR :#{#hoRoleRequest.idFacility} LIKE '' 
+                               OR r.id_facility LIKE :#{#hoRoleRequest.idFacility})
                       ORDER BY r.last_modified_date desc
             """, nativeQuery = true)
     Page<HOStaffRoleCheckResponse> getRolesChecked(Pageable pageable, HOStaffRoleRequest hoRoleRequest);

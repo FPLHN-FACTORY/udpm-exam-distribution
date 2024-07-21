@@ -6,18 +6,16 @@ import fplhn.udpm.examdistribution.core.headoffice.role.service.impl.HORoleServi
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(MappingConstants.API_HEAD_OFFICE_ROLE)
-public class HORoleRescontroller {
+@RequiredArgsConstructor
+public class HORoleRestController {
 
     private final HORoleServiceImpl roleService;
-
-    public HORoleRescontroller(HORoleServiceImpl roleService) {
-        this.roleService = roleService;
-    }
 
     @GetMapping
     public ResponseEntity<?> getAll(HORoleRequest hoRoleRequest) {

@@ -54,39 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Infomation -->
-                    <div class="shadow p-4 bg-white rounded">
-                        <div class="d-flex justify-content-between mt-4">
-                            <h4><i class="fa-solid fa-list"></i> Danh sách bộ môn, chuyên ngành theo cơ sở </h4>
-                            <button
-                                    class="btn btn-black"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddRole()"
-                            >
-                                Thêm bộ môn chuyên ngành
-                            </button>
-                        </div>
-                        <div class="table-responsive mt-4">
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <td>STT</td>
-                                    <td>Tên chức vụ</td>
-                                    <td>Tên cơ sở</td>
-                                    <td
-                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
-                                    </td>
-                                </tr>
-                                </thead>
-                                <tbody id="majorFacilityTableBody" class="table-group-divider">
-                                <tr>
-                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- Subject Major -->
+                    <!-- Table role -->
                     <div class="shadow p-4 bg-white rounded">
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-list"></i> Danh sách chức vụ </h4>
@@ -103,6 +71,7 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã chức vụ</td>
                                     <td>Tên chức vụ</td>
                                     <td>Tên cơ sở</td>
                                     <td
@@ -111,6 +80,39 @@
                                 </tr>
                                 </thead>
                                 <tbody id="staffRoleTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Table suject major -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-list"></i> Danh sách bộ môn, chuyên ngành theo cơ sở </h4>
+                            <button
+                                    class="btn btn-black"
+                                    data-bs-toggle="modal"
+                                    onclick="openModalMajorFacility()"
+                            >
+                                Thêm bộ môn chuyên ngành
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Cơ sở</td>
+                                    <td>Bộ môn</td>
+                                    <td>Chuyên ngành</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="majorFacilityTableBody" class="table-group-divider">
                                 <tr>
                                     <td colspan="6" class="text-center">Không có dữ liệu</td>
                                 </tr>
@@ -142,8 +144,12 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="roleName">Tên chức vụ</label>
-                                    <input type="text" id="roleName" name="roleName" class="form-control">
+                                    <label for="roleName">Chức vụ</label>
+                                    <input type="text"
+                                           id="roleName"
+                                           name="roleName"
+                                           class="form-control"
+                                           placeholder="Tìm kiếm với từ khóa(Mã chức vụ / Tên chức vụ)">
                                 </div>
                                 <div class="col form-group">
                                     <label for="idFacility">Cơ sở</label>
@@ -165,6 +171,7 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã chức vụ</td>
                                     <td>Tên chức vụ</td>
                                     <td>Tên cơ sở</td>
                                     <td></td>
@@ -202,6 +209,59 @@
         </div>
     </div>
     <!-- Start modal add role -->
+
+    <!-- Start modal add major facility  -->
+    <div class="modal fade" id="majorFacilityModal" tabindex="-1" aria-labelledby="majorFacilityModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="majorFacilityModalLabel">Thêm bộ môn chuyên ngành </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="facilitySelect"><span class="text-danger"> * </span> Cơ sở <span id="facilityLabel"></span></label>
+                        <select id="facilitySelect" name="facilitySelect" class="form-select"
+                                style="height: 60%;">
+                            <option value="">Chọn cơ sở</option>
+                        </select>
+                        <div class="text-danger" id="idFacilityError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="departmentSelect" class="form-label">
+                            <span class="text-danger"> * </span> Bộ môn </label>
+                        <select id="departmentSelect" name="departmentSelect" class="form-select"
+                                style="height: 60%;">
+                            <option value="">Chọn bộ môn</option>
+                        </select>
+                        <div class="text-danger" id="idDepartmentError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="majorSelect" class="form-label">
+                            <span class="text-danger"> * </span> Chuyên ngành </label>
+                        <select id="majorSelect" name="majorSelect" class="form-select"
+                                style="height: 60%;">
+                            <option value="">Chọn chuyên ngành</option>
+                        </select>
+                        <div class="text-danger" id="idMajorError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được
+                            trống!</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn btn-black" id="addMajorDepartmentButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End modal add major facility -->
+
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -221,5 +281,6 @@
 <script th:src="@{/js/loading.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
 <script th:src="@{/js/head-office/manage-staff/staff-role.js}"></script>
+<script th:src="@{/js/head-office/manage-staff/staff-major-facility.js}"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 package fplhn.udpm.examdistribution.core.headoffice.staff.repository;
 
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.response.HOStaffDepartmentFacilityResponse;
+import fplhn.udpm.examdistribution.entity.DepartmentFacility;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.repository.DepartmentFacilityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,5 +21,7 @@ public interface HOStaffDepartmentFacilityRepository extends DepartmentFacilityR
         WHERE df.status = 0
     """,nativeQuery = true)
     List<HOStaffDepartmentFacilityResponse> getDepartmentFacilities();
+
+    List<DepartmentFacility> findAllByDepartment_IdAndFacility_IdAndStatus(String departmentId, String facilityId, EntityStatus status);
 
 }

@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headoffice.role.repository;
 import fplhn.udpm.examdistribution.core.headoffice.role.model.request.HORoleRequest;
 import fplhn.udpm.examdistribution.core.headoffice.role.model.response.HORoleResponse;
 import fplhn.udpm.examdistribution.entity.Role;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.repository.RoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,8 @@ public interface HORoleRepository extends RoleRepository {
             nativeQuery = true)
     Page<HORoleResponse> getAllRole(Pageable pageable, HORoleRequest hoRoleRequest);
 
-    List<Role> findAllByCodeAndFacility_Id(String code,String facilityId);
+    List<Role> findAllByCodeAndFacility_Id(String code, String facilityId);
+
+    List<Role> findAllByCodeAndFacility_IdAndStatus(String code, String facilityId, EntityStatus status);
 
 }
