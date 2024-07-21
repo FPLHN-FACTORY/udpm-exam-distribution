@@ -12,4 +12,8 @@ public interface HOStaffRoleService {
 
     ResponseObject<?> updateStaffRole(HOStaffRoleChangePermissionRequest request);
 
+    ResponseObject<?> getFacilities();
+
+    ResponseObject<?> getFacilitiesSelect(String idStaff);
+
 }

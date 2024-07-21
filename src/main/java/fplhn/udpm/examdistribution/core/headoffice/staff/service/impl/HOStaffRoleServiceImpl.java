@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headoffice.staff.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRoleChangePermissionRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRoleRequest;
+import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffFacilityRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRoleRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.service.HOStaffRoleService;
@@ -13,6 +14,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.repository.RoleRepository;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HOStaffRoleServiceImpl implements HOStaffRoleService {
 
     private final HOStaffRoleRepository staffRoleRepository;
@@ -29,11 +32,7 @@ public class HOStaffRoleServiceImpl implements HOStaffRoleService {
 
     private final RoleRepository roleRepository;
 
-    public HOStaffRoleServiceImpl(HOStaffRoleRepository staffRoleRepository, HOStaffRepository staffRepository, RoleRepository roleRepository) {
-        this.staffRoleRepository = staffRoleRepository;
-        this.staffRepository = staffRepository;
-        this.roleRepository = roleRepository;
-    }
+    private final HOStaffFacilityRepository facilityRepository;
 
     @Override
     public ResponseObject<?> getAllRole(String staffId) {
@@ -68,6 +67,16 @@ public class HOStaffRoleServiceImpl implements HOStaffRoleService {
             staffRoleRepository.save(staffRoles.get(0));
         }
         return new ResponseObject<>(null, HttpStatus.OK, "change permission successfully");
+    }
+
+    @Override
+    public ResponseObject<?> getFacilities() {
+        return new ResponseObject<>(facilityRepository.getFacilities(), HttpStatus.OK, "Get facilities successfully");
+    }
+
+    @Override
+    public ResponseObject<?> getFacilitiesSelect(String idStaff) {
+        return new ResponseObject<>(facilityRepository.getFacilitiesSelect(idStaff), HttpStatus.OK, "Get facilities successfully");
     }
 
 }

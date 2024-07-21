@@ -118,7 +118,7 @@ function getRoles(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.content?.map((role, index) => {

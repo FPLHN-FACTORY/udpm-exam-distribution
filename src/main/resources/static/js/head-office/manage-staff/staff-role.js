@@ -4,16 +4,25 @@ $(document).ready(function () {
 
     getRolesByStaffId();
 
-    // getFacilities();
+    $('#facilitySelect').on('change',function (){
+
+    })
 
 });
 
+//START: Exam Distribution Information
+const examDistributionInfor = getExamDistributionInfo();
+
+//END: Exam Distribution Information
+
 function getDetailStaff() {
+
     let url = window.location.href;
 
     let idStaff = url.substring(url.lastIndexOf('/') + 1);
 
     let api = ApiConstant.API_HEAD_OFFICE_STAFF + '/' + idStaff;
+
     $.ajax({
         type: "GET",
         url: api,
@@ -34,24 +43,30 @@ function getDetailStaff() {
 }
 
 function getFacilities() {
-    let url = ApiConstant.API_HEAD_OFFICE_ROLE + '/facilities';
-    $.ajax({
-        type: "GET",
-        url: url,
-        success: function (responseBody) {
-            const facilities = responseBody?.data?.map((facility) => {
-                return `<option value="${facility.idFacility}">${facility.facilityName}</option>`
-            });
-            facilities.unshift('<option value="">Chọn cơ sở</option>');
-            $('#idFacility').html(facilities);
-            $('#modifyFacility').html(facilities);
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy dữ liệu cơ sở!');
-        }
+    let url = ApiConstant.API_HEAD_OFFICE_STAFF + '/facilities';
+    showLoading();
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (responseBody) {
+                const facilities = responseBody?.data?.map((facility) => {
+                    return `<option value="${facility.idFacility}" ${facility.idFacility === examDistributionInfor.facilityId ? "selected" : ""}>${facility.facilityName}</option>`;
+                });
+                facilities.unshift('<option value="">Tất cả</option>');
+                $('#idFacility').html(facilities);
+                $('#facilitySelect').html(facilities);
+                resolve();  // Resolve the promise when the AJAX call is successful
+                hideLoading();
+            },
+            error: function (error) {
+                showToastError('Có lỗi xảy ra khi lấy dữ liệu cơ sở!');
+                reject(error);  // Reject the promise if there's an error
+                hideLoading();
+            }
+        });
     });
 }
-
 
 function getRolesByStaffId() {
 
@@ -60,7 +75,9 @@ function getRolesByStaffId() {
     let idStaff = url.substring(url.lastIndexOf('/') + 1);
 
     let api = ApiConstant.API_HEAD_OFFICE_STAFF + '/role/' + idStaff;
+
     showLoading();
+
     $.ajax({
         type: "GET",
         url: api,
@@ -71,12 +88,13 @@ function getRolesByStaffId() {
                          <td colspan="8" style="text-align: center;">Nhân viên này không có chức vụ nào</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.map((role, index) => {
                 return `<tr>
                             <td>${index + 1}</td>
+                            <td>${role.roleCode}</td>  
                             <td>${role.roleName}</td>  
                             <td>${role.facilityName}</td>
                             <td><a>
@@ -97,10 +115,10 @@ $('#pagination').empty();
     hideLoading();
 }
 
-function handleDelete(idRole,roleName) {
+function handleDelete(idRole, roleName) {
     swal({
         title: "Xác nhận xóa?",
-        text: "Bạn chắc chắn muốn xóa chức vụ "+roleName+" của nhân viên này?",
+        text: "Bạn chắc chắn muốn xóa chức vụ " + roleName + " của nhân viên này?",
         type: "warning",
         buttons: {
             cancel: {
@@ -186,35 +204,35 @@ function getAllRoles(
         success: function (responseBody) {
             if (responseBody?.data?.content?.length === 0) {
                 $('#roleTableBodyModal').html(`
-                    <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
-                    </tr>
-                `);
-$('#pagination').empty();
+                                                <tr>
+                                                     <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                                                </tr>
+                                            `);
+                $('#pagination').empty();
                 return;
             }
             const roles = responseBody?.data?.content?.map((role, index) => {
-                return `<tr>
-                            
-                            <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
-                            <td>${role.roleName}</td>  
-                            <td>${role.facilityName}</td> 
-                            <td><div class="col-auto">
-                              <label class="colorinput">
-                                <input
-                                  name="color"
-                                  type="checkbox"
-                                  value="${role.idRole}"
-                                  class="colorinput-input checkboxRole"
-                                  ${role.checked == 1 ? "checked" : ""}
-                                />
-                                <span
-                                  class="colorinput-color bg-secondary"
-                                ></span>
-                              </label>
-                            </div>
-                            </td> 
-                        </tr>`;
+                return `<tr>                        
+                        <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
+                        <td>${role.roleCode}</td>  
+                        <td>${role.roleName}</td>  
+                        <td>${role.facilityName}</td> 
+                        <td><div class="col-auto">
+                          <label class="colorinput">
+                            <input
+                              name="color"
+                              type="checkbox"
+                              value="${role.idRole}"
+                              class="colorinput-input checkboxRole"
+                              ${role.checked == 1 ? "checked" : ""}
+                            />
+                            <span
+                              class="colorinput-color bg-secondary"
+                            ></span>
+                          </label>
+                        </div>
+                        </td> 
+            </tr>`;
             });
             $('#roleTableBodyModal').html(roles);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
@@ -281,11 +299,11 @@ function changePage(newCurrentPage) {
     getAllRoles(newCurrentPage, $('#pageSize').val(), $('#roleName').val(), $('#idFacility').val());
 }
 
-const openModalAddRole = () => {
+const openModalAddRole = async () => {
 
-    getFacilities();
+    await getFacilities();
 
-    getAllRoles();
+    getAllRoles(1, $('#pageSize').val(), $('#roleName').val(), $('#idFacility').val());
 
     handleChangePermission();
 

@@ -9,6 +9,5 @@ import lombok.Setter;
 public class HOStaffRequest extends PageableRequest {
 
     private String searchQuery;
-    private String searchQueryy;
 
 }

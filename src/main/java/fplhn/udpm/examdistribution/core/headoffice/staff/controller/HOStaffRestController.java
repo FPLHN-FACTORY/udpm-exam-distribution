@@ -6,18 +6,16 @@ import fplhn.udpm.examdistribution.core.headoffice.staff.service.HOStaffService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(MappingConstants.API_HEAD_OFFICE_STAFF)
+@RequiredArgsConstructor
 public class HOStaffRestController {
 
     private final HOStaffService staffService;
-
-    public HOStaffRestController(HOStaffService staffService) {
-        this.staffService = staffService;
-    }
 
     @GetMapping
     public ResponseEntity<?> getStaff(HOStaffRequest hoRoleStaffRequest) {
