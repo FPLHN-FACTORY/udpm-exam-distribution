@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
     <title>Teacher - Trang chủ</title>
 </head>
 <body>
@@ -18,37 +19,55 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
-            <div class="bg-white p-4 m-4 shadow rounded" style="min-height: 88vh;">
-                <div class="row d-flex justify-content-center align-items-center">
-                    <div class="col-md-5">
-                        <h1>Phòng thi</h1>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                            when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                            It has survived not only five centuries, but also the leap into electronic typesetting,
-                            remaining essentially unchanged. It was popularised in the 1960s with the release of
-                            Letraset
-                            sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                            like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        <button class="btn rounded" data-bs-toggle="modal"
-                                style="background-color: var(--common-button-color); color: white;"
-                                onclick="openModalAddExamShift()">
-                            <i class="fa-solid fa-school fa-3x"></i>
-                            <br><br>
-                            Tạo phòng
-                        </button>
-                        <button class="btn rounded" data-bs-toggle="modal"
-                                style="background-color: var(--common-button-color); color: white;"
-                                onclick="openModalJoinExamShift()">
-                            <i class="fa-solid fa-share-from-square fa-3x"></i>
-                            <br><br>
-                            Tham gia phòng
-                        </button>
+            <div class="bg-white p-4 m-4 shadow rounded">
+                <section class="">
+                    <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 97%)">
+                        <div class="container">
+                            <div class="row gx-lg-5 align-items-center">
+                                <div class="col-lg-6 mb-5 mb-lg-0 text-center">
+                                    <img src="../../assets/image/BeeSuperHeroLogo.png" class="w-100">
+                                </div>
+                                <div class="col-lg-6 mb-5 mb-lg-0">
+                                    <div class="card">
+                                        <div class="card-body py-5 px-md-5">
+                                            <form>
+                                                <img src="../../assets/image/Logo_FPT.png" class="mx-auto d-block">
+                                                <div class="mb-3">
+                                                    <label for="modifyExamShiftCodeJoin" class="form-label">Mã phòng
+                                                        thi</label>
+                                                    <input type="text" class="form-control" id="modifyExamShiftCodeJoin"
+                                                           required>
+                                                    <div class="invalid-feedback" id="examShiftCodeJoinError"></div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="modifyPasswordJoin" class="form-label">Mật khẩu phòng
+                                                        thi</label>
+                                                    <input type="password" class="form-control" id="modifyPasswordJoin"
+                                                           required>
+                                                    <div class="invalid-feedback" id="passwordJoinError"></div>
+                                                </div>
+
+                                                <div class="d-flex justify-content-center align-items-center mt-5">
+                                                    <button class="btn mx-2" data-bs-toggle="modal"
+                                                            style="background-color: var(--common-button-color); color: white;"
+                                                            onclick="openModalAddExamShift()">
+                                                        Tạo phòng
+                                                    </button>
+                                                    <button class="btn"
+                                                            type="button"
+                                                            style="background-color: var(--common-button-color); color: white;"
+                                                            id="modifyExamShiftJoinButton">
+                                                        Tham gia phòng
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-5 text-center">
-                        <img src="../../assets/image/BeeSuperHeroLogo.png" class="w-100">
-                    </div>
-                </div>
+                </section>
             </div>
         </div>
     </div>
@@ -123,44 +142,6 @@
         </div>
     </div>
     <!--Modal Create ExamShift -->
-
-    <!-- Modal Join ExamShift -->
-    <div class="modal fade" id="examShiftJoinModal" tabindex="-1" aria-labelledby="ExamShiftJoinModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="examShiftJoinModalLabel">Tham gia phòng thi</h5>
-                    <button type="button" class="btn-close"
-                            data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="joinExamShiftForm">
-                        <div class="mb-3">
-                            <label for="modifyExamShiftCodeJoin" class="form-label">Mã phòng thi</label>
-                            <input type="text" class="form-control" id="modifyExamShiftCodeJoin" required>
-                            <div class="invalid-feedback" id="examShiftCodeJoinError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyPasswordJoin" class="form-label">Mật khẩu phòng thi</label>
-                            <input type="password" class="form-control" id="modifyPasswordJoin" required>
-                            <div class="invalid-feedback" id="passwordJoinError"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
-                    </button>
-                    <button type="button" class="btn"
-                            style="background-color: var(--common-button-color); color: white;"
-                            id="modifyExamShiftJoinButton">Tham gia
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Modal Join ExamShift -->
 
     <!-- The toggle theme button -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>

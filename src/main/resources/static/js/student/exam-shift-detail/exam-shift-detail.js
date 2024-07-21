@@ -15,22 +15,26 @@ const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
 
-// document.addEventListener('contextmenu', (e) => {
-//     e.preventDefault()
-// });
-//
-// document.onkeydown = (e) => {
-//     const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
-//
-//     if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
-//         e.preventDefault();
-//         return false;
-//     }
-// }
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+});
+
+document.onkeydown = (e) => {
+    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+
+    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+        e.preventDefault();
+        return false;
+    }
+}
 
 $(document).ready(function () {
 
-    // detectDevTools();
+    if (devtools.isOpen) {
+        while (true) {
+            console.log("access denied")
+        }
+    }
 
     getExamShiftByCode();
 
@@ -63,14 +67,6 @@ $(document).ready(function () {
     // checkOnline();
 
 });
-
-const detectDevTools = () => {
-    if (devtools.isOpen) {
-        while (true) {
-            console.log("Access denied");
-        }
-    }
-}
 
 const openModalExamRule = () => {
     $('#examRuleOpenModal').modal('show');
@@ -213,7 +209,6 @@ function renderPage(num) {
 }
 
 const showViewAndPagingPdf = (totalPage) => {
-    console.log(totalPage);
     $("#pdf-viewer").prop("hidden", false);
     if (totalPage > 1) {
         $("#paging-pdf").prop("hidden", false);

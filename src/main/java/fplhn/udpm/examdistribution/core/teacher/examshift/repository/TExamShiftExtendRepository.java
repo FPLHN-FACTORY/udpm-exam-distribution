@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -73,19 +74,30 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
 
     @Query(value = """
             SELECT
-            	ep.id
+            	es.exam_shift_code as examShiftCode,
+            	s.name as subjectName,
+            	ep.`path` as pathExamPaper,
+            	s2.account_fe as accountFe,
+            	s2.account_fpt as accountFpt
             FROM
-            	exam_paper ep
+            	exam_shift es
+            JOIN exam_paper_shift eps ON
+            	es.id = eps.id_exam_shift
+            JOIN exam_paper ep ON
+            	ep.id = eps.id_exam_paper
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
             JOIN subject s ON
-            	ep.id_subject = s.id
-            JOIN department d ON
-            	d.id = s.id_department
-            JOIN department_facility df ON
-            	d.id = df.id_department
+            	cs.id_subject = s.id
+            JOIN subject_group sg ON
+            	s.id_subject_group = sg.id
+            JOIN head_subject_by_semester hsbs ON
+            	sg.id = hsbs.id_subject_group
+            JOIN staff s2 ON
+            	hsbs.id_staff = s2.id
             WHERE
-            	df.id = :departmentFacilityId
-            	AND ep.id_subject = :subjectId
-            	AND ep.exam_paper_type = 'OFFICIAL_EXAM_PAPER'
-            """, nativeQuery = true)
-    List<String> getListIdExamPaper(String departmentFacilityId, String subjectId);
+            	es.exam_shift_code = :examShiftCode
+                    """, nativeQuery = true)
+    THeadSubjectAndContentSendMailResponse getHeadSubjectAndContentSendMail(String examShiftCode);
+
 }
