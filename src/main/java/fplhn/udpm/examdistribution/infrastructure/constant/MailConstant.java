@@ -8,4 +8,14 @@ public class MailConstant {
 
     public static final String BODY = "";
 
+    public static final String BODY_START_EXAM_SHIFT = """
+            <html>
+                <body>
+                    <p>Phòng thi: ${examShiftCode} đã bắt đầu.</p>
+                    <p>Môn thi: ${subjectName}</p>
+                    <p>Link đề thi: <a href="${pathExamPaper}">${pathExamPaper}</a></p>
+                </body>
+            </html>
+            """;
+
 }

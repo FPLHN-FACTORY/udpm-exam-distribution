@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.core.teacher.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.TClassSubjectExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.exampaperbysemester.repository.TExamPaperBySemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.exampapershift.model.response.TExamPaperShiftResponse;
@@ -22,6 +23,7 @@ import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
@@ -67,11 +69,15 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
     private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
 
+    private final TExamPaperBySemesterExtendRepository tExamPaperBySemesterExtendRepository;
+
     private final GoogleDriveFileService googleDriveFileService;
 
     private final HttpSession httpSession;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    private final EmailService emailService;
 
     @Override
     public boolean findUsersInExamShift(String examShiftCode) {
@@ -301,16 +307,16 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
             }
 
-            if (examShift.get().getSecondSupervisor() == null) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
-            }
+//            if (examShift.get().getSecondSupervisor() == null) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
+//            }
 
             String departmentFacilityId
                     = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
             String subjectId = examShift.get().getClassSubject().getSubject().getId();
 
             List<String> getListIdExamPaper
-                    = tExamShiftExtendRepository.getListIdExamPaper(departmentFacilityId, subjectId);
+                    = tExamPaperBySemesterExtendRepository.getListIdExamPaper(departmentFacilityId, subjectId);
 
             Random random = new Random();
             int index = random.nextInt(getListIdExamPaper.size());
@@ -330,9 +336,9 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             String salt = PasswordUtils.generateSalt();
             String password = PasswordUtils.getSecurePassword(passwordExamPaperShift, salt);
 
-            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
-            }
+//            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
+//            }
 
             ExamPaperShift examPaperShift = new ExamPaperShift();
             examPaperShift.setExamShift(examShift.get());
@@ -362,10 +368,13 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             simpMessagingTemplate.convertAndSend("/topic/exam-shift-start",
                     new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
 
+            emailService.sendEmailWhenStartExamShift(tExamShiftExtendRepository.getHeadSubjectAndContentSendMail(examShiftCode));
+
             return new ResponseObject<>(
                     new TStartExamShiftResponse(
                             tExamPaperExtendRepository.getReferenceById(examPaperId).getPath()),
                     HttpStatus.OK, "Bắt đầu ca thi thành công!");
+
         } catch (Exception e) {
             return new ResponseObject<>(null,
                     HttpStatus.BAD_REQUEST, "Phát sinh lỗi khi bắt đầu ca thi!");
