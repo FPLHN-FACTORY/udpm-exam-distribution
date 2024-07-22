@@ -29,13 +29,13 @@ import java.util.stream.Stream;
 public class UploadStaffServiceImpl implements UploadStaffService {
 
     @Value("${file.upload.staff.path}")
-    public String FILE_UPLOAD_CLASS_SUBJECT_PATH;
+    public String FILE_UPLOAD_STAFF_PATH;
 
     private Path root;
 
     @PostConstruct
     public void init() {
-        root = Paths.get(FILE_UPLOAD_CLASS_SUBJECT_PATH);
+        root = Paths.get(FILE_UPLOAD_STAFF_PATH);
         try {
             Files.createDirectories(root);
         } catch (IOException e) {

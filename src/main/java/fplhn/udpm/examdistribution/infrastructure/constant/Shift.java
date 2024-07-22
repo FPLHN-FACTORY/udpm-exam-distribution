@@ -34,4 +34,14 @@ public enum Shift {
         }
         return null;
     }
+
+    public static Shift fromString(String shift) {
+        for (Shift s : Shift.values()) {
+            if (s.name().equals(shift)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 }

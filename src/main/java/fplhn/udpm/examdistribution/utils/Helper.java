@@ -45,4 +45,13 @@ public class Helper {
         return !matcher.matches();
     }
 
+    public static String extractPrefix(String input) {
+        Pattern pattern = Pattern.compile("^[A-Za-z]+\\d+");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
+    }
+
 }

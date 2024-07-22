@@ -4,13 +4,11 @@ import fplhn.udpm.examdistribution.infrastructure.config.upload.FileUploadServic
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -21,17 +19,18 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-@Service
-public class FileUploadServiceImpl implements FileUploadService {
+@Component
+public class FileUploadShiftServiceImpl implements FileUploadService {
 
-    @Value("${file.upload.class.subject.path}")
-    public String FILE_UPLOAD_CLASS_SUBJECT_PATH;
+    @Value("${file.upload.exam.shift.path}")
+    public String FILE_UPLOAD_EXAM_SHIFT_PATH;
 
     private Path root;
 
+    @Override
     @PostConstruct
     public void init() {
-        root = Paths.get(FILE_UPLOAD_CLASS_SUBJECT_PATH);
+        root = Paths.get(FILE_UPLOAD_EXAM_SHIFT_PATH);
         try {
             Files.createDirectories(root);
         } catch (IOException e) {
@@ -55,29 +54,10 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
     }
 
-    private String getFileExtension(String filename) {
-        return filename.substring(filename.lastIndexOf('.'));
-    }
-
-    private String generateUUIDFromTimestamp(Timestamp timestamp) {
-        UUID uuid = UUID.nameUUIDFromBytes(ByteBuffer.allocate(16).putLong(timestamp.getTime()).array());
-        return uuid.toString();
-    }
-
     @Override
-    public Resource load(String filename) {
-        try {
-            Path file = root.resolve(filename);
-            Resource resource = new UrlResource(file.toUri());
 
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("Could not read the file!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Error: " + e.getMessage());
-        }
+    public Resource load(String filename) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -87,12 +67,16 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public Stream<Path> loadAll() {
-        try (Stream<Path> paths = Files.walk(this.root, 1)) {
-            return paths.filter(path -> !path.equals(this.root)).map(this.root::relativize);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load the files!");
-        }
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private String getFileExtension(String filename) {
+        return filename.substring(filename.lastIndexOf('.'));
+    }
+
+    private String generateUUIDFromTimestamp(Timestamp timestamp) {
+        UUID uuid = UUID.nameUUIDFromBytes(ByteBuffer.allocate(16).putLong(timestamp.getTime()).array());
+        return uuid.toString();
     }
 
 }
-

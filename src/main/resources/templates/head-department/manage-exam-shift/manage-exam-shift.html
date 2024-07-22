@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quản lý ca thi</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/common/tag.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-department:: sidebar-head-of-department}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quản lý ca thi</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded mb-4">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-filter"></i> Lọc dữ liệu</h4>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="blockInfo">Block</label>
+                                    <select class="form-select" id="blockInfo" style="height: 40px;">
+                                        <option value="">Chọn block</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="joinCode">Mã tham gia</label>
+                                    <input type="text" class="form-control" id="joinCode" placeholder="Nhập mã ca thi"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classSubjectCode">Mã lớp môn</label>
+                                    <input type="text" class="form-control" id="classSubjectCode"
+                                           placeholder="Nhập mã lớp môn"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examDate">Ngày thi</label>
+                                    <input type="date" class="form-control" id="examDate"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examShift">Ca thi</label>
+                                    <select class="form-select" id="examShift" style="height: 40px;">
+                                        <option value="">Chọn ca thi</option>
+                                        <option value="CA1">CA1</option>
+                                        <option value="CA2">CA2</option>
+                                        <option value="CA3">CA3</option>
+                                        <option value="CA4">CA4</option>
+                                        <option value="CA5">CA5</option>
+                                        <option value="CA6">CA6</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="room">Phòng thi</label>
+                                    <input type="text" class="form-control" id="room" placeholder="Nhập phòng thi"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffCode">Mã giám thị</label>
+                                    <input type="text" class="form-control" id="staffCode"
+                                           placeholder="Nhập mã giám thị"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subjectCode">Mã giám thị</label>
+                                    <input type="text" class="form-control" id="subjectCode"
+                                           placeholder="Nhập mã giám thị"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Filter -->
+                    <!-- Table -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-list"></i> Danh sách ca thi</h4>
+                            <div>
+                                <button
+                                        id="btnImportExamShift"
+                                        type="button"
+                                        class="btn btn-black"
+                                >
+                                    Import danh sách ca thi
+                                </button>
+                                <input
+                                        type="file"
+                                        id="fileImportExamShift"
+                                        accept=".xlsx, .xls"
+                                        style="display: none;"
+                                />
+                            </div>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="ant-table">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã lớp môn</td>
+                                    <td>Thông tin môn học</td>
+                                    <td>Giám thị 1</td>
+                                    <td>Giám thị 2</td>
+                                    <td>Mã tham gia</td>
+                                    <td>Ngày thi</td>
+                                    <td>Phòng thi</td>
+                                    <td>Ca thi</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="manageExamShiftTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="8" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationExamShift">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/sidebar-track.js}"></script>
+<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+<script th:src="@{/js/constants.js}"></script>
+<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+<script th:src="@{/js/utils.js}"></script>
+<script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+<script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/js/head-department/manage-exam-shift/manage-exam-shift.js}"></script>
+</body>
+</html>
