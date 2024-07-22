@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,15 +19,16 @@ public interface FacilityExtendRepository extends FacilityRepository {
             value = """
                     SELECT
                         ROW_NUMBER() OVER (
-                        ORDER BY fa.id DESC ) as orderNumber,
-                        fa.id as id,
-                        fa.name as facilityName,
-                        fa.status as facilityStatus,
-                        fa.created_date as createdDate
+                        ORDER BY fa.id DESC ) AS orderNumber,
+                        fa.id AS id,
+                        fa.name AS facilityName,
+                        fa.code AS facilityCode,
+                        fa.status AS facilityStatus,
+                        fa.created_date AS createdDate
                     FROM
                         facility fa
                     WHERE
-                        (:#{#request.name} IS NULL OR fa.name LIKE CONCAT('%',:#{#request.name},'%'))
+                        (:#{#request.name} IS NULL OR fa.name LIKE CONCAT('%',:#{#request.name},'%') OR fa.code LIKE CONCAT('%',:#{#request.name},'%'))
                         AND (:#{#request.status} IS NULL OR fa.status = :#{#request.status}) 
                     """,
             countQuery = """
@@ -45,10 +47,11 @@ public interface FacilityExtendRepository extends FacilityRepository {
     @Query(
             value = """
                     SELECT
-                        fa.id as id,
-                        fa.name as facilityName,
-                        fa.status as facilityStatus,
-                        fa.created_date as createdDate
+                        fa.id AS id,
+                        fa.code AS facilityCode,
+                        fa.name AS facilityName,
+                        fa.status AS facilityStatus,
+                        fa.created_date AS createdDate
                     FROM
                         facility fa
                     WHERE
@@ -58,7 +61,7 @@ public interface FacilityExtendRepository extends FacilityRepository {
     )
     Optional<FacilityResponse> getDetailFacilityById(String facilityId);
 
-    Optional<Facility> findByName(String name);
+    List<Facility> findAllByName(String name);
 
     boolean existsByNameAndIdNot(String name,String id);
 }

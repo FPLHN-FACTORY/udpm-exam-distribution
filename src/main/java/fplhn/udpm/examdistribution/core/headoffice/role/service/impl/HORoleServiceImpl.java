@@ -79,22 +79,14 @@ public class HORoleServiceImpl implements HORoleService {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cơ sở không tồn tại");
         }
 
-        // Chuyển role name chuỗi thành chữ hoa
-        String upperCaseString = roleRequest.getRoleName().toUpperCase();
-
-        // Loại bỏ dấu
-        String normalizedString = Normalizer.normalize(upperCaseString, Normalizer.Form.NFD);
-        String withoutAccentString = normalizedString.replaceAll("\\p{M}", "");
-
-        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
-        String roleCode = withoutAccentString.replaceAll("\\s+", "_");
+        String roleCode = Helper.generateCodeFromName(roleRequest.getRoleName().trim());
 
         //create role
         if (roleRequest.getRoleId() == null || roleRequest.getRoleId().isEmpty()) {
             Role role = new Role();
             role.setId(CodeGenerator.generateRandomCode());
             role.setCode(roleCode.trim());
-            role.setName(roleRequest.getRoleName());
+            role.setName(Helper.replaceManySpaceToOneSpace(roleRequest.getRoleName().trim()));
             role.setFacility(facility.isPresent() ? facility.get() : null);
             role.setStatus(EntityStatus.ACTIVE);
 
@@ -120,7 +112,7 @@ public class HORoleServiceImpl implements HORoleService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy chức vụ");
             } else {
                 role.get().setCode(roleCode.trim());
-                role.get().setName(roleRequest.getRoleName().trim());
+                role.get().setName(Helper.replaceManySpaceToOneSpace(roleRequest.getRoleName().trim()));
                 role.get().setFacility(facility.isPresent() ? facility.get() : null);
                 List<Role> optionalRole = roleRepository.findAllByCodeAndFacility_Id(roleCode.trim(), roleRequest.getIdFacility());
                 if (optionalRole.isEmpty()) {

@@ -21,6 +21,10 @@ import java.io.Serializable;
 @Table(name = "facility")
 public class Facility extends PrimaryEntity implements Serializable {
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    @Nationalized
+    private String code;
+
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;

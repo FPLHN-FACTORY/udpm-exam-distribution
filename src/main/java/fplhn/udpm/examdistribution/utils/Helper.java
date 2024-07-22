@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 
+import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,28 @@ public class Helper {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(phoneNumber);
         return !matcher.matches();
+    }
+
+    public static String generateCodeFromName(String name) {
+        // Chuyển role name chuỗi thành chữ hoa
+        String upperCaseString = name.toUpperCase();
+
+        // Loại bỏ dấu
+        String normalizedString = Normalizer.normalize(upperCaseString, Normalizer.Form.NFD);
+        String withoutAccentString = normalizedString.replaceAll("\\p{M}", "");
+
+        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
+        return withoutAccentString.replaceAll("\\s+", "_");
+    }
+
+    public static String replaceManySpaceToOneSpace(String name) {
+        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
+        return name.replaceAll("\\s+", " ");
+    }
+
+    public static String replaceSpaceToEmpty(String name) {
+        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
+        return name.replaceAll("\\s+", "");
     }
 
     public static String extractPrefix(String input) {
