@@ -244,8 +244,8 @@ document.getElementById('export-docx').addEventListener('click', () => {
             tempDiv.innerHTML = content;
             const images = tempDiv.getElementsByTagName("img");
             for (let img of images) {
-                if (img.width > 400) {
-                    img.width = 400;
+                if (img.width > 700) {
+                    img.width = 700;
                 }
             }
             const modifiedContent = tempDiv.innerHTML;

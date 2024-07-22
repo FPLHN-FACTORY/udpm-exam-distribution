@@ -154,7 +154,7 @@ public class EditExamPaperServiceImpl implements EditExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        "Nội quy thi không được lớn hơn 20MB"
                 );
             }
 

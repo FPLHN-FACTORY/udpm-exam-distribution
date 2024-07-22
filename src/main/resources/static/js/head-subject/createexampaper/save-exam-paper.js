@@ -18,7 +18,7 @@ const convertJoditContentToPdf = async () => {
 
     const images = element.getElementsByTagName("img");
     for (let img of images) {
-        if (img.width > 700) {
+        if (img.width > 800) {
             img.width = 700;
         }
     }
@@ -59,7 +59,18 @@ const convertJoditContentToPdf = async () => {
 
 const convertJoditContentToDocx = () => {
     const content = editor.getEditorValue();
-    const converted = htmlDocx.asBlob(content);
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = content;
+    const images = tempDiv.getElementsByTagName("img");
+    for (let img of images) {
+        if (img.width > 700) {
+            img.width = 700;
+        }
+    }
+    const modifiedContent = tempDiv.innerHTML;
+
+    const converted = htmlDocx.asBlob(modifiedContent);
     // Create a File object from the Blob
     return new File([converted], "document.docx", {type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
     // For demonstration purposes, log the file object to the console
