@@ -16,6 +16,28 @@ const convertJoditContentToPdf = async () => {
     const element = document.createElement('div');
     element.innerHTML = content;
 
+    const images = element.getElementsByTagName("img");
+    for (let img of images) {
+        if (img.width > 700) {
+            img.width = 700;
+        }
+    }
+
+    const tables = element.getElementsByTagName("table");
+    for (let table of tables) {
+        if (table.style.width && parseInt(table.style.width) > 700) {
+            table.style.width = '700px';
+        }
+        else {
+            const computedWidth = window.getComputedStyle(table).width;
+            if (parseInt(computedWidth) > 700) {
+                table.style.width = '700px';
+            }
+        }
+    }
+
+    const modifiedContent = element.innerHTML;
+
     // Sử dụng html2pdf để chuyển đổi nội dung HTML thành Blob
     const opt = {
         margin: 0.5,
@@ -26,7 +48,7 @@ const convertJoditContentToPdf = async () => {
     };
 
     try {
-        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        const pdfBlob = await html2pdf().set(opt).from(modifiedContent).outputPdf('blob');
 
         return new File([pdfBlob], "document.pdf", {type: "application/pdf"});
 

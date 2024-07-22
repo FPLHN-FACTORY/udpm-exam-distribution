@@ -199,7 +199,7 @@ document.getElementById('export-pdf').addEventListener('click', () => {
     }).then((ok) => {
         if (ok) {
             showLoading();
-            setTimeout( async () => {
+            setTimeout(async () => {
                 const pdfFile = await convertJoditContentToPdf();
                 if (pdfFile) {
                     // Ví dụ: Bạn có thể tải file xuống
@@ -213,7 +213,7 @@ document.getElementById('export-pdf').addEventListener('click', () => {
                     URL.revokeObjectURL(url);
                 }
                 hideLoading();
-            }, 1000);
+            }, 0);
         }
     });
 });
@@ -238,25 +238,34 @@ document.getElementById('export-docx').addEventListener('click', () => {
     }).then((ok) => {
         if (ok) {
             showLoading();
-            setTimeout(() => {
-                const content = editor.getEditorValue();
-                const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
-                    "xmlns:w='urn:schemas-microsoft-com:office:word' " +
-                    "xmlns='http://www.w3.org/TR/REC-html40'>" +
-                    "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
-                const footer = "</body></html>";
-                const sourceHTML = header + content + footer;
+            const content = editor.getEditorValue();
 
-                const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-                const fileDownload = document.createElement("a");
-                document.body.appendChild(fileDownload);
-                fileDownload.href = source;
-                fileDownload.download = 'document.docx';
-                fileDownload.click();
-                document.body.removeChild(fileDownload);
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = content;
+            const images = tempDiv.getElementsByTagName("img");
+            for (let img of images) {
+                if (img.width > 400) {
+                    img.width = 400;
+                }
+            }
+            const modifiedContent = tempDiv.innerHTML;
 
-                hideLoading();
-            }, 1000);
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+            const footer = "</body></html>";
+            const sourceHTML = header + modifiedContent + footer;
+
+            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            const fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'document.docx';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+
+            hideLoading();
         }
     });
 });
