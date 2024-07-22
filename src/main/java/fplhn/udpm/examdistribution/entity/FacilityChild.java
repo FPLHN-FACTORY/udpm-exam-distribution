@@ -23,6 +23,10 @@ import java.io.Serializable;
 @Table(name = "facility_child")
 public class FacilityChild extends PrimaryEntity implements Serializable {
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    @Nationalized
+    private String code;
+
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;

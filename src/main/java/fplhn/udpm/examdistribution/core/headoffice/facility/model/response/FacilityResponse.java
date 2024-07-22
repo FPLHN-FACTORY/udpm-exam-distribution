@@ -8,6 +8,8 @@ public interface FacilityResponse extends IsIdentify, HasOrderNumber {
 
     String getFacilityName();
 
+    String getFacilityCode();
+
     Integer getFacilityStatus();
 
     Long getCreatedDate();

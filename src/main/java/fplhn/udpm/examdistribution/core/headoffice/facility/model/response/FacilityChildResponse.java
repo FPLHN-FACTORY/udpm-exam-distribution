@@ -5,6 +5,8 @@ import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
 public interface FacilityChildResponse extends IsIdentify, HasOrderNumber {
 
+    String getFacilityChildCode();
+
     String getFacilityChildName();
 
     Integer getFacilityChildStatus();

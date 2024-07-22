@@ -22,125 +22,128 @@
         </div>
         <div class="container">
             <div class="p-4">
-                <div class="tab-pane fade show active" id="pills-upload-exam-paper" role="tabpanel"
-                     aria-labelledby="pills-upload-exam-paper-tab" tabindex="0">
-                    <div class="bg-white shadow rounded min-vh-100">
-                        <div class="p-4">
-                            <h2>Tải đề thi</h2>
-                        </div>
-                        <div class="p-4">
-                            <!-- Filter -->
-                            <div class="shadow p-4 mb-4 bg-white rounded">
-                                <h3 class="m-portlet__head-text">
-                                    <i class="fa-solid fa-filter"></i> Bộ lọc
-                                </h3>
-                                <div class="row">
-                                    <div class="col form-group">
-                                        <label for="semesterId">Học kỳ</label>
-                                        <select id="semesterId" name="semesterId"
-                                                class="form-select"
-                                                style="height: 60%;">
-                                        </select>
-                                    </div>
-                                    <div class="col form-group">
-                                        <label for="blockId">Block</label>
-                                        <select id="blockId" name="semesterId"
-                                                class="form-select"
-                                                style="height: 60%;">
-                                        </select>
-                                    </div>
+                <div class="bg-white shadow rounded min-vh-100">
+                    <div class="p-4">
+                        <h2>Tải đề thi</h2>
+                    </div>
+                    <div class="p-4">
+                        <!-- Filter -->
+                        <div class="shadow p-4 mb-4 bg-white rounded">
+                            <h3 class="m-portlet__head-text">
+                                <i class="fa-solid fa-filter"></i> Bộ lọc
+                            </h3>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="semesterId">Học kỳ</label>
+                                    <select id="semesterId" name="semesterId"
+                                            class="form-select"
+                                            style="height: 60%;">
+                                    </select>
                                 </div>
-                                <div class="row">
-                                    <div class="col form-group">
-                                        <label for="subjectId">Người tải</label>
-                                        <select id="staffId" name="subjectId"
-                                                class="form-select"
-                                                style="height: 60%;">
-                                        </select>
-                                    </div>
-                                    <div class="col form-group">
-                                        <label for="subjectId">Môn học</label>
-                                        <select id="subjectId" name="subjectId"
-                                                class="form-select"
-                                                style="height: 60%;">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col form-group">
-                                        <label for="examPaperTypeId">Loại đề thi</label>
-                                        <select id="examPaperTypeId" name="form-select"
-                                                class="form-select"
-                                                style="height: 60%;">
-                                            <option value="">--Chọn loại đề--</option>
-                                            <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
-                                            <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="text-center mt-4">
-                                    <button onclick="handleSearchListExamPaper()" type="button"
-                                            class="btn btn-black">Tìm kiếm
-                                    </button>
-                                    <button
-                                            onclick="handleClearSearchListExamPaper()"
-                                            type="reset"
-                                            class="btn"
-                                            style="background-color: var(--common-button-color); color: white;"
-                                    >
-                                        Xóa bộ lọc
-                                    </button>
+                                <div class="col form-group">
+                                    <label for="blockId">Block</label>
+                                    <select id="blockId" name="semesterId"
+                                            class="form-select"
+                                            style="height: 60%;">
+                                    </select>
                                 </div>
                             </div>
-                            <!-- Filter -->
-                            <div class="shadow p-4 bg-white rounded">
-                                <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
-                                    <h4 style="margin-bottom: 0">Danh sách đề thi</h4>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="subjectId">Người tải</label>
+                                    <select id="staffId" name="subjectId"
+                                            class="form-select"
+                                            style="height: 60%;">
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectId">Môn học</label>
+                                    <select id="subjectId" name="subjectId"
+                                            class="form-select"
+                                            style="height: 60%;">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="examPaperTypeId">Loại đề thi</label>
+                                    <select id="examPaperTypeId" name="form-select"
+                                            class="form-select"
+                                            style="height: 60%;">
+                                        <option value="">--Chọn loại đề--</option>
+                                        <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
+                                        <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button onclick="handleSearchListExamPaper()" type="button"
+                                        class="btn btn-black">Tìm kiếm
+                                </button>
+                                <button
+                                        onclick="handleClearSearchListExamPaper()"
+                                        type="reset"
+                                        class="btn"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Filter -->
+                        <div class="shadow p-4 bg-white rounded">
+                            <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                                <h4 style="margin-bottom: 0">Danh sách đề thi</h4>
+                                <div>
+                                    <button onclick="handleRedirectCreateExamPaper()" class="btn btn-black mr-2"
+                                            data-bs-toggle="modal">
+                                        Tạo đề thi
+                                    </button>
                                     <button onclick="handleOpenModalExamPaper('',3)" class="btn btn-black"
                                             data-bs-toggle="modal">
                                         Tải đề thi
                                     </button>
                                 </div>
-                                <div class="table-responsive mt-4">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <td>STT</td>
-                                            <td>Mã đề thi</td>
-                                            <td>Môn</td>
-                                            <td>Chuyên ngành</td>
-                                            <td>Loại đề thi</td>
-                                            <td>Giảng viên tải đề</td>
-                                            <td>Ngày tạo</td>
-                                            <td>Trạng thái</td>
-                                            <td>Cơ sở</td>
-                                            <td>Chọn đề</td>
-                                            <td
-                                                    style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành
-                                                động
-                                            </td>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="examPaperTableBody" class="table-group-divider">
-                                        <tr>
-                                            <td colspan="6" class="text-center">Không có dữ liệu</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="d-flex justify-content-end align-items-center gap-3">
-                                        <div class="d-flex align-items-center">
-                                            <nav>
-                                                <ul class="pagination" id="paginationFirstPage">
-                                                </ul>
-                                            </nav>
-                                        </div>
-                                        <select class="form-select" id="pageSizeFirstPage" style="width: 100px;">
-                                            <option value="5">5 bản ghi / Trang</option>
-                                            <option value="10">10 bản ghi / Trang</option>
-                                            <option value="20">20 bản ghi / Trang</option>
-                                            <option value="50">50 bản ghi / Trang</option>
-                                        </select>
+                            </div>
+                            <div class="table-responsive mt-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <td>STT</td>
+                                        <td>Mã đề thi</td>
+                                        <td>Môn</td>
+                                        <td>Chuyên ngành</td>
+                                        <td>Loại đề thi</td>
+                                        <td>Giảng viên tải đề</td>
+                                        <td>Ngày tạo</td>
+                                        <td>Trạng thái</td>
+                                        <td>Cơ sở</td>
+                                        <td>Chọn đề</td>
+                                        <td
+                                                style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành
+                                            động
+                                        </td>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="examPaperTableBody" class="table-group-divider">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <nav>
+                                            <ul class="pagination" id="paginationFirstPage">
+                                            </ul>
+                                        </nav>
                                     </div>
+                                    <select class="form-select" id="pageSizeFirstPage" style="width: 100px;">
+                                        <option value="5">5 bản ghi / Trang</option>
+                                        <option value="10">10 bản ghi / Trang</option>
+                                        <option value="20">20 bản ghi / Trang</option>
+                                        <option value="50">50 bản ghi / Trang</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

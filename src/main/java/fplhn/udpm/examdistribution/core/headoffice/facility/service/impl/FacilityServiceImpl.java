@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,38 +37,41 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Override
     public ResponseObject<?> createFacility(CreateUpdateFacilityRequest request) {
-        Optional<Facility> facilityOptional = facilityExtendRepository.findByName(request.getFacilityName().trim());
-        if (facilityOptional.isPresent()) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Facility already exists");
+        List<Facility> facilityOptional = facilityExtendRepository.findAllByName(request.getFacilityName().trim());
+        if (!facilityOptional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cơ sở đã tồn tại");
         }
-
+        String code = Helper.generateCodeFromName(request.getFacilityName());
         Facility facility = new Facility();
-        facility.setName(request.getFacilityName());
+        facility.setCode(code);
+        facility.setName(Helper.replaceManySpaceToOneSpace(request.getFacilityName()));
         facility.setCreatedDate(System.currentTimeMillis());
         facility.setStatus(EntityStatus.ACTIVE);
         facilityExtendRepository.save(facility);
 
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Create facility successfully");
+        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm cơ sở thành công");
     }
 
     @Override
     public ResponseObject<?> updateFacility(String facilityId, CreateUpdateFacilityRequest request) {
         if (facilityExtendRepository.existsByNameAndIdNot(request.getFacilityName(), facilityId)) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Facility already exists");
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cơ sở đã tồn tại");
         }
 
         Optional<Facility> facilityOptional = facilityExtendRepository.findById(facilityId);
 
+
         facilityOptional.map(facility -> {
-            facility.setName(request.getFacilityName());
+            facility.setCode(Helper.generateCodeFromName(request.getFacilityName().trim()));
+            facility.setName(Helper.replaceManySpaceToOneSpace(  request.getFacilityName().trim()));
             facility.setCreatedDate(facility.getCreatedDate());
             facility.setStatus(EntityStatus.ACTIVE);
             return facilityExtendRepository.save(facility);
         });
 
         return facilityOptional
-                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Update Facility successfully"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility not found"));
+                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật cơ sở thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy cơ sở"));
     }
 
     @Override
@@ -82,8 +86,8 @@ public class FacilityServiceImpl implements FacilityService {
         });
 
         return facilityOptional
-                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Update status Facility successfully"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility not found"));
+                .map(subject -> new ResponseObject<>(null, HttpStatus.OK, "Đổi trạng thái cơ sở thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy cơ sở"));
     }
 
     @Override

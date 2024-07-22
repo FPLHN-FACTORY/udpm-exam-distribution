@@ -277,17 +277,9 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
             ExamPaper putExamPaper = new ExamPaper();
 
-            Long now = new Date().getTime();
-            boolean isFoundBlock = false;
-            for (Block block : blockRepository.findAll()) {
-                if (block.getStartTime() <= now && now <= block.getEndTime()) {
-                    putExamPaper.setBlock(block);
-                    isFoundBlock = true;
-                    break;
-                }
-            }
-
-            if (!isFoundBlock) {
+            String blockId = sessionHelper.getCurrentBlockId();
+            Optional<Block> isBlockExist = blockRepository.findById(blockId);
+            if(isBlockExist.isEmpty()){
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
@@ -299,6 +291,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
+            putExamPaper.setBlock(isBlockExist.get());
             putExamPaper.setPath(googleDriveFileDTO.getId());
             putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
             putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
