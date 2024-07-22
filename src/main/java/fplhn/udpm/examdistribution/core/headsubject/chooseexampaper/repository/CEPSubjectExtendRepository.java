@@ -17,9 +17,11 @@ public interface CEPSubjectExtendRepository extends SubjectRepository {
             FROM
                 head_subject_by_semester hsbs
             JOIN subject_group sg ON
-                hsbs.id_subject_group = sg.id
+                sg.id = hsbs.id_subject_group
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id_subject_group = sg.id
+                s.id = sbsg.id_subject
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND
@@ -31,9 +33,11 @@ public interface CEPSubjectExtendRepository extends SubjectRepository {
             FROM
                 head_subject_by_semester hsbs
             JOIN subject_group sg ON
-                hsbs.id_subject_group = sg.id
+                sg.id = hsbs.id_subject_group
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id_subject_group = sg.id
+                s.id = sbsg.id_subject
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND

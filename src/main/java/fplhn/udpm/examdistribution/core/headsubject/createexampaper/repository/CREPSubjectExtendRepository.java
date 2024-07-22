@@ -16,10 +16,12 @@ public interface CREPSubjectExtendRepository extends SubjectRepository {
             	s.name AS name
             FROM
                 head_subject_by_semester hsbs
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = hsbs.id_subject_group
             JOIN subject_group sg ON
-                hsbs.id_subject_group = sg.id
+                sg.id = sbsg.id_subject_group
             JOIN subject s ON
-                s.id_subject_group = sg.id
+                s.id = sbsg.id_subject
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND
@@ -30,10 +32,12 @@ public interface CREPSubjectExtendRepository extends SubjectRepository {
             	COUNT(hsbs.id)
             FROM
                 head_subject_by_semester hsbs
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = hsbs.id_subject_group
             JOIN subject_group sg ON
-                hsbs.id_subject_group = sg.id
+                sg.id = sbsg.id_subject_group
             JOIN subject s ON
-                s.id_subject_group = sg.id
+                s.id = sbsg.id_subject
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND
