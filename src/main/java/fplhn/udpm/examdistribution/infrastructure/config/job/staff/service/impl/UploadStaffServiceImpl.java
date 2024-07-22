@@ -47,7 +47,7 @@ public class UploadStaffServiceImpl implements UploadStaffService {
     public String save(MultipartFile file) {
         try {
             if (file.getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
-                throw new RuntimeException("File không được quá 50MB!");
+                throw new RuntimeException(GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE);
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String fileExtension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));

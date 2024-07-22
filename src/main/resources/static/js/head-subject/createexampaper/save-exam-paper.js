@@ -18,7 +18,7 @@ const convertJoditContentToPdf = async () => {
 
     const images = element.getElementsByTagName("img");
     for (let img of images) {
-        if (img.width > 800) {
+        if (img.width > 700) {
             img.width = 700;
         }
     }
@@ -38,17 +38,16 @@ const convertJoditContentToPdf = async () => {
 
     const modifiedContent = element.innerHTML;
 
-    // Sử dụng html2pdf để chuyển đổi nội dung HTML thành Blob
-    const opt = {
+    const options = {
         margin: 0.5,
         filename: 'document.pdf',
-        image: {type: 'png', quality: 1},
+        image: {type: 'jpeg', quality: 1},
         html2canvas: {scale: 2},
         jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait'},
     };
 
     try {
-        const pdfBlob = await html2pdf().set(opt).from(modifiedContent).outputPdf('blob');
+        const pdfBlob = await html2pdf().set(options).from(modifiedContent).outputPdf('blob');
 
         return new File([pdfBlob], "document.pdf", {type: "application/pdf"});
 
@@ -123,6 +122,8 @@ const handleSaveExamPaperConfirm = async (status) => {
 };
 
 const handleSaveExamPaper = async (status) => {
+    showLoading();
+
     const data = new FormData();
 
     data.append("examPaperType", getValueExamPaperType());
@@ -136,7 +137,6 @@ const handleSaveExamPaper = async (status) => {
 
     handleResetFieldsError();
 
-    showLoading();
     $.ajax({
         url: ApiConstant.API_HEAD_SUBJECT_CREATE_EXAM_PAPER + "/exam-paper",
         method: "POST",

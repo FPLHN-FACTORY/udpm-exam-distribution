@@ -70,6 +70,10 @@ public class EditExamPaperServiceImpl implements EditExamPaperService {
             return new ResponseEntity<>("Vui lòng tải lên file PDF", HttpStatus.NOT_ACCEPTABLE);
         }
 
+        if(file.getSize() > GoogleDriveConstant.MAX_FILE_SIZE){
+            return new ResponseEntity<>(GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE, HttpStatus.NOT_ACCEPTABLE);
+        }
+
         try {
             // Tạo tài liệu Word mới
             XWPFDocument doc = new XWPFDocument();
@@ -78,19 +82,13 @@ public class EditExamPaperServiceImpl implements EditExamPaperService {
             PDDocument pdfDocument = PDDocument.load(file.getInputStream());
             PDFTextStripper stripper = new PDFTextStripper();
 
-            // Đọc file PDF từng trang và trích xuất văn bản
-            for (int i = 1; i <= pdfDocument.getNumberOfPages(); i++) {
-                stripper.setStartPage(i);
-                stripper.setEndPage(i);
-                String text = stripper.getText(pdfDocument);
+            // Đọc file PDF từ trang đầu tiên đến trang cuối cùng
+            String text = stripper.getText(pdfDocument);
 
-                XWPFParagraph p = doc.createParagraph();
-                XWPFRun run = p.createRun();
-                run.setText(text);
-                if (i < pdfDocument.getNumberOfPages()) {
-                    run.addBreak(BreakType.PAGE);
-                }
-            }
+            // Tạo đoạn văn và thêm văn bản vào tài liệu Word
+            XWPFParagraph p = doc.createParagraph();
+            XWPFRun run = p.createRun();
+            run.setText(text);
 
             // Ghi tài liệu Word ra ByteArrayOutputStream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -154,7 +152,7 @@ public class EditExamPaperServiceImpl implements EditExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 20MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 

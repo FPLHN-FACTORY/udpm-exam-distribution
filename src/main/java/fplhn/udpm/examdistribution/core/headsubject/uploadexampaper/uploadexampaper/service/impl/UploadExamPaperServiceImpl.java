@@ -215,7 +215,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 
@@ -305,7 +305,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 

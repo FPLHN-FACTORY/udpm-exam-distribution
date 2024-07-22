@@ -253,7 +253,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 
@@ -336,7 +336,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 
