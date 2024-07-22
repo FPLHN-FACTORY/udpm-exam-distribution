@@ -33,6 +33,75 @@
                         <div class="d-flex justify-content-between mt-4">
                             <h4><i class="fa-solid fa-filter"></i> Lọc dữ liệu</h4>
                         </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="blockInfo">Block</label>
+                                    <select class="form-select" id="blockInfo" style="height: 40px;">
+                                        <option value="">Chọn block</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="joinCode">Mã tham gia</label>
+                                    <input type="text" class="form-control" id="joinCode" placeholder="Nhập mã ca thi"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classSubjectCode">Mã lớp môn</label>
+                                    <input type="text" class="form-control" id="classSubjectCode"
+                                           placeholder="Nhập mã lớp môn"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examDate">Ngày thi</label>
+                                    <input type="date" class="form-control" id="examDate"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examShift">Ca thi</label>
+                                    <select class="form-select" id="examShift" style="height: 40px;">
+                                        <option value="">Chọn ca thi</option>
+                                        <option value="CA1">CA1</option>
+                                        <option value="CA2">CA2</option>
+                                        <option value="CA3">CA3</option>
+                                        <option value="CA4">CA4</option>
+                                        <option value="CA5">CA5</option>
+                                        <option value="CA6">CA6</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="room">Phòng thi</label>
+                                    <input type="text" class="form-control" id="room" placeholder="Nhập phòng thi"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffCode">Mã giám thị</label>
+                                    <input type="text" class="form-control" id="staffCode"
+                                           placeholder="Nhập mã giám thị"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subjectCode">Mã giám thị</label>
+                                    <input type="text" class="form-control" id="subjectCode"
+                                           placeholder="Nhập mã giám thị"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- Filter -->
                     <!-- Table -->
@@ -60,8 +129,14 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Tên chức vụ nhóm môn học</td>
-                                    <td>Kỳ học</td>
+                                    <td>Mã lớp môn</td>
+                                    <td>Thông tin môn học</td>
+                                    <td>Giám thị 1</td>
+                                    <td>Giám thị 2</td>
+                                    <td>Mã tham gia</td>
+                                    <td>Ngày thi</td>
+                                    <td>Phòng thi</td>
+                                    <td>Ca thi</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
