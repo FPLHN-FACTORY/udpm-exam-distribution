@@ -26,9 +26,11 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
             FROM
                 head_subject_by_semester hsbs
             JOIN subject_group sg ON
-                hsbs.id_subject_group = sg.id
+                sg.id = hsbs.id_subject_group
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id_subject_group = sg.id
+                s.id = sbsg.id_subject
             JOIN department d ON
                 s.id_department = d.id
             WHERE
@@ -46,9 +48,11 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                     FROM
                         head_subject_by_semester hsbs
                     JOIN subject_group sg ON
-                        hsbs.id_subject_group = sg.id
+                        sg.id = hsbs.id_subject_group
+                    JOIN subject_by_subject_group sbsg ON
+                        sbsg.id_subject_group = sg.id
                     JOIN subject s ON
-                        s.id_subject_group = sg.id
+                        s.id = sbsg.id_subject
                     JOIN department d ON
                         s.id_department = d.id
                     WHERE
@@ -60,7 +64,7 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                             (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
                             (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
                         )
-                                    """, nativeQuery = true)
+                            """, nativeQuery = true)
     Page<SubjectResponse> getAllSubject(Pageable pageable, String departmentFacilityId, String semesterId, FindSubjectRequest request);
 
 }

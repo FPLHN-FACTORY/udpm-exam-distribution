@@ -45,10 +45,12 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	) AS isChoose
             FROM
                  head_subject_by_semester hsbs
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = hsbs.id_subject_group
             JOIN subject_group sg ON
-                 sg.id = hsbs.id_subject_group
+                 sg.id = sbsg.id_subject_group
             JOIN subject subj ON
-             	subj.id_subject_group = sg.id
+             	subj.id = sbsg.id_subject
             JOIN exam_paper ep ON
                  ep.id_subject = subj.id
              JOIN major_facility mf ON
@@ -77,10 +79,12 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	COUNT(hsbs.id)
             FROM
                  head_subject_by_semester hsbs
+            JOIN subject_by_subject_group sbsg ON
+                sbsg.id_subject_group = hsbs.id_subject_group
             JOIN subject_group sg ON
-                 sg.id = hsbs.id_subject_group
+                 sg.id = sbsg.id_subject_group
             JOIN subject subj ON
-             	subj.id_subject_group = sg.id
+             	subj.id = sbsg.id_subject
             JOIN exam_paper ep ON
                  ep.id_subject = subj.id
              JOIN major_facility mf ON
