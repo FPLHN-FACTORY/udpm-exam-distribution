@@ -27,7 +27,6 @@ public class RedisTemplateConfig {
                 .build();
 
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHost, Integer.parseInt(redisPort));
-
         return new LettuceConnectionFactory(serverConfig, clientConfig);
     }
 

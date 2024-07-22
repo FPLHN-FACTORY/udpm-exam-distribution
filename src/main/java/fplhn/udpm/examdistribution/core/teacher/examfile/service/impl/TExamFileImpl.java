@@ -85,7 +85,7 @@ public class TExamFileImpl implements TExamFileService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.NOT_ACCEPTABLE,
-                    "Đề thi không được lớn hơn 5MB"
+                    GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
             );
         }
 
