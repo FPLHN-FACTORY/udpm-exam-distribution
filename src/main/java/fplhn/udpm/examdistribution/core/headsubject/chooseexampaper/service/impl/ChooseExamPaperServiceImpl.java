@@ -30,11 +30,10 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
+import fplhn.udpm.examdistribution.utils.FileConvertor;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +79,8 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     private final EmailService emailService;
 
     private final SessionHelper sessionHelper;
+
+    private final FileConvertor fileConvertor;
 
     @Override
     public ResponseObject<?> getListSubject(String semesterId) {
@@ -169,7 +170,16 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             }
 
             Resource resource = googleDriveFileService.loadFile(fileId);
-            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            String data = "";
+
+//            String fileName = resource.getFile().getName();
+//            System.out.println(fileName);
+//            if (fileName.toLowerCase().endsWith(".docx")) {
+//                data = Base64.getEncoder().encodeToString(fileConvertor.convertDocxToPdf(resource));
+//            } else {
+//                data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+//            }
+            data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
 
             return new ResponseObject<>(
@@ -182,7 +192,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đề thi không tồn tại"
+                    "Không lấy được đề thi"
             );
         }
     }
@@ -279,7 +289,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
             String blockId = sessionHelper.getCurrentBlockId();
             Optional<Block> isBlockExist = blockRepository.findById(blockId);
-            if(isBlockExist.isEmpty()){
+            if (isBlockExist.isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,

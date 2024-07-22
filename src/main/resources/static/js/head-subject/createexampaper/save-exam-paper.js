@@ -69,10 +69,16 @@ const convertJoditContentToDocx = () => {
     }
     const modifiedContent = tempDiv.innerHTML;
 
-    const converted = htmlDocx.asBlob(modifiedContent);
-    // Create a File object from the Blob
-    return new File([converted], "document.docx", {type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
-    // For demonstration purposes, log the file object to the console
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+        "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+        "xmlns='http://www.w3.org/TR/REC-html40'>" +
+        "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + modifiedContent + footer;
+
+    const blob = new Blob([sourceHTML], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+    return new File([blob], 'document.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 }
 
 const handleResetFieldsError = () => {
