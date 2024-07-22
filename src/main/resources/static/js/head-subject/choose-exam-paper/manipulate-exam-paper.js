@@ -154,6 +154,10 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     $("#examPaperModal").modal("show");
 };
 
+const handleRedirectCreateExamPaper = () => {
+    window.location.href = "/head-subject/create-exam-paper";
+}
+
 const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
     $("#show-pdf").prop("hidden", false);
 
