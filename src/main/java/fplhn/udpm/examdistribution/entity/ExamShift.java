@@ -62,4 +62,7 @@ public class ExamShift extends PrimaryEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private ExamShiftStatus examShiftStatus;
 
+    @Column(name = "total_student")
+    private Integer totalStudent;
+
 }
