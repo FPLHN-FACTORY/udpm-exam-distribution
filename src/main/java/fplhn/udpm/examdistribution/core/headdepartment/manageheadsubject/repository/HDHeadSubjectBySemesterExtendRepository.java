@@ -49,9 +49,12 @@ public interface HDHeadSubjectBySemesterExtendRepository extends HeadSubjectBySe
                     LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
                     LEFT JOIN major_facility mf ON smf.id_major_facility = mf.id
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                    LEFT JOIN staff_role sr ON s.id = sr.id_staff
+                    LEFT JOIN role r ON sr.id_role = r.id
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
                         AND s.id != :#{#request.currentUserId}
+                        AND r.name = :#{#request.roleName}
                         AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
                         AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
                         AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))
@@ -63,9 +66,12 @@ public interface HDHeadSubjectBySemesterExtendRepository extends HeadSubjectBySe
                     LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
                     LEFT JOIN major_facility mf ON smf.id_major_facility = mf.id
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                    LEFT JOIN staff_role sr ON s.id = sr.id_staff
+                    LEFT JOIN role r ON sr.id_role = r.id
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
                         AND s.id != :#{#request.currentUserId}
+                        AND r.name = :#{#request.roleName}
                         AND (:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.q}, '%'))
                         AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%'))
                         AND (:#{#request.q} IS NULL OR s.account_fpt LIKE CONCAT('%', :#{#request.q}, '%'))

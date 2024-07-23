@@ -12,6 +12,8 @@ $(document).ready(() => {
     bindClickEvent('#btnCloseCreateSubjectGroupModal', closeCreateSubjectGroupModal);
 
     $('#querySearchSubjectGroup').on('input', handleListenQuerySearch);
+
+    $('#filterSubject').on('input', handleFilterSubject);
 });
 
 const userInfo = getExamDistributionInfo();
@@ -27,6 +29,7 @@ const subjectGroupParams = {
 const subjectParams = {
     page: INIT_PAGINATION.page,
     size: INIT_PAGINATION.size,
+    q: null,
 }
 
 let currentSubjectGroupId = null;
@@ -86,7 +89,7 @@ const getSubjectGroups = () => {
                             ${subjectGroup.semesterInfo}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <i class="fa fa-edit" style="width: 1px; text-wrap: nowrap; padding: 0 10px;" 
                            onclick="showUpdateSubjectGroupModal('${subjectGroup.id}', '${subjectGroup.attachRoleName}')"></i>
                     </td>
@@ -158,15 +161,16 @@ const checkCurrentIsCreateOrUpdate = () => {
     }
 };
 
-const getListSubject = (subjectGroupId, subjectParams = {page: INIT_PAGINATION.page, size: INIT_PAGINATION.size}) => {
+const getListSubject = (subjectGroupId, subjectParams) => {
     const url = getUrlParameters(
         `${ApiConstant.API_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP}/subject`,
         {
-            page: subjectParams.page,
-            size: subjectParams.size,
+            page: subjectParams?.page || INIT_PAGINATION.page,
+            size: subjectParams?.size || INIT_PAGINATION.size,
             departmentFacilityId: userInfo.departmentFacilityId,
             subjectGroupId: subjectGroupId || currentSubjectGroupId || null,
             semesterId: subjectGroupParams.semesterId,
+            q: subjectParams?.q.trim() || null,
         }
     );
     $.ajax({
@@ -180,7 +184,11 @@ const getListSubject = (subjectGroupId, subjectParams = {page: INIT_PAGINATION.p
                     <td>${subject.orderNumber}</td>
                     <td>${subject.subjectCode}</td>
                     <td>${subject.subjectName}</td>
-                    <td>${subject.subjectType}</td>
+                    <td>
+                        <span class="tag tag-warning">
+                            ${subject.subjectType}
+                        </span>
+                    </td>
                     <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
                         <div class="col-auto">
                             <label class="colorinput">
@@ -191,7 +199,12 @@ const getListSubject = (subjectGroupId, subjectParams = {page: INIT_PAGINATION.p
                         </div>
                     </td>
                 </tr>`);
-            createPagination('#paginationSubject', responseBody?.data?.totalPages || 1, subjectParams.page, 'changePageSubject');
+            createPagination(
+                '#paginationSubject',
+                responseBody?.data?.totalPages || 1,
+                subjectParams?.page || INIT_PAGINATION.page,
+                'changePageSubject'
+            );
         },
         error: (error) => {
             showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
@@ -254,3 +267,10 @@ const updateSubjectGroup = () => {
         }
     });
 };
+
+const handleFilterSubject = debounce(() => {
+    const query = $('#filterSubject').val();
+    subjectParams.page = INIT_PAGINATION.page;
+    subjectParams.q = query;
+    getListSubject(currentSubjectGroupId, subjectParams);
+});

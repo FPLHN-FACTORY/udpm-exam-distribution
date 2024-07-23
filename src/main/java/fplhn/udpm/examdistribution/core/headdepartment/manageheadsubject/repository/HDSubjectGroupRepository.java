@@ -79,15 +79,18 @@ public interface HDSubjectGroupRepository extends SubjectGroupRepository {
                     LEFT JOIN department_facility df ON d.id = df.id_department
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
+                        AND s.name IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%')
+                        AND s.subject_code IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.q}, '%')
                     """,
             countQuery = """
                     SELECT COUNT(s.id)
                     FROM subject s
-                    LEFT JOIN subject_by_subject_group sbg ON s.id = sbg.id_subject
-                    LEFT JOIN subject_group sg ON sbg.id_subject_group = sg.id
-                    WHERE sg.id = :#{#request.subjectGroupId}
-                    AND sg.id_department_facility = :#{#request.departmentFacilityId}
-                    AND sg.id_semester = :#{#request.semesterId}
+                    LEFT JOIN department d ON s.id_department = d.id
+                    LEFT JOIN department_facility df ON d.id = df.id_department
+                    WHERE
+                        df.id = :#{#request.departmentFacilityId}
+                        AND s.name IS NULL OR s.name LIKE CONCAT('%', :#{#request.q}, '%')
+                        AND s.subject_code IS NULL OR s.subject_code LIKE CONCAT('%', :#{#request.q}, '%')
                     """,
             nativeQuery = true
     )
@@ -116,8 +119,17 @@ public interface HDSubjectGroupRepository extends SubjectGroupRepository {
                     WHERE
                         sg.id_department_facility = :#{#request.departmentFacilityId}
                         AND sg.id_semester = :#{#request.semesterId}
+                        AND :#{#request.attachRoleName} IS NULL OR sg.attach_role_name LIKE CONCAT('%', :#{#request.attachRoleName}, '%')
                     """,
             countQuery = """
+                    SELECT
+                        COUNT(sg.id)
+                    FROM subject_group sg
+                    LEFT JOIN head_subject_by_semester hs ON sg.id = hs.id_subject_group
+                    WHERE
+                        sg.id_department_facility = :#{#request.departmentFacilityId}
+                        AND sg.id_semester = :#{#request.semesterId}
+                        AND :#{#request.attachRoleName} IS NULL OR sg.attach_role_name LIKE CONCAT('%', :#{#request.attachRoleName}, '%')
                     """,
             nativeQuery = true
     )

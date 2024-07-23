@@ -67,8 +67,8 @@ const getListExamShift = () => {
                         <td>${examShift.orderNumber}</td>
                         <td>${examShift.classSubjectCode}</td>
                         <td>${examShift.subjectInfo}</td>
-                        <td>${examShift.firstSupervisor}</td>
-                        <td>${examShift.secondSupervisor}</td>
+                        <td>${examShift.firstSupervisor || '<span class="tag tag-danger">Chưa phân công</span>'}</td>
+                        <td>${examShift.secondSupervisor || '<span class="tag tag-danger">Chưa phân công</span>'}</td>
                         <td>${examShift.joinCode}</td>
                         <td>${formatFromUnixTimeToDate(examShift.examDate)}</td>
                         <td>${examShift.room}</td>
