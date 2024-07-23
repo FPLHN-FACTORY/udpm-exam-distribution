@@ -167,4 +167,9 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
 //        }
     }
 
+    @Override
+    public String getFileName(String fileId) {
+        return googleDriveManagerService.getFileName(fileId);
+    }
+
 }
