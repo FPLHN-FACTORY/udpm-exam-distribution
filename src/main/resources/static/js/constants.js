@@ -134,6 +134,8 @@ const INIT_PAGINATION = {
     size: 5,
 };
 
+const EXAM_DISTRIBUTION_EXTENSION_ID = "mfjgckbmeakcekilcamhpjglhkiaanol";
+
 const EXAM_DISTRIBUTION_CONSTANT_KEY = "e_d_i";
 
 const getExamDistributionInfo = () => {

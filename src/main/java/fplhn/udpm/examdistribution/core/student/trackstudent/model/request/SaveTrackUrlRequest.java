@@ -15,4 +15,6 @@ public class SaveTrackUrlRequest {
 
     private String url;
 
+    private Boolean isDisable;
+
 }

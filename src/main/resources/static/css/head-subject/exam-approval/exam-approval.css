@@ -3,7 +3,7 @@ canvas {
     margin: 0 auto;
 }
 
-.pdf-viewer-detail {
+#pdf-viewer-detail {
     border: 1px solid #999;
     width: 100%;
     height: 700px;
@@ -13,6 +13,6 @@ canvas {
     scrollbar-width: none; /* Firefox */
 }
 
-.pdf-viewer-detail::-webkit-scrollbar {
+#pdf-viewer-detail::-webkit-scrollbar {
     display: none; /* Safari and Chrome */
 }

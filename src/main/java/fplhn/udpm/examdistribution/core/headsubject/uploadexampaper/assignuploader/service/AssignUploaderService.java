@@ -10,7 +10,7 @@ public interface AssignUploaderService {
 
     ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request);
 
-    ResponseObject<?> getAllStaff(String departmentFacilityId, FindStaffRequest request);
+    ResponseObject<?> getAllStaff(FindStaffRequest request);
 
     ResponseObject<?> addOrDelAssignUploader(AssignUploaderRequest request);
 

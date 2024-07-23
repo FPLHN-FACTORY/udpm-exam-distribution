@@ -68,8 +68,9 @@ const handleFetchExamRule = (fileId) => {
                 pdfDocDetail = pdfDoc_;
                 $("#total-page-detail").text(pdfDocDetail.numPages);
 
-                renderPageDetail(pageNumDetail);
-                showViewAndPagingPdfDetail(pdfDocDetail.numPages);
+                renderPage(pdfDocDetail, pageNumDetail, "#page-num-detail", pageRenderingDetail, pageNumPendingDetail, scaleDetail, $pdfCanvasDetail, ctxDetail);
+
+                showViewAndPagingPdf(pdfDocDetail.numPages, "#pdf-viewer-detail", "#paging-pdf-detail");
 
                 hideLoading();
             });
@@ -85,46 +86,12 @@ const handleFetchExamRule = (fileId) => {
     });
 };
 
-// Render the page
-function renderPageDetail(num) {
-    pageRenderingDetail = true;
-    pdfDocDetail.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scaleDetail});
-        $pdfCanvasDetail.height = viewport.height;
-        $pdfCanvasDetail.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctxDetail,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRenderingDetail = false;
-            if (pageNumPendingDetail !== null) {
-                renderPageDetail(pageNumPendingDetail);
-                pageNumPendingDetail = null;
-            }
-        });
-    });
-
-    $("#page-num-detail").text(num);
-}
-
-function queueRenderPageDetail(num) {
-    if (pageRenderingDetail) {
-        pageNumPendingDetail = num;
-    } else {
-        renderPageDetail(num);
-    }
-}
-
 $("#prev-page-detail").on("click", function () {
     if (pageNumDetail <= 1) {
         return;
     }
     pageNumDetail--;
-    queueRenderPageDetail(pageNumDetail);
+    queueRenderPage(1,pdfDocDetail, pageNumDetail, "#page-num-detail", pageRenderingDetail, pageNumPendingDetail, scaleDetail, $pdfCanvasDetail, ctxDetail);
 });
 
 $("#next-page-detail").on("click", function () {
@@ -132,5 +99,5 @@ $("#next-page-detail").on("click", function () {
         return;
     }
     pageNumDetail++;
-    queueRenderPageDetail(pageNumDetail);
+    queueRenderPage(1,pdfDocDetail, pageNumDetail, "#page-num-detail", pageRenderingDetail, pageNumPendingDetail, scaleDetail, $pdfCanvasDetail, ctxDetail);
 });

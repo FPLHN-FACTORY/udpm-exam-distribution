@@ -54,13 +54,6 @@ const handleSolveViewWhenOpenModal = () => { // ẩn đi view pdf và paging c�
     $("#word-container").prop("hidden", true);
 };
 
-const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    $("#pdf-viewer").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf").prop("hidden", false);
-    }
-};
-
 const handleOpenChooseFilePdf = () => {
     const pdfFile = $("#file-pdf-input");
     pdfFile.click();
@@ -139,10 +132,12 @@ $(document).ready(() => {
                         .getDocument({data: pdfData})
                         .promise.then(function (pdfDoc_) {
                         pdfDoc = pdfDoc_;
-                        $("#total-page").text(pdfDoc.numPages);
-                        renderPage(pageNum, true);
 
-                        showViewAndPagingPdf(pdfDoc.numPages);
+                        $("#total-page").text(pdfDoc.numPages);
+
+                        renderPage(pdfDoc, pageNum, "#page-num", pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+
+                        showViewAndPagingPdf(pdfDoc.numPages, "#pdf-viewer", "#paging-pdf");
                     });
                 };
                 fileReader.readAsArrayBuffer(file);
@@ -154,45 +149,12 @@ $(document).ready(() => {
     });
 });
 
-function renderPage(num) {
-    pageRendering = true;
-    pdfDoc.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scale});
-        $pdfCanvas.height = viewport.height;
-        $pdfCanvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRendering = false;
-            if (pageNumPending !== null) {
-                renderPage(pageNumPending);
-                pageNumPending = null;
-            }
-        });
-    });
-
-    $("#page-num").text(num);
-}
-
-function queueRenderPage(num) {
-    if (pageRendering) {
-        pageNumPending = num;
-    } else {
-        renderPage(num);
-    }
-}
-
 $("#prev-page").on("click", function () {
     if (pageNum <= 1) {
         return;
     }
     pageNum--;
-    queueRenderPage(pageNum);
+    queueRenderPage(1, pdfDoc, pageNum, "#page-num", pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
 });
 
 $("#next-page").on("click", function () {
@@ -200,5 +162,5 @@ $("#next-page").on("click", function () {
         return;
     }
     pageNum++;
-    queueRenderPage(pageNum);
+    queueRenderPage(1, pdfDoc, pageNum, "#page-num", pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
 });

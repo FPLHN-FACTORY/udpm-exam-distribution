@@ -154,15 +154,6 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     $("#examPaperModal").modal("show");
 };
 
-const showViewAndPagingPdf = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    $("#show-pdf").prop("hidden", false);
-
-    $("#pdf-viewer").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf").prop("hidden", false);
-    }
-};
-
 const handleFetchExamRulePDF = (fileId) => {
     showLoading();
     $.ajax({
@@ -281,12 +272,21 @@ const renderPdfInView = (data) => {
         pdfDoc = pdfDoc_;
         $("#total-page").text(pdfDoc.numPages);
 
-        renderPage(pageNum);
-        showViewAndPagingPdf(pdfDoc.numPages);
+        renderPageC(pageNum);
+        showViewAndPagingPdfC(pdfDoc.numPages);
     });
 }
 
-const renderPage = (num) => {
+const showViewAndPagingPdfC = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
+    $("#show-pdf").prop("hidden", false);
+
+    $("#pdf-viewer").prop("hidden", false);
+    if (totalPage > 1) {
+        $("#paging-pdf").prop("hidden", false);
+    }
+};
+
+const renderPageC = (num) => {
     pageRendering = true;
     pdfDoc.getPage(num).then(function (page) {
         const viewport = page.getViewport({scale: scale});
@@ -311,11 +311,11 @@ const renderPage = (num) => {
     $("#page-num").text(num);
 }
 
-const queueRenderPage = (num) => {
+const queueRenderPageC = (num) => {
     if (pageRendering) {
         pageNumPending = num;
     } else {
-        renderPage(num);
+        renderPageC(num);
     }
 }
 
@@ -324,7 +324,7 @@ $("#prev-page").on("click", function () {
         return;
     }
     pageNum--;
-    queueRenderPage(pageNum);
+    queueRenderPageC(pageNum);
 });
 
 $("#next-page").on("click", function () {
@@ -332,7 +332,7 @@ $("#next-page").on("click", function () {
         return;
     }
     pageNum++;
-    queueRenderPage(pageNum);
+    queueRenderPageC(pageNum);
 });
 
 const showViewByStatus = (status) => {

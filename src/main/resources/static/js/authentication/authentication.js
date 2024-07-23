@@ -14,11 +14,9 @@ const getListMappingScreenConstant = () => {
     ]
 }
 
-const extensionId = "pdjmofhklljccnomnflikopkjhfilhfe";
-
 const checkExtensionInstalled = async () => {
     try {
-        await fetch(`chrome-extension://${extensionId}/icon.png`);
+        await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
         return true;
     } catch (e) {
         if (e instanceof TypeError && e.message === 'Failed to fetch') {
