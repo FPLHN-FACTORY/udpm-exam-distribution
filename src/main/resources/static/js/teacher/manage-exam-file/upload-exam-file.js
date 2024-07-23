@@ -12,13 +12,11 @@ const ctx = $pdfCanvas.getContext("2d");
 let examFile = new File([], "emptyFile");
 let stateSubjectId = "";
 let stateSubjectCode = "";
-let stateMajorFacilityId = "";
 // END: state
 
 // START: getter
 const getStateSubjectId = () => stateSubjectId;
 const getStateSubjectCode = () => stateSubjectCode;
-const getStateMajorFacilityId = () => stateMajorFacilityId;
 // END: getter
 
 // START: setter
@@ -27,9 +25,6 @@ const setStateSubjectId = (subjectId) => {
 };
 const setStateSubjectCode = (subjectCode) => {
     stateSubjectCode = subjectCode
-};
-const setStateMajorFacilityId = (majorFacilityId) => {
-    stateMajorFacilityId = majorFacilityId
 };
 // END: setter
 
@@ -141,7 +136,6 @@ const handleUploadExamFile = () => {
                 const data = new FormData();
                 data.append("folderName", getStateSubjectCode());
                 data.append("file", getValueFileInput());
-                data.append("majorFacilityId", getStateMajorFacilityId());
 
                 $.ajax({
                     type: "POST",
@@ -202,10 +196,6 @@ $(document).ready(function () {
             }
         }
         hideLoading();
-    });
-    // Event listener for major facility select
-    $("#major-facility").on("change", function (e) {
-        setStateMajorFacilityId($("#major-facility").val())
     });
 });
 

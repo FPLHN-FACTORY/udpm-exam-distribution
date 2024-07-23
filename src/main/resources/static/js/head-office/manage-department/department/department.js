@@ -1,7 +1,9 @@
 $(document).ready(function () {
     fetchSearchDepartment();
     onChangePageSize();
-    handleFilter();
+    handleAddEvent($("#departmentName"),"keyup", function () {
+        fetchSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
+    });
     handleResetFilter();
 
     $("#modifyDepartmentButton").on("click", function () {
@@ -115,13 +117,14 @@ const fetchSearchDepartment = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const departments = responseData.map((department, index) => {
                 return `<tr>
                             <td>${department.orderNumber}</td>
-                            <td>${department.departmentName + " - " + department?.departmentCode}</td>
+                            <td>${department.departmentCode}</td>
+                            <td>${department.departmentName}</td>
                             <td>${department.departmentStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span onclick="handleOpenModalManipulateMajor('${department.id}')" class="fs-4">
@@ -159,12 +162,6 @@ const handleResetFilter = () => {
         $("#pageSize").val("5");
         resetGlobalParamsSearch();
         fetchSearchDepartment();
-    });
-};
-
-const handleFilter = () => {
-    $("#buttonFilter").on("click", function () {
-        fetchSearchDepartment(1, $('#pageSize').val(), getGlobalParamsSearch());
     });
 };
 

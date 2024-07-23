@@ -4,5 +4,5 @@ import fplhn.udpm.examdistribution.repository.StaffRoleRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StaffRoleCustomRepository extends StaffRoleRepository {
+public interface ConfigStaffRoleCustomRepository extends StaffRoleRepository {
 }

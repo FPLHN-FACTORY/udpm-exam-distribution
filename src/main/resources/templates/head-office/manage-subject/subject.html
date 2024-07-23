@@ -26,6 +26,9 @@
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
@@ -49,7 +52,7 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="subjectType">Loại môn học</label>
-                                    <select id="subjectType" name="subjectType" class="form-select">
+                                    <select id="subjectType" style="height: 60%;" name="subjectType" class="form-select">
                                         <option value="">Chọn loại môn học</option>
                                         <option value="TRADITIONAL">Traditional</option>
                                         <option value="ONLINE">Online</option>
@@ -61,19 +64,6 @@
                                     <label for="startDate">Ngày bắt đầu</label>
                                     <input type="date" id="startDate" name="startDate" class="form-control">
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn"
-                                        style="background-color: var(--common-button-color); color: white;">Tìm kiếm
-                                </button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>

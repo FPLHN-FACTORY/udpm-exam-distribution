@@ -1,8 +1,8 @@
 package fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.DepartmentFacilityCustomRepository;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.RoleCustomRepository;
+import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigDepartmentFacilityCustomRepository;
+import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigRoleCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.ExcelFileStaffService;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import jakarta.servlet.http.HttpSession;
@@ -22,14 +22,14 @@ import java.util.List;
 @Slf4j
 public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
 
-    private final DepartmentFacilityCustomRepository departmentFacilityRepository;
+    private final ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
 
-    private final RoleCustomRepository roleRepository;
+    private final ConfigRoleCustomRepository roleRepository;
 
     private final HttpSession httpSession;
 
-    public ExcelFileStaffServiceImpl(DepartmentFacilityCustomRepository departmentFacilityRepository,
-                                     RoleCustomRepository roleRepository,
+    public ExcelFileStaffServiceImpl(ConfigDepartmentFacilityCustomRepository departmentFacilityRepository,
+                                     ConfigRoleCustomRepository roleRepository,
                                      HttpSession httpSession) {
         this.departmentFacilityRepository = departmentFacilityRepository;
         this.roleRepository = roleRepository;
@@ -71,7 +71,7 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
             cell.setCellStyle(headerCellStyle);
 
             cell = row.createCell(5);
-            cell.setCellValue("Bộ Môn");
+            cell.setCellValue("Bộ Môn - Chuyên Ngành");
             cell.setCellStyle(headerCellStyle);
 
             cell = row.createCell(6);

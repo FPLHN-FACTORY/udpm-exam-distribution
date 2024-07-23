@@ -29,7 +29,8 @@ public interface DPDepartmentExtendRepository extends DepartmentRepository {
             	department d
             WHERE
                 :#{#req.departmentName} IS NULL OR
-                d.name LIKE :#{"%" + #req.departmentName + "%"}
+                d.name LIKE :#{"%" + #req.departmentName + "%"} OR
+                d.code LIKE :#{"%" + #req.departmentName + "%"} 
             """, countQuery = """
             SELECT
                 COUNT(d.id) FROM department d

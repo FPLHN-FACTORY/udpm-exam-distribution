@@ -37,7 +37,7 @@ public interface SemesterExtendRepository extends SemesterRepository {
                         semester s
                     WHERE
                         (:#{#request.semesterName} IS NULL OR s.name LIKE CONCAT('%',:#{#request.semesterName},'%'))
-                        AND (:#{#request.semesterYear} IS NULL OR s.year = :#{#request.semesterYear})
+                        AND (:#{#request.semesterYear} IS NULL OR s.year LIKE CONCAT('%',:#{#request.semesterYear},'%'))
                         AND (:#{#request.startDate} IS NULL OR s.start_time >= :#{#request.startDate})
                     """,
             nativeQuery = true

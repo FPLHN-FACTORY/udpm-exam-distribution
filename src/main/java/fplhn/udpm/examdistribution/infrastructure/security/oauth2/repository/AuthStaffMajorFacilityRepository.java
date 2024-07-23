@@ -5,7 +5,7 @@ import fplhn.udpm.examdistribution.repository.StaffMajorFacilityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface AuthStaffMajorFacilityRepository extends StaffMajorFacilityRepository {
@@ -17,6 +17,6 @@ public interface AuthStaffMajorFacilityRepository extends StaffMajorFacilityRepo
                   smf.majorFacility.departmentFacility.facility.id = :facilityId AND
                   smf.status = 0
             """)
-    Optional<StaffMajorFacility> findByStaffIdAndFacilityId(String staffId, String facilityId);
+    List<StaffMajorFacility> findByStaffIdAndFacilityId(String staffId, String facilityId);
 
 }

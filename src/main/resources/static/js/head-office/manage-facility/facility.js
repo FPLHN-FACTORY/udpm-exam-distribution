@@ -6,8 +6,13 @@ $(document).ready(function () {
 
     getFacilitis();
 
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
+    handleAddEvent($('#facilityName'),'keyup', function () {
+        const facilityName = $('#facilityName').val()?.trim();
+        const facilityStatus = $('#facilityStatus').val();
+        getFacilitis(1, $('#pageSize').val(), facilityName, facilityStatus);
+    });
+
+    handleAddEvent($('#facilityStatus'),'change', function () {
         const facilityName = $('#facilityName').val()?.trim();
         const facilityStatus = $('#facilityStatus').val();
         getFacilitis(1, $('#pageSize').val(), facilityName, facilityStatus);
@@ -27,10 +32,6 @@ $(document).ready(function () {
 
     $('#closeFacilityChildButton').on('click', function () {
         getFacilityUpdate(currentFacilityId);
-    });
-
-    $('#resetFilter').on('click', function () {
-        resetFilterForm();
     });
 
     $('#pageSize').on('change', function () {

@@ -52,7 +52,7 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
     @Override
     public ResponseObject<?> getSemesters() {
         List<TSemesterResponse> semesters = semesterRepository.getSemester();
-        if (!semesters.isEmpty()) {
+        if (!semesters.isEmpty() && semesters.size()>1) {
             TSemesterResponse currentSemester = null;
             for (int i =0 ;i < semesters.size(); i++) {
                 if (semesters.get(i).getId().equalsIgnoreCase(httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString())) {

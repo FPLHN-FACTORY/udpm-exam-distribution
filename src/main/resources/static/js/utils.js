@@ -37,3 +37,7 @@ const getUrlParameters = (apiURL, params) => {
     url = url.slice(0, -1);
     return url;
 }
+
+function handleAddEvent(dom,eventType,func){
+    dom.on(eventType,debounce(func,500));
+}

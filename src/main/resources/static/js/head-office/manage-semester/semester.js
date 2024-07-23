@@ -2,13 +2,26 @@ $(document).ready(function () {
 
     getSemesters();
 
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
+    handleAddEvent($('#semesterName'),'keyup',function () {
         const semesterName = $('#semesterName').val();
         const semesterYear = $('#semesterYear').val();
         const startTime = $('#startDate').val();
         getSemesters(1, 5, semesterName, semesterYear, startTime);
-    });
+    })
+
+    handleAddEvent($('#semesterYear'),'keyup',function () {
+        const semesterName = $('#semesterName').val();
+        const semesterYear = $('#semesterYear').val();
+        const startTime = $('#startDate').val();
+        getSemesters(1, 5, semesterName, semesterYear, startTime);
+    })
+
+    handleAddEvent($('#startDate'),'change',function () {
+        const semesterName = $('#semesterName').val();
+        const semesterYear = $('#semesterYear').val();
+        const startTime = $('#startDate').val();
+        getSemesters(1, 5, semesterName, semesterYear, startTime);
+    })
 
     $('#modifySemesterButton').on('click', function () {
         submitSemesterForm();

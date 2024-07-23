@@ -26,23 +26,18 @@
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="departmentName">Tên bộ môn</label>
-                                    <input type="text" id="departmentName" class="form-control">
+                                    <label for="departmentName">Bộ môn</label>
+                                    <input type="text"
+                                           id="departmentName"
+                                           class="form-control"
+                                           placeholder="Tìm kiếm với từ khóa (Mã bộ môn / Tên bộ môn)">
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <button id="buttonFilter" type="button" class="btn btn-black">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>
@@ -63,6 +58,7 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã bộ môn</td>
                                     <td>Tên bộ môn</td>
                                     <td>Trạng thái</td>
                                     <td
@@ -137,22 +133,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <div class="row">
                             <div class="col form-group">
                                 <label for="majorName">Tên chuyên ngành</label>
                                 <input type="text" id="majorName" class="form-control">
                             </div>
-                        </div>
-                        <div class="text-center">
-                            <button id="buttonFilterMajor" type="button" class="btn btn-black">Tìm kiếm</button>
-                            <button
-                                    type="reset"
-                                    class="btn"
-                                    id="resetFilterMajor"
-                                    style="background-color: var(--common-button-color); color: white;"
-                            >
-                                Xóa bộ lọc
-                            </button>
                         </div>
                     </div>
                     <div class="shadow p-4 bg-white rounded">

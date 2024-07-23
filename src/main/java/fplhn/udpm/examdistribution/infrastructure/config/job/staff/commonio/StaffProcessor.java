@@ -1,13 +1,12 @@
 package fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio;
 
-import fplhn.udpm.examdistribution.entity.DepartmentFacility;
+import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Role;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.entity.StaffMajorFacility;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.dto.TranferStaffRole;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.request.StaffExcelRequest;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.DepartmentFacilityCustomRepository;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.RoleCustomRepository;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.StaffCustomRepository;
+import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.*;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +21,19 @@ import java.util.List;
 public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferStaffRole> {
 
     @Autowired
-    private RoleCustomRepository roleCustomRepository;
+    private ConfigRoleCustomRepository roleCustomRepository;
 
     @Autowired
-    private StaffCustomRepository staffCustomRepository;
+    private ConfigStaffCustomRepository staffCustomRepository;
 
     @Autowired
-    private DepartmentFacilityCustomRepository departmentFacilityRepository;
+    private ConfigMajorFacilityCustomRepository majorFacilityCustomRepository;
+
+    @Autowired
+    private ConfigStaffMajorFacilityRepository staffMajorFacilityRepository;
+
+    @Autowired
+    private ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
 
     @Override
     public TranferStaffRole process(StaffExcelRequest item) throws Exception {
@@ -36,15 +41,16 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
             String staffCode = "";
             String departmentFacility = item.getDepartmentFacilityName();
             String departmentName = departmentFacility.split(" - ")[0];
-            String dFacilityName = departmentFacility.split(" - ")[1];
+            String majorName = departmentFacility.split(" - ")[1];
+            String facilityCode = departmentFacility.split(" - ")[2];
             String roleFacility = item.getRoleFacilityName();
             String roleName = roleFacility.split(" - ")[0];
             String rFacilityName = roleFacility.split(" - ")[1];
-            List<DepartmentFacility> departmentFacilities = departmentFacilityRepository.findByDepartmentFacility(departmentName, dFacilityName);
+            List<MajorFacility> majorFacilities = majorFacilityCustomRepository.getMajorFacilities(departmentName, majorName, facilityCode);
             List<Role> roles = roleCustomRepository.findAllByRoleNameAndFacilityName(roleName, rFacilityName);
 
-            if (departmentFacilities.isEmpty()) {
-                log.error("Bộ Môn Không Tồn Tại");
+            if (majorFacilities.isEmpty()) {
+                log.error("Chuyên ngành theo cơ sở không tồn tại");
                 return null;
             }
 
@@ -57,20 +63,32 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
                 log.error("Mã Nhân Viên Không Được Để Trống");
                 return null;
             } else if (!item.getAccountFe().contains(item.getStaffCode()) || !item.getAccountFpt().contains(item.getStaffCode())) {
-                log.error("ID Giáo Viên Không Đúng Định Dạng");
+                log.error("ID Nhân Viên Không Đúng Định Dạng");
                 return null;
             } else {
                 staffCode = item.getStaffCode();
             }
 
             List<Staff> staff = staffCustomRepository.findByStaffCode(staffCode);
+            StaffMajorFacility newStaffMajorFacility = new StaffMajorFacility();
             if (!staff.isEmpty()) {
                 staff.get(0).setName(item.getName());
                 staff.get(0).setAccountFpt(item.getAccountFpt());
                 staff.get(0).setAccountFe(item.getAccountFe());
-//                staff.get(0).setDepartmentFacility(departmentFacilities.get(0));
                 staff.get(0).setStatus(EntityStatus.ACTIVE);
-                return new TranferStaffRole(staff.get(0), roles.get(0));
+                List<StaffMajorFacility> staffMajorFacilities = staffMajorFacilityRepository.findAllByStaffAndFacility(staff.get(0).getId(), facilityCode);
+                if (staffMajorFacilities.isEmpty()) {
+                    StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
+                    staffMajorFacility.setStaff(staff.get(0));
+                    staffMajorFacility.setStatus(EntityStatus.ACTIVE);
+                    staffMajorFacility.setMajorFacility(majorFacilities.get(0));
+                    newStaffMajorFacility = staffMajorFacility;
+                } else {
+                    staffMajorFacilities.get(0).setStatus(EntityStatus.ACTIVE);
+                    staffMajorFacilities.get(0).setMajorFacility(majorFacilities.get(0));
+                    newStaffMajorFacility = staffMajorFacilities.get(0);
+                }
+                return new TranferStaffRole(staff.get(0), roles.get(0),newStaffMajorFacility);
             }
 
             Staff staffNew = new Staff();
@@ -79,9 +97,13 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
             staffNew.setName(item.getName());
             staffNew.setAccountFpt(item.getAccountFpt());
             staffNew.setAccountFe(item.getAccountFe());
-//            staffNew.setDepartmentFacility(departmentFacilities.get(0));
             staffNew.setStatus(EntityStatus.ACTIVE);
-            return new TranferStaffRole(staffNew, roles.get(0));
+            StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
+            staffMajorFacility.setStaff(staff.get(0));
+            staffMajorFacility.setStatus(EntityStatus.ACTIVE);
+            staffMajorFacility.setMajorFacility(majorFacilities.get(0));
+            staffMajorFacilityRepository.save(staffMajorFacility);
+            return new TranferStaffRole(staffNew, roles.get(0),staffMajorFacility);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error processing excel row : " + item, e);

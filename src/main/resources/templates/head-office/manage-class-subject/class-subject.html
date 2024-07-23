@@ -25,28 +25,36 @@
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterForm">
                             <div class="row">
                                 <div class="mb-3 col-4">
-                                    <select class="form-select" id="facilityChildId">
+                                    <label for="facilityChildId">Cơ sở con</label>
+                                    <select class="form-select" style="height: 60%;" id="facilityChildId">
                                         <option value="">Chọn cơ sở con</option>
                                     </select>
                                 </div>
                                 <div class="mb-3 col-4">
+                                    <label for="subjectName">Tên môn học</label>
                                     <input type="text" class="form-control" id="subjectName"
                                            placeholder="Tên môn học">
                                 </div>
                                 <div class="mb-3 col-4">
+                                    <label for="staffName">Tên giảng viên</label>
                                     <input type="text" class="form-control" id="staffName"
                                            placeholder="Tên giảng viên">
                                 </div>
 
                                 <div class="mb-3 col-4">
+                                    <label for="startEndDate">Ngày</label>
                                     <input type="text" class="form-control" id="startEndDate"
                                            placeholder="Start date ⇀ End date">
                                 </div>
                                 <div class="mb-3 col-4">
-                                    <select class="form-select" id="shift">
+                                    <label for="shift">Ca</label>
+                                    <select class="form-select" style="height: 60%;" id="shift">
                                         <option value="">Chọn ca</option>
                                         <option value="CA1">CA 1</option>
                                         <option value="CA2">CA 2</option>
@@ -61,21 +69,10 @@
                                     </select>
                                 </div>
                                 <div class="mb-3 col-4">
+                                    <label for="classSubjectCode">Mã lớp</label>
                                     <input type="text" class="form-control" id="classSubjectCode"
                                            placeholder="Mã lớp">
                                 </div>
-
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-black">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>

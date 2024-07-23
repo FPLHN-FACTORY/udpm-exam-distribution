@@ -26,7 +26,10 @@
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
-                        <form id="filterForm">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
+                        <div id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="semesterName">Tên học kỳ</label>
@@ -34,25 +37,14 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="semesterYear">Năm học</label>
-                                    <input type="text" id="semesterYear" name="semesterYear" class="form-control">
+                                    <input type="number" id="semesterYear" name="semesterYear" class="form-control">
                                 </div>
                                 <div class="col form-group">
                                     <label for="startDate">Ngày bắt đầu</label>
                                     <input type="date" id="startDate" name="startTime" class="form-control">
                                 </div>
                             </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-black">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                     <!-- Filter -->
                     <div class="shadow p-4 bg-white rounded">

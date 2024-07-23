@@ -1,7 +1,8 @@
 $(document).ready(function () {
     onChangePageSizeMajor();
-    handleFilterMajor();
-    handleResetFilterMajor();
+    handleAddEvent($("#majorName"),"keyup", function () {
+        fetchSearchMajor(1, $('#pageSizeMajor').val(), getGlobalParamsSearchMajor());
+    });
 
     $("#modifyMajorButton").on("click", function () {
         handleAddOrUpdateMajorConfirm();
@@ -43,20 +44,6 @@ const getGlobalParamsSearchMajor = () => {
 
 const resetGlobalParamSearchMajor = () => {
     $("#majorName").val("");
-};
-
-const handleFilterMajor = () => {
-    $("#buttonFilterMajor").on("click", function () {
-        fetchSearchMajor(1, $('#pageSizeMajor').val(), getGlobalParamsSearchMajor());
-    });
-};
-
-const handleResetFilterMajor = () => {
-    $("#resetFilterMajor").on("click", function () {
-        $("#pageSizeMajor").val("5");
-        resetGlobalParamSearchMajor();
-        fetchSearchMajor();
-    });
 };
 
 const onChangePageSizeMajor = () => {
@@ -154,7 +141,7 @@ const fetchSearchMajor = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const departments = responseData.map((department, index) => {

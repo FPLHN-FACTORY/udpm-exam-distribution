@@ -28,23 +28,15 @@
                 <div class="p-4">
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="departmentFacilityName">Tên cơ sở</label>
                                     <input type="text" id="departmentFacilityName" class="form-control">
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <button id="buttonFilter" type="button" class="btn btn-black">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>
@@ -158,7 +150,9 @@
                 <div class="modal-body">
                     <!-- Filter Major Facility -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
-                        <h5 class="mb-4">Bộ lọc</h5>
+                        <h3 class="m-portlet__head-text">
+                            <i class="fa-solid fa-filter"></i> Bộ lọc
+                        </h3>
                         <form id="filterMajorFacilityForm">
                             <div class="row">
                                 <div class="col form-group">
@@ -178,19 +172,6 @@
                                     <input type="text" id="majorFacilityHeadOfMajorNameFilter" class="form-control"
                                            placeholder="Nhập tên trưởng môn"/>
                                 </div>
-                            </div>
-                            <div class="text-center mt-3">
-                                <button id="buttonFilterMajorFacility" type="button" class="btn btn-black"
-                                        onclick="handleFilterMajorFacility()"
-                                >
-                                    Tìm kiếm
-                                </button>
-                                <button type="reset" class="btn" id="resetFilterMajorFacility"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                        onclick="handleResetFilterMajorFacility()"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>

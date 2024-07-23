@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface StaffCustomRepository extends StaffRepository {
+public interface ConfigStaffCustomRepository extends StaffRepository {
 
     List<Staff> findByStaffCode(String id);
 

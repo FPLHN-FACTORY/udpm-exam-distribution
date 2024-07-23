@@ -3,22 +3,15 @@ $(document).ready(function () {
 
     getSubjects();
 
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
-        const subjectCode = $('#subjectCode').val();
-        const subjectName = $('#subjectName').val();
-        const departmentId = $('#departmentId').val();
-        const subjectType = $('#subjectType').val();
-        const startDate = $('#startDate').val();
-        getSubjects(1, 5, subjectCode, subjectName, departmentId, subjectType, startDate);
-    });
+
+    handleAddEvent($('#subjectCode'), 'keyup',handleSearch);
+    handleAddEvent($('#subjectName'), 'keyup',handleSearch);
+    handleAddEvent($('#departmentId'), 'change',handleSearch);
+    handleAddEvent($('#subjectType'), 'change',handleSearch);
+    handleAddEvent($('#startDate'), 'change',handleSearch);
 
     $('#modifySubjectButton').on('click', function () {
         submitSubjectForm();
-    });
-
-    $('#resetFilter').on('click', function () {
-        resetFilterForm();
     });
 
     $('#detailSubjectBtn').on('click', function () {
@@ -31,6 +24,15 @@ $(document).ready(function () {
     });
 
 });
+
+function handleSearch() {
+    const subjectCode = $('#subjectCode').val();
+    const subjectName = $('#subjectName').val();
+    const departmentId = $('#departmentId').val();
+    const subjectType = $('#subjectType').val();
+    const startDate = $('#startDate').val();
+    getSubjects(1, 5, subjectCode, subjectName, departmentId, subjectType, startDate);
+}
 
 const getSubjects = (
     page = 1,
@@ -74,7 +76,7 @@ const getSubjects = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const subjects = responseBody?.data?.data?.map((subject, index) => {

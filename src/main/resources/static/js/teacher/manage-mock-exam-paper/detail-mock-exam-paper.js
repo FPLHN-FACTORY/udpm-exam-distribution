@@ -56,6 +56,7 @@ const setupDate = () => {
 
     time.on('cancel.daterangepicker', (ev, picker) => {
         time.val('');
+        changeFormSearch();
     });
 
     // If you want to handle change event separately
