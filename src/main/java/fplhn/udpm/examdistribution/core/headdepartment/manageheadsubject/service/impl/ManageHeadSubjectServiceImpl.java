@@ -13,6 +13,7 @@ import fplhn.udpm.examdistribution.core.headdepartment.manageheadsubject.service
 import fplhn.udpm.examdistribution.entity.HeadSubjectBySemester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.SubjectGroup;
+import fplhn.udpm.examdistribution.infrastructure.constant.Role;
 import fplhn.udpm.examdistribution.infrastructure.log.LoggerObject;
 import fplhn.udpm.examdistribution.utils.CSVManipulationUtils;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
@@ -49,6 +50,7 @@ public class ManageHeadSubjectServiceImpl implements ManageHeadSubjectService {
 
     @Override
     public ResponseObject<?> getStaffAndHeadSubjects(@Valid HeadSubjectRequest request) {
+        request.setRoleName(Role.TRUONG_MON.name());
         return new ResponseObject<>(
                 PageableObject.of(
                         hdHeadSubjectBySemesterExtendRepository.getHeadSubjects(

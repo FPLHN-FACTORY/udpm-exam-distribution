@@ -48,7 +48,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="querySearchSemester">Kỳ học</label>
-                                    <select class="form-select" id="querySearchSemester">
+                                    <select class="form-select" id="querySearchSemester" style="height: 40px;">
                                     </select>
                                 </div>
                             </div>
@@ -145,6 +145,15 @@
                         </div>
                     </div>
                     <div id="subjectTableContainer" class="mt-4" style="display: none">
+                        <div class="form-group mb-3">
+                            <label for="filterSubject">Tìm kiếm môn học</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="filterSubject"
+                                    placeholder="Nhập mã môn học / tên môn học..."
+                            />
+                        </div>
                         <table class="ant-table" id="subjectTable">
                             <thead>
                             <tr>

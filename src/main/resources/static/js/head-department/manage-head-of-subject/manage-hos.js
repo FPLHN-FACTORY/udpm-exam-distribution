@@ -18,16 +18,25 @@ $(document).ready(() => {
     $('#btnShowHistoryLog').click(handleShowModalHistory);
 
     handleCheckAssignSubjectGroup();
+
+    $('#querySearchAttachRoleName').on('input', handleSearchSubjectGroup);
+
+    $('#btnCloseAssignSubjectGroupForStaff').click(closeModalModifyAssignSubject);
 });
 
-const getListHeadSubject = (page = INIT_PAGINATION.page, size = INIT_PAGINATION.size, semesterId = null, query = null) => {
+const getListHeadSubject = (
+    page = INIT_PAGINATION.page,
+    size = INIT_PAGINATION.size,
+    semesterId = null,
+    query = null
+) => {
     const url = getUrlParameters(ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS, {
         page,
         size,
         departmentFacilityId: examDistributionInfo.departmentFacilityId,
         currentUserId: examDistributionInfo.userId,
         semesterId,
-        q: query,
+        q: query ? query.trim() : null,
     });
 
     $.ajax({
@@ -53,7 +62,7 @@ const getListHeadSubject = (page = INIT_PAGINATION.page, size = INIT_PAGINATION.
                         <span class="tag tag-warning">${staff.roleName}</span>
                     </td>
                     <td>${staff.semesterInfo ? ('<span class="tag tag-warning">' + staff.semesterInfo + '</span>') : '<span class="tag tag-warning">Empty</span>'}</td>
-                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
                         <a data-bs-toggle="tooltip" data-bs-placement="top" title="Phân công môn học"
                            onclick="showModalModifyAssignSubject('${staff.id}', '${staff.staffName}', '${staff.staffCode}')">
                             <i class="fa-solid fa-eye" style="cursor: pointer; margin-left: 10px;"></i>
@@ -105,6 +114,11 @@ const showModalModifyAssignSubject = (staffId, staffName, staffCode) => {
     $('#modifyAssignSubjectForStaff').modal('show');
 };
 
+const closeModalModifyAssignSubject = () => {
+    $('#modifyAssignSubjectForStaff').modal('hide');
+    $('#querySearchAttachRoleName').val('');
+}
+
 const getAllSemesterAndSetDefaultCurrentSemester = () => {
     $.ajax({
         type: "GET",
@@ -125,12 +139,17 @@ const handleListenSearchQuery = debounce(() => {
     getListHeadSubject(INIT_PAGINATION.page, INIT_PAGINATION.size, currentSemesterId, $('#querySearchStaff').val());
 }, 300);
 
-const getSubjectGroupAssignForStaff = (staffId, page = INIT_PAGINATION.page, size = INIT_PAGINATION.size, attachRoleName = null) => {
+const getSubjectGroupAssignForStaff = (
+    staffId,
+    page = INIT_PAGINATION.page,
+    size = INIT_PAGINATION.size,
+    attachRoleName = null
+) => {
     const url = getUrlParameters(ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS + "/subject-group", {
         page,
         size,
         staffId,
-        attachRoleName
+        attachRoleName: attachRoleName ? attachRoleName.trim() : null
     });
 
     $.ajax({
@@ -147,7 +166,7 @@ const getSubjectGroupAssignForStaff = (staffId, page = INIT_PAGINATION.page, siz
 
             const subjectGroupAssigneds = data.map(subjectGroup => `
                 <tr>
-                    <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
+                    <td style="width: 1px; text-wrap: nowrap;" class="text-center">
                         <div class="col-auto">
                             <label class="colorinput">
                                 <input name="color" data-subject-id="${subjectGroup.id}" ${subjectGroup.assigned === 1 ? 'checked' : ''} type="checkbox" class="colorinput-input"/>
@@ -155,7 +174,7 @@ const getSubjectGroupAssignForStaff = (staffId, page = INIT_PAGINATION.page, siz
                             </label>
                         </div>
                     </td>
-                    <td>${subjectGroup.attachRoleName}</td>
+                    <td style="width: 1px; text-wrap: nowrap;">${subjectGroup.attachRoleName}</td>
                 </tr>`).join('');
 
             $('#subjectAssignedTableBody').html(subjectGroupAssigneds);
@@ -213,6 +232,11 @@ const handleCheckAssignSubjectGroup = () => {
     });
 };
 
+const handleSearchSubjectGroup = debounce(() => {
+    const attachRoleName = $('#querySearchAttachRoleName').val();
+    getSubjectGroupAssignForStaff(currentStaffId, INIT_PAGINATION.page, INIT_PAGINATION.size, attachRoleName);
+}, 300);
+
 const getHistoryAssignSubject = () => {
     $.ajax({
         type: "GET",
@@ -244,3 +268,4 @@ const handleShowModalHistory = () => {
     getHistoryAssignSubject();
     $('#viewHistoryLog').modal('show');
 };
+

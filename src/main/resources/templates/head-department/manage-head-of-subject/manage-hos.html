@@ -48,7 +48,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="querySearchSemester">Kỳ học</label>
-                                    <select class="form-select" id="querySearchSemester">
+                                    <select class="form-select" id="querySearchSemester" style="height: 40px;">
                                     </select>
                                 </div>
                             </div>
@@ -125,14 +125,32 @@
                 </div>
                 <div class="modal-body">
                     <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded mb-4">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4><i class="fa-solid fa-filter"></i> Lọc dữ liệu</h4>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="querySearchAttachRoleName">Tìm kiếm</label>
+                                    <input
+                                            type="text"
+                                            class="form-control"
+                                            id="querySearchAttachRoleName"
+                                            placeholder="Nhập mã môn học / tên môn học để tìm kiếm..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Filter -->
                     <!-- Table -->
                     <div class="table-responsive mt-4">
                         <table class="ant-table">
                             <thead>
                             <tr>
-                                <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Phân công quản lý</td>
-                                <td>Tên chức vụ - nhóm môn</td>
+                                <td style="width: 1px; text-wrap: nowrap;" class="text-center">Phân công quản lý</td>
+                                <td style="width: 1px; text-wrap: nowrap;">Tên chức vụ - nhóm môn</td>
                             </tr>
                             </thead>
                             <tbody id="subjectAssignedTableBody" class="table-group-divider">
@@ -160,7 +178,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
+                            style="background-color: var(--common-button-color); color: white;"
+                            id="btnCloseAssignSubjectGroupForStaff"
+                    >
+                        Đóng
                     </button>
                     <button
                             type="button"

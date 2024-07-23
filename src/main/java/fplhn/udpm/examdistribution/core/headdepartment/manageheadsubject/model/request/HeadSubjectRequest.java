@@ -17,4 +17,6 @@ public class HeadSubjectRequest extends PageableRequest {
     @NotNull
     private String currentUserId;
 
+    private String roleName;
+
 }
