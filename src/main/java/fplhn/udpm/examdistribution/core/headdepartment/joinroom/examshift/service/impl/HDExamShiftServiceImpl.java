@@ -2,26 +2,32 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.servi
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.request.HDExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.response.HDExamRuleResourceResponse;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.response.HDFileResourceResponse;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository.HDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.service.HDExamShiftService;
 import fplhn.udpm.examdistribution.entity.ExamShift;
+import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
+import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -29,12 +35,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HDExamShiftServiceImpl implements HDExamShiftService {
 
-    private static final Logger log = LoggerFactory.getLogger(HDExamShiftServiceImpl.class);
     private final HDExamShiftExtendRepository hdExamShiftExtendRepository;
+
+    private final HDExamPaperExtendRepository hdExamPaperExtendRepository;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     private final HttpSession httpSession;
+
+    private final GoogleDriveFileService googleDriveFileService;
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
@@ -76,7 +85,7 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
 
         ExamShift examShift = existingExamShift.get();
 
-        simpMessagingTemplate.convertAndSend("/topic/head-department-exam-shift-join",
+        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT,
                 "Chủ nhiệm bộ môn đã tham gia phòng thi " + examShift.getExamShiftCode());
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
@@ -95,8 +104,30 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
     }
 
     @Override
-    public ResponseObject<?> getPathByExamShiftCode(String examShiftCode) {
-        return null;
+    public ResponseObject<?> getFileExamRule(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+        return new ResponseObject<>(
+                new HDExamRuleResourceResponse(data, fileResponse.getFilename()),
+                HttpStatus.OK,
+                "Lấy file quy định thi thành công!"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode) {
+        return new ResponseObject<>(hdExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
+                HttpStatus.OK, "Lấy path đề thi thành công!");
+    }
+
+    @Override
+    public ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+        return new ResponseObject<>(
+                new HDFileResourceResponse(data, fileResponse.getFilename()),
+                HttpStatus.OK, "Lấy đề thi thành công!");
     }
 
 }

@@ -3,8 +3,9 @@ package fplhn.udpm.examdistribution.core.student.examshift.controller;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.student.exampaper.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamRuleResourceResponse;
+import fplhn.udpm.examdistribution.core.student.examshift.model.response.SFileResourceResponse;
 import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,20 @@ public class SExamShiftRestController {
         return Helper.createResponseEntity(sExamShiftService.getExamShiftByCode(examShiftCode));
     }
 
+    @GetMapping("/file-exam-rule")
+    public ResponseEntity<?> getFileExamRule(@RequestParam(name = "fileId") String fileId) throws IOException {
+        ResponseObject<?> responseObject = sExamShiftService.getFileExamRule(fileId);
+        if (responseObject.getStatus().equals(HttpStatus.OK)) {
+            SExamRuleResourceResponse fileResponse = (SExamRuleResourceResponse) responseObject.getData();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition",
+                            "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileResponse.getData());
+        }
+        return Helper.createResponseEntity(responseObject);
+    }
+
     @GetMapping("/path")
     public ResponseEntity<?> getExamPaperShiftInfoAndPathByExamShiftCode
             (@RequestParam(name = "examShiftCode") String examShiftCode) {
@@ -52,7 +67,7 @@ public class SExamShiftRestController {
             (@RequestParam(name = "fileId") String fileId) throws IOException {
         ResponseObject<?> responseObject = sExamShiftService.getExamShiftPaperByExamShiftCode(fileId);
         if (responseObject.getStatus().equals(HttpStatus.OK)) {
-            TFileResourceResponse fileResponse = (TFileResourceResponse) responseObject.getData();
+            SFileResourceResponse fileResponse = (SFileResourceResponse) responseObject.getData();
 
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)

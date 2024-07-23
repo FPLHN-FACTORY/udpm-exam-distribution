@@ -2,16 +2,16 @@ package fplhn.udpm.examdistribution.core.teacher.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.classsubject.repository.TClassSubjectExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.exampaper.repository.TExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.exampaperbysemester.repository.TExamPaperBySemesterExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.exampapershift.model.response.TExamPaperShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.exampapershift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
-import fplhn.udpm.examdistribution.core.teacher.exampapershift.model.response.TExamPaperShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TStartExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.exampaper.repository.TExamPaperExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.exampapershift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.service.TExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.staff.repository.TStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.student.repository.TStudentExtendRepository;
@@ -30,6 +30,7 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
+import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.servlet.http.HttpSession;
@@ -199,7 +200,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         tExamShiftExtendRepository.save(examShift);
 
         String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
-        simpMessagingTemplate.convertAndSend("/topic/exam-shift",
+        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
                 new NotificationResponse("Giám thị " + accountFe + " đã tham gia phòng thi!"));
 
         return new ResponseObject<>(examShift.getExamShiftCode(),
@@ -235,7 +236,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
         studentExamShift.get().setReason(reason);
 
-        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-kick",
+        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
                 new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi phòng thi!"));
 
         return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
@@ -263,7 +264,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
         tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
-        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-approve",
+        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
                 new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào phòng thi!"));
 
         return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
@@ -292,7 +293,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
         tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
-        simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-refuse",
+        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
                 new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
 
         return new ResponseObject<>(null, HttpStatus.OK,
@@ -365,7 +366,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 tStudentExamShiftExtendRepository.save(studentExamShift);
             }
 
-            simpMessagingTemplate.convertAndSend("/topic/exam-shift-start",
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT_START,
                     new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
 
             emailService.sendEmailWhenStartExamShift(tExamShiftExtendRepository.getHeadSubjectAndContentSendMail(examShiftCode));

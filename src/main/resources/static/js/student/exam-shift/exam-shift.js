@@ -20,13 +20,13 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe("/topic/student-exam-shift-rejoin", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
             messageType = 'rejoin';
         });
-        stompClient.subscribe("/topic/student-exam-shift-refuse", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
             showToastError('Bạn đã bị từ chối tham gia ca thi!');
         });
-        stompClient.subscribe("/topic/student-exam-shift-approve", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
             let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
             if (examShiftCodeRejoin) {
                 window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;

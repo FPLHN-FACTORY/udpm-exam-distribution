@@ -1,3 +1,20 @@
+const pdfjsLib = window["pdfjs-dist/build/pdf"];
+let pdfDoc = null;
+let pageNum = 1;
+let pageRendering = false;
+let pageNumPending = null;
+const scale = 1.5;
+const $pdfCanvas = $("#pdf-canvas")[0];
+const ctx = $pdfCanvas.getContext("2d");
+
+let pdfDocExamRule = null;
+let pageNumExamRule = 1;
+let pageRenderingExamRule = false;
+let pageNumPendingExamRule = null;
+const scaleExamRule = 1.5;
+const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
+const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
+
 $(document).ready(function () {
 
     getExamShiftByCode();
@@ -13,6 +30,8 @@ $(document).ready(function () {
         showToastSuccess(hsJoinExamShiftSuccessMessage);
         localStorage.removeItem('hsJoinExamShiftSuccessMessage');
     }
+
+    getPathFilePDFExamPaper(examShiftCode);
 
     connect();
 
@@ -32,6 +51,7 @@ const getExamShiftByCode = () => {
             if (responseBody?.data) {
                 const examShift = responseBody?.data;
                 $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+                fetchFilePDFExamRule(examShift.pathExamRule);
             }
         },
         error: function (error) {
@@ -45,25 +65,34 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe("/topic/exam-shift", function (response) {
-            // showToastSuccess(JSON.parse(response.body).message);
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
             getSecondSupervisorId();
         });
-        stompClient.subscribe("/topic/student-exam-shift", function (response) {
-            // showToastSuccess(JSON.parse(response.body).message);
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
             countStudentInExamShift();
             getStudents();
         });
-        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
-            // showToastSuccess(JSON.parse(response.body).message);
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
             countStudentInExamShift();
             getStudents();
         });
-        stompClient.subscribe("/topic/head-subject-exam-shift-join", function () {
+        stompClient.subscribe(TopicConstant.TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT, function () {
             countStudentInExamShift();
             getStudents();
         });
-        stompClient.subscribe("/topic/track-student", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
+            getStudents();
+            countStudentInExamShift();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
+            getStudents();
+            countStudentInExamShift();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
+            getPathFilePDFExamPaper(examShiftCode);
+            handleSendMessageStartToExt();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getStudents();
@@ -149,11 +178,11 @@ const getStudents = () => {
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         ${student.isViolation === 0 ?
-                                            `<button onclick="handleOpenModalStudentViolation('${student.id}')" class="btn position-absolute bottom-0 end-0 p-2 fs-3">
+                        `<button onclick="handleOpenModalStudentViolation('${student.id}')" class="btn position-absolute bottom-0 end-0 p-2 fs-3">
                                                 <i class="fa-regular fa-rectangle-list"></i>
                                              </button>` :
-                                            ""
-                                        }
+                        ""
+                    }
                                     </div>
                                 </div>
                             </div>
@@ -177,6 +206,132 @@ const getStudents = () => {
         }
     });
 }
+
+const getPathFilePDFExamPaper = (examShiftCode) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_JOIN_ROOM + "/path",
+        data: {
+            examShiftCode: examShiftCode
+        },
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                examPaperId = responseBody?.data?.id;
+                const fileId = responseBody?.data?.path;
+                const startTime = responseBody?.data?.startTime;
+                const endTime = responseBody?.data?.endTime;
+                fetchFilePDFExamPaper(fileId);
+                startCountdown(startTime, endTime);
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+}
+
+// Exam paper
+const fetchFilePDFExamPaper = (fileId) => {
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_JOIN_ROOM + "/file",
+        data: {
+            fileId: fileId
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            pdfjsLib
+                .getDocument({data: pdfData})
+                .promise.then(function (pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                $("#total-page").text(pdfDoc.numPages);
+
+                renderPage(pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+                showViewAndPagingPdf(pdfDoc.numPages, '#pdf-viewer', '#paging-pdf');
+
+                hideLoading();
+            });
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
+
+$("#prev-page").on("click", function () {
+    if (pageNum <= 1) {
+        return;
+    }
+    pageNum--;
+    queueRenderPage(-1, pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+});
+
+$("#next-page").on("click", function () {
+    if (pageNum >= pdfDoc.numPages) {
+        return;
+    }
+    pageNum++;
+    queueRenderPage(1, pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+});
+
+//Exam rule
+const fetchFilePDFExamRule = (fileId) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_JOIN_ROOM + "/file-exam-rule",
+        data: {
+            fileId: fileId
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            pdfjsLib
+                .getDocument({data: pdfData})
+                .promise.then(function (pdfDoc_) {
+                pdfDocExamRule = pdfDoc_;
+                $("#total-page-exam-rule").text(pdfDocExamRule.numPages);
+
+                renderPage(pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+                    pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
+                showViewAndPagingPdf(pdfDocExamRule.numPages, '#pdf-viewer-exam-rule', '#paging-pdf-exam-rule');
+            });
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+};
+
+$("#prev-page-exam-rule").on("click", function () {
+    if (pageNumExamRule <= 1) {
+        return;
+    }
+    pageNumExamRule--;
+    queueRenderPage(-1, pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+        pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
+});
+
+$("#next-page-exam-rule").on("click", function () {
+    if (pageNumExamRule >= pdfDocExamRule.numPages) {
+        return;
+    }
+    pageNumExamRule++;
+    queueRenderPage(1, pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+        pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
+});
 
 const handleOpenModalStudentViolation = (studentId) => {
     currentStudentViolationId = studentId;
@@ -216,7 +371,7 @@ const fetchListViolationStudent = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const violations = responseData.map((violation, index) => {
@@ -299,3 +454,23 @@ const formatDateTime = (date) => {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
+const startCountdown = (startTime, endTime) => {
+    let endTimeDate = new Date(endTime).getTime();
+
+    let countdown = setInterval(function () {
+        let now = new Date().getTime();
+        let distanceToEnd = endTimeDate - now;
+
+        if (distanceToEnd > 0) {
+            let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
+            let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
+            $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
+        } else {
+            clearInterval(countdown);
+            $('#examShiftStart').prop('hidden', true);
+            $('#completeExamShift').prop('hidden', false);
+            $('#countdown').text("Đã kết thúc!");
+            showToastSuccess('Đã hết giờ làm bài thi!')
+        }
+    }, 1000);
+}

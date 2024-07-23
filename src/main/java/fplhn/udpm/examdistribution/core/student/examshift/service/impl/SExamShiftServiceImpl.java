@@ -1,16 +1,17 @@
 package fplhn.udpm.examdistribution.core.student.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
 import fplhn.udpm.examdistribution.core.student.exampaper.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.exampaper.repository.SExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.student.exampapershift.repository.SExamPaperShiftRepository;
-import fplhn.udpm.examdistribution.core.student.studentexamshift.repository.SStudentExamShiftExtendRepository;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamRuleResourceResponse;
+import fplhn.udpm.examdistribution.core.student.examshift.model.response.SFileResourceResponse;
+import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.student.student.repository.SStudentExtendRepository;
+import fplhn.udpm.examdistribution.core.student.studentexamshift.repository.SStudentExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.exampapershift.repository.TExamPaperShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
@@ -20,6 +21,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -112,7 +114,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
                 studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                 sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
-                simpMessagingTemplate.convertAndSend("/topic/student-exam-shift-rejoin",
+                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                         new NotificationResponse(
                                 "Sinh viên "
                                 + existingStudent.get().getStudentCode()
@@ -152,7 +154,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             studentExamShift.setStatus(EntityStatus.ACTIVE);
             sStudentExamShiftExtendRepository.save(studentExamShift);
 
-            simpMessagingTemplate.convertAndSend("/topic/student-exam-shift",
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                     new NotificationResponse(
                             "Sinh viên "
                             + existingStudent.get().getStudentCode()
@@ -170,6 +172,18 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     }
 
     @Override
+    public ResponseObject<?> getFileExamRule(String file) throws IOException {
+        Resource fileResponse = googleDriveFileService.loadFile(file);
+        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+        return new ResponseObject<>(
+                new SExamRuleResourceResponse(data, fileResponse.getFilename()),
+                HttpStatus.OK,
+                "Lấy file quy định thi thành công!"
+        );
+    }
+
+    @Override
     public ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode) {
         return new ResponseObject<>(sExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
                 HttpStatus.OK, "Lấy path đề thi thành công!");
@@ -180,7 +194,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
         Resource fileResponse = googleDriveFileService.loadFile(file);
         String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
         return new ResponseObject<>(
-                new TFileResourceResponse(data, fileResponse.getFilename()),
+                new SFileResourceResponse(data, fileResponse.getFilename()),
                 HttpStatus.OK, "Lấy đề thi thành công!");
     }
 

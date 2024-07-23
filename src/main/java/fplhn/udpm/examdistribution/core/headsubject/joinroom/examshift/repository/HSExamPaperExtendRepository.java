@@ -1,12 +1,12 @@
-package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.repository;
+package fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.repository;
 
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model.response.HDExamPaperShiftInfoAndPathResponse;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.examshift.model.response.HSExamPaperShiftInfoAndPathResponse;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HDExamPaperExtendRepository extends ExamPaperRepository {
+public interface HSExamPaperExtendRepository extends ExamPaperRepository {
 
     @Query(value = """
             SELECT
@@ -23,6 +23,6 @@ public interface HDExamPaperExtendRepository extends ExamPaperRepository {
             WHERE
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
-    HDExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
+    HSExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 
 }
