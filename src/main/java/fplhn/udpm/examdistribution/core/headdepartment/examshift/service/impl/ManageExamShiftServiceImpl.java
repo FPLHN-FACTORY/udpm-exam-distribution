@@ -6,8 +6,13 @@ import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.E
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ModifyExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDBlockRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDExamShiftRepository;
+import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDStaffExamShiftRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.service.ManageExamShiftService;
 import fplhn.udpm.examdistribution.entity.Block;
+import fplhn.udpm.examdistribution.entity.ExamShift;
+import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
+import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +34,8 @@ public class ManageExamShiftServiceImpl implements ManageExamShiftService {
     private final SessionHelper sessionHelper;
 
     private final HDBlockRepository hdBlockRepository;
+
+    private final HDStaffExamShiftRepository hdStaffExamShiftRepository;
 
     @Override
     public ResponseObject<?> getAllExamShifts(ExamShiftRequest request) {
@@ -71,7 +78,61 @@ public class ManageExamShiftServiceImpl implements ManageExamShiftService {
 
     @Override
     public ResponseObject<?> editExamShift(String examShiftId, ModifyExamShiftRequest request) {
-        return null;
+        Optional<ExamShift> examShift = hdExamShiftRepository.findById(examShiftId);
+        if (examShift.isEmpty()) {
+            return ResponseObject.errorForward(
+                    "Không tìm thấy ca thi phù hợp",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+        ExamShift examShiftEntity = examShift.get();
+        Long currentTime = DateTimeUtil.getCurrentTime();
+        if (examShiftEntity.getExamDate() < currentTime) {
+            return ResponseObject.errorForward(
+                    "Không thể chỉnh sửa ca thi đã diễn ra",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        examShiftEntity.setExamDate(request.getExamDate());
+
+        Optional<ExamShift> examShiftDuplicate = hdExamShiftRepository.findByExamDateAndRoomAndShift(
+                request.getExamDate(),
+                request.getRoom(),
+                examShiftEntity.getShift()
+        );
+        if (examShiftDuplicate.isPresent() && !examShiftDuplicate.get().getId().equals(examShiftId)) {
+            return ResponseObject.errorForward(
+                    "Đã có ca thi sử dụng phòng - " + request.getRoom() + " vào thời gian này",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        examShiftEntity.setRoom(request.getRoom());
+        examShiftEntity.setShift(Shift.valueOf(request.getShift()));
+
+        Optional<Staff> firstSupervisor = hdStaffExamShiftRepository.findByStaffCode(request.getFirstSupervisorCode());
+        if (firstSupervisor.isEmpty()) {
+            return ResponseObject.errorForward(
+                    "Không tìm thấy giáo viên coi thi 1 phù hợp",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+        examShiftEntity.setFirstSupervisor(firstSupervisor.get());
+
+        Optional<Staff> secondSupervisor = hdStaffExamShiftRepository.findByStaffCode(request.getSecondSupervisorCode());
+        if (secondSupervisor.isEmpty()) {
+            return ResponseObject.errorForward(
+                    "Không tìm thấy giáo viên coi thi 2 phù hợp",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+        examShiftEntity.setSecondSupervisor(secondSupervisor.get());
+
+        hdExamShiftRepository.save(examShiftEntity);
+        return new ResponseObject<>(
+                null,
+                HttpStatus.OK,
+                "Chỉnh sửa ca thi thành công"
+        );
     }
 
 }

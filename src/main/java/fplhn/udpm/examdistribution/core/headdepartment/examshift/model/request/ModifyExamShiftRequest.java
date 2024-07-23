@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class ModifyExamShiftRequest {
 
-    private String firstSupervisorId;
+    private String firstSupervisorCode;
 
-    private String secondSupervisorId;
+    private String secondSupervisorCode;
 
     private Long examDate;
 

@@ -1,12 +1,16 @@
 package fplhn.udpm.examdistribution.core.headdepartment.examshift.controller;
 
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ModifyExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.service.ManageExamShiftService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +24,14 @@ public class HDManageExamShiftRestController {
     @GetMapping
     public ResponseEntity<?> getExamShifts(ExamShiftRequest request) {
         return Helper.createResponseEntity(manageExamShiftService.getAllExamShifts(request));
+    }
+
+    @PutMapping("{examShiftId}")
+    public ResponseEntity<?> modifyExamShift(
+            @PathVariable String examShiftId,
+            @RequestBody ModifyExamShiftRequest request
+    ) {
+        return Helper.createResponseEntity(manageExamShiftService.editExamShift(examShiftId, request));
     }
 
     @GetMapping("/block-info")

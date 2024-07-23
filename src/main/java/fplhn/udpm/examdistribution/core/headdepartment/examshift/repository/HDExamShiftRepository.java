@@ -2,11 +2,15 @@ package fplhn.udpm.examdistribution.core.headdepartment.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.response.ExamShiftResponse;
+import fplhn.udpm.examdistribution.entity.ExamShift;
+import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface HDExamShiftRepository extends ExamShiftRepository {
@@ -63,5 +67,7 @@ public interface HDExamShiftRepository extends ExamShiftRepository {
             Long startRangeTime,
             Long endRangeTime
     );
+
+    Optional<ExamShift> findByExamDateAndRoomAndShift(Long examDate, String room, Shift shift);
 
 }
