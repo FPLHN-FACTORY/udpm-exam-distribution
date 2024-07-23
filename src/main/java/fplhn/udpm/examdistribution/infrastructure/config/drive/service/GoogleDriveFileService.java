@@ -28,4 +28,6 @@ public interface GoogleDriveFileService {
 
     Resource loadFile(String fileId) throws IOException;
 
+    String getFileName(String fileId);
+
 }

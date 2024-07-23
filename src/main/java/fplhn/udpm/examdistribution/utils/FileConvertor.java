@@ -1,35 +1,26 @@
 package fplhn.udpm.examdistribution.utils;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import com.documents4j.api.DocumentType;
+import com.documents4j.api.IConverter;
+import com.documents4j.job.LocalConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Component
 public class FileConvertor {
 
-    public byte[] convertDocxToPdf(MultipartFile file) throws IOException {
-        XWPFDocument doc = new XWPFDocument(file.getInputStream());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PdfWriter writer = new PdfWriter(out);
-        PdfDocument pdf = new PdfDocument(writer);
-        Document pdfDoc = new Document(pdf);
+    public byte[] convertDocxToPdf(InputStream docxInputStream) throws IOException {
+        ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
 
-        for (XWPFParagraph paragraph : doc.getParagraphs()) {
-            System.out.println(paragraph.getText());
-            pdfDoc.add(new Paragraph(paragraph.getText()));
-        }
+        IConverter converter = LocalConverter.builder().build();
+        converter.convert(docxInputStream).as(DocumentType.DOCX)
+                .to(pdfOutputStream).as(DocumentType.PDF)
+                .execute();
 
-        pdfDoc.close();
-        doc.close();
-        return out.toByteArray();
+        return pdfOutputStream.toByteArray();
     }
 
 }

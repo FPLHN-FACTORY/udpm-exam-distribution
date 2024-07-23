@@ -326,4 +326,13 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
         }
     }
 
+    @Override
+    public String getFileName(String fileId) {
+        try {
+            return googleDriveConfig.getDrive().files().get(fileId).execute().getName();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

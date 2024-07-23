@@ -172,14 +172,12 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             Resource resource = googleDriveFileService.loadFile(fileId);
             String data = "";
 
-//            String fileName = resource.getFile().getName();
-//            System.out.println(fileName);
-//            if (fileName.toLowerCase().endsWith(".docx")) {
-//                data = Base64.getEncoder().encodeToString(fileConvertor.convertDocxToPdf(resource));
-//            } else {
-//                data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
-//            }
-            data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            String fileName = googleDriveFileService.getFileName(fileId);
+            if (fileName.toLowerCase().endsWith(".docx")) {
+                data = Base64.getEncoder().encodeToString(fileConvertor.convertDocxToPdf(resource.getInputStream()));
+            } else {
+                data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            }
             redisService.set(redisKey, data);
 
             return new ResponseObject<>(
@@ -188,7 +186,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                     "Tìm thấy file thành công"
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
