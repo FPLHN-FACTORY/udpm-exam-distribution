@@ -6,9 +6,14 @@ $(document).ready(function () {
 
     getFacilitis();
 
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
-        const facilityName = $('#facilityName').val();
+    handleAddEvent($('#facilityName'),'keyup', function () {
+        const facilityName = $('#facilityName').val()?.trim();
+        const facilityStatus = $('#facilityStatus').val();
+        getFacilitis(1, $('#pageSize').val(), facilityName, facilityStatus);
+    });
+
+    handleAddEvent($('#facilityStatus'),'change', function () {
+        const facilityName = $('#facilityName').val()?.trim();
         const facilityStatus = $('#facilityStatus').val();
         getFacilitis(1, $('#pageSize').val(), facilityName, facilityStatus);
     });
@@ -29,10 +34,6 @@ $(document).ready(function () {
         getFacilityUpdate(currentFacilityId);
     });
 
-    $('#resetFilter').on('click', function () {
-        resetFilterForm();
-    });
-
     $('#pageSize').on('change', function () {
         getFacilitis();
     });
@@ -43,8 +44,8 @@ $(document).ready(function () {
 const getFacilitis = (
     page = currentPage,
     size = $('#pageSize').val(),
-    facilityName = $('#facilityName').val(),
-    facilityStatus = $('#facilityStatus').val()
+    facilityName = $('#facilityName').val()?.trim(),
+    facilityStatus = $('#facilityStatus').val()?.trim()
 ) => {
 
     const params = {
@@ -68,7 +69,6 @@ const getFacilitis = (
         type: "GET",
         url: url,
         success: function (responseBody) {
-            console.log(responseBody);
             if (responseBody?.data?.data?.length === 0) {
                 $('#facilityTableBody').html(`
                     <tr>
@@ -81,6 +81,7 @@ $('#pagination').empty();
             const facilities = responseBody?.data?.data?.map((facility, index) => {
                 return `<tr>
                             <td>${facility.orderNumber}</td>
+                            <td>${facility.facilityCode}</td>
                             <td>${facility.facilityName}</td>
                             <td>${facility.facilityStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
@@ -304,6 +305,9 @@ const confirmUpdateFacility = () =>
     }).then((willUpdate) => {
         if (willUpdate) {
             updateFacility();
+        }else {
+            $('#facilityUpdateModal').modal('show');
+            $('#facilityChildModal').modal('hide');
         }
     });
 }
@@ -388,10 +392,12 @@ const changeStatus = (id) => {
 }
 
 const createFacilityChild = () => {
-    const facilityChildName = $('#modifyFacilityChildName').val();
+    const facilityChildCode = $('#modifyFacilityChildCode')?.val()?.trim();
+    const facilityChildName = $('#modifyFacilityChildName')?.val()?.trim();
 
     const facilityChildRequest = {
-        facilityChildName: facilityChildName
+        facilityChildName: facilityChildName,
+        facilityChildCode:facilityChildCode
     };
 
     $.ajax({
@@ -468,11 +474,13 @@ const confirmUpdateFacilityChild = () => {
 
 
 const updateFacilityChild = () => {
-    const facilityChildName = $('#modifyFacilityChildName').val();
+    const facilityChildCode = $('#modifyFacilityChildCode').val()?.trim();
+    const facilityChildName = $('#modifyFacilityChildName').val()?.trim();
     const facilityChildId = $('#facilityChildId').val();
 
     const facilityUpdateRequest = {
         facilityChildName: facilityChildName,
+        facilityChildCode:facilityChildCode
     }
 
     $.ajax({
@@ -555,12 +563,13 @@ const getFacilityChild = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const facilityChilds = responseBody?.data?.data?.map((facilityChild, index) => {
                 return `<tr>
                             <td>${facilityChild.orderNumber}</td>
+                            <td>${facilityChild.facilityChildCode}</td>
                             <td>${facilityChild.facilityChildName}</td>
                             <td>${facilityChild.facilityChildStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
@@ -596,6 +605,7 @@ const getDetailFacilityChild = (facilityChildId) => {
             if (response?.data) {
                 const facilityChild = response?.data;
                 $('#facilityChildId').val(facilityChild.id);
+                $('#modifyFacilityChildCode').val(facilityChild.facilityChildCode);
                 $('#modifyFacilityChildName').val(facilityChild.facilityChildName);
                 $('#facilityChildModalLabel').text('Cập nhật cơ sở con');
                 $('#facilityUpdateModal').modal('hide');
@@ -632,8 +642,10 @@ const openModalAddFacility = () => {
 const openModalAddFacilityChild = () => {
     $('#facilityChildId').val('');
     $('#modifyFacilityChildName').val('');
-
     $('#facilityChildNameError').text('');
+
+    $('#modifyFacilityChildCode').val('');
+    $('#facilityChildCodeError').text('');
     $('.form-control').removeClass('is-invalid');
 
     $('#facilityChildModalLabel').text('Thêm cơ sở con');

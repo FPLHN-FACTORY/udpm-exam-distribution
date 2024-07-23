@@ -5,8 +5,14 @@ $(document).ready(function () {
 
     fetchSearchDepartmentFacility();
     onChangePageSize();
-    handleFilter();
-    handleResetFilter();
+
+    //add event
+    handleAddEvent($("#departmentFacilityName"),"keyup", function () {
+        fetchSearchDepartmentFacility(1, $('#pageSize').val(), getGlobalParamsSearch());
+    });
+    handleAddEvent($("#majorFacilityNameFilter"),"keyup", handleFilterMajorFacility);
+    handleAddEvent($("#majorFacilityHeadOfMajorCodeFilter"),"keyup", handleFilterMajorFacility);
+    handleAddEvent($("#majorFacilityHeadOfMajorNameFilter"),"keyup", handleFilterMajorFacility);
 
     $("#modifyDepartmentFacilityButton").on("click", function () {
         handleAddOrUpdateDepartmentFacilityConfirm();
@@ -288,20 +294,6 @@ const fetchDepartmentName = () => {
 const onChangePageSize = () => {
     $("#pageSize").on("change", function () {
         resetGlobalParamsSearch();
-        fetchSearchDepartmentFacility(1, $('#pageSize').val(), getGlobalParamsSearch());
-    });
-};
-
-const handleResetFilter = () => {
-    $("#resetFilter").on("click", function () {
-        $("#pageSize").val("5");
-        resetGlobalParamsSearch();
-        fetchSearchDepartmentFacility();
-    });
-};
-
-const handleFilter = () => {
-    $("#buttonFilter").on("click", function () {
         fetchSearchDepartmentFacility(1, $('#pageSize').val(), getGlobalParamsSearch());
     });
 };

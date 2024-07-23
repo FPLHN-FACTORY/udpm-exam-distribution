@@ -134,12 +134,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 this.successAuthentication(request, response);
             } else {
                 String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
-                Optional<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
+                List<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
 
                 if (staffMajorFacilityOptional.isEmpty()) {
                     this.errorAuthentication(request, response);
                 } else {
-                    CustomUserCookie userCookie = buildStaffCookie(staffMajorFacilityOptional.get(), currentStaff, role.toString(), userInfo);
+                    CustomUserCookie userCookie = buildStaffCookie(staffMajorFacilityOptional.get(0), currentStaff, role.toString(), userInfo);
                     String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
                     CookieUtils.addCookie(

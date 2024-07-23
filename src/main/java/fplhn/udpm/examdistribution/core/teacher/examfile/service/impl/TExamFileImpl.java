@@ -98,7 +98,7 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        Optional<MajorFacility> majorFacility = majorFacilityRepository.findById(request.getMajorFacilityId());
+        Optional<MajorFacility> majorFacility = majorFacilityRepository.findById(httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString());
 
         Optional<Staff> staffs = tStaffRepository.findById((String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
 

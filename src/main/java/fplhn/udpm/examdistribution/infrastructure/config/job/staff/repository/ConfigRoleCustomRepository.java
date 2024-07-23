@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RoleCustomRepository extends RoleRepository {
+public interface ConfigRoleCustomRepository extends RoleRepository {
 
     @Query(
             value = """

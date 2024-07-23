@@ -32,8 +32,12 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="facilityName">Tên cơ sở</label>
-                                    <input type="text" id="facilityName" name="facilityName" class="form-control">
+                                    <label for="facilityName">Cơ sở</label>
+                                    <input type="text"
+                                           id="facilityName"
+                                           name="facilityName"
+                                           class="form-control"
+                                           placeholder="Tìm kiếm với từ khóa(Mã cơ sở / Tên cơ sở)">
                                 </div>
                                 <div class="col form-group">
                                     <label for="facilityStatus">Trạng thái</label>
@@ -44,17 +48,6 @@
                                         <option value="1">Dừng hoạt động</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-black">Tìm kiếm</button>
-                                <button
-                                        type="reset"
-                                        class="btn"
-                                        id="resetFilter"
-                                        style="background-color: var(--common-button-color); color: white;"
-                                >
-                                    Xóa bộ lọc
-                                </button>
                             </div>
                         </form>
                     </div>
@@ -75,6 +68,7 @@
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã cơ sở</td>
                                     <td>Tên cơ sở</td>
                                     <td>Trạng thái</td>
                                     <td
@@ -120,9 +114,13 @@
                 <div class="modal-body">
                     <form id="addFacilityForm">
                         <div class="mb-3">
-                            <label for="modifyFacilityNameCreate" class="form-label">Tên cơ sở</label>
+                            <label for="modifyFacilityNameCreate" class="form-label"><span class="text-danger"> * </span> Tên cơ sở</label>
                             <input type="text" class="form-control" id="modifyFacilityNameCreate" required>
                             <div class="invalid-feedback" id="facilityNameErrorCreate"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được
+                                trống!</label>
                         </div>
                     </form>
                 </div>
@@ -140,10 +138,10 @@
     <!-- Modal Modify Update Facility -->
     <div class="modal fade" id="facilityUpdateModal" tabindex="-1" aria-labelledby="addFacilityLabel"
          aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="facilityModalLabel">Sửa cơ sở</h5>
+                    <h5 class="modal-title" id="facilityModalLabel">Cập nhật cơ sở</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -157,13 +155,14 @@
                     </form>
                     <div>
                         <div>
-                            <button class="btn btn-black" onclick="openModalAddFacilityChild()">Thêm sơ sở con</button>
+                            <button class="btn btn-black" onclick="openModalAddFacilityChild()">Thêm cơ sở con</button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <td>STT</td>
+                                    <td>Mã cở sở con</td>
                                     <td>Tên cở sở con</td>
                                     <td>Trạng thái</td>
                                     <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
@@ -211,9 +210,18 @@
                     <form id="addFacilityChildForm">
                         <input type="hidden" id="facilityChildId">
                         <div class="mb-3">
-                            <label for="modifyFacilityChildName" class="form-label">Tên cơ sở con</label>
+                            <label for="modifyFacilityChildCode" class="form-label"><span class="text-danger"> * </span> Mã cơ sở con</label>
+                            <input type="text" class="form-control" id="modifyFacilityChildCode" required>
+                            <div class="invalid-feedback" id="facilityChildCodeError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyFacilityChildName" class="form-label"><span class="text-danger"> * </span> Tên cơ sở con</label>
                             <input type="text" class="form-control" id="modifyFacilityChildName" required>
                             <div class="invalid-feedback" id="facilityChildNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">(<span class="text-danger"> * </span>) Biểu thị trường không được
+                                trống!</label>
                         </div>
                     </form>
                 </div>

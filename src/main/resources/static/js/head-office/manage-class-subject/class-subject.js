@@ -10,16 +10,25 @@ $(document).ready(() => {
 
     change();
 
-    $('#filterForm').on('submit', function (e) {
-        submitFormFilter(e);
+    //add event
+    handleAddEvent($('#facilityChildId'),'change', function () {
+        submitFormFilter();
+    });
+    handleAddEvent($('#subjectName'),'keyup', function () {
+        submitFormFilter();
+    });
+    handleAddEvent($('#staffName'),'keyup', function () {
+        submitFormFilter();
+    });
+    handleAddEvent($('#shift'),'change', function () {
+        submitFormFilter();
+    });
+    handleAddEvent($('#classSubjectCode'),'keyup', function () {
+        submitFormFilter();
     });
 
     $('#modifySubjectButton').on('click', function () {
         submitSubjectForm();
-    });
-
-    $('#resetFilter').on('click', function () {
-        resetFilterForm();
     });
 
     $('#detailSubjectBtn').on('click', function () {
@@ -123,10 +132,17 @@ const setupDate = () => {
 
     time.on('apply.daterangepicker', (ev, picker) => {
         time.val(picker.startDate.format('DD/MM/YYYY') + ' ⇀ ' + picker.endDate.format('DD/MM/YYYY'));
+        submitFormFilter();
     });
 
     time.on('cancel.daterangepicker', (ev, picker) => {
         time.val('');
+        submitFormFilter();
+    });
+    // If you want to handle change event separately
+    time.on('change', function (e) {
+        e.preventDefault();
+        submitFormFilter();
     });
 }
 
@@ -430,8 +446,7 @@ const submitSubjectForm = () => {
     }
 }
 
-const submitFormFilter = (e) => {
-    e.preventDefault();
+const submitFormFilter = () => {
     let size = $('#pageSize').val();
     const facilityChildId = $('#facilityChildId').val().trim();
     const subjectName = $('#subjectName').val().trim();
@@ -440,7 +455,7 @@ const submitFormFilter = (e) => {
     const shift = $('#shift').val().trim();
     const classSubjectCode = $('#classSubjectCode').val().trim();
 
-    let startDateString = startEndDate.substring(0, 9);
+    let startDateString = startEndDate.substring(0, 10);
     let endDateString = startEndDate.substring(12);
     let startDate = null;
     let endDate = null;
