@@ -48,38 +48,23 @@ public class ShiftProcessor implements ItemProcessor<ImportShiftRequest, ExamShi
 
     @Override
     public ExamShift process(ImportShiftRequest item) throws Exception {
-        String numberOfShift = item.getShift();
-        double shiftNumberDouble = Double.parseDouble(numberOfShift);
-        int shiftNumber = Integer.parseInt(String.valueOf((int) shiftNumberDouble));
-        Shift shift = Shift.fromString("CA" + shiftNumber);
-
+        Shift shift = Shift.fromString("CA" + (int) Double.parseDouble(item.getShift()));
         Long startDate = DateTimeUtil.parseStringToLong(item.getStartDate());
+        String room = Helper.extractPrefix(item.getRoomInfo());
 
-        String roomInfo = item.getRoomInfo();
-        String room = Helper.extractPrefix(roomInfo);
-
-        Optional<Subject> subject = subjectRepository.findByNameAndSubjectCode(
-                item.getSubjectName(),
-                item.getSubjectCode()
-        );
+        Optional<Subject> subject = subjectRepository.findByNameAndSubjectCode(item.getSubjectName(), item.getSubjectCode());
         if (subject.isEmpty()) return null;
 
         Optional<FacilityChild> facilityChild = facilityChildRepository.findByName(item.getCampusCode());
         if (facilityChild.isEmpty()) return null;
 
-        String blockName = item.getBlock();
-        String[] blockNameConvert = blockName.toUpperCase().split(" ");
-        String blockNameConvention = blockNameConvert[0] + "_" + blockNameConvert[1];
+        String blockNameConvention = item.getBlock().toUpperCase().replace(" ", "_");
         List<Block> listBlockCurrent = blockRepository.findByName(BlockName.valueOf(blockNameConvention));
         if (listBlockCurrent.isEmpty()) return null;
-        Long currentTime = DateTimeUtil.getCurrentTime();
-        Block block = null;
-        for (Block b : listBlockCurrent) {
-            if (b.getStartTime() < currentTime && b.getEndTime() > currentTime) {
-                block = b;
-                break;
-            }
-        }
+
+        Block block = listBlockCurrent.stream()
+                .filter(b -> b.getStartTime() < DateTimeUtil.getCurrentTime() && b.getEndTime() > DateTimeUtil.getCurrentTime())
+                .findFirst().orElse(null);
         if (block == null) return null;
 
         Optional<ClassSubject> classSubject = classSubjectRepository
@@ -94,13 +79,18 @@ public class ShiftProcessor implements ItemProcessor<ImportShiftRequest, ExamShi
         Optional<Staff> firstSupervisor = staffRepository.findByStaffCode(item.getFirstSupervisorCode());
         Optional<Staff> secondSupervisor = staffRepository.findByStaffCode(item.getSecondSupervisorCode());
 
-        String examShiftCode = CodeGenerator.generateRandomCode();
+        try {
+            Integer.parseInt(item.getTotalStudent());
+        } catch (NumberFormatException e) {
+            return null;
+        }
 
         ExamShift examShift = new ExamShift();
         examShift.setShift(shift);
+        examShift.setTotalStudent(Integer.parseInt(item.getTotalStudent()));
         examShift.setClassSubject(classSubject.get());
         examShift.setExamDate(startDate);
-        examShift.setExamShiftCode(examShiftCode);
+        examShift.setExamShiftCode(CodeGenerator.generateRandomCode());
         examShift.setFirstSupervisor(firstSupervisor.orElse(null));
         examShift.setSecondSupervisor(secondSupervisor.orElse(null));
         examShift.setRoom(room);
