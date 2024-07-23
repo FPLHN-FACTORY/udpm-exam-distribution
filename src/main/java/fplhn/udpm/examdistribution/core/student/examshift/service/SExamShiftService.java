@@ -15,6 +15,8 @@ public interface SExamShiftService {
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
+    ResponseObject<?> getFileExamRule(String file) throws IOException;
+
     ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 
     ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) throws IOException;

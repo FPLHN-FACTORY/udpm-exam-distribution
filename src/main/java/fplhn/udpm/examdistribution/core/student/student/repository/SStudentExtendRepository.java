@@ -33,8 +33,8 @@ public interface SStudentExtendRepository extends StudentRepository {
             JOIN class_subject cs ON cs.id = es.id_subject_class
             WHERE
                 ses.exam_student_status IN(0, 1, 2)
-            	AND es.exam_shift_code = :examShiftCode AND
-            	    cs.id_block = :blockId
+            	AND es.exam_shift_code = :examShiftCode
+                AND cs.id_block = :blockId
             """,countQuery = """
             SELECT
                 COUNT(s.id)
@@ -44,8 +44,8 @@ public interface SStudentExtendRepository extends StudentRepository {
             JOIN class_subject cs ON cs.id = es.id_subject_class
             WHERE
                 ses.exam_student_status IN(0, 1, 2)
-            	AND es.exam_shift_code = :examShiftCode AND
-            	    cs.id_block = :blockId
+            	AND es.exam_shift_code = :examShiftCode
+                AND cs.id_block = :blockId
             """, nativeQuery = true)
     List<SStudentResponse> findAllStudentByExamShiftCode(String examShiftCode, String blockId);
 

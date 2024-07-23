@@ -13,7 +13,7 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe("/topic/teacher-exam-shift-create", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_CREATE, function (response) {
             getExamShifts();
         });
     });
@@ -22,7 +22,6 @@ const connect = () => {
 const joinExamShift = (examShiftCode) => {
     const examShift = {
         examShiftCodeJoin: examShiftCode,
-        // passwordJoin: $('#modifyPasswordJoin').val(),
     }
     $.ajax({
         type: "POST",
@@ -66,8 +65,6 @@ const resetFormJoinExamShift = () => {
 const removeFormJoinError = () => {
     $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
     $('#examShiftCodeJoinError').text('');
-    // $('#modifyPasswordJoin').removeClass('is-invalid');
-    // $('#passwordJoinError').text('');
 };
 
 const getExamShifts = () => {

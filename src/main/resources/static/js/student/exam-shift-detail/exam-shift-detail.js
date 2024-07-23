@@ -15,26 +15,26 @@ const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
 
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault()
-});
-
-document.onkeydown = (e) => {
-    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
-
-    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
-        e.preventDefault();
-        return false;
-    }
-}
+// document.addEventListener('contextmenu', (e) => {
+//     e.preventDefault()
+// });
+//
+// document.onkeydown = (e) => {
+//     const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+//
+//     if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+//         e.preventDefault();
+//         return false;
+//     }
+// }
 
 $(document).ready(function () {
 
-    if (devtools.isOpen) {
-        while (true) {
-            console.log("access denied")
-        }
-    }
+    // if (devtools.isOpen) {
+    //     while (true) {
+    //         console.log("access denied")
+    //     }
+    // }
 
     getExamShiftByCode();
 
@@ -121,6 +121,7 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
     });
 }
 
+// Exam paper
 const fetchFilePDFExamPaper = (fileId) => {
     showLoading();
     $.ajax({
@@ -137,8 +138,8 @@ const fetchFilePDFExamPaper = (fileId) => {
                 pdfDoc = pdfDoc_;
                 $("#total-page").text(pdfDoc.numPages);
 
-                renderPage(pageNum);
-                showViewAndPagingPdf(pdfDoc.numPages);
+                renderPage(pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+                showViewAndPagingPdf(pdfDoc.numPages, '#pdf-viewer', '#paging-pdf');
 
                 hideLoading();
             });
@@ -153,6 +154,22 @@ const fetchFilePDFExamPaper = (fileId) => {
         }
     });
 };
+
+$("#prev-page").on("click", function () {
+    if (pageNum <= 1) {
+        return;
+    }
+    pageNum--;
+    queueRenderPage(-1, pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+});
+
+$("#next-page").on("click", function () {
+    if (pageNum >= pdfDoc.numPages) {
+        return;
+    }
+    pageNum++;
+    queueRenderPage(1, pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+});
 
 const openExamPaper = () => {
     const openExamPaper = {
@@ -182,64 +199,7 @@ const openExamPaper = () => {
     });
 };
 
-// Render the page
-function renderPage(num) {
-    pageRendering = true;
-    pdfDoc.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scale});
-        $pdfCanvas.height = viewport.height;
-        $pdfCanvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRendering = false;
-            if (pageNumPending !== null) {
-                renderPage(pageNumPending);
-                pageNumPending = null;
-            }
-        });
-    });
-
-    $("#page-num").text(num);
-}
-
-const showViewAndPagingPdf = (totalPage) => {
-    $("#pdf-viewer").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf").prop("hidden", false);
-    }
-};
-
-function queueRenderPage(num) {
-    if (pageRendering) {
-        pageNumPending = num;
-    } else {
-        renderPage(num);
-    }
-}
-
-$("#prev-page").on("click", function () {
-    if (pageNum <= 1) {
-        return;
-    }
-    pageNum--;
-    queueRenderPage(pageNum);
-});
-
-$("#next-page").on("click", function () {
-    if (pageNum >= pdfDoc.numPages) {
-        return;
-    }
-    pageNum++;
-    queueRenderPage(pageNum);
-});
-
-//file-exam-rule
+//Exam rule
 const fetchFilePDFExamRule = (fileId) => {
     $.ajax({
         type: "GET",
@@ -255,8 +215,9 @@ const fetchFilePDFExamRule = (fileId) => {
                 pdfDocExamRule = pdfDoc_;
                 $("#total-page-exam-rule").text(pdfDocExamRule.numPages);
 
-                renderPageExamRule(pageNumExamRule);
-                showViewAndPagingPdfExamRule(pdfDocExamRule.numPages);
+                renderPage(pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+                    pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
+                showViewAndPagingPdf(pdfDocExamRule.numPages, '#pdf-viewer-exam-rule', '#paging-pdf-exam-rule');
             });
         },
         error: function (error) {
@@ -269,53 +230,13 @@ const fetchFilePDFExamRule = (fileId) => {
     });
 };
 
-// Render the page
-function renderPageExamRule(num) {
-    pageRenderingExamRule = true;
-    pdfDocExamRule.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scaleExamRule});
-        $pdfCanvasExamRule.height = viewport.height;
-        $pdfCanvasExamRule.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctxExamRule,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRenderingExamRule = false;
-            if (pageNumPendingExamRule !== null) {
-                renderPage(pageNumPendingExamRule);
-                pageNumPendingExamRule = null;
-            }
-        });
-    });
-
-    $("#page-num-exam-rule").text(num);
-}
-
-const showViewAndPagingPdfExamRule = (totalPage) => {
-    $("#pdf-viewer-exam-rule").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf-exam-rule").prop("hidden", false);
-    }
-};
-
-function queueRenderPageExamRule(num) {
-    if (pageRenderingExamRule) {
-        pageRenderingExamRule = num;
-    } else {
-        renderPageExamRule(num);
-    }
-}
-
 $("#prev-page-exam-rule").on("click", function () {
     if (pageNumExamRule <= 1) {
         return;
     }
     pageNumExamRule--;
-    queueRenderPageExamRule(pageNumExamRule);
+    queueRenderPage(-1, pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+        pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
 });
 
 $("#next-page-exam-rule").on("click", function () {
@@ -323,23 +244,23 @@ $("#next-page-exam-rule").on("click", function () {
         return;
     }
     pageNumExamRule++;
-    queueRenderPageExamRule(pageNumExamRule);
+    queueRenderPage(1, pdfDocExamRule, pageNumExamRule, '#page-num-exam-rule', pageRenderingExamRule,
+        pageNumPendingExamRule, scaleExamRule, $pdfCanvasExamRule, ctxExamRule);
 });
-//file-exam-rule
 
 const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe("/topic/student-exam-shift", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
         });
-        stompClient.subscribe("/topic/student-exam-shift-kick", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
             localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
             window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         });
-        stompClient.subscribe("/topic/exam-shift-start", function (response) {
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);

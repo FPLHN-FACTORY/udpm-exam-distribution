@@ -108,6 +108,20 @@ const ApiConstant = {
 
 };
 
+const TopicConstant = {
+    TOPIC_EXAM_SHIFT_CREATE: "/topic/teacher-exam-shift-create",
+    TOPIC_EXAM_SHIFT: "/topic/exam-shift",
+    TOPIC_STUDENT_EXAM_SHIFT: "/topic/student-exam-shift",
+    TOPIC_STUDENT_EXAM_SHIFT_KICK: "/topic/student-exam-shift-kick",
+    TOPIC_STUDENT_EXAM_SHIFT_REJOIN: "/topic/student-exam-shift-rejoin",
+    TOPIC_STUDENT_EXAM_SHIFT_APPROVE: "/topic/student-exam-shift-approve",
+    TOPIC_STUDENT_EXAM_SHIFT_REFUSE: "/topic/student-exam-shift-refuse",
+    TOPIC_EXAM_SHIFT_START: "/topic/exam-shift-start",
+    TOPIC_TRACK_STUDENT: "/topic/track-student",
+    TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT: "/topic/head-subject-exam-shift-join",
+    TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT: "/topic/head-department-exam-shift-join",
+}
+
 const INIT_PAGINATION = {
     page: 1,
     size: 5,
@@ -150,3 +164,42 @@ const getExamDistributionInfo = () => {
         isAssignUploader: examDistributionInfo?.isAssignUploader || null,
     };
 };
+
+const renderPage = (pdfDoc, pageNum, pageNumSelector, pageRendering, pageNumPending, scale, canvas, ctx) => {
+    pageRendering = true;
+    pdfDoc.getPage(pageNum).then(function (page) {
+        const viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+        const renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function () {
+            pageRendering = false;
+            if (pageNumPending !== null) {
+                renderPage(pdfDoc, pageNum, pageNumSelector, pageRendering, pageNumPending, scale, canvas, ctx);
+                pageNumPending = null;
+            }
+        });
+    });
+
+    $(pageNumSelector).text(pageNum);
+}
+
+const queueRenderPage = (change, pdfDoc, pageNum, pageNumSelector, pageRendering, pageNumPending, scale, canvas, ctx) => {
+    if (pageRendering) {
+        pageNumPending = pageNum;
+    }
+    renderPage(pdfDoc, pageNum, pageNumSelector, pageRendering, pageNumPending, scale, canvas, ctx);
+}
+
+const showViewAndPagingPdf = (totalPage, viewerSelector, pagingSelector) => {
+    $(viewerSelector).prop("hidden", false);
+    if (totalPage > 1) {
+        $(pagingSelector).prop("hidden", false);
+    }
+}

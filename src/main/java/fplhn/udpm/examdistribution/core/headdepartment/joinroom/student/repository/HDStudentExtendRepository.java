@@ -31,17 +31,21 @@ public interface HDStudentExtendRepository extends StudentRepository {
             JOIN student_exam_shift ses ON s.id = ses.id_student
             JOIN exam_shift es ON ses.id_exam_shift = es.id
             JOIN class_subject cs ON cs.id = es.id_subject_class
-            WHERE es.exam_shift_code = :examShiftCode AND
-                  cs.id_block = :blockId
-            """,countQuery = """
+            WHERE 
+                ses.exam_student_status IN(0, 1, 2)
+                AND es.exam_shift_code = :examShiftCode
+                AND cs.id_block = :blockId
+            """, countQuery = """
             SELECT
                 COUNT(s.id)
             FROM student s
             JOIN student_exam_shift ses ON s.id = ses.id_student
             JOIN exam_shift es ON ses.id_exam_shift = es.id
             JOIN class_subject cs ON cs.id = es.id_subject_class
-            WHERE es.exam_shift_code = :examShiftCode AND
-                  cs.id_block = :blockId
+            WHERE 
+                ses.exam_student_status IN(0, 1, 2)
+                AND es.exam_shift_code = :examShiftCode
+                AND cs.id_block = :blockId
             """, nativeQuery = true)
     List<HDStudentResponse> findAllStudentByExamShiftCode(String examShiftCode, String blockId);
 

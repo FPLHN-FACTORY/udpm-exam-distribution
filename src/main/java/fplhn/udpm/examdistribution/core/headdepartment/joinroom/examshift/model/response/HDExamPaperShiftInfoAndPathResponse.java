@@ -2,10 +2,12 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.examshift.model
 
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-public interface HDExamShiftResponse extends IsIdentify {
+public interface HDExamPaperShiftInfoAndPathResponse extends IsIdentify {
 
-    String getExamShiftCode();
+    String getPath();
 
-    String getPathExamRule();
+    Long getStartTime();
+
+    Long getEndTime();
 
 }

@@ -25,11 +25,17 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	exam_shift es
             JOIN staff s ON
             	es.id_first_supervisor = s.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s2 ON
+            	cs.id_subject = s2.id
+            JOIN subject_group sg ON
+            	s2.id_subject_group = sg.id
             WHERE
-            	s.id_department_facility = :departmentFacilityId
+            	sg.id_department_facility = :departmentFacilityId
             	AND es.exam_date >= :currentDate
-                AND es.shift = :currentShift
-                AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
+            	AND es.shift = :currentShift
+            	AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
             """, nativeQuery = true)
     List<HDAllExamShiftResponse> getAllExamShift(String departmentFacilityId, Long currentDate, String currentShift);
 
@@ -41,21 +47,33 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.exam_shift_code as examShiftCode
             FROM
             	exam_shift es
-            LEFT JOIN staff s ON
+            JOIN staff s ON
             	es.id_first_supervisor = s.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s2 ON
+            	cs.id_subject = s2.id
+            JOIN subject_group sg ON
+            	s2.id_subject_group = sg.id
             WHERE
-                es.exam_shift_code = :examShiftCode
-                AND s.id_department_facility = :departmentFacilityId
+            	es.exam_shift_code = :examShiftCode
+            	AND sg.id_department_facility = :departmentFacilityId
             """, nativeQuery = true)
     Optional<HDExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId);
 
     @Query(value = """
             SELECT
             	es.id as id,
-            	es.exam_shift_code as examShiftCode
+            	es.exam_shift_code as examShiftCode,
+            	s.path_exam_rule as pathExamRule
             FROM
             	exam_shift es
-            WHERE es.exam_shift_code = :examShiftCode
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s ON
+            	cs.id_subject = s.id
+            WHERE
+            	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     HDExamShiftResponse getExamShiftByCode(String examShiftCode);
 
@@ -67,7 +85,8 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             JOIN exam_shift es ON
             	ses.id_exam_shift = es.id
             WHERE
-            	es.exam_shift_code = :examShiftCode
+                ses.exam_student_status IN(0, 1, 2)
+            	AND es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     Integer countStudentInExamShift(String examShiftCode);
 
