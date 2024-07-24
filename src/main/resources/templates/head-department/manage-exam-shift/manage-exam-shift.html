@@ -169,6 +169,95 @@
             </div>
         </div>
     </div>
+    <!-- Modal Edit Exam Shift   -->
+    <div class="modal fade" id="editExamShiftModal" tabindex="-1" aria-labelledby="editExamShiftModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editExamShiftModalLabel">Chỉnh sửa ca thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editClassSubjectCode">Mã lớp môn</label>
+                                <input type="text" class="form-control" id="editClassSubjectCode"
+                                       placeholder="Nhập mã lớp môn" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editSubjectInfo">Thông tin môn học</label>
+                                <input type="text" class="form-control" id="editSubjectInfo"
+                                       placeholder="Nhập thông tin môn học" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editStaffCode1">Mã giám thị 1</label>
+                                <input type="text" class="form-control" id="editStaffCode1"
+                                       placeholder="Nhập mã giám thị 1"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editStaffCode2">Mã giám thị 2</label>
+                                <input type="text" class="form-control" id="editStaffCode2"
+                                       placeholder="Nhập mã giám thị 2"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editJoinCode">Mã tham gia</label>
+                                <input type="text" class="form-control" id="editJoinCode"
+                                       placeholder="Nhập mã tham gia" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editExamDate">Ngày thi</label>
+                                <input type="date" class="form-control" id="editExamDate"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editRoom">Phòng thi</label>
+                                <input type="text" class="form-control" id="editRoom"
+                                       placeholder="Nhập phòng thi"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editExamShift">Ca thi</label>
+                                <select class="form-select" id="editExamShift" style="height: 40px;">
+                                    <option value="">Chọn ca thi</option>
+                                    <option value="CA1">CA1</option>
+                                    <option value="CA2">CA2</option>
+                                    <option value="CA3">CA3</option>
+                                    <option value="CA4">CA4</option>
+                                    <option value="CA5">CA5</option>
+                                    <option value="CA6">CA6</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-black" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-black" id="btnSaveEditExamShift">Cập nhật</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Edit Exam Shift   -->
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -185,6 +274,7 @@
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
+<script th:src="@{/js/swal-custom.js}"></script>
 <script th:src="@{/js/head-department/manage-exam-shift/manage-exam-shift.js}"></script>
 </body>
 </html>

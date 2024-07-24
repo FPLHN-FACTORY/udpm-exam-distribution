@@ -4,6 +4,7 @@ import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ModifyExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.response.DetailExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDBlockRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDExamShiftRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDStaffExamShiftRepository;
@@ -51,19 +52,35 @@ public class ManageExamShiftServiceImpl implements ManageExamShiftService {
         }
         Long startRangeTime = block.get().getStartTime();
         Long endRangeTime = block.get().getEndTime();
-        log.info("startRangeTime: {}", startRangeTime);
-        log.info("endRangeTime: {}", endRangeTime);
+        log.info("current timestamp: {}", DateTimeUtil.getCurrentTime());
         return new ResponseObject<>(
                 PageableObject.of(
                         hdExamShiftRepository.getAllExamShifts(
                                 Helper.createPageable(request, "examDate"),
                                 request,
                                 startRangeTime,
-                                endRangeTime
+                                endRangeTime,
+                                DateTimeUtil.getCurrentTime()
                         )
                 ),
                 HttpStatus.OK,
                 "Lấy danh sách ca thi thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getExamShiftDetail(String examShiftId) {
+        DetailExamShiftResponse examShiftDetail = hdExamShiftRepository.findDetailById(examShiftId);
+        if (examShiftDetail == null) {
+            return ResponseObject.errorForward(
+                    "Không tìm thấy ca thi phù hợp",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+        return new ResponseObject<>(
+                examShiftDetail,
+                HttpStatus.OK,
+                "Lấy thông tin ca thi thành công"
         );
     }
 

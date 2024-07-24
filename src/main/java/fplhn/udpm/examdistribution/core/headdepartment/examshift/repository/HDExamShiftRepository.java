@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headdepartment.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.request.ExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.response.DetailExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.model.response.ExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
@@ -28,7 +29,7 @@ public interface HDExamShiftRepository extends ExamShiftRepository {
                         es.room AS room,
                         es.exam_date AS examDate,
                         es.shift AS shift,
-                        IF(es.exam_date < UNIX_TIMESTAMP(NOW()), 1, 0) AS isCanEdit
+                        IF(es.exam_date > :currentTimestamp,TRUE,FALSE) AS isCanEdit
                     FROM exam_shift es
                     LEFT JOIN class_subject cs ON es.id_subject_class = cs.id
                     LEFT JOIN subject s ON cs.id_subject = s.id
@@ -65,9 +66,35 @@ public interface HDExamShiftRepository extends ExamShiftRepository {
             Pageable pageable,
             ExamShiftRequest request,
             Long startRangeTime,
-            Long endRangeTime
+            Long endRangeTime,
+            Long currentTimestamp
     );
 
     Optional<ExamShift> findByExamDateAndRoomAndShift(Long examDate, String room, Shift shift);
+
+    @Query(
+            value = """
+                    SELECT
+                        es.id AS id,
+                        cs.class_subject_code AS classSubjectCode,
+                        CONCAT(s.subject_code, ' - ', s.name) AS subjectInfo,
+                        std.staff_code AS staffConductCode,
+                        stf.staff_code AS firstSupervisorCode,
+                        sts.staff_code AS secondSupervisorCode,
+                        es.exam_shift_code AS joinCode,
+                        es.room AS room,
+                        es.exam_date AS examDate,
+                        es.shift AS shift
+                    FROM exam_shift es
+                    LEFT JOIN class_subject cs ON es.id_subject_class = cs.id
+                    LEFT JOIN subject s ON cs.id_subject = s.id
+                    LEFT JOIN staff stf ON es.id_first_supervisor = stf.id
+                    LEFT JOIN staff sts ON es.id_second_supervisor = sts.id
+                    LEFT JOIN staff std ON cs.id_staff = std.id
+                    WHERE es.id = :examShiftId
+                    """,
+            nativeQuery = true
+    )
+    DetailExamShiftResponse findDetailById(String examShiftId);
 
 }
