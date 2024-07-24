@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.student.examshift.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.student.exampaper.model.request.SOpenExamPaperRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SFileResourceResponse;

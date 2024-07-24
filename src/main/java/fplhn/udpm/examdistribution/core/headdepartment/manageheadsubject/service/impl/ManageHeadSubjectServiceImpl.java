@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.manageheadsubject.servic
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.staff.repository.HDSStaffExtendRepository;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository.HDSStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.manageheadsubject.model.request.AssignSubjectGroupToStaffRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.manageheadsubject.model.request.HeadSubjectRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.manageheadsubject.model.request.SubjectGroupAssignedRequest;

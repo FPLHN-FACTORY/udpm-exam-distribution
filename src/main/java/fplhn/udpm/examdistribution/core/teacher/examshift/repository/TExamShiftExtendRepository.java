@@ -89,8 +89,10 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
             	es.id_subject_class = cs.id
             JOIN subject s ON
             	cs.id_subject = s.id
+            JOIN subject_by_subject_group sbsg ON
+             	sbsg.id_subject = s.id
             JOIN subject_group sg ON
-            	s.id_subject_group = sg.id
+            	sbsg.id_subject_group = sg.id
             JOIN head_subject_by_semester hsbs ON
             	sg.id = hsbs.id_subject_group
             JOIN staff s2 ON
