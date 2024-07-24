@@ -8,6 +8,8 @@ public interface ManageExamShiftService {
 
     ResponseObject<?> getAllExamShifts(ExamShiftRequest request);
 
+    ResponseObject<?> getExamShiftDetail(String examShiftId);
+
     ResponseObject<?> getBlockInfo(String semesterId);
 
     ResponseObject<?> editExamShift(String examShiftId, ModifyExamShiftRequest request);

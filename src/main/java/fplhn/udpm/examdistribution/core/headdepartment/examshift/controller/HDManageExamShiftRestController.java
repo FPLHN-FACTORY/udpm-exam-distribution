@@ -26,6 +26,11 @@ public class HDManageExamShiftRestController {
         return Helper.createResponseEntity(manageExamShiftService.getAllExamShifts(request));
     }
 
+    @GetMapping("{examShiftId}")
+    public ResponseEntity<?> getExamShiftDetail(@PathVariable String examShiftId) {
+        return Helper.createResponseEntity(manageExamShiftService.getExamShiftDetail(examShiftId));
+    }
+
     @PutMapping("{examShiftId}")
     public ResponseEntity<?> modifyExamShift(
             @PathVariable String examShiftId,
