@@ -75,7 +75,6 @@ const openModalExamRule = () => {
 let examShiftCode = $('#examShiftCodeCtl').text();
 let examPaperId = $('#examPaperId').text();
 let stompClient = null;
-const editorExtensionId = "mfjgckbmeakcekilcamhpjglhkiaanol";
 
 const getExamShiftByCode = () => {
     $.ajax({
@@ -293,7 +292,7 @@ const startCountdown = (startTime, endTime) => {
 
 const handleSendMessageStartToExt = () => {
     chrome.runtime.sendMessage(
-        editorExtensionId,
+        EXAM_DISTRIBUTION_EXTENSION_ID,
         {active: "onTracking"},
         function (response) {
             console.log(response);
@@ -303,7 +302,7 @@ const handleSendMessageStartToExt = () => {
 
 const handleSendMessageEndTimeToExt = () => {
     chrome.runtime.sendMessage(
-        editorExtensionId,
+        EXAM_DISTRIBUTION_EXTENSION_ID,
         {active: "stopTracking"},
         function (response) {
             console.log(response);

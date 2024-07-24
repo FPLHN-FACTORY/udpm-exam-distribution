@@ -57,10 +57,10 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     ) AS isAssigned
             FROM staff_major_facility smf
             LEFT JOIN staff s ON s.id = smf.id_staff
-            LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
-            WHERE mf.id_department_facility = :departmentFacilityId AND
+            WHERE smf.id_major_facility = :majorFacilityId AND
                   smf.id_staff <> :userId AND
-                  smf.status = 0
+                  smf.status = 0 AND
+                  s.status = 0 
             AND (
                  (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                  (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -74,20 +74,20 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     SELECT COUNT(smf.id)
                     FROM staff_major_facility smf
                     LEFT JOIN staff s ON s.id = smf.id_staff
-                    LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
-                    WHERE mf.id_department_facility = :departmentFacilityId AND
-                          smf.id_staff <> :userId AND
-                          smf.status = 0
-                    AND (
-                         (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
-                         (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
-                        )
-                    AND (
-                         (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
-                         (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
-                        )
-                                    """,
+                    WHERE   smf.id_major_facility = :majorFacilityId AND
+                            smf.id_staff <> :userId AND
+                            smf.status = 0 AND
+                            s.status = 0
+                      AND (
+                           (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
+                           (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
+                          )
+                      AND (
+                           (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
+                           (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
+                          )
+                                      """,
             nativeQuery = true)
-    Page<StaffResponse> getAllStaff(Pageable pageable, String departmentFacilityId, FindStaffRequest request, String userId, String semesterId);
+    Page<StaffResponse> getAllStaff(Pageable pageable, String majorFacilityId, FindStaffRequest request, String userId, String semesterId);
 
 }

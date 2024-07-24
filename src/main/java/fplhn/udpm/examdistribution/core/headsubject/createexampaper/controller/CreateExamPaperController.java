@@ -11,7 +11,7 @@ public class CreateExamPaperController {
 
     @GetMapping
     public String viewCreateExamPaper() {
-        return "head-subject/createexampaper/create-exam-paper";
+        return "head-subject/create-exam-paper/create-exam-paper";
     }
 
 }

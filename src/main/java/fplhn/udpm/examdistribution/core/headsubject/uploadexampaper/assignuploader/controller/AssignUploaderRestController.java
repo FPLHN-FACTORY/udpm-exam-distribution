@@ -36,9 +36,9 @@ public class AssignUploaderRestController {
         return Helper.createResponseEntity(assignUploaderService.getAllSubject(departmentFacilityId, request));
     }
 
-    @GetMapping("/staff/{departmentFacilityId}")
-    public ResponseEntity<?> getAllStaff(@PathVariable String departmentFacilityId, FindStaffRequest request) {
-        return Helper.createResponseEntity(assignUploaderService.getAllStaff(departmentFacilityId, request));
+    @GetMapping("/staff")
+    public ResponseEntity<?> getAllStaff(FindStaffRequest request) {
+        return Helper.createResponseEntity(assignUploaderService.getAllStaff(request));
     }
 
     @PostMapping("/assign-uploader")

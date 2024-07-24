@@ -370,7 +370,7 @@ const fetchSearchStaff = (
         subjectId: paramSearch.subjectId
     };
 
-    let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/staff/" + examDistributionInfor.departmentFacilityId + '?';
+    let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER + "/staff" + '?';
 
     for (let [key, value] of Object.entries(params)) {
         if (value) {

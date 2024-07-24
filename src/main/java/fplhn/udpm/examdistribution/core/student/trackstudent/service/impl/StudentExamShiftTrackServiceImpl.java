@@ -87,7 +87,12 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
 
             examShiftTrackExtendRepository.save(studentExamShiftTrack);
 
-            String messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã đã bật 1 tab khác";
+            String messageTrack = "";
+            if (request.getIsDisable()) {
+                messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã tắt extension";
+            } else {
+                messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã bật 1 tab khác";
+            }
             simpMessagingTemplate.convertAndSend("/topic/track-student",
                     new NotificationResponse(messageTrack));
 

@@ -7,26 +7,8 @@ $(document).ready(function () {
     onChangePageSizeFirstTab();
 });
 //----------------------------------------------------------------------------------------------------------------------
-//START: state
-let startMajorFacilityUpload = `<div class="mb-3" id="major-facility-container">
-                        <label class="form-label">
-                            <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
-                        <select class="form-select" style="height: 60%;" id="major-facility-upload" required>`;
-let middleMajorFacilityUpload = ``;
-let endMajorFacilityUpload = `
-                        </select>
-                        <div class="text-danger" id="major-facility-upload-error"></div>
-                    </div>`;
-//END: state
-
-//START: getter
-const getMiddleMajorFacilityUpload = () => middleMajorFacilityUpload;
-//END: getter
 
 //START: setter
-const setMiddleMajorFacilityUpload = (value) => {
-    middleMajorFacilityUpload = value;
-};
 const setValueSubject = (value) => {
     $("#subjectId").val(value);
 };
@@ -160,9 +142,8 @@ $('#pagination').empty();
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
-                                    <i 
-                                        class="fa-solid fa-pen-to-square"
+                                <span onclick="handleRedirectUpdateContentFile('${item.id}')">
+                                    <i class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
@@ -323,7 +304,6 @@ const handleFetchMajorFacility = () => {
             });
             majorFacility.unshift('<option value="">-- Chuyên ngành - Cơ sở --</option>');
             $("#major-facility").html(majorFacility);
-            setMiddleMajorFacilityUpload(majorFacility);
             hideLoading();
         },
         error: function (error) {

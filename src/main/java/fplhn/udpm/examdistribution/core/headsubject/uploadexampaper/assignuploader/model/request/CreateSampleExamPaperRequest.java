@@ -12,6 +12,4 @@ public class CreateSampleExamPaperRequest {
 
     private MultipartFile file;
 
-    private String majorFacilityId;
-
 }

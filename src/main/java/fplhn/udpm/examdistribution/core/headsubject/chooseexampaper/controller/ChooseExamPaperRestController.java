@@ -66,13 +66,13 @@ public class ChooseExamPaperRestController {
         ResponseObject<?> responseObject = chooseExamPaperService.getFile(fileId);
         if (responseObject.getStatus().equals(HttpStatus.BAD_REQUEST)) {
             return Helper.createResponseEntity(responseObject);
-        } else {
-            FileResponse fileResponse = (FileResponse) responseObject.getData();
-            return ResponseEntity.ok()
-                    .header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFileName() + "\"")
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(fileResponse.getData());
         }
+
+        FileResponse fileResponse = (FileResponse) responseObject.getData();
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(fileResponse.getData());
     }
 
     @DeleteMapping("/{id}")

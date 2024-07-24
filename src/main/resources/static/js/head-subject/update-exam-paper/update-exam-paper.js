@@ -258,6 +258,76 @@ document.getElementById('export-docx').addEventListener('click', () => {
     });
 });
 
+const convertJoditContentToPdf = async () => {
+    const content = editor.getEditorValue();
+    const element = document.createElement('div');
+    element.innerHTML = content;
+
+    const images = element.getElementsByTagName("img");
+    for (let img of images) {
+        if (img.width > 700) {
+            img.width = 700;
+        }
+    }
+
+    const tables = element.getElementsByTagName("table");
+    for (let table of tables) {
+        if (table.style.width && parseInt(table.style.width) > 700) {
+            table.style.width = '700px';
+        }
+        else {
+            const computedWidth = window.getComputedStyle(table).width;
+            if (parseInt(computedWidth) > 700) {
+                table.style.width = '700px';
+            }
+        }
+    }
+
+    const modifiedContent = element.innerHTML;
+
+    const options = {
+        margin: 0.5,
+        filename: 'document.pdf',
+        image: {type: 'jpeg', quality: 1},
+        html2canvas: {scale: 2},
+        jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait'},
+    };
+
+    try {
+        const pdfBlob = await html2pdf().set(options).from(modifiedContent).outputPdf('blob');
+
+        return new File([pdfBlob], "document.pdf", {type: "application/pdf"});
+
+    } catch (error) {
+        showToastError("Convert PDF không thành công");
+    }
+}
+
+const convertJoditContentToDocx = () => {
+    const content = editor.getEditorValue();
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = content;
+    const images = tempDiv.getElementsByTagName("img");
+    for (let img of images) {
+        if (img.width > 700) {
+            img.width = 700;
+        }
+    }
+    const modifiedContent = tempDiv.innerHTML;
+
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+        "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+        "xmlns='http://www.w3.org/TR/REC-html40'>" +
+        "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + modifiedContent + footer;
+
+    const blob = new Blob([sourceHTML], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+    return new File([blob], 'document.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+
 const handleOpenChooseFile = () => {
     $("#import-file").click();
 };
@@ -301,7 +371,7 @@ const showFilePdf = async (file) => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const url = ApiConstant.API_HEAD_SUBJECT_CREATE_EXAM_PAPER + "/pdf-to-docx";
+        const url = ApiConstant.API_HEAD_SUBJECT_UPDATE_EXAM_PAPER + "/pdf-to-docx";
         const response = await fetch(url, {
             body: formData,
             method: "POST",
@@ -320,7 +390,9 @@ const showFilePdf = async (file) => {
 
 const convertBlobAndShow = async (response) => {
     const blob = await response.blob();
+    console.log(blob);
     const docxText = await readDocxBlob(blob);
+    console.log(docxText);
     editor.value = formatTextAsHtml(docxText);
 }
 

@@ -1,8 +1,3 @@
-$(document).ready(function () {
-    handleFetchMajorFacility();
-    fetchListSubject();
-});
-
 const handleFetchMajorFacility = () => {
     showLoading();
     $.ajax({

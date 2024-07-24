@@ -7,7 +7,7 @@ import fplhn.udpm.examdistribution.core.headsubject.createexampaper.repository.C
 import fplhn.udpm.examdistribution.core.headsubject.createexampaper.repository.CREPMajorFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.createexampaper.repository.CREPStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.createexampaper.repository.CREPSubjectExtendRepository;
-import fplhn.udpm.examdistribution.core.headsubject.createexampaper.service.EditExamPaperService;
+import fplhn.udpm.examdistribution.core.headsubject.createexampaper.service.CreateExamPaperService;
 import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
@@ -42,7 +42,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
-public class EditExamPaperServiceImpl implements EditExamPaperService {
+public class CreateExamPaperServiceImpl implements CreateExamPaperService {
 
     private final SessionHelper sessionHelper;
 

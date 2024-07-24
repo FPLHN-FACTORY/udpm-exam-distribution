@@ -42,6 +42,7 @@ const ApiConstant = {
     REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
     REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
     REDIRECT_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/head-subject/create-exam-paper",
+    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/update-exam-paper",
 
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
@@ -85,6 +86,7 @@ const ApiConstant = {
     API_HEAD_SUBJECT_CLASS_SUBJECT: "/api/v1/head-subject/class-subjects",
     API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
     API_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/api/v1/head-subject/create-exam-paper",
+    API_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/api/v1/head-subject/update-exam-paper",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",
@@ -133,6 +135,10 @@ const INIT_PAGINATION = {
     page: 1,
     size: 5,
 };
+
+const EXAM_DISTRIBUTION_EXTENSION_ID = "mfjgckbmeakcekilcamhpjglhkiaanol";
+
+const EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID = "e_e_p_i";
 
 const EXAM_DISTRIBUTION_CONSTANT_KEY = "e_d_i";
 
