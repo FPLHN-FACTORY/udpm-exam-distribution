@@ -150,21 +150,23 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
                 );
             }
 
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_UPDATE_EXAM_PAPER + optionalExamPaper.get().getId();
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + optionalExamPaper.get().getId();
+            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
+
             Object redisValue = redisService.get(redisKey);
             if (redisValue != null) {
                 return new ResponseObject<>(
-                        new UEPFileResponse(redisValue.toString(), "fileName"),
+                        new UEPFileResponse(redisValue.toString(), fileName),
                         HttpStatus.OK,
                         "Tìm thấy file thành công"
                 );
             }
 
             Resource resource = googleDriveFileService.loadFile(optionalExamPaper.get().getPath());
-            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
 
             String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
+
             return new ResponseObject<>(
                     new UEPFileResponse(data, fileName),
                     HttpStatus.OK,

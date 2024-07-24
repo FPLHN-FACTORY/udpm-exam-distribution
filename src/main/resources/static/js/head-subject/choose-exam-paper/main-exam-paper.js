@@ -308,10 +308,16 @@ const fetchListExamPaper = (
                                 </div>
                             </td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
+                                <span style="margin: 0 3px" onclick="handleRedirectUpdateContentFile('${item.id}')">
+                                    <i 
+                                        class="fa-solid fa-file-pen"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span style="margin: 0 3px" onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
-                                        style="cursor: pointer; margin-left: 10px;"
+                                        style="cursor: pointer;"
                                     ></i>
                                 </span>
                                 <span onclick="handleOpenModalExamPaper('${item.fileId}',1)" style="margin: 0 3px;">
@@ -325,7 +331,7 @@ const fetchListExamPaper = (
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleDeleteExamPaper('${item.id}')">
+                                <span onclick="handleDeleteExamPaper('${item.id}')" style="margin: 0 3px">
                                     <i 
                                         class="fa-solid fa-shuffle"
                                         style="cursor: pointer;"

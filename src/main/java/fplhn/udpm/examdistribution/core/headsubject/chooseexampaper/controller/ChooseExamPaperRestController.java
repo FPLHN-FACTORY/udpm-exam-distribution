@@ -1,16 +1,12 @@
 package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.controller;
 
-import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service.ChooseExamPaperService;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,16 +59,7 @@ public class ChooseExamPaperRestController {
 
     @GetMapping("/file")
     public ResponseEntity<?> getFile(@RequestParam(name = "fileId") String fileId) throws IOException {
-        ResponseObject<?> responseObject = chooseExamPaperService.getFile(fileId);
-        if (responseObject.getStatus().equals(HttpStatus.BAD_REQUEST)) {
-            return Helper.createResponseEntity(responseObject);
-        }
-
-        FileResponse fileResponse = (FileResponse) responseObject.getData();
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFileName() + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(fileResponse.getData());
+        return Helper.createResponseEntity(chooseExamPaperService.getFile(fileId));
     }
 
     @DeleteMapping("/{id}")
