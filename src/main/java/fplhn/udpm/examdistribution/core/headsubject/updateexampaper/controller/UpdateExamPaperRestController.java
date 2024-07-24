@@ -1,14 +1,10 @@
 package fplhn.udpm.examdistribution.core.headsubject.updateexampaper.controller;
 
-import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.model.request.UEPEditFileRequest;
-import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.model.response.UEPFileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.service.UpdateExamPaperService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,16 +35,7 @@ public class UpdateExamPaperRestController {
 
     @GetMapping("/file/{examPaperId}")
     public ResponseEntity<?> getFile(@PathVariable String examPaperId) {
-        ResponseObject<?> responseObject = updateExamPaperService.getFile(examPaperId);
-        if (responseObject.getStatus().equals(HttpStatus.BAD_REQUEST) || responseObject.getStatus().equals(HttpStatus.NOT_FOUND)) {
-            return Helper.createResponseEntity(responseObject);
-        }
-
-        UEPFileResponse fileResponse = (UEPFileResponse) responseObject.getData();
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFileName() + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(fileResponse.getData());
+        return Helper.createResponseEntity(updateExamPaperService.getFile(examPaperId));
     }
 
 }

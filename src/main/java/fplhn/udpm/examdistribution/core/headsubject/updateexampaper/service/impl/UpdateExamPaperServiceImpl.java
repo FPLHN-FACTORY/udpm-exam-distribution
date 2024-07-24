@@ -161,11 +161,12 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
             }
 
             Resource resource = googleDriveFileService.loadFile(optionalExamPaper.get().getPath());
+            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
 
             String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
             return new ResponseObject<>(
-                    new UEPFileResponse(data, resource.getFilename()),
+                    new UEPFileResponse(data, fileName),
                     HttpStatus.OK,
                     "Lấy file thành công"
             );
