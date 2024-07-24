@@ -97,7 +97,8 @@ function getRolesByStaffId() {
                             <td>${role.roleCode}</td>  
                             <td>${role.roleName}</td>  
                             <td>${role.facilityName}</td>
-                            <td><a>
+                            <td><a data-bs-toggle="tooltip" 
+                                   data-bs-title="Xóa">
                                 <i
                                     onclick="handleDelete('${role.idRole}','${role.roleName}')"
                                     class="fas fa-trash-alt"
@@ -107,6 +108,7 @@ function getRolesByStaffId() {
                         </tr>`;
             });
             $('#staffRoleTableBody').html(roles);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu chức vụ!');

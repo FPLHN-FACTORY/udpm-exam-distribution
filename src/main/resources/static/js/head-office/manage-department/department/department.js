@@ -127,18 +127,25 @@ const fetchSearchDepartment = (
                             <td>${department.departmentName}</td>
                             <td>${department.departmentStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalManipulateMajor('${department.id}')" class="fs-4">
+                                <span onclick="handleOpenModalManipulateMajor('${department.id}')" class="fs-4"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Quản lý chuyên ngành">
                                     <i 
                                         class="fa-solid fa-receipt"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="openModalAddOrUpdateDepartment(1,'${department.id}','${department.departmentName}','${department.departmentCode}')" class="fs-4">
+                                <span onclick="openModalAddOrUpdateDepartment(1,'${department.id}','${department.departmentName}','${department.departmentCode}')" 
+                                    class="fs-4"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                     <i class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span class="fs-4" onclick="handleRedirectDepartmentFacility('${department.id}')">
+                                <span class="fs-4" onclick="handleRedirectDepartmentFacility('${department.id}')"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Bộ môn theo cơ sở">
                                     <i 
                                         class="fa-solid fa-circle-info"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -150,6 +157,7 @@ const fetchSearchDepartment = (
             $('#departmentTableBody').html(departments);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn');
