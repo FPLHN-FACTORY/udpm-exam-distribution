@@ -41,3 +41,8 @@ const getUrlParameters = (apiURL, params) => {
 function handleAddEvent(dom,eventType,func){
     dom.on(eventType,debounce(func,500));
 }
+
+const callToolTip = () => {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+}

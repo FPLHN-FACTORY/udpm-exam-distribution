@@ -101,9 +101,11 @@ $('#pagination').empty();
                             <td>${classSubject.blockName}</td>
                             <td>${classSubject.facilityChildName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <a onclick="getDetailSubject('${classSubject.id}')">
+                            <a onclick="getDetailSubject('${classSubject.id}')"
+                               data-bs-toggle="tooltip" 
+                               data-bs-title="Cập nhật">
                                 <i 
-                                    class="fa-solid fa-eye"
+                                    class="fas fa-pen-nib"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
@@ -113,6 +115,7 @@ $('#pagination').empty();
             ClassSubjectTableBody.html(classSubjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu lớp môn');
@@ -370,6 +373,7 @@ const getDetailSubject = (id) => {
 }
 
 const fetchBlocks = (blockRequest) => {
+    showLoading();
     $('#modifyBlockId').empty();
     $.ajax({
         type: "GET",
@@ -383,14 +387,17 @@ const fetchBlocks = (blockRequest) => {
                 blocks.unshift('<option value="">Chọn block</option>');
                 $('#modifyBlockId').html(blocks);
             }
+            hideLoading();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+            hideLoading();
         }
     });
 }
 
 const getSemester = (semesterRequest) => {
+    showLoading();
     $.ajax({
         type: "GET",
         contentType: "application/json",
@@ -410,8 +417,10 @@ const getSemester = (semesterRequest) => {
             } else {
                 showToastError('Không tìm thấy học kỳ phù hợp');
             }
+            hideLoading();
         },
         error: function (error) {
+            hideLoading();
             showToastError('Có lỗi xảy ra khi lấy thông tin block');
         }
     });

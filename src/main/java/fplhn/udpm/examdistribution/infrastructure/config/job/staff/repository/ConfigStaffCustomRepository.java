@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ConfigStaffCustomRepository extends StaffRepository {
 
-    List<Staff> findByStaffCode(String id);
+    List<Staff> findAllByStaffCode(String code);
 
 }

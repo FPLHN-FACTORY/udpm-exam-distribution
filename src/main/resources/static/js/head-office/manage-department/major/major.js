@@ -150,12 +150,18 @@ const fetchSearchMajor = (
                             <td>${department.majorName}</td>
                             <td>${department.majorStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="openModalAddOrUpdateMajor(1,'${department.majorId}','${department.majorName}')" class="fs-4">
+                                <span onclick="openModalAddOrUpdateMajor(1,'${department.majorId}','${department.majorName}')" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật"
+                                    class="fs-4">
                                     <i class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="handleDeleteMajor('${department.majorId}')" class="fs-4">
+                                <span onclick="handleDeleteMajor('${department.majorId}')" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Đổi trạng thái"
+                                    class="fs-4">
                                     <i 
                                         class="fa-solid fa-rotate-left"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -167,6 +173,7 @@ const fetchSearchMajor = (
             $('#majorTableBody').html(departments);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPaginationMajor(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn');

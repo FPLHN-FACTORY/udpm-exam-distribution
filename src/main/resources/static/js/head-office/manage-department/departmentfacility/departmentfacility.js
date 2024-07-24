@@ -151,13 +151,17 @@ $('#pagination').empty();
                             <td>${departmentFacility.facilityName}</td>
                             <td>${departmentName ? departmentName : "Chưa xác định"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span class="fs-4">
+                                <span class="fs-4" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                     <i onclick="openModalAddOrUpdateDepartmentFacility(
                                         1, '${departmentFacility.departmentFacilityId}',
                                         '${departmentFacility.facilityId}', '${departmentFacility.headOfDepartmentId}'
                                     )" class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                                 </span>
-                                <span class="fs-4">
+                                <span class="fs-4" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Chuyên ngành theo cơ sở">
                                     <i 
                                         onclick="handleOpenModalListMajorFacility('${departmentFacility.departmentFacilityId}')"
                                         class="fa-solid fa-circle-info"
@@ -170,6 +174,7 @@ $('#pagination').empty();
             $('#departmentFacilityTableBody').html(departmentFacility);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn theo cở sở');
@@ -444,7 +449,7 @@ const getMajorFacilities = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const majorFacilities = responseBody?.data?.majorFacilities?.data?.map((majorFacility, index) => {
@@ -453,10 +458,11 @@ $('#pagination').empty();
                             <td>${majorFacility.majorName}</td>
                             <td>${majorFacility.headMajorCodeName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <a>
+                            <a data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                 <i  
                                     onclick="handleOpenModalUpdateMajorFacility('${majorFacility.id}')"
-                                    class="fa-solid fa-eye"
+                                    class="fa-solid fa-pen-to-square"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
@@ -468,6 +474,7 @@ $('#pagination').empty();
             $('#majorFacilityListTitle').text(`Danh sách chuyên ngành theo cơ sở: ${responseBody?.data?.facilityDepartmentInfo?.facilityName} - ${responseBody?.data?.facilityDepartmentInfo?.departmentName}`);
             currentDepartmentId = responseBody?.data?.facilityDepartmentInfo?.departmentId;
             createPaginationMajorFacility(responseBody?.data?.majorFacilities?.totalPages, page);
+            callToolTip();
         }
     });
 };

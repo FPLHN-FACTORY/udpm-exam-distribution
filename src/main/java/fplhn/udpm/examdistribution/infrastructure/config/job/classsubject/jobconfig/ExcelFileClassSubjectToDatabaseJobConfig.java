@@ -37,11 +37,14 @@ public class ExcelFileClassSubjectToDatabaseJobConfig {
     @Qualifier("transactionManager")
     private PlatformTransactionManager transactionManager;
 
+    @Value("${file.upload.class.subject.path}")
+    private String fullPath;
+
     @Bean
     @StepScope
     ItemReader<ClassSubjectExcelRequest> excelReader(@Value("#{jobParameters['filePath']}") String path) {
         PoiItemReader<ClassSubjectExcelRequest> reader = new PoiItemReader<>();
-        reader.setResource(new FileSystemResource(new File("src/main/resources/excel/" + path)));
+        reader.setResource(new FileSystemResource(new File(fullPath+"/" + path)));
         reader.setLinesToSkip(1);
         reader.open(new ExecutionContext());
         reader.setRowMapper(excelRowMapper());

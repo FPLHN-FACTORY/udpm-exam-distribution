@@ -69,7 +69,7 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
                 staffCode = item.getStaffCode();
             }
 
-            List<Staff> staff = staffCustomRepository.findByStaffCode(staffCode);
+            List<Staff> staff = staffCustomRepository.findAllByStaffCode(staffCode);
             StaffMajorFacility newStaffMajorFacility = new StaffMajorFacility();
             if (!staff.isEmpty()) {
                 staff.get(0).setName(item.getName());
@@ -99,7 +99,7 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
             staffNew.setAccountFe(item.getAccountFe());
             staffNew.setStatus(EntityStatus.ACTIVE);
             StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
-            staffMajorFacility.setStaff(staff.get(0));
+            staffMajorFacility.setStaff(staffNew);
             staffMajorFacility.setStatus(EntityStatus.ACTIVE);
             staffMajorFacility.setMajorFacility(majorFacilities.get(0));
             staffMajorFacilityRepository.save(staffMajorFacility);

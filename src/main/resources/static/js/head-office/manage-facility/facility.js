@@ -85,13 +85,17 @@ $('#pagination').empty();
                             <td>${facility.facilityName}</td>
                             <td>${facility.facilityStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                 <span onclick="confirmDelete('${facility.id}')">
+                                 <span onclick="confirmDelete('${facility.id}')"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Đổi trạng thái">
                                     <i 
                                         class="fas fa-trash-alt"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="getFacilityUpdate('${facility.id}')">
+                                <span onclick="getFacilityUpdate('${facility.id}')"
+                                      data-bs-toggle="tooltip" 
+                                      data-bs-title="Cập nhật">
                                      <i class="fa-solid fa-edit"
                                             style="cursor: pointer; margin-left: 10px"
                                      ></i>
@@ -102,6 +106,7 @@ $('#pagination').empty();
             $('#facilityTableBody').html(facilities);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu cơ sở');
@@ -573,13 +578,17 @@ const getFacilityChild = (
                             <td>${facilityChild.facilityChildName}</td>
                             <td>${facilityChild.facilityChildStatus === 0 ? "Hoạt động" : "Ngưng hoạt động"}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="confirmDelete('${facilityChild.id}')">
+                                <span onclick="confirmDelete('${facilityChild.id}')"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Đổi trạng thái">
                                     <i 
                                         class="fas fa-trash-alt"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="getDetailFacilityChild('${facilityChild.id}')">
+                                <span onclick="getDetailFacilityChild('${facilityChild.id}')"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                     <i class="fa-solid fa-edit"
                                         style="cursor: pointer; margin-left: 10px"
                                     ></i>
@@ -590,6 +599,7 @@ const getFacilityChild = (
             $('#facilityChildTableBody').html(facilityChilds);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPaginationChild(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin bộ môn');

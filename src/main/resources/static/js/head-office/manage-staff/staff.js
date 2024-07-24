@@ -198,21 +198,24 @@ function getStaffs(
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                           <a>
+                           <a data-bs-toggle="tooltip" 
+                              data-bs-title="Cập nhật">
                                 <i
                                     onclick="openModalUpdateStaff('${staff.id}')"
                                     class="fas fa-pen-nib"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
-                                 <a>
+                                 <a data-bs-toggle="tooltip" 
+                                    data-bs-title="Xóa">
                                 <i
                                     onclick="handleDelete('${staff.id}','${staff.name}')"
                                     class="fas fa-trash-alt"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
-                                <a>
+                                <a data-bs-toggle="tooltip" 
+                                    data-bs-title="Chức vụ / bộ môn / chuyên ngành">
                                 <i
                                     onclick="handleDetail('${staff.id}')"
                                     class="fas fas fa-eye"
@@ -225,6 +228,7 @@ function getStaffs(
             $('#staffTableBody').html(staffs);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu chức vụ!');

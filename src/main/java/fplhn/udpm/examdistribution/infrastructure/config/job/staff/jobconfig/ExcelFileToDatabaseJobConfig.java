@@ -40,12 +40,15 @@ public class ExcelFileToDatabaseJobConfig {
     @Qualifier("transactionManager")
     private PlatformTransactionManager transactionManager;
 
+    @Value("${file.upload.staff.path}")
+    private String fullPath;
+
     @Bean
     @StepScope
     ItemReader<StaffExcelRequest> excelStaffReader(@Value("#{jobParameters['fullPathFileName']}") String path) {
         try {
             PoiItemReader<StaffExcelRequest> reader = new PoiItemReader<>();
-            Resource resource = new FileSystemResource(new File("src/main/resources/excel/" + path));
+            Resource resource = new FileSystemResource(new File(fullPath+"/" + path));
             if (!resource.exists()) {
                 throw new RuntimeException("Could not read the file!");
             }

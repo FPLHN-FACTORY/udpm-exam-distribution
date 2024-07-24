@@ -129,13 +129,17 @@ function getRoles(
                             <td>${role.facilityName}</td>  
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                             
-                           <a onclick="openModalUpdateRole('${role.idRole}')">
+                           <a onclick="openModalUpdateRole('${role.idRole}')" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-title="Cập nhật">
                                 <i 
                                     class="fas fa-pen-nib"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a> 
-                                 <a onclick="handleDelete('${role.idRole}','${role.roleName}')">
+                                 <a onclick="handleDelete('${role.idRole}','${role.roleName}')"
+                                 data-bs-toggle="tooltip" 
+                                    data-bs-title="Xóa chức vụ">
                                 <i 
                                     class="fas fa-trash-alt"
                                     style="cursor: pointer; margin-left: 10px;"
@@ -147,6 +151,7 @@ function getRoles(
             $('#roleTableBody').html(roles);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu chức vụ!');

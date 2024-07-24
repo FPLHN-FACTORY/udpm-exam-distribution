@@ -62,14 +62,16 @@ function getMajorFacilitiesByStaffId() {
                             <td>${item.departmentName}</td>  
                             <td>${item.majorName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <a>
+                            <a data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                 <i
                                     onclick="openModalUpdateStaffMajorFacility('${item.staffMajorFacilityId}')"
                                     class="fas fa-pen-nib"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
-                                <a>
+                                <a data-bs-toggle="tooltip" 
+                                    data-bs-title="Xóa">
                                 <i
                                     onclick="handleDeleteStaffMajorFacility('${item.staffMajorFacilityId}')"
                                     class="fas fa-trash-alt"
@@ -79,6 +81,7 @@ function getMajorFacilitiesByStaffId() {
                         </tr>`;
             });
             $('#majorFacilityTableBody').html(roles);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu bộ môn chuyên ngành theo cơ sở!');

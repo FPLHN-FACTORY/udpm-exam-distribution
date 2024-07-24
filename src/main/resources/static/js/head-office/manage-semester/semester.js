@@ -57,11 +57,13 @@ const getAllBlockBySemesterId = (semesterId) => {
                         <td>${block.endTime ? formatFromUnixTimeToDate(block.endTime) : 'Chưa xác định'}</td>
                         <td>${block.blockStatus === 0 ? 'Hoạt động' : 'Ngừng hoạt động'}</td>
                         <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <span class="fs-4">
+                            <span class="fs-4"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Cập nhật">
                                 <i onclick="getDetailBlock('${block.id}')"
                                 class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
-                            <span class="fs-4">
+                            <span class="fs-4" data-bs-toggle="tooltip" data-bs-title="Đổi trạng thái">
                                 <i onclick="confirmChangeStatusBlock('${block.id}')"
                                 class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
@@ -70,6 +72,7 @@ const getAllBlockBySemesterId = (semesterId) => {
                 `;
             });
             $('#blockTableBody').html(blocks);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu block');
@@ -116,11 +119,15 @@ const getSemesters = (
                         <td>${semester.startTime ? formatFromUnixTimeToDate(semester.startTime) : 'Chưa xác định'}</td>
                         <td>${semester.semesterStatus === 0 ? 'Hoạt động' : 'Ngừng hoạt động'}</td>
                         <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <span class="fs-4">
+                            <span class="fs-4"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Cập nhật">
                                 <i onclick="getDetailSemester('${semester.id}')"
                                 class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
-                            <span class="fs-4">
+                            <span class="fs-4"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Đổi trạng thái">
                                 <i onclick="confirmChangeStatusSemester('${semester.id}')"
                                 class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
@@ -131,6 +138,7 @@ const getSemesters = (
             $('#semesterTableBody').html(semesters);
             const totalPages = response?.data?.totalPages ? response?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu học kỳ');
