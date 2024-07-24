@@ -154,11 +154,6 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     $("#examPaperModal").modal("show");
 };
 
-const handleRedirectUpdateContentFile = (id) => {
-    sessionStorage.setItem(EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID, id);
-    window.location.href = "/head-subject/update-exam-paper";
-}
-
 const handleFetchExamRulePDF = (fileId) => {
     showLoading();
     $.ajax({

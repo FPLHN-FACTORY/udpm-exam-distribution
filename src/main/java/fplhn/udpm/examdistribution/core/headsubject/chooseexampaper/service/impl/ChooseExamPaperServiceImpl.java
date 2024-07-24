@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -170,18 +171,14 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             }
 
             Resource resource = googleDriveFileService.loadFile(fileId);
-            String data = "";
 
             String fileName = googleDriveFileService.getFileName(fileId);
-            if (fileName.toLowerCase().endsWith(".docx")) {
-                data = Base64.getEncoder().encodeToString(fileConvertor.convertDocxToPdf(resource.getInputStream()));
-            } else {
-                data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
-            }
+
+            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
 
             return new ResponseObject<>(
-                    new FileResponse(data, resource.getFilename()),
+                    new FileResponse(data, fileName),
                     HttpStatus.OK,
                     "Tìm thấy file thành công"
             );

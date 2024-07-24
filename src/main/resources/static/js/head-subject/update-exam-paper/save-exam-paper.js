@@ -79,7 +79,7 @@ const saveChangeEditFileExamPaper = async (pdfOrDocx) => {
 };
 
 const redirectChooseExamPaper = () => {
-    window.location.href = "/head-subject/upload-exam-paper";
+    window.location.href = "/head-subject/choose-exam-paper";
 }
 
 

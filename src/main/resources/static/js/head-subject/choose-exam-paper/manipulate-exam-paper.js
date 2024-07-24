@@ -154,6 +154,11 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     $("#examPaperModal").modal("show");
 };
 
+const handleRedirectUpdateContentFile = (id) => {
+    sessionStorage.setItem(EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID, id);
+    window.location.href = "/head-subject/update-exam-paper";
+}
+
 const handleRedirectCreateExamPaper = () => {
     window.location.href = "/head-subject/create-exam-paper";
 }
@@ -167,13 +172,14 @@ const handleFetchExamRulePDF = (fileId) => {
             fileId: fileId,
         },
         success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            const data = responseBody?.data?.data;
+            const fileName = responseBody?.data.fileName;
 
-            const blob = new Blob([pdfData], {type: 'application/pdf'});
-            const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
-            setExamPaperFile(file);
-
-            renderPdfInView(pdfData);
+            if (fileName.endsWith(".docx")) {
+                convertEndShowDocx(data);
+            } else {
+                convertEndShowPdf(data);
+            }
 
             hideLoading();
         },
@@ -187,6 +193,22 @@ const handleFetchExamRulePDF = (fileId) => {
         }
     });
 };
+
+const convertEndShowDocx = (data) => {
+    console.log(atob(data));
+
+};
+
+const convertEndShowPdf = (data) => {
+    const pdfData = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+
+    const blob = new Blob([pdfData], {type: 'application/pdf'});
+    const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
+    setExamPaperFile(file);
+
+    renderPdfInView(pdfData);
+};
+
 
 const onChangeChoosePDFFile = () => {
     $("#file-pdf-input").on("change", (e) => {
@@ -222,13 +244,11 @@ const handleDownloadExamPaper = (fileId) => {
         success: function (responseBody) {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             const blob = new Blob([pdfData], {type: 'application/pdf'});
-            // Tạo đối tượng URL từ Blob
             const url = URL.createObjectURL(blob);
 
-            // Tạo và nhấp vào liên kết để tải tệp
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'file.pdf'; // Đặt tên cho file tải về
+            link.download = 'file.pdf';
             document.body.appendChild(link);
             link.click();
 
