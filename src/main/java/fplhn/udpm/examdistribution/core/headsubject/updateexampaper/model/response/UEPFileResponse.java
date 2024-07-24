@@ -11,6 +11,6 @@ public class UEPFileResponse {
 
     private String data;
 
-    private String fileName;
+    private String isPdf;
 
 }
