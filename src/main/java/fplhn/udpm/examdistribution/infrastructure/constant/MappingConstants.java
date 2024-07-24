@@ -70,6 +70,9 @@ public final class MappingConstants {
     // Constants representing the full paths for various resources under head department
     public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/subjects";
+    public static final String API_HEAD_DEPARTMENT_CLASS_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/class-subjects";
+    public static final String API_HEAD_DEPARTMENT_BLOCK = API_HEAD_DEPARTMENT_PREFIX + "/blocks";
+    public static final String API_HEAD_DEPARTMENT_CAMPUS = API_HEAD_DEPARTMENT_PREFIX + "/campuses";
     public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP = API_HEAD_DEPARTMENT_PREFIX + "/subject-group";
     public static final String API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = API_HEAD_DEPARTMENT_PREFIX + "/join-room";
     public static final String API_HEAD_DEPARTMENT_STAFF = API_HEAD_DEPARTMENT_PREFIX + "/staffs";
@@ -83,8 +86,12 @@ public final class MappingConstants {
     public static final String API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL = API_HEAD_SUBJECT_PREFIX + "/exam-approval";
     public static final String API_HEAD_SUBJECT_MANAGE_EXAM_RULE = API_HEAD_SUBJECT_PREFIX + "/exam-rule";
     public static final String API_HEAD_SUBJECT_MANAGE_JOIN_ROOM = API_HEAD_SUBJECT_PREFIX + "/join-room";
+    public static final String API_HEAD_SUBJECT_SUBJECT = API_HEAD_SUBJECT_PREFIX + "/subjects";
     public static final String API_HEAD_SUBJECT_STAFF = API_HEAD_SUBJECT_PREFIX + "/staffs";
     public static final String API_HEAD_SUBJECT_STUDENT = API_HEAD_SUBJECT_PREFIX + "/students";
+    public static final String API_HEAD_SUBJECT_BLOCK = API_HEAD_SUBJECT_PREFIX + "/blocks";
+    public static final String API_HEAD_SUBJECT_CAMPUS = API_HEAD_SUBJECT_PREFIX + "/campuses";
+    public static final String API_HEAD_SUBJECT_CLASS_SUBJECT = API_HEAD_SUBJECT_PREFIX + "/class-subjects";
     public static final String API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER = API_HEAD_SUBJECT_PREFIX + "/choose-exam-paper";
     public static final String API_HEAD_SUBJECT_CREATE_EXAM_PAPER = API_HEAD_SUBJECT_PREFIX + "/create-exam-paper";
 

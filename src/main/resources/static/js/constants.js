@@ -62,6 +62,9 @@ const ApiConstant = {
     API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/head-of-subjects",
     API_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP: "/api/v1/head-department/subject-group",
     API_HEAD_DEPARTMENT_MANAGE_SUBJECT: "/api/v1/head-department/subjects",
+    API_HEAD_DEPARTMENT_BLOCK: "/api/v1/head-department/blocks",
+    API_HEAD_DEPARTMENT_CAMPUS: "/api/v1/head-department/campuses",
+    API_HEAD_DEPARTMENT_CLASS_SUBJECT: "/api/v1/head-department/class-subjects",
     API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/api/v1/head-department/join-room",
     API_HEAD_DEPARTMENT_STAFF: "/api/v1/head-department/staffs",
     API_HEAD_DEPARTMENT_STUDENT: "/api/v1/head-department/students",
@@ -76,6 +79,10 @@ const ApiConstant = {
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
     API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
     API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",
+    API_HEAD_SUBJECT_SUBJECT: "/api/v1/head-subject/subjects",
+    API_HEAD_SUBJECT_BLOCK: "/api/v1/head-subject/blocks",
+    API_HEAD_SUBJECT_CAMPUS: "/api/v1/head-subject/campuses",
+    API_HEAD_SUBJECT_CLASS_SUBJECT: "/api/v1/head-subject/class-subjects",
     API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
     API_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/api/v1/head-subject/create-exam-paper",
 
@@ -203,3 +210,12 @@ const showViewAndPagingPdf = (totalPage, viewerSelector, pagingSelector) => {
         $(pagingSelector).prop("hidden", false);
     }
 }
+
+const getExamDate = () => {
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    today = mm + '/' + dd + '/' + yyyy;
+    $('#modifyExamDate').val(today);
+};

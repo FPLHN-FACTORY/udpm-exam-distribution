@@ -62,15 +62,6 @@ $(document).ready(function () {
 
 });
 
-const getExamDate = () => {
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, '0');
-    let mm = String(today.getMonth() + 1).padStart(2, '0');
-    let yyyy = today.getFullYear();
-    today = mm + '/' + dd + '/' + yyyy;
-    $('#modifyExamDate').val(today);
-};
-
 const fetchSubjects = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
     $.ajax({
