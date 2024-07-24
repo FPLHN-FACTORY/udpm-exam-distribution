@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.createexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.headsubject.createexampaper.model.request.CREPCreateExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.createexampaper.service.EditExamPaperService;
+import fplhn.udpm.examdistribution.core.headsubject.createexampaper.service.CreateExamPaperService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -19,26 +19,26 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class CreateExamPaperRestController {
 
-    private final EditExamPaperService editExamPaperService;
+    private final CreateExamPaperService createExamPaperService;
 
     @PostMapping("/pdf-to-docx")
     public ResponseEntity<?> convertPdfToDocx(@RequestParam("file") MultipartFile file) {
-        return editExamPaperService.convertPdfToDocx(file);
+        return createExamPaperService.convertPdfToDocx(file);
     }
 
     @GetMapping("/major-facility")
     public ResponseEntity<?> getListMajorFacility() {
-        return Helper.createResponseEntity(editExamPaperService.getListMajorFacility());
+        return Helper.createResponseEntity(createExamPaperService.getListMajorFacility());
     }
 
     @GetMapping("/subject")
     public ResponseEntity<?> getListSubject() {
-        return Helper.createResponseEntity(editExamPaperService.getListSubject());
+        return Helper.createResponseEntity(createExamPaperService.getListSubject());
     }
 
     @PostMapping("/exam-paper")
     public ResponseEntity<?> createExamPaper(@ModelAttribute CREPCreateExamPaperRequest request) {
-        return Helper.createResponseEntity(editExamPaperService.createExamPaper(request));
+        return Helper.createResponseEntity(createExamPaperService.createExamPaper(request));
     }
 
 }

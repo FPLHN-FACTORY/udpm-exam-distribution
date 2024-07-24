@@ -142,9 +142,8 @@ $('#pagination').empty();
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
-                                    <i 
-                                        class="fa-solid fa-pen-to-square"
+                                <span onclick="handleRedirectUpdateContentFile('${item.id}')">
+                                    <i class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
