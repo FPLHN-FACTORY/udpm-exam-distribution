@@ -75,3 +75,15 @@ const joinExamShift = () => {
         }
     });
 }
+
+const resetFormJoinExamShift = () => {
+    $('#modifyExamShiftCodeJoin').val('');
+    $('#modifyPasswordJoin').val('');
+}
+
+const removeFormJoinError = (id) => {
+    $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
+    $('#examShiftCodeJoinError').text('');
+    $('#modifyPasswordJoin').removeClass('is-invalid');
+    $('#passwordJoinError').text('');
+};

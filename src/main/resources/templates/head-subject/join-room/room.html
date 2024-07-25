@@ -75,31 +75,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="modifyRoom" class="form-label">Phòng thi</label>
-                            <input type="text" class="form-control" id="modifyRoom" required>
-                            <div class="invalid-feedback" id="roomError"></div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label for="modifyRoom" class="form-label">Phòng thi</label>
+                                    <input type="text" class="form-control" id="modifyRoom" required>
+                                    <div class="invalid-feedback" id="roomError"></div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label for="modifySubjectClassCode" class="form-label">Mã lớp môn</label>
+                                    <input type="text" class="form-control" id="modifySubjectClassCode" required>
+                                    <div class="invalid-feedback" id="classSubjectCodeError"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 <div class="mb-3">
-                                    <label for="modifyFirstSupervisor" class="form-label">Giám thị 1</label>
-                                    <input type="text" class="form-control" id="modifyFirstSupervisor" required>
-                                    <div class="invalid-feedback" id="firstSupervisorError"></div>
+                                    <label for="modifyFirstSupervisorCode" class="form-label">Giám thị 1</label>
+                                    <input type="text" class="form-control" id="modifyFirstSupervisorCode" required>
+                                    <div class="invalid-feedback" id="firstSupervisorCodeError"></div>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="mb-3">
-                                    <label for="modifySecondSupervisor" class="form-label">Giám thị 2</label>
-                                    <input type="text" class="form-control" id="modifySecondSupervisor" required>
-                                    <div class="invalid-feedback" id="secondSupervisorError"></div>
+                                    <label for="modifySecondSupervisorCode" class="form-label">Giám thị 2</label>
+                                    <input type="text" class="form-control" id="modifySecondSupervisorCode" required>
+                                    <div class="invalid-feedback" id="secondSupervisorCodeError"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifySubjectClassCode" class="form-label">Mã lớp môn</label>
-                            <input type="text" class="form-control" id="modifySubjectClassCode" required>
-                            <div class="invalid-feedback" id="classSubjectCodeError"></div>
                         </div>
                         <div class="mb-3">
                             <label for="modifySubjectId" class="form-label">Môn thi</label>
@@ -118,6 +124,11 @@
                             <select class="form-select" id="modifyFacilityChildId" required>
                                 <option value="">Chọn campus</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyTotalStudent" class="form-label">Tổng số sinh viên</label>
+                            <input type="text" class="form-control" id="modifyTotalStudent" required>
+                            <div class="invalid-feedback" id="totalStudentError"></div>
                         </div>
                         <div class="mb-3">
                             <label for="modifyPassword" class="form-label">Password</label>

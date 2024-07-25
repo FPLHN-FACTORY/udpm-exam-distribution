@@ -73,8 +73,8 @@ const connect = () => {
             getStudents();
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            countStudentInExamShift();
             getStudents();
+            countStudentInExamShift();
         });
         stompClient.subscribe(TopicConstant.TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT, function () {
             countStudentInExamShift();

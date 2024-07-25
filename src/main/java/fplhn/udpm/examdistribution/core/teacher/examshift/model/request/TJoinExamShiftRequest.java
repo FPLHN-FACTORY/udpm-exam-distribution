@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 public class TJoinExamShiftRequest {
 
-    private String secondSupervisorId;
-
     @NotBlank(message = "Mã phòng thi không được để trống")
     private String examShiftCodeJoin;
 

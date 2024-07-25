@@ -15,6 +15,31 @@ public interface HSStaffExtendRepository extends StaffRepository {
 
     @Query(value = """
             SELECT
+            	s.id,
+            	s.staff_code,
+            	s.name,
+            	s.account_fe,
+            	s.account_fpt,
+            	s.picture,
+            	s.status,
+            	s.created_date,
+            	s.last_modified_date
+            FROM
+            	staff s
+            JOIN staff_major_facility smf ON
+            	s.id = smf.id_staff
+            JOIN major_facility mf ON
+            	smf.id_major_facility = mf.id
+            JOIN department_facility df ON
+            	mf.id_department_facility = df.id
+            WHERE
+                s.staff_code = :staffCode
+                AND df.id = :departmentFacilityId
+            """, nativeQuery = true)
+    Optional<Staff> findByStaffCodeAndDepartmentFacilityId(String staffCode, String departmentFacilityId);
+
+    @Query(value = """
+            SELECT
             	s.id as id,
             	s.name as name,
             	s.staff_code as staffCode,

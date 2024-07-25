@@ -21,8 +21,6 @@ $(document).ready(function () {
         joinExamShiftSubmit($('#modifyExamShiftCodeJoin').val());
     });
 
-    connect();
-
     let timeout = null;
 
     getExamDate();
@@ -187,16 +185,6 @@ const addExamShift = () => {
                 showToastError('Có lỗi xảy ra khi thêm ca thi!');
             }
         }
-    });
-}
-
-const connect = () => {
-    const socket = new SockJS("/ws");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_CREATE, function (response) {
-            getExamShifts();
-        });
     });
 }
 

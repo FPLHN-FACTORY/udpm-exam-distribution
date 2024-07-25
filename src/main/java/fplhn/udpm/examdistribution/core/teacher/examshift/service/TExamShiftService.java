@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import jakarta.validation.Valid;
 
@@ -10,8 +9,6 @@ import java.io.IOException;
 public interface TExamShiftService {
 
     boolean findUsersInExamShift(String examShiftCode);
-
-    ResponseObject<?> createExamShift(@Valid TCreateExamShiftRequest tCreateExamShiftRequest);
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 

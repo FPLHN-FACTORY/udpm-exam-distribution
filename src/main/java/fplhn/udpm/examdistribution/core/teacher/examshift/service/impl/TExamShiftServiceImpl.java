@@ -1,22 +1,19 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TClassSubjectExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperBySemesterExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamPaperShiftResponse;
-import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamPaperShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TStartExamShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperBySemesterExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.service.TExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStaffExtendRepository;
-import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.entity.ClassSubject;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.service.TExamShiftService;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
@@ -28,12 +25,9 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
-import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
-import jakarta.servlet.http.HttpSession;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +50,6 @@ import java.util.Random;
 @Slf4j
 public class TExamShiftServiceImpl implements TExamShiftService {
 
-    private final TClassSubjectExtendRepository tClassSubjectExtendRepository;
-
     private final TStaffExtendRepository tStaffExtendRepository;
 
     private final TExamShiftExtendRepository tExamShiftExtendRepository;
@@ -74,7 +66,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
     private final GoogleDriveFileService googleDriveFileService;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -89,74 +81,16 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                          .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString())
-                  || (examShift.get().getSecondSupervisor() != null
-                      && examShift.get().getSecondSupervisor().getId()
-                              .equals(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString()));
+                .equals(sessionHelper.getCurrentUserId())
+                || (examShift.get().getSecondSupervisor() != null
+                && examShift.get().getSecondSupervisor().getId()
+                .equals(sessionHelper.getCurrentUserId()));
 
-        if (!isCurrentUserSupervisor && httpSession
-                .getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("GIANG_VIEN")) {
+        if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
         }
 
         return true;
-    }
-
-    @Override
-    public ResponseObject<?> createExamShift(@Valid TCreateExamShiftRequest tCreateExamShiftRequest) {
-
-        Optional<ClassSubject> existingClassSubject = tClassSubjectExtendRepository
-                .findById(tCreateExamShiftRequest.getClassSubjectId());
-        if (existingClassSubject.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Lớp môn không tồn tại!");
-        }
-
-        if (tExamShiftExtendRepository.countByClassSubjectId(tCreateExamShiftRequest.getClassSubjectId()) == 3) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Lớp môn đã đủ 3 ca thi trong block của campus này!");
-        }
-
-        if (tExamShiftExtendRepository.countByExamDateAndShiftAndRoom(tCreateExamShiftRequest.getExamDate(),
-                tCreateExamShiftRequest.getShift(), tCreateExamShiftRequest.getRoom()) == 1) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi đã tồn tại!");
-        }
-
-        Optional<Staff> existingStaff = tStaffExtendRepository
-                .findById(tCreateExamShiftRequest.getFirstSupervisorId());
-        if (existingStaff.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Giám thị không tồn tại!");
-        }
-
-//        ResponseObject<?> validateShift = validateShift(createExamShiftRequest.getShift());
-//        if (validateShift != null) {
-//            return validateShift;
-//        }
-
-        ResponseObject<?> validatePassword = validatePassword(tCreateExamShiftRequest.getPassword());
-        if (validatePassword != null) {
-            return validatePassword;
-        }
-
-        String examShiftCode = CodeGenerator.generateRandomCode();
-
-        String salt = PasswordUtils.generateSalt();
-        String password = PasswordUtils.getSecurePassword(tCreateExamShiftRequest.getPassword(), salt);
-
-        ExamShift examShift = new ExamShift();
-        examShift.setClassSubject(existingClassSubject.get());
-        examShift.setFirstSupervisor(existingStaff.get());
-        examShift.setExamDate(tCreateExamShiftRequest.getExamDate());
-        examShift.setShift(Shift.valueOf(tCreateExamShiftRequest.getShift()));
-        examShift.setRoom(tCreateExamShiftRequest.getRoom());
-        examShift.setExamShiftCode(examShiftCode);
-        examShift.setHash(password);
-        examShift.setSalt(salt);
-        examShift.setStatus(EntityStatus.ACTIVE);
-        examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
-        tExamShiftExtendRepository.save(examShift);
-
-        return new ResponseObject<>(examShift.getExamShiftCode(),
-                HttpStatus.CREATED, "Tạo phòng thi thành công!");
     }
 
     @Override
@@ -184,20 +118,13 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã kết thúc!");
         }
 
-        Optional<Staff> existingStaff = tStaffExtendRepository.findById(tJoinExamShiftRequest.getSecondSupervisorId());
-        if (existingStaff.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Giám thị không tồn tại!");
-        }
+        Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
-        if (tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getFirstSupervisor().getId())
-            && (examShift.getSecondSupervisor() == null
-                || tJoinExamShiftRequest.getSecondSupervisorId().equals(examShift.getSecondSupervisor().getId()))) {
-            return new ResponseObject<>(examShift.getExamShiftCode(),
-                    HttpStatus.OK, "Tham gia phòng thi thành công!");
+        if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
+                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+            return new ResponseObject<>(null,
+                    HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
         }
-
-        examShift.setSecondSupervisor(existingStaff.get());
-        tExamShiftExtendRepository.save(examShift);
 
         String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
@@ -312,8 +239,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 //                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi chưa đủ giám thị!");
 //            }
 
-            String departmentFacilityId
-                    = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
             String subjectId = examShift.get().getClassSubject().getSubject().getId();
 
             List<String> getListIdExamPaper
