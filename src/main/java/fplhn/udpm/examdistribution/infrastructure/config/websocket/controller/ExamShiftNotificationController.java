@@ -9,12 +9,6 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ExamShiftNotificationController {
 
-    @MessageMapping("/exam-shift-create")
-    @SendTo(TopicConstant.TOPIC_EXAM_SHIFT_CREATE)
-    public NotificationResponse notifyExamShiftCreate(String message) {
-        return new NotificationResponse(message);
-    }
-
     @MessageMapping("/exam-shift-join")
     @SendTo(TopicConstant.TOPIC_EXAM_SHIFT)
     public NotificationResponse notifyExamShiftJoin(String message) {

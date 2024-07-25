@@ -77,6 +77,8 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             	exam_shift es
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
+            JOIN subject s on
+             	cs.id_subject = s.id
             JOIN block b ON
             	cs.id_block = b.id
             JOIN facility_child fc ON
@@ -97,6 +99,30 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             AND es.room = :room
             """, nativeQuery = true)
     Integer countByExamDateAndShiftAndRoom(Long examDate, String shift, String room);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	exam_shift es
+            WHERE
+            	es.id_first_supervisor = :firstSupervisorId
+            	AND es.exam_date = :examDate
+            	AND es.shift = :shift
+            """, nativeQuery = true)
+    Integer countExistingFirstSupervisorByCurrentExamDateAndShift(String firstSupervisorId, Long examDate, String shift);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	exam_shift es
+            WHERE
+            	es.id_second_supervisor = :secondSupervisorId
+            	AND es.exam_date = :examDate
+            	AND es.shift = :shift
+            """, nativeQuery = true)
+    Integer countExistingSecondSupervisorByCurrentExamDateAndShift(String secondSupervisorId, Long examDate, String shift);
 
     @Query(value = """
             SELECT

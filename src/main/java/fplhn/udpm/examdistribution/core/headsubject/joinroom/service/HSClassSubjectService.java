@@ -5,6 +5,8 @@ import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request.HSCla
 
 public interface HSClassSubjectService {
 
+    ResponseObject<?> getClassSubject(String classSubjectCode);
+
     ResponseObject<?> getClassSubjectIdByRequest(HSClassSubjectRequest hsClassSubjectRequest);
 
 }

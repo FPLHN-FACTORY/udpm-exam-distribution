@@ -14,18 +14,18 @@ const getListMappingScreenConstant = () => {
     ]
 }
 
-const checkExtensionInstalled = async () => {
-    try {
-        await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
-        return true;
-    } catch (e) {
-        if (e instanceof TypeError && e.message === 'Failed to fetch') {
-            return false;
-        } else {
-            throw e;
-        }
-    }
-}
+// const checkExtensionInstalled = async () => {
+//     try {
+//         await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
+//         return true;
+//     } catch (e) {
+//         if (e instanceof TypeError && e.message === 'Failed to fetch') {
+//             return false;
+//         } else {
+//             throw e;
+//         }
+//     }
+// }
 
 const handleRedirectGoogleLogin = async (status) => {
     const mapping = getListMappingScreenConstant().find(item => item.status === status);
@@ -34,13 +34,13 @@ const handleRedirectGoogleLogin = async (status) => {
     const origin = window.location.origin;
     const redirectUrl = `${origin}${ApiConstant.REDIRECT_AUTHENTICATION_AUTHOR_SWITCH}?role=${mapping.role}&redirect_uri=${mapping.redirect}&facility_id=${mapping.facility}`;
 
-    if (mapping.role === "SINH_VIEN") {
-        const installed = await checkExtensionInstalled();
-        if (!installed) {
-            showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
-            return;
-        }
-    }
+    // if (mapping.role === "SINH_VIEN") {
+    //     const installed = await checkExtensionInstalled();
+    //     if (!installed) {
+    //         showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
+    //         return;
+    //     }
+    // }
 
     window.location.href = redirectUrl;
 };

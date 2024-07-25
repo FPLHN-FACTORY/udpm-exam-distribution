@@ -1,7 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TCreateExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
@@ -29,11 +28,6 @@ import java.io.IOException;
 public class TExamShiftRestController {
 
     private final TExamShiftService tExamShiftService;
-
-    @PostMapping
-    public ResponseEntity<?> createExamShift(@RequestBody TCreateExamShiftRequest tCreateExamShiftRequest) {
-        return Helper.createResponseEntity(tExamShiftService.createExamShift(tCreateExamShiftRequest));
-    }
 
     @GetMapping("/{examShiftCode}")
     public ResponseEntity<?> getExamShiftByCode(@PathVariable String examShiftCode) {

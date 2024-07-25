@@ -4,8 +4,6 @@ public final class TopicConstant {
 
     public static final String TOPIC = "/topic";
 
-    public static final String TOPIC_EXAM_SHIFT_CREATE = TOPIC + "/teacher-exam-shift-create";
-
     public static final String TOPIC_EXAM_SHIFT = TOPIC + "/exam-shift";
 
     public static final String TOPIC_STUDENT_EXAM_SHIFT = TOPIC + "/student-exam-shift";

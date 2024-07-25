@@ -118,7 +118,6 @@ const ApiConstant = {
 };
 
 const TopicConstant = {
-    TOPIC_EXAM_SHIFT_CREATE: "/topic/teacher-exam-shift-create",
     TOPIC_EXAM_SHIFT: "/topic/exam-shift",
     TOPIC_STUDENT_EXAM_SHIFT: "/topic/student-exam-shift",
     TOPIC_STUDENT_EXAM_SHIFT_KICK: "/topic/student-exam-shift-kick",
