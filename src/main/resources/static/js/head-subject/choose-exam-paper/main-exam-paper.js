@@ -241,6 +241,8 @@ const fetchListExamPaper = (
     paramSearch = getGlobalParamsSearchFirstPage(),
 ) => {
 
+    showLoading();
+
     const params = {
         page: page,
         size: size,
@@ -261,7 +263,6 @@ const fetchListExamPaper = (
 
     url = url.slice(0, -1);
 
-    showLoading();
     $.ajax({
         url: url,
         method: "GET",

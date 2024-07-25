@@ -1,6 +1,8 @@
 package fplhn.udpm.examdistribution.core.student.trackstudent.controller;
 
 import fplhn.udpm.examdistribution.core.student.trackstudent.model.request.CheckRoomIsValidRequest;
+import fplhn.udpm.examdistribution.core.student.trackstudent.model.request.InfoRoomRequest;
+import fplhn.udpm.examdistribution.core.student.trackstudent.model.request.RemoveTabRequest;
 import fplhn.udpm.examdistribution.core.student.trackstudent.model.request.SaveTrackUrlRequest;
 import fplhn.udpm.examdistribution.core.student.trackstudent.service.StudentExamShiftTrackService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -26,9 +28,19 @@ public class StudentExamShiftTrackRestController {
         return Helper.createResponseEntity(studentExamShiftTrackService.checkExamShiftIsValid(request));
     }
 
+    @PostMapping("/exam-shift-info")
+    public ResponseEntity<?> getInfoRoom(@RequestBody InfoRoomRequest request) {
+        return Helper.createResponseEntity(studentExamShiftTrackService.getExamShiftInfo(request));
+    }
+
     @PostMapping("/save-track-url")
     public ResponseEntity<?> saveTrackUrl(@RequestBody SaveTrackUrlRequest request) {
         return Helper.createResponseEntity(studentExamShiftTrackService.saveTrackUrl(request));
+    }
+
+    @PostMapping("/remove-tab")
+    public ResponseEntity<?> removeTab(@RequestBody RemoveTabRequest request) {
+        return Helper.createResponseEntity(studentExamShiftTrackService.removeTab(request));
     }
 
 }

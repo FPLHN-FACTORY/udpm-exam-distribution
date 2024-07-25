@@ -90,7 +90,6 @@ const connect = () => {
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             getPathFilePDFExamPaper(examShiftCode);
-            handleSendMessageStartToExt();
         });
         stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
             const responseBody = JSON.parse(response.body);

@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CheckRoomIsValidRequest {
+public class RemoveTabRequest {
 
     private String email;
 

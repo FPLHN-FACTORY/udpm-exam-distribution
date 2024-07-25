@@ -114,6 +114,7 @@ const ApiConstant = {
     // Constants representing the full paths for various resources under student
     API_STUDENT_EXAM_SHIFT: "/api/v1/student/exam-shift",
     API_STUDENT_JOIN_EXAM_SHIFT: "/api/v1/student/exam-shift/join",
+    API_STUDENT_TRACKER: "/api/v1/student/tracker",
 
 };
 
@@ -139,7 +140,29 @@ const EXAM_DISTRIBUTION_EXTENSION_ID = "mfjgckbmeakcekilcamhpjglhkiaanol";
 
 const EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID = "e_e_p_i";
 
+const EXAM_DISTRIBUTION_IS_ENABLE_EXT = "i_e_e";
+
 const EXAM_DISTRIBUTION_CONSTANT_KEY = "e_d_i";
+
+const handleSendMessageStartToExt = () => {
+    chrome.runtime.sendMessage(
+        EXAM_DISTRIBUTION_EXTENSION_ID,
+        {active: "onTracking"},
+        function (response) {
+            console.log(response);
+        }
+    );
+};
+
+const handleSendMessageEndTimeToExt = () => {
+    chrome.runtime.sendMessage(
+        EXAM_DISTRIBUTION_EXTENSION_ID,
+        {active: "stopTracking"},
+        function (response) {
+            console.log(response);
+        }
+    );
+};
 
 const getExamDistributionInfo = () => {
     const cookieValue = Cookies.get(EXAM_DISTRIBUTION_CONSTANT_KEY);
@@ -169,6 +192,7 @@ const getExamDistributionInfo = () => {
         facilityId: examDistributionInfo?.facilityId || null,
         facilityName: examDistributionInfo?.facilityName || null,
         userEmailFPT: examDistributionInfo?.userEmailFPT || null,
+        userEmail: examDistributionInfo?.userEmail || null,
         userEmailFe: examDistributionInfo?.userEmailFe || null,
         userFullName: examDistributionInfo?.userFullName || null,
         userId: examDistributionInfo?.userId || null,
@@ -224,3 +248,16 @@ const getExamDate = () => {
     today = mm + '/' + dd + '/' + yyyy;
     $('#modifyExamDate').val(today);
 };
+
+const checkExtensionInstalled = async () => {
+    try {
+        await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
+        return true;
+    } catch (e) {
+        if (e instanceof TypeError && e.message === 'Failed to fetch') {
+            return false;
+        } else {
+            throw e;
+        }
+    }
+}

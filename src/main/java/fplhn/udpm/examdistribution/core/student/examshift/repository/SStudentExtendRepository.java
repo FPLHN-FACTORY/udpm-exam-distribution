@@ -1,11 +1,13 @@
 package fplhn.udpm.examdistribution.core.student.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SStudentResponse;
+import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.repository.StudentRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SStudentExtendRepository extends StudentRepository {
@@ -68,5 +70,13 @@ public interface SStudentExtendRepository extends StudentRepository {
             	AND es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     List<SStudentResponse> findAllStudentRejoinByExamShiftCode(String examShiftCode);
+
+    @Query("""
+            SELECT st
+            FROM Student st
+            WHERE st.id = :studentId AND
+                  st.status = 0
+            """)
+    Optional<Student> findStudentExist(String studentId);
 
 }

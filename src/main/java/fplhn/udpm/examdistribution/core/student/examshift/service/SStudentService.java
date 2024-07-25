@@ -8,4 +8,6 @@ public interface SStudentService {
 
     ResponseObject<?> findAllStudentRejoinByExamShiftCode(String examShiftCode);
 
+    ResponseObject<?> kickStudentUnInstallExt(String examShiftCode);
+
 }
