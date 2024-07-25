@@ -14,6 +14,7 @@ public interface AuthFacilityExtendRepository extends FacilityRepository {
             SELECT  f.id AS id,
                     f.name AS name
             FROM facility f
+            WHERE f.status = 0
             """,nativeQuery = true)
     List<ListFacilityResponse> getListFacility();
 
