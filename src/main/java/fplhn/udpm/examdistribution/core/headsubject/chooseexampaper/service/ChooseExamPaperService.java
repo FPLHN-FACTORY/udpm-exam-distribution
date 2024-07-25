@@ -24,8 +24,6 @@ public interface ChooseExamPaperService {
 
     ResponseObject<?> deleteExamPaper(String examPaperId);
 
-    ResponseObject<?> getListMajorFacility();
-
     ResponseObject<?> createExamPaper(@Valid CEPCreateExamPaperRequest request);
 
     ResponseObject<?> updateExamPaper(@Valid CEPUpdateExamPaperRequest request);

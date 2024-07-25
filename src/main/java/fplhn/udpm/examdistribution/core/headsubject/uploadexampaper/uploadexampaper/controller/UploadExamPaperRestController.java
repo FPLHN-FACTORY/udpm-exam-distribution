@@ -36,11 +36,6 @@ public class UploadExamPaperRestController {
         return Helper.createResponseEntity(uploadExamPaperService.getListCurrentSubject());
     }
 
-    @GetMapping("/major-facility")
-    public ResponseEntity<?> getListMajorFacility() {
-        return Helper.createResponseEntity(uploadExamPaperService.getListMajorFacility());
-    }
-
     @GetMapping("/staff")
     public ResponseEntity<?> getListStaff() {
         return Helper.createResponseEntity(uploadExamPaperService.getListStaff());

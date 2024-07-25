@@ -10,146 +10,18 @@ const ctx = $pdfCanvas.getContext("2d");
 // END: state
 
 //START: getter,setter
-let examPaperFile = new File([], "");
-let stateExamPaperId = "";
-let statePostOrPutExamPaper = true; //true -> post, false -> put
 
-const getValueMajorFacilityId = () => $("#major-facility").val();
-const getValueExamPaperType = () => $("#exam-paper-type").val();
-const getValueExamPaperSubjectId = () => $("#exam-paper-subject").val();
-const getValueExamPaperId = () => stateExamPaperId;
-const getExamPaperFile = () => examPaperFile;
-const getStatePostOrPutExamPaper = () => statePostOrPutExamPaper;
-
-const setValueExamPaperType = (value) => {
-    $("#exam-paper-type").val(value);
-}
-const setValueMajorFacilityId = (value) => {
-    $("#major-facility").val(value);
-};
-const setValueExamPaperSubjectId = (value) => {
-    $("#exam-paper-subject").val(value);
-};
-const setValueExamPaperId = (value) => {
-    stateExamPaperId = value;
-};
-const setExamPaperFile = (value) => {
-    examPaperFile = value;
-};
-const setStatePostOrPutExamPaper = (value) => {
-    statePostOrPutExamPaper = value;
-};
 //END: getter,setter
-
-const clearFieldsChoose = () => {
-    $("#major-facility").val("");
-    $("#exam-paper-type").val("");
-    $("#exam-paper-subject").val("");
-};
 
 const handleOpenChooseFilePdf = () => {
     const pdfFile = $("#file-pdf-input");
     pdfFile.click();
 };
 
-const handlePostOrPutExamPaperConfirm = () => {
-    swal({
-        title: getStatePostOrPutExamPaper() === false ? "Xác nhận cập nhật?" : "Xác nhận thêm",
-        text: getStatePostOrPutExamPaper() === false ? "Bạn có chắc muốn cập nhật đề thi này không?" : "Bạn có chắc muốn thêm đề thi này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Xác nhận",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willDelete) => {
-        if (willDelete) {
-            handlePostOrPutExamPaper();
-        }
-    });
-};
+const handleOpenModalExamPaper = (fileId) => {
+    showViewByStatus();
 
-const handlePostOrPutExamPaper = () => {
-    const data = new FormData();
-    if (getStatePostOrPutExamPaper() === false) {
-        data.append("examPaperId", getValueExamPaperId());
-    }
-    data.append("examPaperType", getValueExamPaperType());
-    data.append("majorFacilityId", getValueMajorFacilityId());
-    data.append("subjectId", getValueExamPaperSubjectId())
-    data.append("file", getExamPaperFile());
-
-    handleResetFieldsError();
-
-    showLoading();
-    $.ajax({
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/exam-paper",
-        method: getStatePostOrPutExamPaper() === false ? "PUT" : "POST",
-        data: data,
-        contentType: false,
-        processData: false,
-        success: function (responseBody) {
-            showToastSuccess(responseBody.message);
-
-            fetchListExamPaper();
-
-            closeModalExamPaper();
-
-            hideLoading();
-        },
-        error: function (error) {
-            const myError = error?.responseJSON;
-            $('.form-control').removeClass('is-invalid');
-
-            if (myError?.length > 0) {
-                myError.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
-                });
-            } else if (myError.message) {
-                showToastError(myError.message);
-            } else {
-                showToastError("Có lỗi xảy ra");
-            }
-            hideLoading();
-        }
-    });
-};
-
-const handleResetFieldsError = () => {
-    $('.form-control').removeClass('is-invalid');
-    $("#examPaperTypeError").text("");
-    $("#majorFacilityIdError").text("");
-    $("#subjectIdError").text("");
-};
-
-const closeModalExamPaper = () => {
-    $("#examPaperModal").modal("hide");
-};
-
-const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId, subjectId, examPaperId) => { //status: 1 -> detail, 2 -> edit, 3 -> add
-    setStatePostOrPutExamPaper(status !== 2);
-
-    showViewByStatus(status);
-    handleResetFieldsError();
-
-    if (status !== 3) {
-        handleFetchExamRulePDF(fileId);
-        if (status === 2) {
-            setValueExamPaperType(examPaperType);
-            setValueMajorFacilityId(majorFacilityId);
-            setValueExamPaperSubjectId(subjectId);
-            setValueExamPaperId(examPaperId);
-        }
-    } else {
-        clearFieldsChoose();
-    }
+    handleFetchExamRulePDF(fileId);
 
     $("#examPaperModal").modal("show");
 };
@@ -167,7 +39,6 @@ const handleFetchExamRulePDF = (fileId) => {
 
             const blob = new Blob([pdfData], {type: 'application/pdf'});
             const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
-            setExamPaperFile(file);
 
             renderPdfInView(pdfData);
 
@@ -335,20 +206,18 @@ $("#next-page").on("click", function () {
     queueRenderPageC(pageNum);
 });
 
-const showViewByStatus = (status) => {
-    $("#examPaperTitle").text(status === 1 ? "Chi tiết đề thi" : status === 2 ? "Cập nhật đề thi" : status === 3 ? "Thêm đề thi" : "")
+const showViewByStatus = () => {
+    $("#examPaperTitle").text("Chi tiết đề thi");
 
     $("#paging-pdf").prop("hidden", true);
 
-    $("#view-add-edit").prop("hidden", !(status === 2 || status === 3));
-    $("#modal-footer").prop("hidden", !(status === 2 || status === 3));
+    $("#modal-footer").prop("hidden", true);
 
     $("#show-pdf").prop("hidden", true);
 
     $("#file-pdf-input").val("");
-    //reset lai page 1
+
     pageNum = 1;
-    setExamPaperFile(new File([], ""));
 };
 
 

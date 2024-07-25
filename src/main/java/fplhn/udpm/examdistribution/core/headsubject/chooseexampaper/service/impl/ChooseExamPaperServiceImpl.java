@@ -224,26 +224,6 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> getListMajorFacility() {
-        try {
-            String majorFacilityId = sessionHelper.getCurrentUserMajorFacilityId();
-            String semesterId = sessionHelper.getCurrentSemesterId();
-            String staffId = sessionHelper.getCurrentUserId();
-            return new ResponseObject<>(
-                    examPaperRepository.getMajorFacilityByDepartmentFacilityId(majorFacilityId, staffId, semesterId),
-                    HttpStatus.OK,
-                    "Lấy thành công danh sách chuyên ngành cơ sở"
-            );
-        } catch (Exception e) {
-            return new ResponseObject<>(
-                    null,
-                    HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
-            );
-        }
-    }
-
-    @Override
     public ResponseObject<?> createExamPaper(@Valid CEPCreateExamPaperRequest request) {
         try {
             if (request.getFile().isEmpty()) {
@@ -262,7 +242,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(request.getMajorFacilityId());
+            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(sessionHelper.getCurrentUserMajorFacilityId());
             if (isMajorFacilityExist.isEmpty()) {
                 return new ResponseObject<>(
                         null,
@@ -345,7 +325,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(request.getMajorFacilityId());
+            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(sessionHelper.getCurrentUserMajorFacilityId());
             if (isMajorFacilityExist.isEmpty()) {
                 return new ResponseObject<>(
                         null,

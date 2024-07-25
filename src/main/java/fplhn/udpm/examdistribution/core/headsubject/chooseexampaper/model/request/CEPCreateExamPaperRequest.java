@@ -12,9 +12,6 @@ public class CEPCreateExamPaperRequest {
     @NotBlank(message = "Kiểu của đề thi chưa được chọn")
     private String examPaperType;
 
-    @NotBlank(message = "Chuyên ngành cơ sở chưa được chọn")
-    private String majorFacilityId;
-
     @NotBlank(message = "Môn học chưa được chọn")
     private String subjectId;
 

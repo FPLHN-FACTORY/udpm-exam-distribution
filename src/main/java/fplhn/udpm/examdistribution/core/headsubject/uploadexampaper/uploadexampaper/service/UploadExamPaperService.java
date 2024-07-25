@@ -18,8 +18,6 @@ public interface UploadExamPaperService {
 
     ResponseObject<?> deleteExamPaper(String examPaperId);
 
-    ResponseObject<?> getListMajorFacility();
-
     ResponseObject<?> createExamPaper(@Valid CreateExamPaperRequest request);
 
     ResponseObject<?> updateExamPaper(@Valid UpdateExamPaperRequest request);
