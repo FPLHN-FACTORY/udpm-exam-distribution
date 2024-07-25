@@ -1,6 +1,5 @@
 $(document).ready(function () {
     fetchListCurrentSubject();
-    handleFetchMajorFacility();
     fetchListSemester();
     fetchListStaff();
 
@@ -455,30 +454,6 @@ const handleDeleteExamPaper = (examPaperId) => {
                     hideLoading();
                 }
             });
-        }
-    });
-};
-
-const handleFetchMajorFacility = () => {
-    showLoading();
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/major-facility",
-        success: function (responseBody) {
-            const majorFacility = responseBody?.data?.map(item => {
-                return `<option value=${item.majorFacilityId}>${item.majorFacilityName}</option>`;
-            });
-            majorFacility.unshift('<option value="">-- Chuyên ngành - Cơ sở --</option>');
-            $("#major-facility").html(majorFacility);
-            hideLoading();
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
         }
     });
 };

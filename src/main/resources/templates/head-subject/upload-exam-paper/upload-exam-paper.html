@@ -408,44 +408,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="view-add-edit">
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <span class="text-danger"> * </span> Loại đề </label>
-                            <select class="form-select" id="exam-paper-type" required>
-                                <option value="">-- Chọn loại đề --</option>
-                                <option value="MOCK_EXAM_PAPER">Đề thi thử</option>
-                                <option value="OFFICIAL_EXAM_PAPER">Đề thi thật</option>
-                            </select>
-                            <div class="text-danger" id="examPaperTypeError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <span class="text-danger"> * </span> Chuyên ngành - cơ sở </label>
-                            <select class="form-select" id="major-facility" required>
-                                <option value="">-- Chuyên ngành - cơ sở --</option>
-                            </select>
-                            <div class="text-danger" id="majorFacilityIdError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <span class="text-danger"> * </span> Môn học </label>
-                            <select class="form-select" id="exam-paper-subject" required>
-                                <option value="">-- Môn học --</option>
-                            </select>
-                            <div class="text-danger" id="subjectIdError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <span class="text-danger"> * </span> Đề thi </label>
-                            <div>
-                                <button onclick="handleOpenChooseFilePdf()" class="btn btn-black">
-                                    <i class="fas fa-file-excel"></i> Chọn đề thi
-                                </button>
-                                <input type="file" id="file-pdf-input" hidden accept="application/pdf"/>
-                            </div>
-                        </div>
-                    </div>
                     <div class="mt-4" id="show-pdf">
                         <div class="pdf-viewer" id="pdf-viewer" hidden>
                             <canvas id="pdf-canvas"></canvas>

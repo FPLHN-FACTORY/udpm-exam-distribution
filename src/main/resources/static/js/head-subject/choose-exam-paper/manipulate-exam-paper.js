@@ -14,7 +14,6 @@ let examPaperFile = new File([], "");
 let stateExamPaperId = "";
 let statePostOrPutExamPaper = true; //true -> post, false -> put
 
-const getValueMajorFacilityId = () => $("#major-facility").val();
 const getValueExamPaperType = () => $("#exam-paper-type").val();
 const getValueExamPaperSubjectId = () => $("#exam-paper-subject").val();
 const getValueExamPaperId = () => stateExamPaperId;
@@ -24,9 +23,6 @@ const getStatePostOrPutExamPaper = () => statePostOrPutExamPaper;
 const setValueExamPaperType = (value) => {
     $("#exam-paper-type").val(value);
 }
-const setValueMajorFacilityId = (value) => {
-    $("#major-facility").val(value);
-};
 const setValueExamPaperSubjectId = (value) => {
     $("#exam-paper-subject").val(value);
 };
@@ -42,7 +38,6 @@ const setStatePostOrPutExamPaper = (value) => {
 //END: getter,setter
 
 const clearFieldsChoose = () => {
-    $("#major-facility").val("");
     $("#exam-paper-type").val("");
     $("#exam-paper-subject").val("");
 };
@@ -81,7 +76,6 @@ const handlePostOrPutExamPaper = () => {
         data.append("examPaperId", getValueExamPaperId());
     }
     data.append("examPaperType", getValueExamPaperType());
-    data.append("majorFacilityId", getValueMajorFacilityId());
     data.append("subjectId", getValueExamPaperSubjectId())
     data.append("file", getExamPaperFile());
 
@@ -143,7 +137,6 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
         handleFetchExamRulePDF(fileId);
         if (status === 2) {
             setValueExamPaperType(examPaperType);
-            setValueMajorFacilityId(majorFacilityId);
             setValueExamPaperSubjectId(subjectId);
             setValueExamPaperId(examPaperId);
         }

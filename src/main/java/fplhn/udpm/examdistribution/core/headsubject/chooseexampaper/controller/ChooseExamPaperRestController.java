@@ -47,11 +47,6 @@ public class ChooseExamPaperRestController {
         return Helper.createResponseEntity(chooseExamPaperService.getListBlock(semesterId));
     }
 
-    @GetMapping("/major-facility")
-    public ResponseEntity<?> getListMajorFacility() {
-        return Helper.createResponseEntity(chooseExamPaperService.getListMajorFacility());
-    }
-
     @GetMapping("/staff")
     public ResponseEntity<?> getListStaff() {
         return Helper.createResponseEntity(chooseExamPaperService.getListStaff());
