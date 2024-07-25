@@ -16,6 +16,12 @@ $(document).ready(function () {
 
 let messageType = null;
 
+const getEnableExtLocalStorage = () => localStorage.getItem(EXAM_DISTRIBUTION_IS_ENABLE_EXT);
+
+const setEnableExtLocalStorage = (value) => {
+    localStorage.setItem(EXAM_DISTRIBUTION_IS_ENABLE_EXT, value);
+}
+
 const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
@@ -31,12 +37,20 @@ const connect = () => {
             if (examShiftCodeRejoin) {
                 window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
                 localStorage.removeItem('rejoinExamShiftCode');
+
+                setEnableExtLocalStorage("true");
+                handleSendMessageStartToExt();
             }
         });
     });
 }
 
-const joinExamShift = () => {
+const joinExamShift = async () => {
+    const installed = await checkExtensionInstalled();
+    if (!installed) {
+        showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
+        return;
+    }
     const examShift = {
         studentId: examDistributionInfo.userId,
         examShiftCodeJoin: $('#modifyExamShiftCodeJoin').val(),
@@ -52,6 +66,7 @@ const joinExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 $('#examShiftJoinModal').modal('hide');
+                setEnableExtLocalStorage("true");
                 if (messageType === 'rejoin') {
                     showToastSuccess(responseBody?.message);
                 } else {

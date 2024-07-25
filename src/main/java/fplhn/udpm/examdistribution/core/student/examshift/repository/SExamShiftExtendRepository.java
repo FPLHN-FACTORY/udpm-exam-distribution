@@ -29,4 +29,13 @@ public interface SExamShiftExtendRepository extends ExamShiftRepository {
             """, nativeQuery = true)
     SExamShiftResponse getExamShiftByCode(String examShiftCode);
 
+    @Query("""
+            SELECT es
+            FROM ExamShift es
+            WHERE es.examShiftCode = :examShiftCode AND
+                  es.classSubject.block.semester.id = :semesterId AND
+                  es.classSubject.facilityChild.facility.id = :facilityId
+            """)
+    Optional<ExamShift> findExamShiftByCode(String examShiftCode,String semesterId,String facilityId);
+
 }

@@ -1,6 +1,6 @@
 package fplhn.udpm.examdistribution.core.student.trackstudent.model.response;
 
-public interface ExamShiftInfoResponse {
+public interface CheckExamShiftIsValidResponse {
 
     String getUserName();
 
@@ -9,8 +9,6 @@ public interface ExamShiftInfoResponse {
     String getClassSubject();
 
     String getSubjectName();
-
-    String getExamShiftStatus();
 
     String getShift();
 

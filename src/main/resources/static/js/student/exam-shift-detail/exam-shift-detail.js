@@ -14,6 +14,7 @@ let pageNumPendingExamRule = null;
 const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
+let idRunJobCheckExtEnable = "";
 
 document.addEventListener('contextmenu', (e) => {
     e.preventDefault()
@@ -44,16 +45,31 @@ $(document).ready(function () {
         localStorage.removeItem('joinExamShiftStudentSuccessMessage');
     }
 
-    getPathFilePDFExamPaper(examShiftCode);
+    if (getEnableExtLocalStorage() !== "false") {
+        getPathFilePDFExamPaper(examShiftCode);
+    } else {
+        $('#openExamPaperTabTracker').prop('hidden', false);
+
+        $('#countdown').prop('hidden', true);
+        $('#examShiftPaper').prop('hidden', true);
+    }
 
     connect();
 
     $('#openExamPaper').click(function () {
-        openModalOpenExamPaper();
+        openModalOpenExamPaper(0);
+    });
+
+    $('#openExamPaperTabTracker').click(function () {
+        openModalOpenExamPaper(1);
     });
 
     $('#modifyExamPaperOpenButton').click(function () {
         examPaperOpenSubmit();
+    });
+
+    $('#modifyExamPaperOpenButtonTabTracker').click(function () {
+        examPaperOpenSubmitTabTracker();
     });
 
     $('#completeExamShift').click(function () {
@@ -66,7 +82,72 @@ $(document).ready(function () {
 
     // checkOnline();
 
+    fetchExamShiftValidAndRunJob();
 });
+
+const fetchExamShiftValidAndRunJob = () => {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: ApiConstant.API_STUDENT_TRACKER + '/check-room-is-valid',
+        data: JSON.stringify({
+            email: getExamDistributionInfo().userEmail,
+            roomCode: examShiftCode
+        }),
+        success: (responseBody) => {
+            runJobCheckExtEnable();
+        },
+        error: (error) => {
+        }
+    })
+};
+
+const getEnableExtLocalStorage = () => localStorage.getItem(EXAM_DISTRIBUTION_IS_ENABLE_EXT);
+
+const setEnableExtLocalStorage = (value) => {
+    localStorage.setItem(EXAM_DISTRIBUTION_IS_ENABLE_EXT, value);
+}
+
+const runJobCheckExtEnable = async () => {
+    idRunJobCheckExtEnable = setInterval(async () => {
+        if (!await isExtEnable()) {
+            if (getEnableExtLocalStorage() !== "false") {
+                $('#openExamPaperTabTracker').prop('hidden', false);
+
+                $('#countdown').prop('hidden', true);
+                $('#examShiftPaper').prop('hidden', true);
+
+                fetchSaveTrackUrl();
+
+                stopRunJobCheckExtEnable();
+            }
+        }
+    }, 5000);
+};
+
+const fetchSaveTrackUrl = () => {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: ApiConstant.API_STUDENT_TRACKER + '/save-track-url',
+        data: JSON.stringify({
+            email: getExamDistributionInfo().userEmail,
+            roomCode: examShiftCode,
+            url: "Sinh Viên đã tắt extension Tab Tracker",
+            isDisable: true
+        }),
+        success: (responseBody) => {
+        },
+        error: (error) => {
+        }
+    })
+}
+
+const stopRunJobCheckExtEnable = () => {
+    clearInterval(idRunJobCheckExtEnable);
+    handleSendMessageEndTimeToExt();
+    setEnableExtLocalStorage("false");
+}
 
 const openModalExamRule = () => {
     $('#examRuleOpenModal').modal('show');
@@ -198,6 +279,40 @@ const openExamPaper = () => {
     });
 };
 
+const openExamPaperTabTracker = () => {
+    const openExamPaper = {
+        examPaperShiftId: examPaperId,
+        passwordOpen: $('#modifyPasswordOpen').val()
+    };
+    $.ajax({
+        type: "POST",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/open",
+        contentType: "application/json",
+        data: JSON.stringify(openExamPaper),
+        success: function (responseBody) {
+            if (responseBody?.status === "OK") {
+                setEnableExtLocalStorage("true");
+                handleSendMessageStartToExt();
+
+                $('#openExamPaperTabTracker').prop('hidden', true);
+                $('#countdown').prop('hidden', false);
+                $('#examShiftPaper').prop('hidden', false);
+
+                runJobCheckExtEnable();
+
+                $('#examPaperOpenModal').modal('hide');
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+        }
+    });
+};
+
 //Exam rule
 const fetchFilePDFExamRule = (fileId) => {
     $.ajax({
@@ -259,14 +374,37 @@ const connect = () => {
             localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
             window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         });
-        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-            getPathFilePDFExamPaper(examShiftCode);
-            handleSendMessageStartToExt();
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, async function (response) {
+            if (!await isExtEnable()) {
+                showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
+                kickStudentUnInstallExtension();
+            } else {
+                const responseBody = JSON.parse(response.body);
+                showToastSuccess(responseBody.message);
+                getPathFilePDFExamPaper(examShiftCode);
+                handleSendMessageStartToExt();
+                runJobCheckExtEnable();
+            }
         });
     });
-}
+};
+
+const isExtEnable = async () => {
+    return await checkExtensionInstalled();
+};
+
+const kickStudentUnInstallExtension = () => {
+    $.ajax({
+        type: "POST",
+        url: ApiConstant.API_STUDENT_JOIN_EXAM_SHIFT + "/kick-uninstall-ext/" + examShiftCode,
+        success: function (responseBody) {
+            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
+        },
+        error: function (error) {
+            showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
+        }
+    });
+};
 
 const startCountdown = (startTime, endTime) => {
     let endTimeDate = new Date(endTime).getTime();
@@ -286,29 +424,10 @@ const startCountdown = (startTime, endTime) => {
             $('#countdown').prop('hidden', true);
             $('#examShiftPaper').prop('hidden', true);
             handleSendMessageEndTimeToExt();
+            stopRunJobCheckExtEnable();
         }
     }, 1000);
 }
-
-const handleSendMessageStartToExt = () => {
-    chrome.runtime.sendMessage(
-        EXAM_DISTRIBUTION_EXTENSION_ID,
-        {active: "onTracking"},
-        function (response) {
-            console.log(response);
-        }
-    );
-};
-
-const handleSendMessageEndTimeToExt = () => {
-    chrome.runtime.sendMessage(
-        EXAM_DISTRIBUTION_EXTENSION_ID,
-        {active: "stopTracking"},
-        function (response) {
-            console.log(response);
-        }
-    );
-};
 
 const updateExamPaperShiftStatus = () => {
     $.ajax({
@@ -337,6 +456,20 @@ const examPaperOpenSubmit = () => {
     });
 };
 
+const examPaperOpenSubmitTabTracker = () => {
+    swal({
+        title: "Xác nhận mở đề thi",
+        text: "Mở đề thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willOpen) => {
+        if (willOpen) {
+            openExamPaperTabTracker();
+        }
+    });
+};
+
 const completeExamShift = () => {
     swal({
         title: "Xác nhận hoàn thành ca thi",
@@ -351,11 +484,18 @@ const completeExamShift = () => {
     });
 };
 
-const openModalOpenExamPaper = () => {
-    $('#modifyPasswordOpen').val('');
-    $(`#modifyPasswordOpenError`).text('');
-    $(`#modifyPasswordOpen`).removeClass('is-invalid');
-    $('#examPaperOpenModal').modal('show');
+const openModalOpenExamPaper = async (status) => {
+    if (!await isExtEnable()) {
+        showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
+    } else {
+        $("#modifyExamPaperOpenButton").prop("hidden", status !== 0);
+        $("#modifyExamPaperOpenButtonTabTracker").prop("hidden", status !== 1);
+
+        $('#modifyPasswordOpen').val('');
+        $(`#modifyPasswordOpenError`).text('');
+        $(`#modifyPasswordOpen`).removeClass('is-invalid');
+        $('#examPaperOpenModal').modal('show');
+    }
 }
 
 // const checkOnline = () => {
