@@ -33,7 +33,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ResponseObject<?> getListFacility() {
-        return new ResponseObject<>(facilityRepository.getListFacility(), HttpStatus.OK, "Lấy thành công danh sách cơ sở");
+        return new ResponseObject<>(
+                facilityRepository.getListFacility(),
+                HttpStatus.OK,
+                "Lấy thành công danh sách cơ sở"
+        );
     }
 
 }
