@@ -31,7 +31,6 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
-import fplhn.udpm.examdistribution.utils.FileConvertor;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.validation.Valid;
@@ -80,8 +79,6 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     private final EmailService emailService;
 
     private final SessionHelper sessionHelper;
-
-    private final FileConvertor fileConvertor;
 
     @Override
     public ResponseObject<?> getListSubject(String semesterId) {

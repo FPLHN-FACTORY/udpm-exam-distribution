@@ -12,4 +12,6 @@ public class UEPEditFileRequest {
 
     private String examPaperId;
 
+    private String contentFile;
+
 }

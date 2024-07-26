@@ -199,6 +199,7 @@ public class CreateExamPaperServiceImpl implements CreateExamPaperService {
             putExamPaper.setExamPaperCreatedDate(new Date().getTime());
             putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
             putExamPaper.setStatus(EntityStatus.ACTIVE);
+            putExamPaper.setContentFile(request.getContentFile());
             if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
                 putExamPaper.setIsPublic(false);
             }

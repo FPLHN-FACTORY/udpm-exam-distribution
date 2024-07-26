@@ -308,12 +308,17 @@ const fetchListExamPaper = (
                                 </div>
                             </td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span style="margin: 0 3px" onclick="handleRedirectUpdateContentFile('${item.id}')">
-                                    <i 
-                                        class="fa-solid fa-file-pen"
-                                        style="cursor: pointer;"
-                                    ></i>
-                                </span>
+                                ${
+                                    item.isUpdateFile == true ?
+                                        `
+                                        <span style="margin: 0 3px" onclick="handleRedirectUpdateContentFile('${item.id}')">
+                                            <i 
+                                                class="fa-solid fa-file-pen"
+                                                style="cursor: pointer;"
+                                            ></i>
+                                        </span>
+                                        ` : ""
+                                }
                                 <span style="margin: 0 3px" onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
