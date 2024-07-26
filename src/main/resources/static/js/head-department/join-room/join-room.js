@@ -14,7 +14,7 @@ $(document).ready(function () {
     getExamShifts();
 
     $('#modifyExamShiftButton').on('click', function () {
-        addExamShift();
+        getClassSubject();
     });
 
     $('#modifyExamShiftJoinButton').on('click', function () {
@@ -73,7 +73,9 @@ const fetchSubjects = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin môn học');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -93,7 +95,9 @@ const fetchBlocks = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin block');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -113,7 +117,9 @@ const fetchFacilityChildren = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin campus');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -130,10 +136,30 @@ const getClassSubjectIdByRequest = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin lớp môn');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 };
+
+const getClassSubject = () => {
+    let subjectClassCodeVal = $('#modifySubjectClassCode').val();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_DEPARTMENT_CLASS_SUBJECT + '/get-class-subject' + classSubjectCodeUrl + subjectClassCodeVal,
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                addExamShift();
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
+        }
+    })
+}
 
 const checkClassSubject = (id) => {
     if ($(`#${id}`).val() === '') {
@@ -144,11 +170,12 @@ const checkClassSubject = (id) => {
 const addExamShift = () => {
     const examShift = {
         classSubjectId: classSubjectId,
-        firstSupervisorCode: $('#modifyFirstSupervisor').val(),
-        secondSupervisorCode: $('#modifySecondSupervisor').val(),
+        firstSupervisorCode: $('#modifyFirstSupervisorCode').val(),
+        secondSupervisorCode: $('#modifySecondSupervisorCode').val(),
         examDate: new Date($('#modifyExamDate').val()).getTime(),
         shift: $('#modifyShift').val(),
         room: $('#modifyRoom').val(),
+        totalStudent: $('#modifyTotalStudent').val(),
         password: $('#modifyPassword').val()
     }
     $.ajax({
@@ -228,9 +255,10 @@ const openModalAddExamShift = () => {
 
 const resetFormAddExamShift = () => {
     $('#modifyRoom').val('');
-    $('#modifyFirstSupervisor').val('');
-    $('#modifySecondSupervisor').val('');
+    $('#modifyFirstSupervisorCode').val('');
+    $('#modifySecondSupervisorCode').val('');
     $('#modifySubjectClassCode').val('');
+    $('#modifyTotalStudent').val('');
     $('#modifySubjectId').val('');
     $('#modifyBlockId').val('');
     $('#modifyFacilityChildId').val('');
@@ -240,13 +268,15 @@ const resetFormAddExamShift = () => {
 const removeFormAddError = (id) => {
     $('#modifyRoom').removeClass('is-invalid');
     $('#roomError').text('');
-    $('#modifyFirstSupervisor').removeClass('is-invalid');
-    $('#firstSupervisorError').text('');
-    $('#modifySecondSupervisor').removeClass('is-invalid');
-    $('#secondSupervisorError').text('');
+    $('#modifyFirstSupervisorCode').removeClass('is-invalid');
+    $('#firstSupervisorCodeError').text('');
+    $('#modifySecondSupervisorCode').removeClass('is-invalid');
+    $('#secondSupervisorCodeError').text('');
     $('#modifySubjectClassCode').removeClass('is-invalid');
     $('#classSubjectCodeError').text('');
     $('#modifySubjectId').removeClass('is-invalid');
+    $('#totalStudentError').val('');
+    $('#modifyTotalStudent').removeClass('is-invalid');
     $('#modifyBlockId').removeClass('is-invalid');
     $('#modifyFacilityChildId').removeClass('is-invalid');
     $('#modifyPassword').removeClass('is-invalid');
@@ -261,7 +291,6 @@ const openModalJoinExamShift = () => {
 
 const resetFormJoinExamShift = () => {
     $('#modifyExamShiftCodeJoin').val('');
-    // $('#modifyPasswordJoin').val('');
 }
 
 const removeFormJoinError = () => {
@@ -308,7 +337,9 @@ const getExamShifts = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }

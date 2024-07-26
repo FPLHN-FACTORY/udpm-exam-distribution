@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDCreateExamShiftRequest;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftJoinRequest;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ public interface HDExamShiftService {
 
     ResponseObject<?> createExamShift(@Valid HDCreateExamShiftRequest hdCreateExamShiftRequest);
 
-    ResponseObject<?> joinExamShift(@Valid HDExamShiftRequest joinRoomRequest);
+    ResponseObject<?> joinExamShift(@Valid HDExamShiftJoinRequest joinRoomRequest);
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 

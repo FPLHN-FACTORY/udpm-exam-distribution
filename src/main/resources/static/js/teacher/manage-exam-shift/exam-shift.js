@@ -39,7 +39,7 @@ const joinExamShift = () => {
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
-                showToastError('Có lỗi xảy ra khi thêm ca thi!');
+                showToastError('Có lỗi xảy ra khi tham gia ca thi!');
             }
         }
     });

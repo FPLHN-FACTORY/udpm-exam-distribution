@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,9 @@ public class HDCreateExamShiftRequest {
 
     @NotBlank(message = "Phòng thi không được để trống")
     private String room;
+
+    @NotNull(message = "Số lượng sinh viên không được để trống")
+    private Integer totalStudent;
 
     @NotBlank(message = "Mật khẩu không được để trống")
     private String password;

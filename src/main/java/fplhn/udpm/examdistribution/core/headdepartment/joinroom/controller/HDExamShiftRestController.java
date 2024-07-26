@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDCreateExamShiftRequest;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftJoinRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDFileResourceResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.service.HDExamShiftService;
@@ -40,7 +40,7 @@ public class HDExamShiftRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> joinExamShift(@RequestBody HDExamShiftRequest joinRoomRequest) {
+    public ResponseEntity<?> joinExamShift(@RequestBody HDExamShiftJoinRequest joinRoomRequest) {
         return Helper.createResponseEntity(hdExamShiftService.joinExamShift(joinRoomRequest));
     }
 

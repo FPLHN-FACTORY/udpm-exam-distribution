@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headsubject.joinroom.repository;
 
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request.HSExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
@@ -36,13 +37,14 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             JOIN head_subject_by_semester hsbs ON
             	hsbs.id_subject_group = sg.id
             WHERE
-            	sg.id_department_facility = :departmentFacilityId
-                AND hsbs.id_staff = :staffId
-            	AND es.exam_date >= :currentDate
-            	AND es.shift = :currentShift
+            	sg.id_department_facility = :#{#hsExamShiftRequest.departmentFacilityId}
+                AND hsbs.id_semester = :#{#hsExamShiftRequest.semesterId}
+                AND hsbs.id_staff = :#{#hsExamShiftRequest.staffId}
+            	AND es.exam_date >= :#{#hsExamShiftRequest.currentDate}
+            	AND es.shift = :#{#hsExamShiftRequest.currentShift}
             	AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
             """, nativeQuery = true)
-    List<HSAllExamShiftResponse> getAllExamShift(String departmentFacilityId, String staffId, Long currentDate, String currentShift);
+    List<HSAllExamShiftResponse> getAllExamShift(HSExamShiftRequest hsExamShiftRequest);
 
     @Query(value = """
             SELECT
@@ -65,8 +67,47 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             WHERE
                 es.exam_shift_code = :examShiftCode
                 AND sg.id_department_facility = :departmentFacilityId
+                AND hsbs.id_semester = :semesterId
             """, nativeQuery = true)
-    Optional<HSExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId);
+    Optional<HSExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId, String semesterId);
+
+    @Query(value = """
+            SELECT
+            	es.id,
+            	es.exam_shift_code,
+            	es.exam_date,
+            	es.shift,
+            	es.room,
+            	es.id_first_supervisor,
+            	es.id_second_supervisor,
+            	es.id_subject_class,
+            	es.total_student,
+            	es.salt,
+            	es.hash,
+            	es.exam_shift_status,
+            	es.status,
+            	es.created_date,
+            	es.last_modified_date
+            FROM
+            	exam_shift es
+            JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s2 ON
+            	cs.id_subject = s2.id
+            JOIN subject_by_subject_group sbsg ON
+             	sbsg.id_subject = s2.id
+            JOIN subject_group sg ON
+            	sbsg.id_subject_group = sg.id
+            JOIN head_subject_by_semester hsbs ON
+            	hsbs.id_subject_group = sg.id
+            WHERE
+                es.exam_shift_code = :examShiftCode
+                AND sg.id_department_facility = :departmentFacilityId
+                AND hsbs.id_semester = :semesterId
+            """, nativeQuery = true)
+    Optional<ExamShift> findExamShiftByRequest(String examShiftCode, String departmentFacilityId, String semesterId);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 

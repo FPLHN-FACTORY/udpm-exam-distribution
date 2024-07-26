@@ -15,12 +15,14 @@ import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SStudentServiceImpl implements SStudentService {
@@ -47,20 +49,25 @@ public class SStudentServiceImpl implements SStudentService {
                     "Lấy thông tin danh sách sinh viên thành công!"
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lấy danh sách sinh viên: {}", e.getMessage());
             return new ResponseObject<>(
-                    null,
-                    HttpStatus.BAD_REQUEST,
-                    "Lỗi không lấy được danh sách sinh viên"
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách sinh viên!"
             );
         }
     }
 
     @Override
     public ResponseObject<?> findAllStudentRejoinByExamShiftCode(String examShiftCode) {
-        return new ResponseObject<>(sStudentExtendRepository
-                .findAllStudentRejoinByExamShiftCode(examShiftCode),
-                HttpStatus.OK, "Lấy thông tin danh sách sinh viên chờ phê duyệt thành công!");
+        try {
+            return new ResponseObject<>(sStudentExtendRepository
+                    .findAllStudentRejoinByExamShiftCode(examShiftCode),
+                    HttpStatus.OK, "Lấy thông tin danh sách sinh viên chờ phê duyệt thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thông tin danh sách sinh viên chờ phê duyệt: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin danh sách sinh viên chờ phê duyệt!"
+            );
+        }
     }
 
     @Override

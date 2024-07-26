@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.core.headsubject.joinroom.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request.HSCreateExamShiftRequest;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request.HSExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request.HSExamShiftServiceRequest;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSFileResourceResponse;
@@ -57,8 +58,10 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
-                hsExamShiftExtendRepository.getExamShiftByRequest(examShiftCode,
-                        sessionHelper.getCurrentUserDepartmentFacilityId()).isPresent();
+               hsExamShiftExtendRepository.getExamShiftByRequest(
+                       examShiftCode,
+                       sessionHelper.getCurrentUserDepartmentFacilityId(),
+                       sessionHelper.getCurrentSemesterId()).isPresent();
     }
 
     @Override
@@ -66,15 +69,17 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
         try {
             Long currentTimeMillis = DateTimeUtil.getCurrentTimeMillis();
             String currentShiftString = Shift.getCurrentShift().toString();
-
+            HSExamShiftRequest hsExamShiftRequest = new HSExamShiftRequest();
+            hsExamShiftRequest.setDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
+            hsExamShiftRequest.setSemesterId(sessionHelper.getCurrentSemesterId());
+            hsExamShiftRequest.setStaffId(sessionHelper.getCurrentUserId());
+            hsExamShiftRequest.setCurrentDate(currentTimeMillis);
+            hsExamShiftRequest.setCurrentShift(currentShiftString);
             return new ResponseObject<>(hsExamShiftExtendRepository
-                    .getAllExamShift(sessionHelper.getCurrentUserDepartmentFacilityId(),
-                            sessionHelper.getCurrentUserId(),
-                            currentTimeMillis, currentShiftString),
-                    HttpStatus.OK, "Lấy danh sách ca thi thành công!");
+                    .getAllExamShift(hsExamShiftRequest), HttpStatus.OK, "Lấy danh sách ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi lấy danh sách ca thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi lấy danh sách ca thi!");
         }
     }
@@ -185,15 +190,16 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     HttpStatus.CREATED, "Tạo ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi tạo ca thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi tạo ca thi!");
         }
     }
 
     private ResponseObject<?> validatePassword(String password) {
-        String regex = "^[a-zA-Z0-9]{1,15}$";
+        String regex = "^[a-zA-Z0-9]{6,15}$";
         if (!password.matches(regex)) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mật khẩu không hợp lệ!");
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                    "Mật khẩu phải từ 6 -> 15 ký tự và không được chứa ký tự đặc biệt!");
         }
         return null;
     }
@@ -202,18 +208,21 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     public ResponseObject<?> joinExamShift(HSExamShiftServiceRequest joinRoomRequest) {
         try {
             Optional<ExamShift> existingExamShift = hsExamShiftExtendRepository
-                    .findByExamShiftCode(joinRoomRequest.getExamShiftCodeJoin());
+                    .findExamShiftByRequest(
+                            joinRoomRequest.getExamShiftCodeJoin(),
+                            sessionHelper.getCurrentUserDepartmentFacilityId(),
+                            sessionHelper.getCurrentSemesterId());
             if (existingExamShift.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT,
                         "Ca thi không tồn tại!");
             }
 
-            if (existingExamShift.get().getExamShiftStatus().equals(ExamShiftStatus.FINISHED)) {
+            ExamShift examShift = existingExamShift.get();
+
+            if (examShift.getExamShiftStatus().equals(ExamShiftStatus.FINISHED)) {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT,
                         "Ca thi đã kết thúc!");
             }
-
-            ExamShift examShift = existingExamShift.get();
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT,
                     "Trưởng môn đã tham gia ca thi " + examShift.getExamShiftCode());
@@ -222,7 +231,7 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     HttpStatus.OK, "Tham gia ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi tham gia ca thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi tham gia ca thi!");
         }
     }
@@ -233,7 +242,7 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     HttpStatus.OK, "Lấy thông tin ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi lấy thông tin ca thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi lấy thông tin ca thi!");
         }
     }
@@ -245,7 +254,7 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     HttpStatus.OK, "Đếm số sinh viên trong ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi đếm số sinh viên trong ca thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi đếm số sinh viên trong ca thi!");
         }
     }
@@ -253,6 +262,10 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> getFileExamRule(String file) {
         try {
+            if (file.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Ca thi chưa có quy định thi hoặc có lỗi khi lấy file quy định thi!");
+            }
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
             return new ResponseObject<>(
@@ -260,7 +273,7 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     HttpStatus.OK, "Lấy file quy định thi thành công!");
         } catch (IOException e) {
             log.error("Lỗi khi lấy file quy định thi: ", e);
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR,
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi lấy file quy định thi!");
         }
     }
@@ -268,8 +281,9 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode) {
         try {
-            return new ResponseObject<>(hsExamPaperExtendRepository
-                    .getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
+            return new ResponseObject<>(
+                    hsExamPaperExtendRepository
+                            .getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
                     HttpStatus.OK, "Lấy path đề thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi lấy path đề thi: ", e);
@@ -281,6 +295,10 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) {
         try {
+            if (file.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Lỗi khi lấy đề thi!");
+            }
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
             return new ResponseObject<>(

@@ -55,7 +55,9 @@ const getExamShiftByCode = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 }
@@ -111,7 +113,9 @@ const getFirstSupervisorId = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 }
@@ -129,7 +133,9 @@ const getSecondSupervisorId = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 }
@@ -145,7 +151,9 @@ const countStudentInExamShift = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy số sinh viên tham gia');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -200,7 +208,9 @@ const getStudents = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -224,9 +234,7 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
         }
     });
@@ -257,9 +265,7 @@ const fetchFilePDFExamPaper = (fileId) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
             hideLoading();
         }
@@ -305,9 +311,7 @@ const fetchFilePDFExamRule = (fileId) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
         }
     });

@@ -73,7 +73,9 @@ const fetchSubjects = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin môn học');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -93,7 +95,9 @@ const fetchBlocks = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin block');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -113,7 +117,9 @@ const fetchFacilityChildren = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin campus');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -130,7 +136,9 @@ const getClassSubjectIdByRequest = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin lớp môn');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 };
@@ -233,7 +241,7 @@ const joinExamShift = (examShiftCode) => {
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
-                showToastError('Có lỗi xảy ra khi thêm ca thi!');
+                showToastError('Có lỗi xảy ra khi tham gia ca thi!');
             }
         }
     });
@@ -329,7 +337,9 @@ const getExamShifts = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
