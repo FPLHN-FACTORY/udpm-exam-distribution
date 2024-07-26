@@ -41,6 +41,14 @@
                                             placeholder="Nhập từ khóa tìm kiếm (mã giảng viên / tên giảng viên / email)"
                                     />
                                 </div>
+                                <div class="col form-group">
+                                    <label for="staffStatus">Trạng thái</label>
+                                    <select id="staffStatus" name="staffStatus" class="form-control">
+                                        <option value="" selected>--Chọn trạng thái--</option>
+                                        <option value="0">Hoạt động</option>
+                                        <option value="1">Không hoạt động</option>
+                                    </select>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -78,8 +86,10 @@
                                     <td>Tên nhân viên</td>
                                     <td>Email FPT</td>
                                     <td>Email FE</td>
+                                    <td>Trạng thái</td>
                                     <td
-                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                            style="
+                                            width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>

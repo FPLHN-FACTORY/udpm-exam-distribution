@@ -14,4 +14,6 @@ public interface HOStaffResonpse {
 
     String getDepartmentFacilityName();
 
+    String getStatus();
+
 }

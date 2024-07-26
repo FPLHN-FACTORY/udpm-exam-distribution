@@ -121,16 +121,23 @@ public class HOStaffServiceImpl implements HOStaffService {
     public ResponseObject<?> deleteStaff(String idStaff) {
         Optional<Staff> staffOptional = staffRepo.findById(idStaff);
         if (staffOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "staff not found");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Staff not found");
         }
-        //change status in staff_role
-        List<StaffRole> staffRoles = staffRoleRepo.findAllByStaff_IdAndStatus(idStaff, EntityStatus.ACTIVE);
-        staffRoles.stream().forEach(staffRole -> staffRole.setStatus(EntityStatus.INACTIVE));
+
+        Staff staff = staffOptional.get();
+        EntityStatus newStatus = staff.getStatus() == EntityStatus.ACTIVE ? EntityStatus.INACTIVE : EntityStatus.ACTIVE;
+
+        // Change status in staff_role
+        List<StaffRole> staffRoles = staffRoleRepo.findAllByStaff_Id(idStaff);
+        staffRoles.stream().forEach(staffRole -> staffRole.setStatus(newStatus));
         staffRoleRepo.saveAll(staffRoles);
-        //change status in staff
-        staffOptional.get().setStatus(EntityStatus.INACTIVE);
-        staffRepo.save(staffOptional.get());
-        return new ResponseObject<>(null, HttpStatus.OK, "delete staff successfully");
+
+        // Change status in staff
+        staff.setStatus(newStatus);
+        staffRepo.save(staff);
+
+        String message = newStatus == EntityStatus.INACTIVE ? "Staff deactivated successfully" : "Staff activated successfully";
+        return new ResponseObject<>(null, HttpStatus.OK, message);
     }
 
 }

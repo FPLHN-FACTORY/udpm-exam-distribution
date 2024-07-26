@@ -302,6 +302,8 @@
         </div>
     </div>
     <!-- Start Modal Download Template-->
+    <!-- Loading   -->
+    <div th:insert="~{fragment/loading/loading :: loading}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -320,7 +322,6 @@
 <script th:src="@{/js/toast-custom.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
-<script th:src="@{/js/loading.js}"></script>
 <script th:src="@{/js/head-office/manage-class-subject/class-subject.js}"></script>
 </body>
 </html>

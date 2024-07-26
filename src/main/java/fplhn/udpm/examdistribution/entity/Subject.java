@@ -46,11 +46,6 @@ public class Subject extends PrimaryEntity implements Serializable {
     @Column(name = "path_exam_rule")
     private String pathExamRule;
 
-    @Column(name = "subject_status")
-    @Enumerated(EnumType.STRING)
-    @Nationalized
-    private SubjectStatus subjectStatus;
-
     @Column(name = "created_time")
     private Long createdTime;
 

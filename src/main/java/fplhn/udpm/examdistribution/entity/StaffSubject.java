@@ -4,6 +4,7 @@ import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,5 +34,9 @@ public class StaffSubject extends PrimaryEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_recently_semester")
     private Semester recentlySemester;
+
+    @OneToOne
+    @JoinColumn(name = "id_class_subject")
+    private ClassSubject classSubject;
 
 }

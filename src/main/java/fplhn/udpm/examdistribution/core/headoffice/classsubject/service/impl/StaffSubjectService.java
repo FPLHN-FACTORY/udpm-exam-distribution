@@ -15,15 +15,19 @@ public class StaffSubjectService {
 
     private final StaffSubjectExtendRepository staffSubjectExtendRepository;
 
-    public void createOrUpdateStaffSubject(StaffSubject staffSubject) {
+    public void updateStaffSubject(StaffSubject staffSubject) {
         Optional<StaffSubject> staffSubjectOptional = staffSubjectExtendRepository
-                .findByStaffAndSubjectAndRecentlySemester(staffSubject.getStaff(),
-                        staffSubject.getSubject(), staffSubject.getRecentlySemester());
+                .findByClassSubject(staffSubject.getClassSubject());
 
         StaffSubject staffSubjectAddOrUpdate = staffSubjectOptional.orElse(staffSubject);
         staffSubjectAddOrUpdate.setStatus(EntityStatus.ACTIVE);
 
         staffSubjectExtendRepository.save(staffSubjectAddOrUpdate);
+    }
+
+    public void createStaffSubject(StaffSubject staffSubject) {
+        staffSubject.setStatus(EntityStatus.ACTIVE);
+        staffSubjectExtendRepository.save(staffSubject);
     }
 
     public void removeStaffSubject(ClassSubjectByStaffRequest request) {

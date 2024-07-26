@@ -78,12 +78,18 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Block not found");
         }
 
+        // Kiểm tra xem ngày có nằm trong khoảng thời gian không
+        Block block = blockOptional.get();
+        if (request.getDay() < block.getStartTime() || request.getDay() > block.getEndTime()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,"Day is out of block range");
+        }
+
         Optional<FacilityChild> facilityChildOptional = facilityChildClassSubjectRepository.findById(request.getFacilityChildId());
         if (facilityChildOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility child not found");
         }
 
-        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCode(request.getStaffCode());
+        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCodeAndStatus(request.getStaffCode(), EntityStatus.ACTIVE);
         if (staffOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Staff not found");
         }
@@ -118,15 +124,16 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
         classSubject.setStaff(staffOptional.get());
         classSubject.setSubject(subjectOptional.get());
         classSubject.setStatus(EntityStatus.ACTIVE);
-        classSubjectExtendRepository.save(classSubject);
+        ClassSubject classSubjectSave = classSubjectExtendRepository.save(classSubject);
 
         // them giao vien day mon
         StaffSubject staffSubject = new StaffSubject();
         staffSubject.setSubject(subjectOptional.get());
         staffSubject.setStaff(staffOptional.get());
         staffSubject.setRecentlySemester(semester);
+        staffSubject.setClassSubject(classSubjectSave);
 
-        staffSubjectService.createOrUpdateStaffSubject(staffSubject);
+        staffSubjectService.createStaffSubject(staffSubject);
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Create class subject successfully");
     }
@@ -145,12 +152,18 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Block not found");
         }
 
+        // Kiểm tra xem ngày có nằm trong khoảng thời gian không
+        Block block = blockOptional.get();
+        if (request.getDay() < block.getStartTime() || request.getDay() > block.getEndTime()) {
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,"Day is out of block range");
+        }
+
         Optional<FacilityChild> facilityChildOptional = facilityChildClassSubjectRepository.findById(request.getFacilityChildId());
         if (facilityChildOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility child not found");
         }
 
-        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCode(request.getStaffCode());
+        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCodeAndStatus(request.getStaffCode(),EntityStatus.ACTIVE);
         if (staffOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Staff not found");
         }
@@ -182,8 +195,9 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
         staffSubject.setSubject(subjectOptional.get());
         staffSubject.setStaff(staffOptional.get());
         staffSubject.setRecentlySemester(semester);
+        staffSubject.setClassSubject(classSubjectOptional.get());
 
-        staffSubjectService.createOrUpdateStaffSubject(staffSubject);
+        staffSubjectService.updateStaffSubject(staffSubject);
         String staffCodeOld = classSubjectOptional.get().getStaff().getStaffCode();
         if (!request.getStaffCode().equalsIgnoreCase(staffCodeOld)) {
             ClassSubjectByStaffRequest countClassSubjectByStaffRequest = new ClassSubjectByStaffRequest();
