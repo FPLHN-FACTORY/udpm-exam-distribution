@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    checkIfUserLoggedIn();
     fetchListFacility();
 });
 
@@ -32,7 +33,6 @@ const handleRedirectGoogleLogin = async (status) => {
     window.location.href = redirectUrl;
 };
 
-
 const fetchListFacility = () => {
     $('#loading-ele').show();
     $.ajax({
@@ -56,4 +56,15 @@ const fetchListFacility = () => {
         }
     });
 };
+
+const checkIfUserLoggedIn = () => {
+    const userInfo = getExamDistributionInfo();
+    if (userInfo) {
+        const {userRole} = userInfo;
+        const userRoleString = userRole?.replace("[", "").replace("]", "");
+        const mapping = getListMappingScreenConstant()
+            .find(item => item?.role === userRoleString && item?.facility === getFacilityId());
+        if (mapping) window.location.href = `${window.location.origin}/${mapping.redirect}`;
+    }
+}
 
