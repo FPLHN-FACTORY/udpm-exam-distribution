@@ -54,7 +54,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final AuthStaffMajorFacilityRepository staffMajorFacilityRepository;
 
-    private static final int COOKIE_EXPIRE = 7200;
+    private static final int COOKIE_EXPIRE = 7200; // 2 hours
 
     @Override
     public void onAuthenticationSuccess(
@@ -191,12 +191,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         this.setCurrentUserAdminInformationSession(userInfo, staff, role);
 
         String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
-        Optional<Facility> facilityOptional = facilityRepository.findFacilityById(facilityId);
+        Facility facility = facilityRepository.getReferenceById(facilityId);
 
         return CustomUserCookie.builder()
                 .userId(staff.getId())
-                .facilityId(facilityOptional.get().getId())
-                .facilityName(facilityOptional.get().getName())
+                .facilityId(facility.getId())
+                .facilityName(facility.getName())
                 .userEmailFPT(staff.getAccountFpt())
                 .userEmailFe(staff.getAccountFe())
                 .userFullName(userInfo.getName())
@@ -275,9 +275,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         String serverName = request.getServerName();
         int serverPort = request.getServerPort();
 
-        StringBuilder origin = new StringBuilder();
-        origin.append(scheme).append("://").append(serverName).append(":").append(serverPort).append("/");
-        String urlRedirect = origin + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
+        String urlRedirect = scheme + "://" + serverName + ":" + serverPort + "/" + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
         new DefaultRedirectStrategy().sendRedirect(request, response, urlRedirect);
     }
 

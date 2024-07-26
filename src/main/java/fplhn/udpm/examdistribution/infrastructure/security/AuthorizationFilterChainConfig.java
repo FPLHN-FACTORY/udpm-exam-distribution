@@ -8,15 +8,15 @@ import fplhn.udpm.examdistribution.infrastructure.security.oauth2.CustomUnAuthor
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2AuthenticationFailureHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomOAuth2UserService;
-import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static fplhn.udpm.examdistribution.utils.Helper.appendWildcard;
 
 @Configuration
 @EnableWebSecurity
@@ -41,25 +41,30 @@ public class AuthorizationFilterChainConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(authorization -> {
             authorization.requestMatchers(
-                            Helper.appendWildcard(MappingConstants.HEAD_OFFICE)
-                    )
+                            appendWildcard(MappingConstants.HEAD_OFFICE))
                     .hasAuthority(Role.BAN_DAO_TAO.name());
             authorization.requestMatchers(
-                            Helper.appendWildcard(MappingConstants.TEACHER)
-                    )
+                            appendWildcard(MappingConstants.TEACHER))
                     .hasAuthority(Role.GIANG_VIEN.name());
             authorization.requestMatchers(
-                            Helper.appendWildcard(MappingConstants.STUDENT)
-                    )
+                            appendWildcard(MappingConstants.STUDENT))
                     .hasAuthority(Role.SINH_VIEN.name());
             authorization.requestMatchers(
-                            Helper.appendWildcard(MappingConstants.HEAD_DEPARTMENT)
-                    )
+                            appendWildcard(MappingConstants.HEAD_DEPARTMENT))
                     .hasAuthority(Role.CHU_NHIEM_BO_MON.name());
             authorization.requestMatchers(
-                            Helper.appendWildcard(MappingConstants.HEAD_SUBJECT)
-                    )
+                            appendWildcard(MappingConstants.HEAD_SUBJECT))
                     .hasAuthority(Role.TRUONG_MON.name());
+            authorization.requestMatchers(
+                    "/static/**",
+                    "/css/**",
+                    "/js/**",
+                    "/assets/**",
+                    "/webjars/**",
+                    "/favicon.ico",
+                    "/error",
+                    "/plugins/**"
+            ).permitAll();
             authorization.anyRequest().permitAll();
         });
         httpSecurity.oauth2Login(oauth2 -> {
@@ -81,22 +86,6 @@ public class AuthorizationFilterChainConfig {
         });
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    WebSecurityCustomizer webSecurityCustomizer() {
-        return webSecurity -> webSecurity
-                .ignoring()
-                .requestMatchers(
-                        "/static/**",
-                        "/css/**",
-                        "/js/**",
-                        "/assets/**",
-                        "/webjars/**",
-                        "/favicon.ico",
-                        "/error",
-                        "/plugins/**"
-                );
     }
 
 }
