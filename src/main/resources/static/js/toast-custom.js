@@ -23,3 +23,15 @@ const showToastSuccess = (message) => {
         duration: 2000
     }).showToast();
 }
+
+const showToastDisConnectNetwork = (message) => {
+    Toastify({
+        text: message,
+        style: {
+            background: "white",
+            color: "black",
+            borderLeft: "4px solid red",
+        },
+        close: true,
+    }).showToast();
+}

@@ -136,7 +136,7 @@ const INIT_PAGINATION = {
     size: 5,
 };
 
-const EXAM_DISTRIBUTION_EXTENSION_ID = "mfjgckbmeakcekilcamhpjglhkiaanol";
+const EXAM_DISTRIBUTION_EXTENSION_ID = "elhfimeafdmkloahpjmjpcgdmjejlgld";
 
 const EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID = "e_e_p_i";
 
