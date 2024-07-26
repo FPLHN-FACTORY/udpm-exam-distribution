@@ -41,3 +41,9 @@ out/
 
 ###CSV FILES###
 /src/main/resources/csv-logger/
+
+### MINIFIED JS ###
+/src/main/resources/static/js/minified/
+
+### NODE MODULES ###
+/node_modules/
