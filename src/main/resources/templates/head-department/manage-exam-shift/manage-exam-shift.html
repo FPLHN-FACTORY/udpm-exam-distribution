@@ -259,22 +259,45 @@
     </div>
     <!-- Modal Edit Exam Shift   -->
 </div>
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
-<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
-<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{/js/sidebar-track.js}"></script>
-<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
-<script th:src="@{/js/constants.js}"></script>
-<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
-<script th:src="@{/js/utils.js}"></script>
-<script th:src="@{/js/toast-custom.js}"></script>
-<script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
-<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
-<script th:src="@{/js/user-info-handler.js}"></script>
-<script th:src="@{/js/swal-custom.js}"></script>
-<script th:src="@{/js/head-department/manage-exam-shift/manage-exam-shift.js}"></script>
+<div th:switch="${isDevelopment}">
+    <div th:case="true">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/sidebar-track.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/utils.js}"></script>
+        <script th:src="@{/js/toast-custom.js}"></script>
+        <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+        <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/user-info-handler.js}"></script>
+        <script th:src="@{/js/swal-custom.js}"></script>
+        <script th:src="@{/js/head-department/manage-exam-shift/manage-exam-shift.js}"></script>
+    </div>
+    <div th:case="false">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/minified/sidebar-track.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/minified/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/minified/utils.js}"></script>
+        <script th:src="@{/js/minified/toast-custom.js}"></script>
+        <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+        <script th:src="@{/js/minified/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/minified/user-info-handler.js}"></script>
+        <script th:src="@{/js/minified/swal-custom.js}"></script>
+        <script th:src="@{/js/minified/manage-exam-shift.js}"></script>
+    </div>
+</div>
 </body>
 </html>
