@@ -55,11 +55,6 @@ dependencies {
 
     implementation 'com.itextpdf:itext7-core:8.0.2'
     implementation 'org.apache.pdfbox:pdfbox:2.0.25'
-    implementation 'com.documents4j:documents4j-local:1.0.3'
-    implementation 'com.documents4j:documents4j-transformer-msoffice-word:1.0.3'
-    implementation 'com.google.guava:guava:33.0.0-jre'
-    implementation 'org.apache.httpcomponents:httpcore:4.4.8'
-
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 

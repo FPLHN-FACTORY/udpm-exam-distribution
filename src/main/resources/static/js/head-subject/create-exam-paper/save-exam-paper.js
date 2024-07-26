@@ -58,7 +58,8 @@ const handleSaveExamPaper = async () => {
 
     data.append("examPaperType", getValueExamPaperType());
     data.append("subjectId", getValueExamPaperSubjectId())
-    data.append("file", await convertJoditContentToPdf());
+    data.append("file", await convertTinyContentToPdf());
+    data.append("contentFile", getTinyContent());
 
     handleResetFieldsError();
 

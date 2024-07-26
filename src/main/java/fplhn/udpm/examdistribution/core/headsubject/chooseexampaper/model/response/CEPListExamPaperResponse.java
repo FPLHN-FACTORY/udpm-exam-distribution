@@ -31,4 +31,6 @@ public interface CEPListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
     Integer getIsChoose();
 
+    Integer getIsUpdateFile();
+
 }

@@ -1,15 +1,16 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
-import fplhn.udpm.examdistribution.infrastructure.listener.ExamPaperListener;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
+import fplhn.udpm.examdistribution.infrastructure.listener.ExamPaperListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -65,5 +66,9 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
 
     @Column(name = "is_public")
     private Boolean isPublic;
+
+    @Lob
+    @Column(name = "content_file",length = 16777216)
+    private String contentFile;
 
 }

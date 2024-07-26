@@ -42,7 +42,13 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	    WHERE epbs.id_semester = :semesterId AND
              	          epbs.id_exam_paper = ep.id AND
              	          epbs.status = 0
-             	) AS isChoose
+             	) AS isChoose,
+                (
+                    CASE
+                        WHEN ep.content_file IS NOT NULL THEN 1
+                        ELSE 0
+                    END
+                ) AS isUpdateFile
             FROM
                  head_subject_by_semester hsbs
             JOIN subject_by_subject_group sbsg ON

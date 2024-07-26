@@ -17,4 +17,6 @@ public class CREPCreateExamPaperRequest {
 
     private MultipartFile file;
 
+    private String contentFile;
+
 }

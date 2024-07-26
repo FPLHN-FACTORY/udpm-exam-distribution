@@ -26,7 +26,8 @@ const saveChangeEditFileExamPaper = async () => {
 
     const data = new FormData();
     data.append("examPaperId", sessionStorage.getItem(EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID));
-    data.append("file", await convertJoditContentToPdf());
+    data.append("file", await convertTinyContentToPdf());
+    data.append("contentFile", getTinyContent());
 
     $.ajax({
         url: ApiConstant.API_HEAD_SUBJECT_UPDATE_EXAM_PAPER + "/edit-file",

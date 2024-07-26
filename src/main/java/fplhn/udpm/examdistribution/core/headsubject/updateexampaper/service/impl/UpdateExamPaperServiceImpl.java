@@ -9,7 +9,6 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFi
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -17,7 +16,6 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -117,6 +114,7 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
 
             putExamPaper.setPath(googleDriveFileDTO.getId());
+            putExamPaper.setContentFile(request.getContentFile());
 
             examPaperRepository.save(putExamPaper);
 
@@ -149,29 +147,12 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
                 );
             }
 
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + optionalExamPaper.get().getId();
-//            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
-
-            Object redisValue = redisService.get(redisKey);
-            if (redisValue != null) {
-                return new ResponseObject<>(
-                        redisValue.toString(),
-                        HttpStatus.OK,
-                        "Tìm thấy file thành công"
-                );
-            }
-
-            Resource resource = googleDriveFileService.loadFile(optionalExamPaper.get().getPath());
-
-            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
-            redisService.set(redisKey, data);
-
             return new ResponseObject<>(
-                    data,
+                    optionalExamPaper.get().getContentFile(),
                     HttpStatus.OK,
                     "Lấy file thành công"
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
