@@ -1,6 +1,34 @@
 const examDistributionInfo = getExamDistributionInfo();
 
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+});
+
+document.onkeydown = (e) => {
+    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+
+    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+        e.preventDefault();
+        return false;
+    }
+}
+
+window.addEventListener('offline', function () {
+    showLoading();
+    showToastDisConnectNetwork('Mất kết nối mạng!');
+})
+
+window.addEventListener('online', function () {
+    hideLoading();
+})
+
 $(document).ready(function () {
+
+    if (devtools.isOpen) {
+        while (true) {
+            console.log("Access denied")
+        }
+    }
 
     resetFormJoinExamShift();
 

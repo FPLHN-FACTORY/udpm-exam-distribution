@@ -29,6 +29,15 @@ document.onkeydown = (e) => {
     }
 }
 
+window.addEventListener('offline', function () {
+    showLoading();
+    showToastDisConnectNetwork('Mất kết nối mạng!');
+})
+
+window.addEventListener('online', function () {
+    hideLoading();
+})
+
 $(document).ready(function () {
 
     if (devtools.isOpen) {
@@ -79,8 +88,6 @@ $(document).ready(function () {
     $('#examRuleOpen').click(function () {
         openModalExamRule();
     });
-
-    // checkOnline();
 
     fetchExamShiftValidAndRunJob();
 });
@@ -493,18 +500,4 @@ const openModalOpenExamPaper = async (status) => {
         $('#examPaperOpenModal').modal('show');
     }
 }
-
-// const checkOnline = () => {
-//     setTimeout(doOnlineCheck, 1000);
-// };
-//
-// const doOnlineCheck = () => {
-//     console.log('onl', window.navigator.onLine)
-//     if (window.navigator.onLine) {
-//         showToastSuccess('Đã kết nối mạng');
-//     } else {
-//         showToastError('Mất kết nối mạng');
-//     }
-//     checkOnline();
-// };
 
