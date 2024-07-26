@@ -4,12 +4,28 @@ public interface THeadSubjectAndContentSendMailResponse {
 
     String getExamShiftCode();
 
+    String getRoom();
+
+    Long getExamDate();
+
+    String getShift();
+
+    String getClassSubjectCode();
+
     String getSubjectName();
+
+    String getCodeFirstSupervisor();
+
+    String getNameFirstSupervisor();
+
+    String getCodeSecondSupervisor();
+
+    String getNameSecondSupervisor();
 
     String getPathExamPaper();
 
-    String getAccountFe();
+    String getAccountFeHeadSubject();
 
-    String getAccountFpt();
+    String getAccountFptHeadSubject();
 
 }

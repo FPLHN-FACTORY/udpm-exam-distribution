@@ -11,9 +11,13 @@ public class MailConstant {
     public static final String BODY_START_EXAM_SHIFT = """
             <html>
                 <body>
-                    <p>Phòng thi: ${examShiftCode} đã bắt đầu.</p>
+                    <p>Phòng thi: ${examShiftCode} - ${room}</p>
+                    <p>Ngày thi: ${examDate} - Ca: ${shift}</p>
+                    <p>Lớp: ${classSubjectCode}</p>
                     <p>Môn thi: ${subjectName}</p>
-                    <p>Link đề thi: <a href="${pathExamPaper}">${pathExamPaper}</a></p>
+                    <p>Giám thị 1: ${nameFirstSupervisor} - ${codeFirstSupervisor}</p>
+                    <p>Giám thị 2: ${nameSecondSupervisor} - ${codeSecondSupervisor}</p>
+                    <p>Link đề thi: <a href="https://drive.google.com/file/d/${pathExamPaper}/view">Tại đây</a></p>
                 </body>
             </html>
             """;

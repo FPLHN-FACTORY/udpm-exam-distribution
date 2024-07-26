@@ -58,10 +58,10 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
-               hsExamShiftExtendRepository.getExamShiftByRequest(
-                       examShiftCode,
-                       sessionHelper.getCurrentUserDepartmentFacilityId(),
-                       sessionHelper.getCurrentSemesterId()).isPresent();
+                hsExamShiftExtendRepository.getExamShiftByRequest(
+                        examShiftCode,
+                        sessionHelper.getCurrentUserDepartmentFacilityId(),
+                        sessionHelper.getCurrentSemesterId()).isPresent();
     }
 
     @Override
@@ -104,41 +104,47 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã tồn tại!");
             }
 
-//            if (hsCreateExamShiftRequest.getFirstSupervisorCode()
-//                    .equals(hsCreateExamShiftRequest.getSecondSupervisorCode())) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                        "Giám thị 1 và giám thị 2 không được trùng nhau!");
-//            }
-
-//        Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
-//                .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getFirstSupervisorCode(),
-//                        sessionHelper.getCurrentUserDepartmentFacilityId());
-//        if (existingFirstSupervisor.isEmpty()) {
-//            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-//                    "Giám thị 1 không tồn tại hoặc không thuộc bộ môn này!");
-//        }
-//
-//        Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
-//                .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getSecondSupervisorCode(),
-//                        sessionHelper.getCurrentUserDepartmentFacilityId());
-//        if (existingSecondSupervisor.isEmpty()) {
-//            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-//                    "Giám thị 2 không tồn tại hoặc không thuộc bộ môn này!");
-//        }
+            if (hsCreateExamShiftRequest.getFirstSupervisorCode()
+                    .equals(hsCreateExamShiftRequest.getSecondSupervisorCode())) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                        "Giám thị 1 và giám thị 2 không được trùng nhau!");
+            }
 
             Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
-                    .findByStaffCode(hsCreateExamShiftRequest.getFirstSupervisorCode());
+                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getFirstSupervisorCode(),
+                            sessionHelper.getCurrentUserDepartmentFacilityId());
             if (existingFirstSupervisor.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 1 không tồn tại!");
+                        "Giám thị 1 không tồn tại hoặc không thuộc bộ môn này!");
             }
 
             Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
-                    .findByStaffCode(hsCreateExamShiftRequest.getSecondSupervisorCode());
+                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getSecondSupervisorCode(),
+                            sessionHelper.getCurrentUserDepartmentFacilityId());
             if (existingSecondSupervisor.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 2 không tồn tại!");
+                        "Giám thị 2 không tồn tại hoặc không thuộc bộ môn này!");
             }
+
+//            Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
+//                    .findByStaffCode(hsCreateExamShiftRequest.getFirstSupervisorCode());
+//            if (existingFirstSupervisor.isEmpty()) {
+//                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+//                        "Giám thị 1 không tồn tại!");
+//            }
+//
+//            Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
+//                    .findByStaffCode(hsCreateExamShiftRequest.getSecondSupervisorCode());
+//            if (existingSecondSupervisor.isEmpty()) {
+//                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+//                        "Giám thị 2 không tồn tại!");
+//            }
+
+
+//        ResponseObject<?> validateShift = validateShift(createExamShiftRequest.getShift());
+//        if (validateShift != null) {
+//            return validateShift;
+//        }
 
             Long currentTimeMillis = DateTimeUtil.getCurrentTimeMillis();
             String currentShiftString = Shift.getCurrentShift().toString();
@@ -154,12 +160,6 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
                         "Giám thị 2 đang là giám thị ở ca thi khác!");
             }
-
-
-//        ResponseObject<?> validateShift = validateShift(createExamShiftRequest.getShift());
-//        if (validateShift != null) {
-//            return validateShift;
-//        }
 
             ResponseObject<?> validatePassword = validatePassword(hsCreateExamShiftRequest.getPassword());
             if (validatePassword != null) {
