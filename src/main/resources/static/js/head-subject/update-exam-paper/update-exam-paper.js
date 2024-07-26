@@ -201,6 +201,13 @@ document.getElementById('export-pdf').addEventListener('click', () => {
             showLoading();
             setTimeout(async () => {
                 const pdfFile = await convertJoditContentToPdf();
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    console.log(e.target.result);
+                };
+                reader.readAsText(pdfFile);
+
                 if (pdfFile) {
 
                     const url = URL.createObjectURL(pdfFile);
@@ -287,25 +294,18 @@ const convertJoditContentToPdf = async () => {
     const options = {
         margin: 0.5,
         filename: 'document.pdf',
-        image: {type: 'jpeg', quality: 1},
+        image: {type: 'jpeg', quality: 0.98},
         html2canvas: {scale: 2},
-        jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait'},
+        jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'},
     };
 
     try {
         const pdfBlob = await html2pdf().set(options).from(modifiedContent).outputPdf('blob');
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            console.log(e.target.result);
-        }
-        reader.readAsText(pdfBlob);
-
         return new File([pdfBlob], "document.pdf", {
             type: "application/pdf",
             lastModified: new Date()
         });
-
     } catch (error) {
         showToastError("Convert PDF không thành công");
     }
@@ -343,6 +343,12 @@ const handleOpenChooseFile = () => {
 document.getElementById('import-file').addEventListener('change', function (event) {
 
     const file = event.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        console.log(e.target.result);
+    };
+    reader.readAsText(file);
 
     if (file) {
         const fileName = file.name.toLowerCase();

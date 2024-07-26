@@ -39,7 +39,9 @@ const convertAndShowDocx = (base64) => {
 const convertAndShowPdf = (base64) => {
     const pdfData = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
 
-    const blob = new Blob([pdfData], {type: 'application/pdf'});
-    const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
+    const file = new File([pdfData], "exam_rule.pdf", {
+        type: 'application/pdf',
+        lastModified: new Date()
+    });
     showFilePdf(file);
 }
