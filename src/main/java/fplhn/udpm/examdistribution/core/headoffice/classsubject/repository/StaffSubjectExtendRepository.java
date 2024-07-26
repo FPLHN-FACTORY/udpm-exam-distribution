@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headoffice.classsubject.repository;
 
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectByStaffRequest;
+import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffSubject;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public interface StaffSubjectExtendRepository extends StaffSubjectRepository {
 
     Optional<StaffSubject> findByStaffAndSubjectAndRecentlySemester(Staff staff, Subject subject, Semester semester);
+
+    Optional<StaffSubject> findByClassSubject(ClassSubject classSubject);
 
     @Query(value = """
             SELECT

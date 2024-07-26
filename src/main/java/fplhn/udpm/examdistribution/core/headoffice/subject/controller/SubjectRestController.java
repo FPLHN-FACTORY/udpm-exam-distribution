@@ -40,10 +40,10 @@ public class SubjectRestController {
         return Helper.createResponseEntity(subjectService.updateSubject(subjectId, request));
     }
 
-    @PutMapping("/{subjectId}/change-status")
-    public ResponseEntity<?> changeStatus(@PathVariable String subjectId) {
-        return Helper.createResponseEntity(subjectService.changeSubjectStatus(subjectId));
-    }
+//    @PutMapping("/{subjectId}/change-status")
+//    public ResponseEntity<?> changeStatus(@PathVariable String subjectId) {
+//        return Helper.createResponseEntity(subjectService.changeSubjectStatus(subjectId));
+//    }
 
     @GetMapping("/{subjectId}")
     public ResponseEntity<?> getById(@PathVariable String subjectId) {

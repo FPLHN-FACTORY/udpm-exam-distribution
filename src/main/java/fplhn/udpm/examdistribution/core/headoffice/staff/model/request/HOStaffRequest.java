@@ -10,4 +10,6 @@ public class HOStaffRequest extends PageableRequest {
 
     private String searchQuery;
 
+    private String status;
+
 }

@@ -4,11 +4,17 @@ $(document).ready(function () {
 
     getStaffs();
 
-    $('#pageSize').on("change", () => {
-        getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim());
-    });
+    handleAddEvent($('#pageSize'),'change',function () {
+        getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
+    })
 
-    handleAddEvent([$('#searchQuery')]);
+    handleAddEvent($('#staffStatus'),'change',function () {
+        getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
+    })
+
+    handleAddEvent($('#searchQuery'),'keyup',function () {
+        getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
+    })
 
     $('#modifyStaffButton').on('click', function () {
         let check = true;
@@ -155,27 +161,17 @@ function clearFormSearch() {
     getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim());
 }
 
-function handleAddEvent(listDom) {
-    for (let i = 0; i < listDom.length; i++) {
-        listDom[i].on("keyup", debounce(() => {
-            getStaffs(
-                1,
-                $('#pageSize').val(),
-                $('#searchQuery').val()?.trim()
-            );
-        }, 500));
-    }
-}
-
 function getStaffs(
     page = 1,
     size = $('#pageSize').val(),
-    query = $('#searchQuery').val()?.trim()
+    query = $('#searchQuery').val()?.trim(),
+    status = $('#staffStatus').val()?.trim()
 ) {
     const url = getUrlParameters(ApiConstant.API_HEAD_OFFICE_STAFF, {
         page: page,
         size: size,
-        searchQuery: query
+        searchQuery: query,
+        status: status
     })
     $.ajax({
         type: "GET",
@@ -197,6 +193,7 @@ function getStaffs(
                             <td>${staff.name}</td>
                             <td>${staff.accountFpt}</td>
                             <td>${staff.accountFe}</td>
+                            <td>${staff.status == 0 ? 'Đang hoạt động' : 'Ngừng hoạt động'}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                            <a data-bs-toggle="tooltip" 
                               data-bs-title="Cập nhật">
@@ -207,7 +204,7 @@ function getStaffs(
                                 ></i>
                                 </a>
                                  <a data-bs-toggle="tooltip" 
-                                    data-bs-title="Xóa">
+                                    data-bs-title="Trạng thái">
                                 <i
                                     onclick="handleDelete('${staff.id}','${staff.name}')"
                                     class="fas fa-trash-alt"
@@ -331,8 +328,8 @@ const openModalUpdateStaff = async (staffId) => {
 
 function handleDelete(staffId, staffName) {
     swal({
-        title: "Xác nhận xóa?",
-        text: "Bạn chắc chắn muốn xóa nhân viên " + staffName + " không?",
+        title: "Xác nhận thay đổi trạng thái?",
+        text: "Bạn chắc chắn muốn thay đổi trạng thái nhân viên " + staffName + " không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -341,7 +338,7 @@ function handleDelete(staffId, staffName) {
                 className: "btn btn-black",
             },
             confirm: {
-                text: "Xóa",
+                text: "Thay đổi",
                 className: "btn btn-black",
             },
         },
@@ -353,12 +350,12 @@ function handleDelete(staffId, staffName) {
                 url: url,
                 success: function (responseBody) {
                     if (responseBody?.status === "OK") {
-                        showToastSuccess("Xóa thành công!")
+                        showToastSuccess("Thay đổi trạng thái thành công!")
                     }
                     clearFormSearch();
                 },
                 error: function (error) {
-                    showToastError('Có lỗi xảy ra khi xóa nhân viên!');
+                    showToastError('Có lỗi xảy ra khi thay đổi trạng thái nhân viên!');
                 }
             });
         }

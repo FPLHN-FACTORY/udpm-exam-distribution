@@ -3,7 +3,6 @@ $(document).ready(function () {
 
     getSubjects();
 
-
     handleAddEvent($('#subjectCode'), 'keyup',handleSearch);
     handleAddEvent($('#subjectName'), 'keyup',handleSearch);
     handleAddEvent($('#departmentId'), 'change',handleSearch);
@@ -25,11 +24,11 @@ $(document).ready(function () {
 
 });
 
-function handleSearch() {
-    const subjectCode = $('#subjectCode').val();
-    const subjectName = $('#subjectName').val();
+function  handleSearch() {
+    const subjectCode = $('#subjectCode').val().trim();
+    const subjectName = $('#subjectName').val().trim();
     const departmentId = $('#departmentId').val();
-    const subjectType = $('#subjectType').val();
+    const subjectType = $('#subjectType').val().trim();
     const startDate = $('#startDate').val();
     getSubjects(1, 5, subjectCode, subjectName, departmentId, subjectType, startDate);
 }
@@ -43,8 +42,6 @@ const getSubjects = (
     subjectType = null,
     startDate = null
 ) => {
-
-    $('#loading').show();
 
     const params = {
         page: page,
@@ -66,6 +63,7 @@ const getSubjects = (
 
     url = url.slice(0, -1);
 
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: url,
@@ -77,6 +75,7 @@ const getSubjects = (
                     </tr>
                 `);
                 $('#pagination').empty();
+                $('#loading-ele').hide();
                 return;
             }
             const subjects = responseBody?.data?.data?.map((subject, index) => {
@@ -86,26 +85,29 @@ const getSubjects = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName ? subject.departmentName : 'Chưa xác định'}</td>
                             <td>${subject.subjectType}</td>
-                            <td>${subject.subjectStatus}</td>
                             <td>${subject.createdDate ? formatFromUnixTimeToDate(subject.createdDate) : 'Chưa xác định'}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <a onclick="getDetailSubject('${subject.id}')">
+                            <a onclick="getDetailSubject('${subject.id}')"
+                               data-bs-toggle="tooltip" 
+                               data-bs-title="Cập nhật">
                                 <i 
-                                    class="fa-solid fa-eye"
+                                    class="fas fa-pen-nib"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
                             </td>
                         </tr>`;
             });
-            $('#loading-ele').hide();
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
+            $('#loading-ele').hide();
         },
         error: function (error) {
-            $('#loading-ele').hide();
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
+            $('#loading-ele').hide();
+
         }
     });
 }
@@ -165,12 +167,13 @@ const createPagination = (totalPages, currentPage) => {
 
 const createSubject = () => {
     $('#subjectModalLabel').text('Cập nhật môn học');
-    const subjectName = $('#modifySubjectName').val();
-    const subjectCode = $('#modifySubjectCode').val();
+    const subjectName = $('#modifySubjectName').val().trim();
+    const subjectCode = $('#modifySubjectCode').val().trim();
     const departmentId = $('#modifyDepartmentId').val();
     const subjectType = $('#modifySubjectType').val();
     const startDate = $('#modifyStartDate').val();
 
+    $('#loading-ele').show();
     $.ajax({
         type: "POST",
         url: ApiConstant.API_HEAD_OFFICE_SUBJECT,
@@ -188,6 +191,7 @@ const createSubject = () => {
                 getSubjects();
                 $('#subjectModal').modal('hide');
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
@@ -199,18 +203,20 @@ const createSubject = () => {
             } else {
                 showToastError('Có lỗi xảy ra khi thêm môn học');
             }
+            $('#loading-ele').hide();
         }
     });
 }
 
 const updateSubject = () => {
-    const subjectName = $('#modifySubjectName').val();
-    const subjectCode = $('#modifySubjectCode').val();
+    const subjectName = $('#modifySubjectName').val().trim();
+    const subjectCode = $('#modifySubjectCode').val().trim();
     const departmentId = $('#modifyDepartmentId').val();
     const subjectType = $('#modifySubjectType').val();
     const startDate = $('#modifyStartDate').val();
     const subjectId = $('#subjectId').val();
 
+    $('#loading-ele').show();
     $.ajax({
         type: "PUT",
         url: ApiConstant.API_HEAD_OFFICE_SUBJECT + `/${subjectId}`,
@@ -228,6 +234,7 @@ const updateSubject = () => {
                 getSubjects();
                 $('#subjectModal').modal('hide');
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
@@ -239,6 +246,7 @@ const updateSubject = () => {
             } else {
                 showToastError('Có lỗi xảy ra khi cập nhật môn học');
             }
+            $('#loading-ele').hide();
         }
     });
 }
@@ -256,6 +264,7 @@ const openModalAddSubject = () => {
 }
 
 const getDetailSubject = (id) => {
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_OFFICE_SUBJECT + `/${id}`,
@@ -271,14 +280,17 @@ const getDetailSubject = (id) => {
                 $('#subjectModalLabel').text('Cập nhật môn học');
                 $('#subjectModal').modal('show');
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin môn học');
+            $('#loading-ele').hide();
         }
     });
 }
 
 const fetchDepartments = () => {
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_OFFICE_SUBJECT + '/department',
@@ -292,9 +304,11 @@ const fetchDepartments = () => {
                 $('#modifyDepartmentId').html(departments);
                 $('#addDepartmentId').html(departments);
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin bộ môn');
+            $('#loading-ele').hide();
         }
     });
 }

@@ -61,7 +61,7 @@ public class SubjectServiceImpl implements SubjectService {
         subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));
         subject.setSubjectCode(request.getSubjectCode());
         subject.setCreatedTime(System.currentTimeMillis());
-        subject.setSubjectStatus(SubjectStatus.MO);
+//        subject.setSubjectStatus(SubjectStatus.MO);
         subject.setStatus(EntityStatus.ACTIVE);
         subjectExtendRepository.save(subject);
 
@@ -81,7 +81,7 @@ public class SubjectServiceImpl implements SubjectService {
                 .map(subject -> {
                     subject.setName(request.getSubjectName());
                     subject.setSubjectCode(request.getSubjectCode());
-                    subject.setSubjectStatus(subject.getSubjectStatus());
+//                    subject.setSubjectStatus(subject.getSubjectStatus());
                     subject.setCreatedTime(subject.getCreatedTime());
                     subject.setDepartment(department);
                     subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));

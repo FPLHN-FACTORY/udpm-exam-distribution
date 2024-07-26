@@ -24,7 +24,6 @@ public interface SubjectExtendRepository extends SubjectRepository {
                         s.name as subjectName,
                         d.name as departmentName,
                         s.subject_type as subjectType,
-                        s.subject_status as subjectStatus,
                         s.created_date as createdDate
                     FROM
                         subject s
@@ -65,7 +64,6 @@ public interface SubjectExtendRepository extends SubjectRepository {
                         s.name as subjectName,
                         s.id_department as departmentId,
                         s.subject_type as subjectType,
-                        s.subject_status as subjectStatus,
                         s.created_date as createdDate
                     FROM
                         subject s

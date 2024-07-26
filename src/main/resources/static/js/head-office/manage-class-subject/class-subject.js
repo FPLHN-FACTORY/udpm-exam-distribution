@@ -76,6 +76,7 @@ const getClassSubjects = (
 
     url = url.slice(0, -1);
 
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: url,
@@ -87,7 +88,8 @@ const getClassSubjects = (
                          <td colspan="9" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
+                $('#loading-ele').hide();
                 return;
             }
             const classSubjects = responseBody?.data?.data?.map((classSubject, index) => {
@@ -116,9 +118,11 @@ $('#pagination').empty();
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
             callToolTip();
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu lớp môn');
+            $('#loading-ele').hide();
         }
     });
 }
@@ -253,14 +257,15 @@ const openModalAddClassSubject = () => {
 
 // CALL API
 const createClassSubject = () => {
-    const modifyClassSubjectCode = $("#modifyClassSubjectCode").val();
-    const modifySubjectCode = $("#modifySubjectCode").val();
+    const modifyClassSubjectCode = $("#modifyClassSubjectCode").val().trim();
+    const modifySubjectCode = $("#modifySubjectCode").val().trim();
     const modifyShift = $("#modifyShift").val();
-    const modifyStaffCode = $("#modifyStaffCode").val();
+    const modifyStaffCode = $("#modifyStaffCode").val().trim();
     const modifyFacilityChildId = $("#modifyFacilityChildId").val();
     const modifyBlockId = $("#modifyBlockId").val();
     const modifyDay = $("#modifyDay").val();
 
+    $('#loading-ele').show();
     $.ajax({
         type: "POST",
         url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT,
@@ -280,6 +285,7 @@ const createClassSubject = () => {
                 getClassSubjects();
                 closeModal();
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
@@ -293,20 +299,22 @@ const createClassSubject = () => {
                     ? error?.responseJSON?.message : 'Có lỗi xảy ra khi thêm môn học';
                 showToastError(mess);
             }
+            $('#loading-ele').hide();
         }
     });
 }
 
 const updateClassSubject = () => {
-    const classSubjectId = $("#classSubjectId").val();
-    const modifyClassSubjectCode = $("#modifyClassSubjectCode").val();
-    const modifySubjectCode = $("#modifySubjectCode").val();
+    const classSubjectId = $("#classSubjectId").val().trim();
+    const modifyClassSubjectCode = $("#modifyClassSubjectCode").val().trim();
+    const modifySubjectCode = $("#modifySubjectCode").val().trim();
     const modifyShift = $("#modifyShift").val();
-    const modifyStaffCode = $("#modifyStaffCode").val();
+    const modifyStaffCode = $("#modifyStaffCode").val().trim();
     const modifyFacilityChildId = $("#modifyFacilityChildId").val();
     const modifyBlockId = $("#modifyBlockId").val();
     const modifyDay = $("#modifyDay").val();
 
+    $('#loading-ele').show();
     $.ajax({
         type: "PUT",
         url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + `/${classSubjectId}`,
@@ -326,6 +334,7 @@ const updateClassSubject = () => {
                 getClassSubjects();
                 closeModal();
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
@@ -339,12 +348,14 @@ const updateClassSubject = () => {
                     ? error?.responseJSON?.message : 'Có lỗi xảy ra khi cập nhật môn học';
                 showToastError(mess);
             }
+            $('#loading-ele').hide();
         }
     });
 }
 
 const getDetailSubject = (id) => {
     $('#classSubjectModalLabel').text('Cập nhật lớp môn');
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + `/${id}`,
@@ -361,19 +372,20 @@ const getDetailSubject = (id) => {
                 $("#modifyDay").val(getValueForInputDate(classSubject.day));
                 $("#modifySemesterId").val(classSubject.semesterName);
                 $("#modifyYearId").val(classSubject.year);
-
                 $('#classSubjectId').val(classSubject.id);
                 $('#classSubjectModal').modal('show');
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin lớp môn học');
+            $('#loading-ele').hide();
         }
     });
 }
 
 const fetchBlocks = (blockRequest) => {
-    showLoading();
+    $('#loading-ele').show();
     $('#modifyBlockId').empty();
     $.ajax({
         type: "GET",
@@ -387,17 +399,17 @@ const fetchBlocks = (blockRequest) => {
                 blocks.unshift('<option value="">Chọn block</option>');
                 $('#modifyBlockId').html(blocks);
             }
-            hideLoading();
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin block');
-            hideLoading();
+            $('#loading-ele').hide();
         }
     });
 }
 
 const getSemester = (semesterRequest) => {
-    showLoading();
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         contentType: "application/json",
@@ -417,16 +429,17 @@ const getSemester = (semesterRequest) => {
             } else {
                 showToastError('Không tìm thấy học kỳ phù hợp');
             }
-            hideLoading();
+            $('#loading-ele').hide();
         },
         error: function (error) {
-            hideLoading();
             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+            $('#loading-ele').hide();
         }
     });
 }
 
 const fetchFacilityChildes = () => {
+    $('#loading-ele').show();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/facility-child',
@@ -439,9 +452,11 @@ const fetchFacilityChildes = () => {
                 $('#modifyFacilityChildId').html(facilityChildes);
                 $('#facilityChildId').html(facilityChildes);
             }
+            $('#loading-ele').hide();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy thông tin block');
+            $('#loading-ele').hide();
         }
     });
 }
@@ -554,6 +569,7 @@ function submitDownload() {
         }).then((willDelete) => {
             if (willDelete) {
                 let url = ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + '/download-template-class-subject' + '?semester=' + $('#downloadSemester').val() + "&year=" + $('#downloadYear').val();
+                $('#loading-ele').show();
                 $.ajax({
                     type: "GET",
                     url: url,
@@ -580,6 +596,7 @@ function submitDownload() {
 
                         window.URL.revokeObjectURL(url);
 
+                        $('#loading-ele').hide();
                     },
                     error: function (error) {
                         if (error?.status === 404) {
@@ -587,6 +604,7 @@ function submitDownload() {
                         } else {
                             showToastError('Học kì ' + $('#downloadSemester').val() + ' năm ' + $('#downloadYear').val() + ' không tồn tại.');
                         }
+                        $('#loading-ele').hide();
                     }
                 });
             } else {
@@ -620,6 +638,7 @@ function submitUpload(fileUpload) {
 
     let url = ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + "/file/upload"
 
+    $('#loading-ele').show();
     $.ajax({
         type: 'POST',
         url: url,
@@ -634,12 +653,14 @@ function submitUpload(fileUpload) {
             $('#input-file-class-subject').val('');
             resetFilterForm();
             getClassSubjects();
+            $('#loading-ele').hide();
         },
         error: (error) => {
             $('#input-file-class-subject').val('');
             showToastError("import thất bại!");
             resetFilterForm();
             getClassSubjects();
+            $('#loading-ele').hide();
         }
     });
 }

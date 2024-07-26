@@ -23,26 +23,27 @@ public interface HOStaffRepository extends StaffRepository {
                             s.name AS name,
                             s.staff_code AS staffCode,
                             s.account_fe AS accountFE,
-                            s.account_fpt AS accountFpt
+                            s.account_fpt AS accountFpt,
+                            s.status AS status
                     FROM staff s
-                    WHERE s.status = 0
-                    AND (:#{#req.searchQuery} IS NULL 
+                    WHERE (:#{#req.searchQuery} IS NULL 
                              OR :#{#req.searchQuery} LIKE ''
                              OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
+                   AND (:#{#req.status} IS NULL OR :#{#req.status} LIKE '' OR s.status = :#{#req.status})
                     """,
             countQuery = """
                     SELECT COUNT(*)
                     FROM staff s
-                    WHERE s.status = 0
-                    AND (:#{#req.searchQuery} IS NULL 
+                    WHERE (:#{#req.searchQuery} IS NULL 
                              OR :#{#req.searchQuery} LIKE ''
                              OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
+                    AND (:#{#req.status} IS NULL OR :#{#req.status} LIKE '' OR s.status = :#{#req.status})
                     """,
             nativeQuery = true)
     Page<HOStaffResonpse> getStaffs(Pageable pageable, HOStaffRequest req);

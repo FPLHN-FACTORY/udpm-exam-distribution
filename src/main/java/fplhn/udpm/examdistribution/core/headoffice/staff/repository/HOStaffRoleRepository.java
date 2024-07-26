@@ -82,4 +82,6 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
 
     List<StaffRole> findAllByStaff_IdAndStatus(String staffId, EntityStatus status);
 
+    List<StaffRole> findAllByStaff_Id(String staffId);
+
 }
