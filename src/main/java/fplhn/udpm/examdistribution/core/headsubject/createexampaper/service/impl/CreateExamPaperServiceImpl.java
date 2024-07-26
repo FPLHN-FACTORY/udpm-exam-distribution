@@ -155,7 +155,7 @@ public class CreateExamPaperServiceImpl implements CreateExamPaperService {
                 );
             }
 
-            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(request.getMajorFacilityId());
+            Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(sessionHelper.getCurrentUserMajorFacilityId());
             if (isMajorFacilityExist.isEmpty()) {
                 return new ResponseObject<>(
                         null,

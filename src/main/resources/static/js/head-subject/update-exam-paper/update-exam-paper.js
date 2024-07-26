@@ -202,7 +202,7 @@ document.getElementById('export-pdf').addEventListener('click', () => {
             setTimeout(async () => {
                 const pdfFile = await convertJoditContentToPdf();
                 if (pdfFile) {
-                    // Ví dụ: Bạn có thể tải file xuống
+
                     const url = URL.createObjectURL(pdfFile);
                     const a = document.createElement('a');
                     a.href = url;
@@ -274,8 +274,7 @@ const convertJoditContentToPdf = async () => {
     for (let table of tables) {
         if (table.style.width && parseInt(table.style.width) > 700) {
             table.style.width = '700px';
-        }
-        else {
+        } else {
             const computedWidth = window.getComputedStyle(table).width;
             if (parseInt(computedWidth) > 700) {
                 table.style.width = '700px';
@@ -296,7 +295,16 @@ const convertJoditContentToPdf = async () => {
     try {
         const pdfBlob = await html2pdf().set(options).from(modifiedContent).outputPdf('blob');
 
-        return new File([pdfBlob], "document.pdf", {type: "application/pdf"});
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            console.log(e.target.result);
+        }
+        reader.readAsText(pdfBlob);
+
+        return new File([pdfBlob], "document.pdf", {
+            type: "application/pdf",
+            lastModified: new Date()
+        });
 
     } catch (error) {
         showToastError("Convert PDF không thành công");
@@ -323,9 +331,9 @@ const convertJoditContentToDocx = () => {
     const footer = "</body></html>";
     const sourceHTML = header + modifiedContent + footer;
 
-    const blob = new Blob([sourceHTML], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const blob = new Blob([sourceHTML], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 
-    return new File([blob], 'document.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    return new File([blob], 'document.docx', {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 
 const handleOpenChooseFile = () => {
@@ -351,6 +359,7 @@ document.getElementById('import-file').addEventListener('change', function (even
 
 const showFileDocx = (file) => {
     showLoading();
+
     const reader = new FileReader();
     reader.onload = function (event) {
         mammoth.convertToHtml({arrayBuffer: event.target.result})
@@ -390,9 +399,7 @@ const showFilePdf = async (file) => {
 
 const convertBlobAndShow = async (response) => {
     const blob = await response.blob();
-    console.log(blob);
     const docxText = await readDocxBlob(blob);
-    console.log(docxText);
     editor.value = formatTextAsHtml(docxText);
 }
 

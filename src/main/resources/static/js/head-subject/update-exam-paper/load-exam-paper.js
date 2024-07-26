@@ -9,12 +9,7 @@ const fetchFileExamPaper = async () => {
         url: ApiConstant.API_HEAD_SUBJECT_UPDATE_EXAM_PAPER + "/file/" + sessionStorage.getItem(EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID),
         method: "GET",
         success: (responseBody) => {
-            const fileName = responseBody?.data?.isPdf;
-            if(fileName.endsWith('.docx')){
-                convertAndShowDocx(responseBody.data.data);
-            }else{
-                convertAndShowPdf(responseBody.data.data);
-            }
+            convertAndShowPdf(responseBody.data);
             hideLoading();
         },
         error: (error) => {

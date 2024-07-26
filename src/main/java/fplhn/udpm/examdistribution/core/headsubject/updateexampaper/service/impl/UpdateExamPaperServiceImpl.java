@@ -2,7 +2,6 @@ package fplhn.udpm.examdistribution.core.headsubject.updateexampaper.service.imp
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.model.request.UEPEditFileRequest;
-import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.model.response.UEPFileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.repository.UEPExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.updateexampaper.service.UpdateExamPaperService;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
@@ -151,12 +150,12 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
             }
 
             String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + optionalExamPaper.get().getId();
-            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
+//            String fileName = googleDriveFileService.getFileName(optionalExamPaper.get().getPath());
 
             Object redisValue = redisService.get(redisKey);
             if (redisValue != null) {
                 return new ResponseObject<>(
-                        new UEPFileResponse(redisValue.toString(), fileName),
+                        redisValue.toString(),
                         HttpStatus.OK,
                         "Tìm thấy file thành công"
                 );
@@ -168,7 +167,7 @@ public class UpdateExamPaperServiceImpl implements UpdateExamPaperService {
             redisService.set(redisKey, data);
 
             return new ResponseObject<>(
-                    new UEPFileResponse(data, fileName),
+                    data,
                     HttpStatus.OK,
                     "Lấy file thành công"
             );

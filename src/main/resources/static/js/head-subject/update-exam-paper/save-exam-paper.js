@@ -1,11 +1,7 @@
-$("#saveChangeEditExamPaper").on("click", () => {
-    $("#modalChooseTypeFile").modal("show");
-});
-
-$("#save-exam_paper-pdf").on("click", () => {
+$("#save-change-edit-exam-paper").on("click", () => {
     swal({
         title: "Xác nhận",
-        text: "Bạn có chắc chắn muốn lưu chỉnh sửa này ở định dạng PDF không?",
+        text: "Bạn có chắc chắn muốn lưu chỉnh sửa này không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -20,40 +16,17 @@ $("#save-exam_paper-pdf").on("click", () => {
         },
     }).then((ok) => {
         if (ok) {
-            saveChangeEditFileExamPaper(true);
+            saveChangeEditFileExamPaper();
         }
     });
 });
 
-$("#save-exam_paper-docx").on("click", () => {
-    swal({
-        title: "Xác nhận",
-        text: "Bạn có chắc chắn muốn lưu chỉnh sửa này ở định dạng DOCX không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Lưu chỉnh sửa",
-                className: "btn btn-black",
-            },
-        },
-    }).then((ok) => {
-        if (ok) {
-            saveChangeEditFileExamPaper(false);
-        }
-    });
-});
-
-const saveChangeEditFileExamPaper = async (pdfOrDocx) => {
+const saveChangeEditFileExamPaper = async () => {
     showLoading();
 
     const data = new FormData();
     data.append("examPaperId", sessionStorage.getItem(EXAM_DISTRIBUTION_EDIT_FILE_EXAM_PAPER_ID));
-    data.append("file", pdfOrDocx ? await convertJoditContentToPdf() : await convertJoditContentToDocx());
+    data.append("file", await convertJoditContentToPdf());
 
     $.ajax({
         url: ApiConstant.API_HEAD_SUBJECT_UPDATE_EXAM_PAPER + "/edit-file",

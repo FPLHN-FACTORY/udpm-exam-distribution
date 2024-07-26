@@ -1,12 +1,10 @@
 //START: getter
-const getValueMajorFacilityId = () => $("#major-facility").val();
 const getValueExamPaperType = () => $("#exam-paper-type").val();
 const getValueExamPaperSubjectId = () => $("#exam-paper-subject").val();
 //END: getter
 
 
 const handleOpenModalSaveExamPaper = () => {
-    handleFetchMajorFacility();
     fetchListSubject();
 
     handleResetFieldsError();
@@ -17,27 +15,20 @@ const handleOpenModalSaveExamPaper = () => {
 const handleResetFieldsError = () => {
     $('.form-control').removeClass('is-invalid');
     $("#examPaperTypeError").text("");
-    $("#majorFacilityIdError").text("");
     $("#subjectIdError").text("");
 };
 
 const clearFieldsChoose = () => {
-    $("#major-facility").val("");
     $("#exam-paper-type").val("");
     $("#exam-paper-subject").val("");
 };
 
 //button save exam_paper pdf
-$("#save-exam_paper-pdf").on("click", () => {
-    handleSaveExamPaperConfirm(0);
+$("#save-exam_paper").on("click", () => {
+    handleSaveExamPaperConfirm();
 });
 
-//button save exam_paper docx
-$("#save-exam_paper-docx").on("click", () => {
-    handleSaveExamPaperConfirm(1);
-});
-
-const handleSaveExamPaperConfirm = async (status) => {
+const handleSaveExamPaperConfirm = async () => {
     swal({
         title: "Xác nhận",
         text: "Bạn có chắc muốn lưu đề thi thi này không?",
@@ -55,20 +46,19 @@ const handleSaveExamPaperConfirm = async (status) => {
         },
     }).then((willDelete) => {
         if (willDelete) {
-            handleSaveExamPaper(status);
+            handleSaveExamPaper();
         }
     });
 };
 
-const handleSaveExamPaper = async (status) => {
+const handleSaveExamPaper = async () => {
     showLoading();
 
     const data = new FormData();
 
     data.append("examPaperType", getValueExamPaperType());
-    data.append("majorFacilityId", getValueMajorFacilityId());
     data.append("subjectId", getValueExamPaperSubjectId())
-    data.append("file", status === 0 ? await convertJoditContentToPdf() : await convertJoditContentToDocx());
+    data.append("file", await convertJoditContentToPdf());
 
     handleResetFieldsError();
 
