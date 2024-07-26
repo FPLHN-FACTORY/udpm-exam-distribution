@@ -26,6 +26,11 @@ public class DateTimeUtil {
         }
     }
 
+    public static String parseLongToString(Long date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(new Date(date));
+    }
+
     public static Long getCurrentTime() {
         return new Date().getTime();
     }
