@@ -168,11 +168,12 @@ const handleFetchExamRulePDF = (fileId) => {
             const data = responseBody?.data?.data;
             const fileName = responseBody?.data.fileName;
 
-            if (fileName.endsWith(".docx")) {
-                convertEndShowDocx(data);
-            } else {
-                convertEndShowPdf(data);
-            }
+            convertAndShowPdf(data);
+            // if (fileName.endsWith(".docx")) {
+            //     convertEndShowDocx(data);
+            // } else {
+            //     convertEndShowPdf(data);
+            // }
 
             hideLoading();
         },
@@ -187,12 +188,7 @@ const handleFetchExamRulePDF = (fileId) => {
     });
 };
 
-const convertEndShowDocx = (data) => {
-    console.log(atob(data));
-
-};
-
-const convertEndShowPdf = (data) => {
+const convertAndShowPdf = (data) => {
     const pdfData = Uint8Array.from(atob(data), c => c.charCodeAt(0));
 
     const blob = new Blob([pdfData], {type: 'application/pdf'});
@@ -235,7 +231,7 @@ const handleDownloadExamPaper = (fileId) => {
             fileId: fileId,
         },
         success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            const pdfData = Uint8Array.from(atob(responseBody.data.data), c => c.charCodeAt(0));
             const blob = new Blob([pdfData], {type: 'application/pdf'});
             const url = URL.createObjectURL(blob);
 
