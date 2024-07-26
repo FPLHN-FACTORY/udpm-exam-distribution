@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository;
 
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
@@ -27,19 +28,60 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.id_first_supervisor = s.id
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
+            JOIN block b ON
+            	cs.id_block = b.id
             JOIN subject s2 ON
             	cs.id_subject = s2.id
-            JOIN subject_by_subject_group sbsg ON
-             	sbsg.id_subject = s2.id
-            JOIN subject_group sg ON
-            	sbsg.id_subject_group = sg.id
+            JOIN department d ON
+            	s2.id_department = d.id
+            JOIN department_facility df ON
+            	df.id_department = d.id
             WHERE
-            	sg.id_department_facility = :departmentFacilityId
-            	AND es.exam_date >= :currentDate
-            	AND es.shift = :currentShift
+            	df.id = :#{#hdExamShiftRequest.departmentFacilityId}
+                AND b.id_semester = :#{#hdExamShiftRequest.semesterId}
+                AND es.exam_date >= :#{#hdExamShiftRequest.currentDate}
+                AND es.shift = :#{#hdExamShiftRequest.currentShift}
             	AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
             """, nativeQuery = true)
-    List<HDAllExamShiftResponse> getAllExamShift(String departmentFacilityId, Long currentDate, String currentShift);
+    List<HDAllExamShiftResponse> getAllExamShift(HDExamShiftRequest hdExamShiftRequest);
+
+    @Query(value = """
+            SELECT
+            	es.id,
+            	es.exam_shift_code,
+            	es.exam_date,
+            	es.shift,
+            	es.room,
+            	es.id_first_supervisor,
+            	es.id_second_supervisor,
+            	es.id_subject_class,
+            	es.total_student,
+            	es.salt,
+            	es.hash,
+            	es.exam_shift_status,
+            	es.status,
+            	es.created_date,
+            	es.last_modified_date
+            FROM
+            	exam_shift es
+            JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN block b ON
+            	cs.id_block = b.id
+            JOIN subject s2 ON
+            	cs.id_subject = s2.id
+            JOIN department d ON
+            	s2.id_department = d.id
+            JOIN department_facility df ON
+            	df.id_department = d.id
+            WHERE
+                es.exam_shift_code = :examShiftCode
+                AND df.id = :departmentFacilityId
+                AND b.id_semester = :semesterId
+            """, nativeQuery = true)
+    Optional<ExamShift> findExamShiftByRequest(String examShiftCode, String departmentFacilityId, String semesterId);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 
@@ -53,17 +95,20 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.id_first_supervisor = s.id
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
+            JOIN block b ON
+            	cs.id_block = b.id
             JOIN subject s2 ON
             	cs.id_subject = s2.id
-            JOIN subject_by_subject_group sbsg ON
-             	sbsg.id_subject = s2.id
-            JOIN subject_group sg ON
-            	sbsg.id_subject_group = sg.id
+            JOIN department d ON
+            	s2.id_department = d.id
+            JOIN department_facility df ON
+            	df.id_department = d.id
             WHERE
             	es.exam_shift_code = :examShiftCode
-            	AND sg.id_department_facility = :departmentFacilityId
+            	AND df.id = :departmentFacilityId
+                AND b.id_semester = :semesterId
             """, nativeQuery = true)
-    Optional<HDExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId);
+    Optional<HDExamShiftResponse> getExamShiftByRequest(String examShiftCode, String departmentFacilityId, String semesterId);
 
     @Query(value = """
             SELECT
@@ -88,6 +133,8 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	exam_shift es
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
+            JOIN subject s on
+             	cs.id_subject = s.id
             JOIN block b ON
             	cs.id_block = b.id
             JOIN facility_child fc ON
@@ -108,6 +155,30 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             AND es.room = :room
             """, nativeQuery = true)
     Integer countByExamDateAndShiftAndRoom(Long examDate, String shift, String room);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	exam_shift es
+            WHERE
+            	es.id_first_supervisor = :firstSupervisorId
+            	AND es.exam_date = :examDate
+            	AND es.shift = :shift
+            """, nativeQuery = true)
+    Integer countExistingFirstSupervisorByCurrentExamDateAndShift(String firstSupervisorId, Long examDate, String shift);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	exam_shift es
+            WHERE
+            	es.id_second_supervisor = :secondSupervisorId
+            	AND es.exam_date = :examDate
+            	AND es.shift = :shift
+            """, nativeQuery = true)
+    Integer countExistingSecondSupervisorByCurrentExamDateAndShift(String secondSupervisorId, Long examDate, String shift);
 
     @Query(value = """
             SELECT

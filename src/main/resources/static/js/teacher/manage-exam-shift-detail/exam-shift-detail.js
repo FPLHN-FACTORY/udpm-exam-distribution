@@ -78,7 +78,9 @@ const getExamShiftByCode = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     })
 }
@@ -95,7 +97,9 @@ const getFirstSupervisorId = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 }
@@ -114,7 +118,9 @@ const getSecondSupervisorId = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     })
 }
@@ -133,7 +139,9 @@ const removeStudent = (studentId) => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -152,7 +160,9 @@ const approveStudent = (studentId) => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -171,7 +181,9 @@ const refuseStudent = (studentId) => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi xóa sinh viên');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -187,7 +199,9 @@ const countStudentInExamShift = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy số sinh viên tham gia');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     });
 }
@@ -245,7 +259,9 @@ const getStudents = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     });
 }
@@ -419,7 +435,9 @@ const getStudentRejoin = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     });
 }
@@ -436,8 +454,6 @@ const examShiftStart = () => {
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
             }
         }
     });
@@ -497,7 +513,9 @@ const updateExamPaperShiftStatus = () => {
         success: function (responseBody) {
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     });
 }
@@ -510,7 +528,9 @@ const updateExamShiftStatus = () => {
             window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT;
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     });
 }
@@ -534,8 +554,6 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
             }
         }
     });
@@ -567,8 +585,6 @@ const fetchFilePDFExamPaper = (fileId) => {
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
             }
             hideLoading();
         }
@@ -615,8 +631,6 @@ const fetchFilePDFExamRule = (fileId) => {
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
             }
         }
     });

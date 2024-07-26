@@ -81,10 +81,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId())
-                || (examShift.get().getSecondSupervisor() != null
-                && examShift.get().getSecondSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId()));
+                          .equals(sessionHelper.getCurrentUserId())
+                  || (examShift.get().getSecondSupervisor() != null
+                      && examShift.get().getSecondSupervisor().getId()
+                              .equals(sessionHelper.getCurrentUserId()));
 
         if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
@@ -95,136 +95,176 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
     @Override
     public ResponseObject<?> getExamShiftByCode(String examShiftCode) {
-        return new ResponseObject<>(tExamShiftExtendRepository.getExamShiftByCode(examShiftCode),
-                HttpStatus.OK, "Lấy thông tin ca thi thành công!");
+        try {
+            return new ResponseObject<>(tExamShiftExtendRepository.getExamShiftByCode(examShiftCode),
+                    HttpStatus.OK, "Lấy thông tin ca thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thông tin ca thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin ca thi!");
+        }
     }
 
     @Override
     public ResponseObject<?> joinExamShift(@Valid TJoinExamShiftRequest tJoinExamShiftRequest) {
-        Optional<ExamShift> existingExamShift = findExamShiftByCode(tJoinExamShiftRequest.getExamShiftCodeJoin());
-        if (existingExamShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
-        }
-        ExamShift examShift = existingExamShift.get();
+        try {
+            Optional<ExamShift> existingExamShift = findExamShiftByCode(tJoinExamShiftRequest.getExamShiftCodeJoin());
+            if (existingExamShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                        "Ca thi không tồn tại hoặc mật khẩu không đúng!");
+            }
+            ExamShift examShift = existingExamShift.get();
 
-        if (!PasswordUtils.verifyUserPassword(tJoinExamShiftRequest
-                .getPasswordJoin(), examShift.getHash(), examShift.getSalt())) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
-        }
+            if (!PasswordUtils.verifyUserPassword(tJoinExamShiftRequest
+                    .getPasswordJoin(), examShift.getHash(), examShift.getSalt())) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                        "Ca thi không tồn tại hoặc mật khẩu không đúng!");
+            }
 
-        if (examShift.getExamShiftStatus() == ExamShiftStatus.FINISHED) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã kết thúc!");
-        }
+            if (examShift.getExamShiftStatus() == ExamShiftStatus.FINISHED) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã kết thúc!");
+            }
 
-        Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
+            Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
-        if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
+            if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
                 && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
-            return new ResponseObject<>(null,
-                    HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
+                return new ResponseObject<>(null,
+                        HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
+            }
+
+            String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
+                    new NotificationResponse("Giám thị " + accountFe + " đã tham gia ca thi!"));
+
+            return new ResponseObject<>(examShift.getExamShiftCode(),
+                    HttpStatus.OK, "Tham gia ca thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi tham gia ca thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi tham gia ca thi!");
         }
-
-        String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
-        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
-                new NotificationResponse("Giám thị " + accountFe + " đã tham gia phòng thi!"));
-
-        return new ResponseObject<>(examShift.getExamShiftCode(),
-                HttpStatus.OK, "Tham gia phòng thi thành công!");
     }
 
     @Override
     public ResponseObject<?> countStudentInExamShift(String examShiftCode) {
-        return new ResponseObject<>(tExamShiftExtendRepository.countStudentInExamShift(examShiftCode),
-                HttpStatus.OK, "Đếm số sinh viên trong phòng thi thành công!");
+        try {
+            return new ResponseObject<>(tExamShiftExtendRepository.countStudentInExamShift(examShiftCode),
+                    HttpStatus.OK, "Đếm số sinh viên trong ca thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi đếm số sinh viên trong ca thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi đếm số sinh viên trong ca thi!");
+        }
     }
 
     @Override
     @Transactional
     public ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason) {
-        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
-        if (examShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        try {
+            Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+            if (examShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
+            }
+
+            Optional<Student> student = findStudentById(studentId);
+            if (student.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+            }
+
+            Optional<StudentExamShift> studentExamShift
+                    = findStudentExamShift(examShift.get().getId(), student.get().getId());
+            if (studentExamShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                        "Không có sinh viên trong ca thi này!");
+            }
+
+            studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+            studentExamShift.get().setReason(reason);
+
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi ca thi!"));
+
+            return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi xoá sinh viên: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi xoá sinh viên!");
         }
-
-        Optional<Student> student = findStudentById(studentId);
-        if (student.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
-        }
-
-        Optional<StudentExamShift> studentExamShift
-                = findStudentExamShift(examShift.get().getId(), student.get().getId());
-        if (studentExamShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                    "Không có sinh viên trong phòng thi này!");
-        }
-
-        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
-        studentExamShift.get().setReason(reason);
-
-        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
-                new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi phòng thi!"));
-
-        return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
     }
 
     @Override
     public ResponseObject<?> approveStudent(String examShiftCode, String studentId) {
-        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
-        if (examShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        try {
+            Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+            if (examShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
+            }
+
+            Optional<Student> student = findStudentById(studentId);
+            if (student.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+            }
+
+            Optional<StudentExamShift> studentExamShift
+                    = findStudentExamShift(examShift.get().getId(), student.get().getId());
+            if (studentExamShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                        "Không có sinh viên trong ca thi này!");
+            }
+
+            if (tExamShiftExtendRepository.countStudentInExamShift(examShiftCode) == examShift.get().getTotalStudent()) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã đủ số lượng sinh viên!");
+            }
+
+            studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
+            tStudentExamShiftExtendRepository.save(studentExamShift.get());
+
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào ca thi!"));
+
+            return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
+                    "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi phê duyệt sinh viên: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi phê duyệt sinh viên!");
         }
-
-        Optional<Student> student = findStudentById(studentId);
-        if (student.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
-        }
-
-        Optional<StudentExamShift> studentExamShift
-                = findStudentExamShift(examShift.get().getId(), student.get().getId());
-        if (studentExamShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                    "Không có sinh viên trong phòng thi này!");
-        }
-
-        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
-        tStudentExamShiftExtendRepository.save(studentExamShift.get());
-
-        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
-                new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào phòng thi!"));
-
-        return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
-                "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
     }
 
     @Override
     public ResponseObject<?> refuseStudent(String examShiftCode, String studentId) {
-        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
-        if (examShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+        try {
+            Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+            if (examShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
+            }
+
+            Optional<Student> student = findStudentById(studentId);
+            if (student.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
+            }
+
+            Optional<StudentExamShift> studentExamShift
+                    = findStudentExamShift(examShift.get().getId(), student.get().getId());
+            if (studentExamShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                        "Không có sinh viên trong ca thi này!");
+            }
+
+            studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+            tStudentExamShiftExtendRepository.save(studentExamShift.get());
+
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
+
+            return new ResponseObject<>(null, HttpStatus.OK,
+                    "Từ chối sinh viên " + student.get().getName() + " thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi từ chối sinh viên: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi từ chối sinh viên!");
         }
-
-        Optional<Student> student = findStudentById(studentId);
-        if (student.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Sinh viên không tồn tại!");
-        }
-
-        Optional<StudentExamShift> studentExamShift
-                = findStudentExamShift(examShift.get().getId(), student.get().getId());
-        if (studentExamShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                    "Không có sinh viên trong phòng thi này!");
-        }
-
-        studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
-        tStudentExamShiftExtendRepository.save(studentExamShift.get());
-
-        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
-                new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
-
-        return new ResponseObject<>(null, HttpStatus.OK,
-                "Từ chối sinh viên " + student.get().getName() + " thành công!");
     }
 
     @Override
@@ -232,7 +272,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         try {
             Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
             if (examShift.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Phòng thi không tồn tại!");
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
             }
 
 //            if (examShift.get().getSecondSupervisor() == null) {
@@ -303,51 +343,76 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                     HttpStatus.OK, "Bắt đầu ca thi thành công!");
 
         } catch (Exception e) {
-            return new ResponseObject<>(null,
-                    HttpStatus.BAD_REQUEST, "Phát sinh lỗi khi bắt đầu ca thi!");
+            log.error("Lỗi khi bắt đầu ca thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi bắt đầu ca thi!");
         }
     }
 
     @Override
     public ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode) {
-        return new ResponseObject<>(tExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
-                HttpStatus.OK, "Lấy path đề thi thành công!");
+        try {
+            return new ResponseObject<>(tExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
+                    HttpStatus.OK, "Lấy path đề thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy path đề thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy path đề thi!");
+        }
     }
 
     @Override
     public ResponseObject<?> getFile(String file) throws IOException {
-        Resource fileResponse = googleDriveFileService.loadFile(file);
-        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+        try {
+            Resource fileResponse = googleDriveFileService.loadFile(file);
+            String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
 
-        return new ResponseObject<>(
-                new TFileResourceResponse(data, fileResponse.getFilename()),
-                HttpStatus.OK,
-                "Lấy đề thi thành công!"
-        );
+            return new ResponseObject<>(
+                    new TFileResourceResponse(data, fileResponse.getFilename()),
+                    HttpStatus.OK,
+                    "Lấy đề thi thành công!"
+            );
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy đề thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy đề thi!");
+        }
     }
 
     @Override
     public ResponseObject<?> getFileExamRule(String file) throws IOException {
-        Resource fileResponse = googleDriveFileService.loadFile(file);
-        String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+        try {
+            Resource fileResponse = googleDriveFileService.loadFile(file);
+            String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
 
-        return new ResponseObject<>(
-                new TExamRuleResourceResponse(data, fileResponse.getFilename()),
-                HttpStatus.OK,
-                "Lấy file quy định thi thành công!"
-        );
+            return new ResponseObject<>(
+                    new TExamRuleResourceResponse(data, fileResponse.getFilename()),
+                    HttpStatus.OK,
+                    "Lấy file quy định thi thành công!"
+            );
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy file quy định thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy file quy định thi!");
+        }
     }
 
     @Override
     public ResponseObject<?> updateStatusExamShift(String examShiftCode) {
-        Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
-        if (examShift.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
+        try {
+            Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
+            if (examShift.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ca thi không tồn tại!");
+            }
+            ExamShift examShiftEntity = examShift.get();
+            examShiftEntity.setExamShiftStatus(ExamShiftStatus.FINISHED);
+            tExamShiftExtendRepository.save(examShiftEntity);
+            return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật trạng thái ca thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi cập nhật trạng thái ca thi: {}", e.getMessage());
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi cập nhật trạng thái ca thi!");
         }
-        ExamShift examShiftEntity = examShift.get();
-        examShiftEntity.setExamShiftStatus(ExamShiftStatus.FINISHED);
-        tExamShiftExtendRepository.save(examShiftEntity);
-        return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật trạng thái ca thi thành công!");
     }
 
 //    private ResponseObject<?> validateShift(String shift) {

@@ -1,6 +1,11 @@
 const examDistributionInfo = getExamDistributionInfo();
 
 $(document).ready(function () {
+
+    resetFormJoinExamShift();
+
+    removeFormJoinError();
+
     $('#modifyExamShiftJoinButton').on('click', function () {
         joinExamShift();
     });
@@ -84,8 +89,6 @@ const joinExamShift = async () => {
                 });
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
-            } else {
-                showToastError('Có lỗi xảy ra khi thêm ca thi!');
             }
         }
     });

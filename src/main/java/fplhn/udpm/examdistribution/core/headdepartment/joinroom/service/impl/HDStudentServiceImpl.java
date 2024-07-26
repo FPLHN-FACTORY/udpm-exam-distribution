@@ -6,9 +6,11 @@ import fplhn.udpm.examdistribution.core.headdepartment.joinroom.service.HDStuden
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HDStudentServiceImpl implements HDStudentService {
@@ -27,11 +29,11 @@ public class HDStudentServiceImpl implements HDStudentService {
                     "Lấy thông tin danh sách sinh viên thành công!"
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lấy danh sách sinh viên: {}", e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Lỗi không lấy được danh sách sinh viên"
+                    "Lỗi khi lấy danh sách sinh viên!"
             );
         }
     }

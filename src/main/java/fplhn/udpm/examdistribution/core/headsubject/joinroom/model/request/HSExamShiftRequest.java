@@ -1,15 +1,17 @@
-package fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request;
+package fplhn.udpm.examdistribution.core.headsubject.joinroom.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class HDExamShiftRequest {
+public class HSExamShiftRequest {
 
     private String departmentFacilityId;
 
     private String semesterId;
+
+    private String staffId;
 
     private Long currentDate;
 

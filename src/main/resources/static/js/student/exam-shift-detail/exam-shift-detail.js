@@ -33,7 +33,7 @@ $(document).ready(function () {
 
     if (devtools.isOpen) {
         while (true) {
-            console.log("access denied")
+            console.log("Access denied")
         }
     }
 
@@ -169,7 +169,9 @@ const getExamShiftByCode = () => {
             }
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
         }
     })
 }
@@ -193,9 +195,7 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
         }
     });
@@ -226,9 +226,7 @@ const fetchFilePDFExamPaper = (fileId) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
             hideLoading();
         }
@@ -272,8 +270,6 @@ const openExamPaper = () => {
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
             }
         }
     });
@@ -336,9 +332,7 @@ const fetchFilePDFExamRule = (fileId) => {
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError(error.responseJSON?.message);
             }
         }
     });
@@ -437,7 +431,9 @@ const updateExamPaperShiftStatus = () => {
             window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         },
         error: function (error) {
-            showToastError('Có lỗi xảy ra khi cập nhật trạng thái ca thi');
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
         }
     });
 }

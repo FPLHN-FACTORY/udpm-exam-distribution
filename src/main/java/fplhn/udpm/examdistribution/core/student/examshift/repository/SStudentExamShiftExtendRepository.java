@@ -25,4 +25,17 @@ public interface SStudentExamShiftExtendRepository extends StudentExamShiftRepos
             String semesterId
     );
 
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	student_exam_shift ses
+            JOIN exam_shift es ON
+            	ses.id_exam_shift = es.id
+            WHERE
+                ses.exam_student_status IN(0, 1, 2)
+            	AND es.exam_shift_code = :examShiftCode
+            """, nativeQuery = true)
+    Integer countStudentInExamShift(String examShiftCode);
+
 }
