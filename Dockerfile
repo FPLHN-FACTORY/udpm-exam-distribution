@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY gradle/ gradle/
 COPY build.gradle settings.gradle ./
-
 COPY src src
+COPY minifyJs.js ./
 
 RUN ls -al
 
