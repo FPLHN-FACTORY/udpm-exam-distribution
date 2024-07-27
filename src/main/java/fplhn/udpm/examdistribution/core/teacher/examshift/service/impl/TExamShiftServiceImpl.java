@@ -313,7 +313,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
             examPaperShift.setStatus(EntityStatus.ACTIVE);
             long startTime = System.currentTimeMillis();
-            long endTime = startTime + (2 * 60 * 1000);
+            long endTime = startTime + (5 * 60 * 1000);
             examPaperShift.setStartTime(startTime);
             examPaperShift.setEndTime(endTime);
             examPaperShift.setHash(password);
