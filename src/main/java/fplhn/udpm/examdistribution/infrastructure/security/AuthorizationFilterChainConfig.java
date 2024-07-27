@@ -63,7 +63,8 @@ public class AuthorizationFilterChainConfig {
                     "/webjars/**",
                     "/favicon.ico",
                     "/error",
-                    "/plugins/**"
+                    "/plugins/**",
+                    "/version"
             ).permitAll();
             authorization.anyRequest().permitAll();
         });
