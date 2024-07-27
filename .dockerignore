@@ -7,3 +7,5 @@ npm-debug.log
 **/.idea
 .env
 .env.example
+tokens
+src/main/resources/credentials.json

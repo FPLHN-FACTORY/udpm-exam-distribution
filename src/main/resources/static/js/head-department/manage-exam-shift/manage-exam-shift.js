@@ -81,7 +81,7 @@ const getListExamShift = () => {
                         <td style="text-align: center;">
                             ${examShift.isCanEdit === 1 ?
                     `<i class="fas fa-edit" style="cursor: pointer;" onclick="showModalEditExamShift('${examShift.id}')"></i>` :
-                    '<span class="tag tag-danger">Ca thi đang diễn ra</span>'}
+                    '<span class="tag tag-danger">Ca thi đã/đang diễn ra</span>'}
                         </td>
                     </tr>`;
             });

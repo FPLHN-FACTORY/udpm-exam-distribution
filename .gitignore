@@ -47,3 +47,6 @@ out/
 
 ### NODE MODULES ###
 /node_modules/
+
+### TOKENS ###
+tokens
