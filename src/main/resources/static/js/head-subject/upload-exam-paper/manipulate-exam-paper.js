@@ -115,22 +115,41 @@ const handleDownloadExamPaper = (fileId) => {
 };
 
 const handleSendEmailPublicExamPaper = (examPaperId) => {
-    showLoading();
-    $.ajax({
-        type: "POST",
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/send-email-public-exam-paper/" + examPaperId,
-        success: function (responseBody) {
-            showToastSuccess(responseBody?.message);
-            fetchListExamPaper();
-            hideLoading();
+    swal({
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn công khai đề thi thử này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Công khai",
+                className: "btn btn-black",
+            },
         },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
+    }).then((willDelete) => {
+        if (willDelete) {
+            showLoading();
+            $.ajax({
+                type: "POST",
+                url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/send-email-public-exam-paper/" + examPaperId,
+                success: function (responseBody) {
+                    showToastSuccess(responseBody?.message);
+                    fetchListExamPaper();
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
         }
     });
 };

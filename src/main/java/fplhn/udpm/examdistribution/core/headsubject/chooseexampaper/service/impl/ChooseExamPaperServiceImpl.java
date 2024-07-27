@@ -404,7 +404,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                         "Môn học này chưa được xếp lớp học"
                 );
             }
-            emailService.sendEmailPublicMockExamPaper(listEmailStaff);
+//            emailService.sendEmailPublicMockExamPaper(listEmailStaff);
 
             ExamPaper examPaper = optionalExamPaper.get();
             examPaper.setIsPublic(true);
