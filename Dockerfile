@@ -1,6 +1,14 @@
 FROM gradle:7.5.1-jdk17 as builder
 
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y curl \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
+
 WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install  # Install Node.js dependencies
 
 COPY gradle/ gradle/
 COPY build.gradle settings.gradle ./
