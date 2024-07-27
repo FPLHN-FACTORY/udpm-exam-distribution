@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <link rel="stylesheet" th:href="@{/css/teacher/manage-exam-file/exam-file.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <title>Teacher - Tải đề thi</title>
 </head>
 <body>
@@ -25,51 +26,127 @@
                     <h2>Tải đề thi</h2>
                 </div>
                 <div class="p-4">
+                    <!-- Infomation  -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <h3 class="m-portlet__head-text">
+                            <i class="fas fa-info-circle"></i> Thông tin môn học
+                        </h3>
+                        <div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="subjectCode">Mã môn</label>
+                                    <span id="subjectCode" name="subjectCode"
+                                          class="form-control text-black border border-secondary text-truncate"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectName">Tên môn</label>
+                                    <span id="subjectName" name="subjectName"
+                                          class="form-control text-black border border-secondary text-truncate"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectDepartment">Bộ môn</label>
+                                    <span id="subjectDepartment" name="subjectDepartment"
+                                          class="form-control text-black border border-secondary text-truncate"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectType">Loại môn</label>
+                                    <span id="subjectType" name="subjectType"
+                                          class="form-control text-black border border-secondary text-truncate"></span>
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectUploaded">Đã upload</label>
+                                    <span id="subjectUploaded" name="subjectUploaded"
+                                          class="form-control text-black border border-secondary text-truncate"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Filter -->
                     <div class="shadow p-4 mb-4 bg-white rounded">
                         <h3 class="m-portlet__head-text">
                             <i class="fa-solid fa-filter"></i> Bộ lọc
                         </h3>
-                        <form id="filterForm">
+                        <form id="filterFormMockExam">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="findSubject">Mã/Tên môn học</label>
-                                    <input type="text" id="findSubject" style="height: 60%;" class="form-control">
+                                    <label for="staff-upload-find">Mã đề/Giảng viên upload</label>
+                                    <input type="text" id="staff-upload-find"
+                                           class="form-control"
+                                           placeholder="Nhập từ khóa tìm kiếm(Mã đề / Giảng viên upload)"
+                                           style="height: 60%;">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="subjectType">Loại môn học</label>
-                                    <select id="subjectType" style="height: 60%;" class="form-select">
-                                        <option value="">-- Chọn loại môn học --</option>
-                                        <option value="TRADITIONAL">Truyền thống</option>
-                                        <option value="ONLINE">Online</option>
-                                        <option value="BLEND">Truyền thống kết hợp Online</option>
-                                        <option value="TRUC_TUYEN">Trực tuyến</option>
-                                    </select>
+                                    <label for="startEndDate">Ngày upload</label>
+                                    <input type="text" class="form-control" id="startEndDate"
+                                           placeholder="Start date ⇀ End date" style="height: 60%;">
                                 </div>
                             </div>
                         </form>
                     </div>
                     <!-- Filter -->
+                    <div class="d-flex justify-content-end mb-1">
+                        <div>
+                            <button type="button" class="btn btn-black mt-4 position-relative" id="btnAll">
+                                Tất cả
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      id="sumAll">
+                                        <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-black mt-4 position-relative ms-1"
+                                    id="btnWaitingApproval">
+                                Chờ phê duyệt
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      id="sumWaitingApproval">
+                                        <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-black mt-4 position-relative ms-1" id="btnInUse">
+                                Đã phê duyệt
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      id="sumInUse">
+                                        <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-black mt-4 position-relative ms-1" id="btnRejected">
+                                Bị từ chối
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      id="sumRejected">
+                                      <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                     <div class="shadow p-4 bg-white rounded">
-                        <div class="mt-4">
-                            <h4>Danh sách môn học</h4>
+                        <div class="d-flex justify-content-between mt-4">
+                            <div class="mt-4">
+                                <h4>Danh sách đề thi</h4>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <button type="button"
+                                        style="height: min-content"
+                                        class="btn btn-black"
+                                        onclick="handleOpenModalExamFile()"
+                                >
+                                    Upload đề
+                                </button>
+                            </div>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
-                                <thead>
+                                <thead id="examTableHead">
                                 <tr>
                                     <td>STT</td>
-                                    <td>Mã môn học</td>
-                                    <td>Tên môn học</td>
-                                    <td>Bộ môn</td>
-                                    <td>Loại môn học</td>
-                                    <td>Đã upload</td>
+                                    <td>Mã đề</td>
+                                    <td>Trạng thái</td>
+                                    <td>Giảng viên upload</td>
+                                    <td>Ngày upload</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
-                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tbody id="examTableBody" class="table-group-divider">
                                 <tr>
                                     <td colspan="6" class="text-center">Không có dữ liệu</td>
                                 </tr>
@@ -95,7 +172,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Upload Exam File  bỏ-->
+    <!-- Modal Upload Exam File -->
     <div class="modal modal-xl fade" id="examFileModal" tabindex="-1" aria-labelledby="examFileModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -144,13 +221,13 @@
     </div>
     <!-- Modal Upload Exam File -->
 
-    <!-- Modal Detail Sample Exam Paper -->
+    <!-- Modal Detail Exam Paper -->
     <div class="modal modal-xl fade" id="detailSampleExamModal" tabindex="-1"
          aria-labelledby="detailExamRuleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Chi tiết đề mẫu</h5>
+                    <h5 class="modal-title">Chi tiết đề thi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -166,7 +243,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Detail Sample Exam Paper -->
+    <!-- Modal Detail Exam Paper -->
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -186,7 +263,10 @@
 <script th:src="@{/js/user-info-handler.js}"></script>
 <script th:src="@{/js/loading.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script th:src="@{/js/teacher/manage-exam-file/exam-file.js}"></script>
+<!--datepicker -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script th:src="@{/js/teacher/manage-exam-file/detail-sample-exam.js}"></script>
+<script th:src="@{/js/teacher/manage-exam-file/upload-exam-file.js}"></script>
 </body>
 </html>

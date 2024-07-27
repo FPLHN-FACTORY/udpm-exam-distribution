@@ -22,12 +22,22 @@ const setStateSubjectIdDetail = (value) => {
 
 //END: setter
 
-function handleDetail(subjectId) {
+function handleDetailSampleExam(subjectId) {
     handleSolveViewWhenOpenModalDetail();
 
     //reset laij page 1
     pageNumDetail = 1;
     handleFetchSampleExam(subjectId);
+
+    $("#detailSampleExamModal").modal("show");
+}
+
+function handleDetailExamPaper(examPaperId) {
+    handleSolveViewWhenOpenModalDetail();
+
+    //reset laij page 1
+    pageNumDetail = 1;
+    handleFetchExamPaper(examPaperId);
 
     $("#detailSampleExamModal").modal("show");
 }
@@ -42,6 +52,36 @@ const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và pag
     if (totalPage > 1) {
         $("#paging-pdf-detail").prop("hidden", false);
     }
+};
+
+const handleFetchExamPaper = (examPaperId) => {
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_FILE + "/detail-exam-paper?examPaperId=" + examPaperId,
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody?.data?.data), c => c.charCodeAt(0));
+            pdfjsLibDetail
+                .getDocument({data: pdfData})
+                .promise.then(function (pdfDoc_) {
+                pdfDocDetail = pdfDoc_;
+                $("#total-page-detail").text(pdfDocDetail.numPages);
+
+                renderPageDetail(pageNumDetail);
+                showViewAndPagingPdfDetail(pdfDocDetail.numPages);
+
+                hideLoading();
+            });
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
 };
 
 const handleFetchSampleExam = (subjectId) => {
@@ -74,7 +114,59 @@ const handleFetchSampleExam = (subjectId) => {
     });
 };
 
-const handleDownloadExamPaper = (subjectId) => {
+const handleDownloadExamPaperById = (examPaperId) => {
+    swal({
+        title: "Xác nhận download đề thi?",
+        text: "Bạn chắc chắn muốn download đề thi không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Download",
+                className: "btn btn-black",
+            },
+        },
+    }).then((ok) => {
+        if (ok) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_TEACHER_EXAM_FILE + "/detail-exam-paper?examPaperId=" + examPaperId,
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody?.data?.data), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    // Tạo đối tượng URL từ Blob
+                    const url = URL.createObjectURL(blob);
+
+                    // Tạo và nhấp vào liên kết để tải tệp
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf'; // Đặt tên cho file tải về
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Xóa đối tượng URL sau khi tải
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
+        }
+    });
+};
+
+const handleDownloadSampleExamPaper = (subjectId) => {
     swal({
         title: "Xác nhận download đề thi mẫu?",
         text: "Bạn chắc chắn muốn download đề thi mẫu không?",

@@ -168,3 +168,29 @@ tr:nth-child(even) {
     background-color: #1A2035;
     color: white;
 }
+
+/*button */
+
+.btn {
+    background-color: #262324;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 1rem 1.3rem;
+    color: #fff;
+}
+
+.btn:hover {
+    background-color: #FFD35A !important;
+    color: #070707 !important;
+}
+
+.btn-selected{
+    background-color: #FFD35A !important;
+    color: #070707 !important;
+}
+
+.btn + .btn {
+    margin-left: .5rem;
+}

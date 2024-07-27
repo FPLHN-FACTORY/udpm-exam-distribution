@@ -16,7 +16,6 @@ public interface TMockExamSubjectRepository extends SubjectRepository {
             	   d.name AS departmentName,
             	   s.id AS id,
             	   s.subject_type AS subjectType,
-            	   s.subject_status AS subjectStatus,
             	   CONCAT(s2.name,' - ',s2.year) AS semesterName
             FROM staff_subject ss
             JOIN subject s ON s.id = ss.id_subject
@@ -29,7 +28,6 @@ public interface TMockExamSubjectRepository extends SubjectRepository {
                      OR (d.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
                      OR (CONCAT(s.subject_code, ' - ',s.name) LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
-            AND (:#{#request.subjectStatus} IS NULL OR s.subject_status LIKE :#{"%" + #request.subjectStatus + "%"})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})
             """,
             countQuery = """
@@ -45,7 +43,6 @@ public interface TMockExamSubjectRepository extends SubjectRepository {
                      OR (d.name LIKE :#{"%" + #request.subjectAndDepartment + "%"})
                      OR (CONCAT(s.subject_code, ' - ',s.name) LIKE :#{"%" + #request.subjectAndDepartment + "%"}))
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
-            AND (:#{#request.subjectStatus} IS NULL OR s.subject_status LIKE :#{"%" + #request.subjectStatus + "%"})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})
             """, nativeQuery = true)
     Page<TSubjectMockExamResponse> getAllSubject(Pageable pageable, String staffId, TSubjectMockExamRequest request);
