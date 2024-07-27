@@ -54,10 +54,12 @@ public class StaffWriter implements ItemWriter<TranferStaffRole> {
                     staffRole.setStatus(EntityStatus.ACTIVE);
                     StaffRole savedStaffRole = staffRoleCustomRepository.save(staffRole);
                     // Save staff major facility third
-                    StaffMajorFacility staffMajorFacility = staffMajorFacilityRepository.save(tranferStaffRole.getStaffMajorFacility());
+                    StaffMajorFacility staffMajorFacility = tranferStaffRole.getStaffMajorFacility();
+                    staffMajorFacility.setStaff(savedStaff);
+                    StaffMajorFacility saveStaffMajorFacility = staffMajorFacilityRepository.save(staffMajorFacility);
                     log.info("Staff: " + savedStaff.toString());
                     log.info("Role: " + savedStaffRole.toString());
-                    log.info("StaffMajorFacility: " + staffMajorFacility.toString());
+                    log.info("StaffMajorFacility: " + saveStaffMajorFacility.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error processing record: " + tranferStaffRole, e);
