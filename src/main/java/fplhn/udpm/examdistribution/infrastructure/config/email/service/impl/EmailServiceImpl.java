@@ -29,7 +29,13 @@ public class EmailServiceImpl implements EmailService {
 
         String toEmail = "nguyenvimanhnqt@gmail.com";
 
+        String header = MailConstant.HEADER
+                .replace("${title}","Thông báo đề thi thử đã được mở.");
+
         String body = MailConstant.BODY;
+
+        String footer = MailConstant.FOOTER;
+
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = null;
@@ -39,7 +45,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setFrom("nguyenvimanhnqt@gmail.com");
             mimeMessageHelper.setTo(toEmail);
             mimeMessageHelper.setBcc(listEmailBcc);
-            mimeMessageHelper.setText(body, true);
+            mimeMessageHelper.setText(header + body + footer, true);
             mimeMessageHelper.setSubject(MailConstant.SUBJECT);
             mimeMessageHelper.addInline("logoImage", resource);
 
