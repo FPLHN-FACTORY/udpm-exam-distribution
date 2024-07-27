@@ -27,14 +27,15 @@ public interface TSubjectRepository extends SubjectRepository {
                      FROM exam_paper ep
                      JOIN subject s3 ON s3.id = ep.id_subject
                      WHERE s3.id = s.id
-                    AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)) AS uploaded
+                     AND ep.id_staff_upload = :staffId
+                     AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)) AS uploaded
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id
             JOIN assign_uploader au ON au.id_subject = s.id
             JOIN semester s2 ON s2.id = au.id_semester
             JOIN block b ON b.id_semester = s2.id
-            WHERE au.id_staff LIKE :staffId
+            WHERE au.id_staff = :staffId
             AND (df.id = :departmentFacilityId)
             AND au.status = 0
             AND (s.status = 0)
@@ -52,7 +53,7 @@ public interface TSubjectRepository extends SubjectRepository {
                  JOIN assign_uploader au ON au.id_subject = s.id
                  JOIN semester s2 ON s2.id = au.id_semester
                  JOIN block b ON b.id_semester = s2.id
-                 WHERE au.id_staff LIKE :staffId
+                 WHERE au.id_staff = :staffId
                  AND (df.id = :departmentFacilityId)
                  AND au.status = 0
                  AND (s.status = 0) 
@@ -79,7 +80,8 @@ public interface TSubjectRepository extends SubjectRepository {
                      FROM exam_paper ep
                      JOIN subject s3 ON s3.id = ep.id_subject
                      WHERE s3.id = s.id
-                    AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)) AS uploaded
+                     AND ep.id_staff_upload = :staffId  
+                     AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)) AS uploaded
             FROM subject s
             JOIN department d ON s.id_department = d.id
             JOIN department_facility df ON df.id_department = d.id

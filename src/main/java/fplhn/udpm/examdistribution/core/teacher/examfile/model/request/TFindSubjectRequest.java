@@ -15,6 +15,4 @@ public class TFindSubjectRequest extends PageableRequest {
 
     private String subjectType;
 
-    private String staffId;
-
 }
