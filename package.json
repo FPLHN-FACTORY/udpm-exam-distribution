@@ -1,6 +1,10 @@
 {
   "name": "exam-distribution",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "main": "minifyJs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "glob": "^11.0.0",
     "terser": "^5.31.3"
