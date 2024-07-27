@@ -28,7 +28,9 @@ repositories {
 }
 
 node {
-    download = false
+    version = '16.13.0'
+    npmVersion = '8.1.0'
+    download = true
 }
 
 task myScript(type: NodeTask, dependsOn: 'npmInstall') {
