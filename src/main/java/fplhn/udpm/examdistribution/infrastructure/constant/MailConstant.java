@@ -74,7 +74,16 @@ public class MailConstant {
                     <div style="text-align: center"><h3>${title}</h3></div>
                         """;
 
-    public static final String BODY = "";
+    public static final String BODY = """
+                <ul>
+                    <li>Mã đề: ${examPaperCode}</li>
+                    <li>Thời gian: ${timeSend}</li>
+                    <li>Môn: ${subjectName}</li>
+                    <li>Chuyên ngành: ${majorName}</li>
+                    <li>Bộ môn: ${departmentName}</li>
+                    <li>Kỳ học: ${semesterName}</li>
+                </ul>
+            """;
 
     public static final String BODY_START_EXAM_SHIFT = """
             <html>

@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.email.service.impl;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.utils.PermissionDetail;
+import fplhn.udpm.examdistribution.infrastructure.config.email.modal.request.SendEmailPublicMockExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MailConstant;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
@@ -25,14 +26,20 @@ public class EmailServiceImpl implements EmailService {
     private final GoogleDriveManagerService googleDriveManagerService;
 
     @Override
-    public void sendEmailPublicMockExamPaper(String[] listEmailBcc) {
+    public void sendEmailPublicMockExamPaper(SendEmailPublicMockExamPaperRequest request) {
 
         String toEmail = "nguyenvimanhnqt@gmail.com";
 
         String header = MailConstant.HEADER
-                .replace("${title}","Thông báo đề thi thử đã được mở.");
+                .replace("${title}", "Thông báo đề thi thử đã được mở.");
 
-        String body = MailConstant.BODY;
+        String body = MailConstant.BODY
+                .replace("${examPaperCode}", request.getExamPaperCode())
+                .replace("${timeSend}", DateTimeUtil.parseLongToString(request.getTimeSend().getTime()))
+                .replace("${subjectName}", request.getSubjectName())
+                .replace("${majorName}", request.getMajorName())
+                .replace("${departmentName}", request.getDepartmentName())
+                .replace("${semesterName}", request.getSemesterName());
 
         String footer = MailConstant.FOOTER;
 
@@ -44,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
             ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
             mimeMessageHelper.setFrom("nguyenvimanhnqt@gmail.com");
             mimeMessageHelper.setTo(toEmail);
-            mimeMessageHelper.setBcc(listEmailBcc);
+            mimeMessageHelper.setBcc(request.getListEmailBcc());
             mimeMessageHelper.setText(header + body + footer, true);
             mimeMessageHelper.setSubject(MailConstant.SUBJECT);
             mimeMessageHelper.addInline("logoImage", resource);

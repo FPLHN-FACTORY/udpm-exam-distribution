@@ -19,6 +19,7 @@ import fplhn.udpm.examdistribution.entity.MajorFacility;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.email.modal.request.SendEmailPublicMockExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
@@ -26,11 +27,9 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
 import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -371,7 +370,24 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                         "Môn học này chưa được xếp lớp học"
                 );
             }
-            emailService.sendEmailPublicMockExamPaper(listEmailStaff);
+            SendEmailPublicMockExamPaperRequest sendEmailPublicMocExamPaper = new SendEmailPublicMockExamPaperRequest();
+            sendEmailPublicMocExamPaper.setListEmailBcc(listEmailStaff);
+            sendEmailPublicMocExamPaper.setExamPaperCode(optionalExamPaper.get().getExamPaperCode());
+            sendEmailPublicMocExamPaper.setTimeSend(new Date());
+            sendEmailPublicMocExamPaper.setSubjectName(optionalExamPaper.get().getSubject().getName());
+            sendEmailPublicMocExamPaper.setMajorName(optionalExamPaper.get().getMajorFacility().getMajor().getName());
+            sendEmailPublicMocExamPaper.setDepartmentName(optionalExamPaper.get().getMajorFacility().getMajor().getDepartment().getName());
+            sendEmailPublicMocExamPaper.setSemesterName(
+                    optionalExamPaper.get().getBlock().getSemester().getSemesterName()
+                    +
+                    " "
+                    +
+                    optionalExamPaper.get().getBlock().getSemester().getYear()
+                    +
+                    " - "
+                    +
+                    optionalExamPaper.get().getBlock().getName().name());
+            emailService.sendEmailPublicMockExamPaper(sendEmailPublicMocExamPaper);
 
             ExamPaper examPaper = optionalExamPaper.get();
             examPaper.setIsPublic(true);
