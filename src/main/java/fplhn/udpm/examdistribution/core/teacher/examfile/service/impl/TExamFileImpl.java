@@ -70,7 +70,8 @@ public class TExamFileImpl implements TExamFileService {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
                 PageableObject.of(subjectRepository.getAllSubject(
-                        pageable, departmentFacilityId,
+                        pageable,
+                        departmentFacilityId,
                         request,
                         (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
                 HttpStatus.OK,

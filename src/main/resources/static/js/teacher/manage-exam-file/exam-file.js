@@ -49,16 +49,14 @@ const fetchSearchSubject = (
     size = $('#pageSize').val(),
     paramSearch = {
         findSubject: "",
-        subjectType: "",
-        staffId: examDistributionInfor.userId
+        subjectType: ""
     },
 ) => {
     const params = {
         page: page,
         size: size,
         findSubject: paramSearch.findSubject,
-        subjectType: paramSearch.subjectType,
-        staffId: paramSearch.staffId
+        subjectType: paramSearch.subjectType
     };
 
     let url = ApiConstant.API_TEACHER_EXAM_FILE + "/subject?";

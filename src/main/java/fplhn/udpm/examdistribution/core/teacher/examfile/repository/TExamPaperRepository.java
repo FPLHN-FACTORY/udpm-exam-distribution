@@ -4,10 +4,7 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFile
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TCountExamPaperByStatus;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TExamFileResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSampleExamPaperResponse;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TMockExamPaperResponse;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
-import org.checkerframework.checker.units.qual.N;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

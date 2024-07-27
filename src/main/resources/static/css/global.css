@@ -173,7 +173,7 @@ tr:nth-child(even) {
 
 .btn {
     background-color: #262324;
-    border-radius: 50px;
+    border-radius: 16px;
     font-size: 1rem;
     font-weight: 500;
     line-height: 1;
