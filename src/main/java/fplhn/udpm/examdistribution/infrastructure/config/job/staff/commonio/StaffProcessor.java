@@ -34,7 +34,6 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
 
     @Autowired
     private ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
-
     @Override
     public TranferStaffRole process(StaffExcelRequest item) throws Exception {
         try {
@@ -69,26 +68,27 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
                 staffCode = item.getStaffCode();
             }
 
-            List<Staff> staff = staffCustomRepository.findAllByStaffCode(staffCode);
+            List<Staff> staffList = staffCustomRepository.findAllByStaffCode(staffCode);
             StaffMajorFacility newStaffMajorFacility = new StaffMajorFacility();
-            if (!staff.isEmpty()) {
-                staff.get(0).setName(item.getName());
-                staff.get(0).setAccountFpt(item.getAccountFpt());
-                staff.get(0).setAccountFe(item.getAccountFe());
-                staff.get(0).setStatus(EntityStatus.ACTIVE);
-                List<StaffMajorFacility> staffMajorFacilities = staffMajorFacilityRepository.findAllByStaffAndFacility(staff.get(0).getId(), facilityCode);
+
+            if (!staffList.isEmpty()) {
+                Staff staff = staffList.get(0);
+                staff.setName(item.getName());
+                staff.setAccountFpt(item.getAccountFpt());
+                staff.setAccountFe(item.getAccountFe());
+                staff.setStatus(EntityStatus.ACTIVE);
+
+                List<StaffMajorFacility> staffMajorFacilities = staffMajorFacilityRepository.findAllByStaffAndFacility(staff.getId(), facilityCode);
                 if (staffMajorFacilities.isEmpty()) {
-                    StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
-                    staffMajorFacility.setStaff(staff.get(0));
-                    staffMajorFacility.setStatus(EntityStatus.ACTIVE);
-                    staffMajorFacility.setMajorFacility(majorFacilities.get(0));
-                    newStaffMajorFacility = staffMajorFacility;
+                    newStaffMajorFacility.setStatus(EntityStatus.ACTIVE);
+                    newStaffMajorFacility.setMajorFacility(majorFacilities.get(0));
                 } else {
-                    staffMajorFacilities.get(0).setStatus(EntityStatus.ACTIVE);
-                    staffMajorFacilities.get(0).setMajorFacility(majorFacilities.get(0));
-                    newStaffMajorFacility = staffMajorFacilities.get(0);
+                    StaffMajorFacility existingStaffMajorFacility = staffMajorFacilities.get(0);
+                    existingStaffMajorFacility.setStatus(EntityStatus.ACTIVE);
+                    existingStaffMajorFacility.setMajorFacility(majorFacilities.get(0));
+                    newStaffMajorFacility = existingStaffMajorFacility;
                 }
-                return new TranferStaffRole(staff.get(0), roles.get(0),newStaffMajorFacility);
+                return new TranferStaffRole(staff, roles.get(0), newStaffMajorFacility);
             }
 
             Staff staffNew = new Staff();
@@ -98,14 +98,12 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
             staffNew.setAccountFpt(item.getAccountFpt());
             staffNew.setAccountFe(item.getAccountFe());
             staffNew.setStatus(EntityStatus.ACTIVE);
+
             StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
-            staffMajorFacility.setStaff(staffNew);
             staffMajorFacility.setStatus(EntityStatus.ACTIVE);
             staffMajorFacility.setMajorFacility(majorFacilities.get(0));
-            staffMajorFacilityRepository.save(staffMajorFacility);
-            return new TranferStaffRole(staffNew, roles.get(0),staffMajorFacility);
+            return new TranferStaffRole(staffNew, roles.get(0), staffMajorFacility);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Error processing excel row : " + item, e);
             return null;
         }

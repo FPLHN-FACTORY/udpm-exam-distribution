@@ -442,6 +442,7 @@ function submitUpload() {
             $('#modalUploadExcel').modal('hide');
             $('#input_file').val('');
             clearFormSearch();
+            getStaffs();
         },
         error: (error) => {
             $('#modalUploadExcel').modal('hide');
