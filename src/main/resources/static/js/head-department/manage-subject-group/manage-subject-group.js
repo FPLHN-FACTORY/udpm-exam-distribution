@@ -170,7 +170,7 @@ const getListSubject = (subjectGroupId, subjectParams) => {
             departmentFacilityId: userInfo.departmentFacilityId,
             subjectGroupId: subjectGroupId || currentSubjectGroupId || null,
             semesterId: subjectGroupParams.semesterId,
-            q: subjectParams?.q.trim() || null,
+            q: subjectParams?.q?.trim() || null,
         }
     );
     $.ajax({
