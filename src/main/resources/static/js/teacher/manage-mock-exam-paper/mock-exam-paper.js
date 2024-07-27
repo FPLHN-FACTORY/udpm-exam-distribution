@@ -11,18 +11,6 @@ $(document).ready(function () {
             {
                 subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
                 subjectType: $('#subjectType').val()?.trim(),
-                subjectStatus: $('#subjectStatus').val()?.trim(),
-                semester: $('#semesterFind').val()?.trim()
-            });
-    }))
-
-    $('#subjectStatus').on('change', debounce(() => {
-        fetchSearchSubject(1,
-            $('#pageSize').val(),
-            {
-                subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
-                subjectType: $('#subjectType').val()?.trim(),
-                subjectStatus: $('#subjectStatus').val()?.trim(),
                 semester: $('#semesterFind').val()?.trim()
             });
     }))
@@ -33,7 +21,6 @@ $(document).ready(function () {
             {
                 subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
                 subjectType: $('#subjectType').val()?.trim(),
-                subjectStatus: $('#subjectStatus').val()?.trim(),
                 semester: $('#semesterFind').val()?.trim()
             });
     }))
@@ -44,7 +31,6 @@ $(document).ready(function () {
             {
                 subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
                 subjectType: $('#subjectType').val()?.trim(),
-                subjectStatus: $('#subjectStatus').val()?.trim(),
                 semester: $('#semesterFind').val()?.trim()
             });
     }))
@@ -55,7 +41,6 @@ $(document).ready(function () {
             {
                 subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
                 subjectType: $('#subjectType').val()?.trim(),
-                subjectStatus: $('#subjectStatus').val()?.trim(),
                 semester: $('#semesterFind').val()?.trim()
             });
     }));
@@ -69,7 +54,6 @@ const handleFetch = async () => {
         {
             subjectAndDepartment: '',
             subjectType: '',
-            subjectStatus: '',
             semester: recentlySemester ? recentlySemester : ''
         });
 }
@@ -86,7 +70,6 @@ const fetchSearchSubject = (
     paramSearch = {
         subjectAndDepartment: '',
         subjectType: '',
-        subjectStatus: '',
         semester: ''
     }
 ) => {
@@ -95,7 +78,6 @@ const fetchSearchSubject = (
         size: size,
         subjectAndDepartment: paramSearch.subjectAndDepartment,
         subjectType: paramSearch.subjectType,
-        subjectStatus: paramSearch.subjectStatus,
         semester: paramSearch.semester
     };
 
@@ -120,7 +102,7 @@ const fetchSearchSubject = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const subjects = responseData.map(function (subject, index) {
@@ -129,11 +111,12 @@ $('#pagination').empty();
                            <td>${subject.subjectName}</td>
                            <td>${subject.departmentName}</td>
                             <td>${getStatusType(subject.subjectType)}</td>
-                            <td>${getStatusBadge(subject.subjectStatus)}</td>
                             <td>${subject.semesterName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}')" class="fs-4">
-
+                                <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}')" 
+                                   data-bs-toggle="tooltip" 
+                                    data-bs-title="Đề thi thử"
+                                    class="fs-4"> 
                                     <i  class="fa-solid fa-receipt"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
@@ -144,25 +127,13 @@ $('#pagination').empty();
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
         }
     });
 };
-
-function getStatusBadge(status) {
-    switch (status) {
-        case 'MO':
-            return '<span class="tag tag-success">Mở</span>';
-        case 'DANG_DANG_KY':
-            return '<span class="tag tag-secondary">Đang đăng ký</span>';
-        case 'DONG':
-            return '<span class="tag tag-danger">Đóng</span>';
-        default:
-            return '<span class="tag tag-secondary">Không xác định</span>';
-    }
-}
 
 function getStatusType(type) {
     switch (type) {
@@ -282,7 +253,6 @@ const changePage = (page) => {
         {
             subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
             subjectType: $('#subjectType').val()?.trim(),
-            subjectStatus: $('#subjectStatus').val()?.trim(),
             semester: $('#semesterFind').val()?.trim()
         });
 };

@@ -61,7 +61,7 @@ const fetchSearchSubject = (
         staffId: paramSearch.staffId
     };
 
-    let url = ApiConstant.API_TEACHER_EXAM_FILE + "/subject/" + examDistributionInfor.departmentFacilityId + '?';
+    let url = ApiConstant.API_TEACHER_EXAM_FILE + "/subject?";
 
     for (let [key, value] of Object.entries(params)) {
         if (value) {
@@ -82,7 +82,7 @@ const fetchSearchSubject = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const subjects = responseData.map(subject => {
@@ -94,19 +94,27 @@ $('#pagination').empty();
                             <td>${getStatusType(subject.subjectType)}</td>
                             <td>${subject.uploaded}/${subject.maxUpload}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                ${subject.uploaded >= subject.maxUpload ? '' : `
-                                <span onclick="handleOpenModalExamFile('${subject.id}','${subject.subjectCode}')" 
-                                class="fs-4">
-                                <i class="fa-solid fa-upload"
-                                   style="cursor: pointer; margin-left: 10px;"
-                                ></i>
-                                </span>`}  
-                                <span onclick="handleDetail('${subject.id}')" class="fs-4">
+                               ${subject.uploaded >= subject.maxUpload ? '' : `
+                                <a href="/teacher/exam-file/subject/${subject.id}"
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-title="Upload đề"
+                                   class="fs-4 text-dark text-decoration-none">
+                                    <i class="fa-solid fa-upload"
+                                       style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </a>`}
+                                <span onclick="handleDetailSampleExam('${subject.id}')" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Xem đề mẫu"
+                                    class="fs-4">
                                 <i class="fa-solid fa-eye"
                                    style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                             </span>
-                            <span onclick="handleDownloadExamPaper('${subject.id}')" class="fs-4">
+                            <span onclick="handleDownloadSampleExamPaper('${subject.id}')" 
+                                   data-bs-toggle="tooltip" 
+                                    data-bs-title="Download đề mẫu"
+                                    class="fs-4">
                                 <i class="fa-solid fa-download"
                                    style="cursor: pointer; margin-left: 10px;"
                                 ></i>
@@ -117,7 +125,8 @@ $('#pagination').empty();
             });
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
-            createPagination(totalPages, page);
+            createPagination(totalPages, page)
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');

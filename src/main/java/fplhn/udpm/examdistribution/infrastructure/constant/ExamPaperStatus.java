@@ -4,6 +4,7 @@ public enum ExamPaperStatus {
 
     IN_USE,
     STOP_USING,
-    WAITING_APPROVAL
+    WAITING_APPROVAL,
+    REJECTED
 
 }

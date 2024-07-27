@@ -12,8 +12,6 @@ public class TSubjectMockExamRequest extends PageableRequest {
 
     private String subjectType;
 
-    private String subjectStatus;
-
     private String semester;
 
 }

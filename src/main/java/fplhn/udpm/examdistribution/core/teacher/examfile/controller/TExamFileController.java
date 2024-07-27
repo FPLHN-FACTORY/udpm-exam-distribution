@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -23,6 +24,11 @@ public class TExamFileController {
         }else {
             return "error/403";
         }
+    }
+
+    @GetMapping("/subject/{id}")
+    public String viewDetailExamFile(@PathVariable("id") String id) {
+        return "teacher/manage-exam-file/upload-exam-file";
     }
 
 }

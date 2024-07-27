@@ -311,7 +311,7 @@ const openModalAddRole = async () => {
 
     $('#modifyRoleModal').modal('show');
 
-    handleAddEvent();
+    handleAddEventStaffRole();
 
 }
 
@@ -369,7 +369,7 @@ function clearEvents() {
     $('#modifyRoleModal').off('hidden.bs.modal');
 }
 
-function handleAddEvent() {
+function handleAddEventStaffRole() {
 
     clearEvents();
 

@@ -148,16 +148,6 @@ function handleDetailMockExamPaper(idMockExamPaper) {
     $("#mockExamPaperModal").modal("hide");
 }
 
-function formatDateTime(date) {
-    const d = new Date(Number(date));
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, "0");
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-}
-
 const handleDownloadExamPaper = (fileId) => {
     showLoading();
     $.ajax({
@@ -226,7 +216,7 @@ const fetchMockExamPaper = (subjectId,
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const mockExamPapers = responseData.map(function (mockExamPaper, index) {
@@ -237,19 +227,26 @@ $('#pagination').empty();
                             <td>${mockExamPaper.staffUpload}</td>
                             <td>${formatDateTime(mockExamPaper.createdExamPaperDate)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleDetailMockExamPaper('${mockExamPaper.id}')" class="fs-4">
+                                <span onclick="handleDetailMockExamPaper('${mockExamPaper.id}')" 
+                                data-bs-toggle="tooltip" 
+                                    data-bs-title="Chi tiết đề"
+                                    class="fs-4">
                                 <i class="fas fas fa-eye" 
                                    style="cursor: pointer; margin-left: 10px;"></i>
                                      
                                 </span>
-                                 <span onclick="handleDownloadExamPaper('${mockExamPaper.path}')" class="fs-4">
+                                 <span onclick="handleDownloadExamPaper('${mockExamPaper.path}')" 
+                                     data-bs-toggle="tooltip" 
+                                    data-bs-title="Tải xuống"
+                                    class="fs-4">
                                 <i class="fa-solid fa-download" 
                                    style="cursor: pointer; margin-left: 10px;"></i>
                                 </span> 
                             </td>
                         </tr>`;
             });
-            $('#mockExamTableBody').html(mockExamPapers);
+            $('#mockExamTableBody').html(mockExamPapers)
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy danh sách đề thi');

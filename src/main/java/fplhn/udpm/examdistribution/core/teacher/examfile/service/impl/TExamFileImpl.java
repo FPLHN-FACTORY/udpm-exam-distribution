@@ -3,9 +3,12 @@ package fplhn.udpm.examdistribution.core.teacher.examfile.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TCountExamPaperByStatus;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSampleExamPaperResponse;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSubjectResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TAssignUploaderRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TBlockRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TExamPaperRepository;
@@ -13,6 +16,7 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TMajorFacili
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TStaffRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TSubjectRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileService;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
@@ -61,12 +65,41 @@ public class TExamFileImpl implements TExamFileService {
     private final RedisService redisService;
 
     @Override
-    public ResponseObject<?> getAllSubject(String departmentFacilityId, TFindSubjectRequest request) {
+    public ResponseObject<?> getAllSubject(TFindSubjectRequest request) {
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, request, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
+                PageableObject.of(subjectRepository.getAllSubject(
+                        pageable, departmentFacilityId,
+                        request,
+                        (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID))),
                 HttpStatus.OK,
                 "Lấy thành công danh sách môn học"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getSubjectById(String subjectId) {
+        String departmentFacilityId = httpSession.getAttribute(
+                SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+
+        Optional<TSubjectResponse> response = subjectRepository.getSubjectById(
+                departmentFacilityId,
+                (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID),
+                subjectId);
+
+        if (response.isPresent()) {
+            return new ResponseObject<>(
+                    response.get(),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách môn học"
+            );
+        }
+
+        return new ResponseObject<>(
+                null,
+                HttpStatus.BAD_REQUEST,
+                "Không tìm thấy môn học"
         );
     }
 
@@ -89,8 +122,11 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        List<AssignUploader> assignUploaders = assignUploaderRepository.findAllBySubject_IdAndStaff_Id(subjectId, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
-        if (assignUploaders.isEmpty() || tExamPaperRepository.getCountUploaded(httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString(), subjectId) >= assignUploaders.get(0).getMaxUpload()) {
+        String currentUserId = (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID);
+        List<AssignUploader> assignUploader = assignUploaderRepository
+                .findAllBySubject_IdAndStaff_Id(subjectId, currentUserId);
+
+        if (assignUploader.isEmpty() || tExamPaperRepository.getCountUploaded(currentUserId, subjectId) >= assignUploader.get(0).getMaxUpload()) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.NOT_ACCEPTABLE,
@@ -98,7 +134,8 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        Optional<MajorFacility> majorFacility = majorFacilityRepository.findById(httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString());
+        String majorFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_MAJOR_FACILITY_ID).toString();
+        Optional<MajorFacility> majorFacility = majorFacilityRepository.findById(majorFacilityId);
 
         Optional<Staff> staffs = tStaffRepository.findById((String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID));
 
@@ -140,14 +177,20 @@ public class TExamFileImpl implements TExamFileService {
     }
 
     @Override
-    public ResponseObject<?> getMajorFacilityByDepartmentFacility(String departmentFacilityId) {
-        return new ResponseObject<>(majorFacilityRepository.getMajorFacilityByIdFacility(departmentFacilityId), HttpStatus.OK, "Lấy danh sách chuyên ngành theo cơ sở thành công!");
+    public ResponseObject<?> getMajorFacilityByDepartmentFacility() {
+        String departmentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString();
+        return new ResponseObject<>(
+                majorFacilityRepository.getMajorFacilityByIdFacility(departmentFacilityId),
+                HttpStatus.OK,
+                "Lấy danh sách chuyên ngành theo cơ sở thành công!");
     }
 
     @Override
     public ResponseObject<?> getSampleExamPaper(String subjectId) {
         try {
-            List<TSampleExamPaperResponse> examPaper = tExamPaperRepository.getSampleExamPaper(httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString(), subjectId);
+            List<TSampleExamPaperResponse> examPaper = tExamPaperRepository.getSampleExamPaper(
+                    httpSession.getAttribute(SessionConstant.CURRENT_USER_DEPARTMENT_FACILITY_ID).toString(),
+                    subjectId);
             if (examPaper.isEmpty()) {
                 return new ResponseObject<>(
                         null,
@@ -165,17 +208,79 @@ public class TExamFileImpl implements TExamFileService {
                 );
             }
 
-            Resource resource= googleDriveFileService.loadFile(examPaper.get(0).getPath());
+            Resource resource = googleDriveFileService.loadFile(examPaper.get(0).getPath());
             String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
             return new ResponseObject<>(
-                    new FileResponse(data,resource.getFilename()), HttpStatus.OK, "Lấy đề thi mẫu thành công"
+                    new FileResponse(data, resource.getFilename()), HttpStatus.OK, "Lấy đề thi mẫu thành công"
             );
         } catch (Exception e) {
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Có lỗi xảy ra khi lấy đề thi thử"
             );
         }
+    }
+
+    @Override
+    public ResponseObject<?> getExamPapers(TExamFileRequest request) {
+        String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+        Pageable pageable = Helper.createPageable(request, "createdDate");
+        return new ResponseObject<>(
+                tExamPaperRepository.getExamPapers(pageable,request,staffId),
+                HttpStatus.OK,
+                "Lấy danh sách đề thi thành công");
+    }
+
+    @Override
+    public ResponseObject<?> getExamPaper(String examPaperId) {
+      try{
+          String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+          Optional<String> fileId = tExamPaperRepository.getExamPaper(examPaperId,staffId);
+          if (fileId.isEmpty()) {
+              return new ResponseObject<>(
+                      null,
+                      HttpStatus.BAD_REQUEST,
+                      "Lấy đề thi thất bại");
+          }
+          String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + examPaperId;
+          Object redisValue = redisService.get(redisKey);
+          if (redisValue != null) {
+              return new ResponseObject<>(
+                      new FileResponse(redisValue.toString(), "fileName"),
+                      HttpStatus.OK,
+                      "Lấy đề thi thành công"
+              );
+          }
+          Resource resource = googleDriveFileService.loadFile(fileId.get());
+          String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+          redisService.set(redisKey, data);
+          return new ResponseObject<>(
+                  new FileResponse(data, resource.getFilename()), HttpStatus.OK, "Lấy đề thi thành công"
+          );
+      }catch (Exception e){
+          e.printStackTrace();
+          return new ResponseObject<>(
+                  null,
+                  HttpStatus.BAD_REQUEST,
+                  "Có lỗi xảy ra khi lấy đề thi"
+          );
+      }
+    }
+
+    @Override
+    public ResponseObject<?> getCount(String subjectId) {
+        String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+        Optional<TCountExamPaperByStatus> countExamPaperByStatus = tExamPaperRepository.countExamPaper(subjectId,staffId);
+        if (countExamPaperByStatus.isEmpty()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Có lỗi xảy ra khi lấy số lượng đề thi");
+        }
+        return new ResponseObject<>(
+                countExamPaperByStatus,
+                HttpStatus.OK,
+                "Lấy số lượng đề thành công");
     }
 
 }

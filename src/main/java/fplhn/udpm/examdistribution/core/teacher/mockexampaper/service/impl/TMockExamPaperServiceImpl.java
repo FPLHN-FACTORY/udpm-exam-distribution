@@ -41,12 +41,20 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
     @Override
     public ResponseObject<?> getAllSubject(TSubjectMockExamRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(mockExamPaperRepository.getAllSubject(pageable, (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID), request), HttpStatus.OK, "Lấy danh sách môn học thành công");
+        return new ResponseObject<>(
+                mockExamPaperRepository.getAllSubject(pageable,
+                        (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID),
+                        request),
+                HttpStatus.OK,
+                "Lấy danh sách môn học thành công");
     }
 
     @Override
     public ResponseObject<?> getMockExams(TMockExamPaperRequest request) {
-        return new ResponseObject<>(examPaperRepository.getMockExamPapers(request), HttpStatus.OK, "Lấy danh sách đề thì thử thành công");
+        return new ResponseObject<>(
+                examPaperRepository.getMockExamPapers(request),
+                HttpStatus.OK,
+                "Lấy danh sách đề thì thử thành công");
     }
 
     @Override
@@ -55,7 +63,9 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
         if (!semesters.isEmpty() && semesters.size()>1) {
             TSemesterResponse currentSemester = null;
             for (int i =0 ;i < semesters.size(); i++) {
-                if (semesters.get(i).getId().equalsIgnoreCase(httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID).toString())) {
+                if (semesters.get(i).getId().equalsIgnoreCase(
+                        httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID)
+                                .toString())) {
                     currentSemester = semesters.get(i);
                     semesters.remove(i);
                     break;
