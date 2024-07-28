@@ -95,7 +95,12 @@ const connect = () => {
         });
         stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
             const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
+            showToastError(responseBody.message);
+            getStudents();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastError(responseBody.message);
             getStudents();
         });
     });

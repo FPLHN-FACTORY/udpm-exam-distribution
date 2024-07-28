@@ -18,6 +18,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -112,7 +113,7 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
             } else {
                 messageTrack = "Sinh viên " + studentOptional.get().getEmail() + " đã bật 1 tab khác";
             }
-            simpMessagingTemplate.convertAndSend("/topic/track-student",
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_TRACK_STUDENT,
                     new NotificationResponse(messageTrack));
 
             return new ResponseObject<>(
@@ -145,8 +146,19 @@ public class StudentExamShiftTrackServiceImpl implements StudentExamShiftTrackSe
 
             StudentExamShift studentExamShift = studentExamShiftOptional.get();
             studentExamShift.setExamStudentStatus(ExamStudentStatus.KICKED);
-
             studentExamShiftRepository.save(studentExamShift);
+
+            StudentExamShiftTrack studentExamShiftTrack = new StudentExamShiftTrack();
+            studentExamShiftTrack.setStudent(studentExamShift.getStudent());
+            studentExamShiftTrack.setExamShift(examShiftOptional.get());
+            studentExamShiftTrack.setTimeViolation(new Date().getTime());
+            studentExamShiftTrack.setUrl("Sinh viên đã thoát khỏi phòng thi");
+            studentExamShiftTrack.setStatus(EntityStatus.ACTIVE);
+            examShiftTrackExtendRepository.save(studentExamShiftTrack);
+
+            String messageTrack = "Sinh viên " + studentExamShift.getStudent().getEmail() + " đã rời khỏi phòng thi";
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_REMOVE_TAB,
+                    new NotificationResponse(messageTrack));
         }
 
         return new ResponseObject<>(
