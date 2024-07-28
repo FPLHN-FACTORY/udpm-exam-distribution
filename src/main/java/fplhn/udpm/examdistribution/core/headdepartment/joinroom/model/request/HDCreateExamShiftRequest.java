@@ -28,7 +28,4 @@ public class HDCreateExamShiftRequest {
     @NotNull(message = "Số lượng sinh viên không được để trống")
     private Integer totalStudent;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    private String password;
-
 }

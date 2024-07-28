@@ -11,6 +11,8 @@ let examShiftCode = null;
 
 $(document).ready(function () {
 
+    fetchShifts();
+
     getExamShifts();
 
     $('#modifyExamShiftButton').on('click', function () {
@@ -57,6 +59,29 @@ $(document).ready(function () {
         }
     });
 });
+
+$(document).ready(function() {
+    let today = new Date();
+    let day = String(today.getDate()).padStart(2, '0');
+    let month = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let year = today.getFullYear();
+
+    today = year + '-' + month + '-' + day;
+    $('#modifyExamDate').val(today);
+});
+
+const fetchShifts = () => {
+    let shifts = $('#shiftsData').text().trim().slice(1, -1).split(',').map(shift => shift.trim());
+    let currentShift = $('#currentShift').text().trim();
+    console.log(shifts)
+    console.log(currentShift)
+
+    const shiftOptions = shifts.map((shift, index) => {
+        return `<option value="${shift}" ${shift === currentShift ? 'selected' : ''}>${shift}</option>`;
+    });
+
+    $('#modifyShift').html(shiftOptions);
+};
 
 const fetchSubjects = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
@@ -172,11 +197,10 @@ const addExamShift = () => {
         classSubjectId: classSubjectId,
         firstSupervisorCode: $('#modifyFirstSupervisorCode').val(),
         secondSupervisorCode: $('#modifySecondSupervisorCode').val(),
-        examDate: new Date($('#modifyExamDate').val()).getTime(),
+        examDate: new Date($('#modifyExamDate').val()).setHours(0, 0, 0, 0),
         shift: $('#modifyShift').val(),
         room: $('#modifyRoom').val(),
-        totalStudent: $('#modifyTotalStudent').val(),
-        password: $('#modifyPassword').val()
+        totalStudent: $('#modifyTotalStudent').val()
     }
     $.ajax({
         type: "POST",
@@ -186,7 +210,6 @@ const addExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 examShiftCode = responseBody?.data;
-                console.log(responseBody)
                 $('#examShiftModal').modal('hide');
                 getExamShifts();
                 showToastSuccess(responseBody?.message);
@@ -262,7 +285,7 @@ const resetFormAddExamShift = () => {
     $('#modifySubjectId').val('');
     $('#modifyBlockId').val('');
     $('#modifyFacilityChildId').val('');
-    $('#modifyPassword').val('');
+    fetchShifts();
 }
 
 const removeFormAddError = (id) => {
@@ -279,8 +302,6 @@ const removeFormAddError = (id) => {
     $('#modifyTotalStudent').removeClass('is-invalid');
     $('#modifyBlockId').removeClass('is-invalid');
     $('#modifyFacilityChildId').removeClass('is-invalid');
-    $('#modifyPassword').removeClass('is-invalid');
-    $('#passwordError').text('');
 };
 
 const openModalJoinExamShift = () => {

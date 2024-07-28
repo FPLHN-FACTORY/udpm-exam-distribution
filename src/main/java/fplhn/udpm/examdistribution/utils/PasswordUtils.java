@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class PasswordUtils {
 
@@ -39,6 +40,10 @@ public class PasswordUtils {
         String newSecurePassword = getSecurePassword(providedPassword, salt);
         // Check if two passwords are equal
         return newSecurePassword.equals(securedPassword);
+    }
+
+    public static String generatePassword() {
+        return RandomStringUtils.randomAlphanumeric(8);
     }
 
 //    public static void main(String[] args) {

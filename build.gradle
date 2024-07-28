@@ -90,6 +90,7 @@ dependencies {
     implementation 'org.webjars:pdf-js:2.10.377'
     implementation 'org.webjars:sockjs-client:1.5.1'
     implementation 'org.webjars:stomp-websocket:2.3.3'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 tasks.named('test') {

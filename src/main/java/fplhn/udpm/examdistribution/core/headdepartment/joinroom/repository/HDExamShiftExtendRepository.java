@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamShiftResponse;
+import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDSendMailWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -192,5 +193,46 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	AND es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     Integer countStudentInExamShift(String examShiftCode);
+
+    @Query(value = """
+            SELECT
+            	es.exam_shift_code as examShiftCode,
+             	es.room as room,
+             	es.exam_date as examDate,
+             	es.shift as shift,
+             	cs.class_subject_code as classSubjectCode,
+             	s3.name as subjectName,
+             	s.name as nameFirstSupervisor,
+             	s.staff_code as codeFirstSupervisor,
+             	s.account_fe as accountFeFirstSupervisor,
+             	s.account_fpt as accountFptFirstSupervisor,
+             	s2.name as nameSecondSupervisor,
+             	s2.staff_code as codeSecondSupervisor,
+             	s2.account_fe as accountFeSecondSupervisor,
+             	s2.account_fpt as accountFptSecondSupervisor,
+             	s4.account_fe as accountFeHeadSubject,
+             	s4.account_fpt as accountFptHeadSubject
+            FROM
+            	exam_shift es
+            JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            JOIN staff s2 ON
+            	es.id_second_supervisor = s2.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s3 ON
+            	cs.id_subject = s3.id
+            JOIN subject_by_subject_group sbsg ON
+            	sbsg.id_subject = s3.id
+            JOIN subject_group sg ON
+            	sbsg.id_subject_group = sg.id
+            JOIN head_subject_by_semester hsbs ON
+            	sg.id = hsbs.id_subject_group
+            JOIN staff s4 ON
+            	hsbs.id_staff = s4.id
+            WHERE
+                es.exam_shift_code = :examShiftCode
+            """, nativeQuery = true)
+    HDSendMailWhenCreateExamShiftResponse getContentSendMail(String examShiftCode);
 
 }
