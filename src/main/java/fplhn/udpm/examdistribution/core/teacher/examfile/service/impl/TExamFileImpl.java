@@ -7,6 +7,7 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFile
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TCountExamPaperByStatus;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TExamPaperCleanAfterSevenDayResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSampleExamPaperResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSubjectResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TAssignUploaderRepository;
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -282,6 +284,20 @@ public class TExamFileImpl implements TExamFileService {
                 countExamPaperByStatus,
                 HttpStatus.OK,
                 "Lấy số lượng đề thành công");
+    }
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanExamPaper() {
+        Long SEVEN_DAY = 604800000L;
+        List<TExamPaperCleanAfterSevenDayResponse> examPapers = tExamPaperRepository.findAllExamPaperStatusAndCreatedDate(SEVEN_DAY, new Date().getTime());
+        for (TExamPaperCleanAfterSevenDayResponse examPaper : examPapers) {
+            try {
+                tExamPaperRepository.deleteById(examPaper.getId());
+                googleDriveFileService.deleteById(examPaper.getPath());
+            } catch (Exception e) {
+            }
+        }
     }
 
 }

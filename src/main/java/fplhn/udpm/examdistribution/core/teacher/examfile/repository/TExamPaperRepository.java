@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.repository;
 
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TExamPaperCleanAfterSevenDayResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TCountExamPaperByStatus;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TExamFileResponse;
@@ -99,5 +100,14 @@ public interface TExamPaperRepository extends ExamPaperRepository {
             AND (ep.exam_paper_type != 'SAMPLE_EXAM_PAPER' OR ep.exam_paper_type IS NULL)
                 """, nativeQuery = true)
     Optional<TCountExamPaperByStatus> countExamPaper(String subjectId, String staffId);
+
+    @Query(value = """
+            SELECT ep.id as id,
+                   ep.path as path
+            FROM exam_paper ep
+            WHERE (ep.last_modified_date + :dateTimeOf7Day) > :now
+            AND ep.exam_paper_status LIKE 'REJECTED'
+            """,nativeQuery = true)
+    List<TExamPaperCleanAfterSevenDayResponse> findAllExamPaperStatusAndCreatedDate(Long dateTimeOf7Day, Long now);
 
 }

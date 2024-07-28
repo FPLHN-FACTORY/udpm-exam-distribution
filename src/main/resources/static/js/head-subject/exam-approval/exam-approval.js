@@ -153,7 +153,7 @@ function getExamPapers(
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const examPapers = responseBody?.data?.content?.map((exam, index) => {
@@ -167,21 +167,21 @@ $('#pagination').empty();
                            <a> 
                                 <i
                                     onclick="handleOpenModalExamApproval('${exam.id}')"
-                                    class="fa-solid fa-square-check"
+                                    class="fs-4 fa-solid fa-square-check"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
                                  <a>
                                 <i
-                                    onclick="handleDelete('${exam.id}','${exam.name}')"
-                                    class="fas fa-trash-alt"
+                                    onclick="handleRejectedApproval('${exam.id}')"
+                                    class="fs-4 fa-solid fa-square-xmark"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>
                                 <a>
                                 <i
                                     onclick="handleDetail('${exam.path}')"
-                                    class="fas fas fa-eye"
+                                    class="fs-4 fas fas fa-eye"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
                                 </a>

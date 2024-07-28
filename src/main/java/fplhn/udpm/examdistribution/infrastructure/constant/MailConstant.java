@@ -99,6 +99,17 @@ public class MailConstant {
             </html>
             """;
 
+    public static final String BODY_REJECT_EXAM_PAPER = """
+                <h4>Thông tin đề thi</h4>
+                <ul>
+                    <li>Mã đề: ${examPaperCode}</li>
+                    <li>Thời gian từ chối: ${timeSend}</li>
+                    <li>Môn: ${subjectName}</li>
+                    <li>Chuyên ngành: ${majorName}</li>
+                    <li>Bộ môn: ${departmentName}</li>
+                </ul>
+            """;
+
     public static final String FOOTER = """
                         <div class=" text-center border-top small" style="background-color: #132A4D; padding: 10px 10px;color: #FFF;">
                             <ul class="list-unstyled">

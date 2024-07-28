@@ -186,6 +186,16 @@ tr:nth-child(even) {
     color: #070707 !important;
 }
 
+.btn-custom {
+    background-color: #262324;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 1rem 1.3rem;
+    color: #fff;
+}
+
 .btn-selected{
     background-color: #FFD35A !important;
     color: #070707 !important;

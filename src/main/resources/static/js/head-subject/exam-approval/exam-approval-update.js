@@ -82,10 +82,10 @@ $(document).ready(function () {
     $('#btn-exam-approval').on('click', handleApproval)
 })
 
-function handleDelete(idExam) {
+function handleRejectedApproval(idExam) {
     swal({
-        title: "Xác nhận xóa?",
-        text: "Bạn chắc chắn muốn xóa đề này không?",
+        title: "Xác nhận từ chối?",
+        text: "Bạn chắc chắn muốn từ chối đề này không?",
         type: "warning",
         buttons: {
             cancel: {
@@ -94,16 +94,16 @@ function handleDelete(idExam) {
                 className: "btn btn-black",
             },
             confirm: {
-                text: "Xóa",
+                text: "Xác nhận",
                 className: "btn btn-black",
             },
         },
     }).then((ok) => {
         if (ok) {
             showLoading();
-            let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL + '?examPaperId=' + idExam;
+            let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL + '/reject?examPaperId=' + idExam;
             $.ajax({
-                type: "DELETE",
+                type: "PUT",
                 url: url,
                 success: function (responseBody) {
                     if (responseBody?.status === "OK") {

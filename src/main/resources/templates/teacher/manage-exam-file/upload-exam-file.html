@@ -86,14 +86,14 @@
                     <!-- Filter -->
                     <div class="d-flex justify-content-end mb-1">
                         <div>
-                            <button type="button" class="btn btn-black mt-4 position-relative" id="btnAll">
+                            <button type="button" class="btn-custom   mt-4 position-relative" id="btnAll">
                                 Tất cả
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                       id="sumAll">
                                         <span class="visually-hidden">unread messages</span>
                                 </span>
                             </button>
-                            <button type="button" class="btn btn-black mt-4 position-relative ms-1"
+                            <button type="button" class="btn-custom   mt-4 position-relative ms-1"
                                     id="btnWaitingApproval">
                                 Chờ phê duyệt
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -101,14 +101,14 @@
                                         <span class="visually-hidden">unread messages</span>
                                 </span>
                             </button>
-                            <button type="button" class="btn btn-black mt-4 position-relative ms-1" id="btnInUse">
+                            <button type="button" class="btn-custom   mt-4 position-relative ms-1" id="btnInUse">
                                 Đã phê duyệt
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                       id="sumInUse">
                                         <span class="visually-hidden">unread messages</span>
                                 </span>
                             </button>
-                            <button type="button" class="btn btn-black mt-4 position-relative ms-1" id="btnRejected">
+                            <button type="button" class="btn-custom   mt-4 position-relative ms-1" id="btnRejected">
                                 Bị từ chối
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                       id="sumRejected">
@@ -152,19 +152,27 @@
                                 </tr>
                                 </tbody>
                             </table>
-                            <div class="d-flex justify-content-end align-items-center gap-3">
-                                <div class="d-flex align-items-center">
-                                    <nav>
-                                        <ul class="pagination" id="pagination">
-                                        </ul>
-                                    </nav>
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <div>
+                                    <h4 class="float-start">
+                                        <i class="text-danger font-weight-bold">*** Chú ý:
+                                            Đề bị từ chối sẽ tự động bị xóa sau 7 ngày ***</i>
+                                    </h4>
                                 </div>
-                                <select class="form-select" id="pageSize" style="width: 100px;">
-                                    <option value="5">5 bản ghi / Trang</option>
-                                    <option value="10">10 bản ghi / Trang</option>
-                                    <option value="20">20 bản ghi / Trang</option>
-                                    <option value="50">50 bản ghi / Trang</option>
-                                </select>
+                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <nav>
+                                            <ul class="pagination" id="pagination">
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <select class="form-select" id="pageSize" style="width: 100px;">
+                                        <option value="5">5 bản ghi / Trang</option>
+                                        <option value="10">10 bản ghi / Trang</option>
+                                        <option value="20">20 bản ghi / Trang</option>
+                                        <option value="50">50 bản ghi / Trang</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
