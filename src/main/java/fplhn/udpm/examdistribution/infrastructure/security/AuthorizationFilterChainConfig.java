@@ -9,12 +9,18 @@ import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2Authenti
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import fplhn.udpm.examdistribution.infrastructure.security.oauth2.user.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static fplhn.udpm.examdistribution.utils.Helper.appendWildcard;
 
@@ -35,9 +41,26 @@ public class AuthorizationFilterChainConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    @Value("${allowed.origin}")
+    public String ALLOWED_ORIGIN;
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        source.registerCorsConfiguration("/**", config.applyPermitDefaultValues());
+        config.setAllowedHeaders(List.of("Cache-Control", "Content-Type", "*"));
+        config.setAllowedOrigins(List.of(ALLOWED_ORIGIN));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT", "OPTIONS", "PATCH", "DELETE"));
+        config.setAllowCredentials(true);
+        return source;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(httpSecurityCorsConfigurer -> {
+            httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
+        });
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(authorization -> {
             authorization.requestMatchers(

@@ -250,14 +250,15 @@ const getExamDate = () => {
 };
 
 const checkExtensionInstalled = async () => {
-    try {
-        await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
-        return true;
-    } catch (e) {
-        if (e instanceof TypeError && e.message === 'Failed to fetch') {
-            return false;
-        } else {
-            throw e;
-        }
-    }
+    return true;
+    // try {
+    //     await fetch(`chrome-extension://${EXAM_DISTRIBUTION_EXTENSION_ID}/icon.png`);
+    //     return true;
+    // } catch (e) {
+    //     if (e instanceof TypeError && e.message === 'Failed to fetch') {
+    //         return false;
+    //     } else {
+    //         throw e;
+    //     }
+    // }
 }

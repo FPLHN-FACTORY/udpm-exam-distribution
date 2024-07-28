@@ -1,6 +1,8 @@
 package fplhn.udpm.examdistribution.infrastructure.config.drive.config;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -23,6 +25,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @Slf4j
@@ -36,6 +39,12 @@ public class GoogleDriveConfig {
 
     @Value("${google.tokens.directory.path}")
     private String TOKENS_DIRECTORY_PATH;
+
+    @Value("${google.host}")
+    private String GOOGLE_HOST;
+
+    @Value("${google.port}")
+    private Integer GOOGLE_PORT;
 
     @Bean
     public Drive getDrive() {
@@ -58,7 +67,16 @@ public class GoogleDriveConfig {
                     .setAccessType("offline")
                     .build();
 
-            return flow.loadCredential("user");
+            if (Objects.equals(GOOGLE_HOST, "localhost")) {
+                LocalServerReceiver receiver = new LocalServerReceiver
+                        .Builder()
+                        .setHost(GOOGLE_HOST)
+                        .setPort(GOOGLE_PORT)
+                        .build();
+                return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+            } else {
+                return flow.loadCredential("user");
+            }
         } catch (Exception e) {
             log.error("Error loading credentials", e);
             throw new RuntimeException(e);
