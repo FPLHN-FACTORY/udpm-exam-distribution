@@ -75,7 +75,12 @@ public class GoogleDriveConfig {
                         .build();
                 return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
             } else {
-                return flow.loadCredential("user");
+                // USE FOR PRODUCTION
+                LocalServerReceiver receiver = new LocalServerReceiver
+                        .Builder()
+                        .setHost(GOOGLE_HOST)
+                        .build();
+                return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
             }
         } catch (Exception e) {
             log.error("Error loading credentials", e);

@@ -20,6 +20,8 @@ public final class TopicConstant {
 
     public static final String TOPIC_TRACK_STUDENT = TOPIC + "/track-student";
 
+    public static final String TOPIC_STUDENT_REMOVE_TAB = TOPIC + "/student-remove-tab";
+
     public static final String TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT = TOPIC + "/head-subject-exam-shift-join";
 
     public static final String TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT = TOPIC + "/head-department-exam-shift-join";

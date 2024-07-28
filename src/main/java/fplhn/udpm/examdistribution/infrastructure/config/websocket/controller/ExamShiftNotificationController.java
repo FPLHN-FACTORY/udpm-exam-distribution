@@ -69,4 +69,10 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
+    @MessageMapping("/student-remove-tab")
+    @SendTo(TopicConstant.TOPIC_STUDENT_REMOVE_TAB)
+    public NotificationResponse notifyStudentRemoveTab(String message) {
+        return new NotificationResponse(message);
+    }
+
 }

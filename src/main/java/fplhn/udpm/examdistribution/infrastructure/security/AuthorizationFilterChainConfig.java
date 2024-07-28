@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static fplhn.udpm.examdistribution.utils.Helper.appendWildcard;
@@ -44,13 +45,17 @@ public class AuthorizationFilterChainConfig {
     @Value("${allowed.origin}")
     public String ALLOWED_ORIGIN;
 
+    public List<String> GOOGLE_DRIVE_API_ORIGINS = List.of("https://www.googleapis.com", "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file");
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        List<String> AL = new ArrayList<>(List.of(ALLOWED_ORIGIN));
+        AL.addAll(GOOGLE_DRIVE_API_ORIGINS);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         source.registerCorsConfiguration("/**", config.applyPermitDefaultValues());
         config.setAllowedHeaders(List.of("Cache-Control", "Content-Type", "*"));
-        config.setAllowedOrigins(List.of(ALLOWED_ORIGIN));
+        config.setAllowedOrigins(AL);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT", "OPTIONS", "PATCH", "DELETE"));
         config.setAllowCredentials(true);
         return source;
