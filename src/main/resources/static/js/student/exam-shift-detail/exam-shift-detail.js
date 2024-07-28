@@ -89,7 +89,7 @@ $(document).ready(function () {
         openModalExamRule();
     });
 
-    fetchExamShiftValidAndRunJob();
+    // fetchExamShiftValidAndRunJob();
 });
 
 const fetchExamShiftValidAndRunJob = () => {
