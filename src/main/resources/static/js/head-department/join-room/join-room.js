@@ -63,25 +63,12 @@ $(document).ready(function () {
 $(document).ready(function() {
     let today = new Date();
     let day = String(today.getDate()).padStart(2, '0');
-    let month = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let month = String(today.getMonth() + 1).padStart(2, '0');
     let year = today.getFullYear();
 
     today = year + '-' + month + '-' + day;
     $('#modifyExamDate').val(today);
 });
-
-const fetchShifts = () => {
-    let shifts = $('#shiftsData').text().trim().slice(1, -1).split(',').map(shift => shift.trim());
-    let currentShift = $('#currentShift').text().trim();
-    console.log(shifts)
-    console.log(currentShift)
-
-    const shiftOptions = shifts.map((shift, index) => {
-        return `<option value="${shift}" ${shift === currentShift ? 'selected' : ''}>${shift}</option>`;
-    });
-
-    $('#modifyShift').html(shiftOptions);
-};
 
 const fetchSubjects = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
@@ -199,8 +186,7 @@ const addExamShift = () => {
         secondSupervisorCode: $('#modifySecondSupervisorCode').val(),
         examDate: new Date($('#modifyExamDate').val()).setHours(0, 0, 0, 0),
         shift: $('#modifyShift').val(),
-        room: $('#modifyRoom').val(),
-        totalStudent: $('#modifyTotalStudent').val()
+        room: $('#modifyRoom').val()
     }
     $.ajax({
         type: "POST",
@@ -281,7 +267,6 @@ const resetFormAddExamShift = () => {
     $('#modifyFirstSupervisorCode').val('');
     $('#modifySecondSupervisorCode').val('');
     $('#modifySubjectClassCode').val('');
-    $('#modifyTotalStudent').val('');
     $('#modifySubjectId').val('');
     $('#modifyBlockId').val('');
     $('#modifyFacilityChildId').val('');
@@ -298,8 +283,6 @@ const removeFormAddError = (id) => {
     $('#modifySubjectClassCode').removeClass('is-invalid');
     $('#classSubjectCodeError').text('');
     $('#modifySubjectId').removeClass('is-invalid');
-    $('#totalStudentError').val('');
-    $('#modifyTotalStudent').removeClass('is-invalid');
     $('#modifyBlockId').removeClass('is-invalid');
     $('#modifyFacilityChildId').removeClass('is-invalid');
 };
@@ -336,8 +319,10 @@ const getExamShifts = () => {
                                 <div class="user-box">
                                     <div class="u-text">
                                         <h3>${examShift.examShiftCode}</h3>
-                                        <p class="text-muted">Phòng thi: ${examShift.room}</p>
-                                        <p class="text-muted">Người tạo: ${examShift.codeFirstSupervisor}</p>
+                                        <p class="text-muted">Phòng thi: ${examShift.room} - ${examShift.shift}</p>
+                                        <p class="text-muted">Môn thi: ${examShift.subjectName}</p>
+                                        <p class="text-muted">Giám thị 1: ${examShift.codeFirstSupervisor}</p>
+                                        <p class="text-muted">Giám thị 2: ${examShift.codeSecondSupervisor}</p>
                                         <p class="text-muted">Trạng thái: ${examShift.status}</p>
                                     </div>
                                 </div>

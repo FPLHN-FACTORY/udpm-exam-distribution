@@ -22,7 +22,7 @@ public interface TExamShiftService {
 
     ResponseObject<?> refuseStudent(String examShiftCode, String studentId);
 
-    ResponseObject<?> startExamShift(String examShiftCode, String passwordExamPaperShift);
+    ResponseObject<?> startExamShift(String examShiftCode);
 
     ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 

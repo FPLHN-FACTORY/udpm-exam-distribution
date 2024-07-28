@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Arrays;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(MappingConstants.REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM)
@@ -20,7 +22,9 @@ public class HSExamShiftController {
     @GetMapping
     public String viewJoinRoom(Model model) {
         Shift currentShift = Shift.getCurrentShift();
+        Shift[] shifts = Shift.values();
         model.addAttribute("currentShift", currentShift);
+        model.addAttribute("shifts", Arrays.toString(shifts));
         return "head-subject/join-room/room";
     }
 

@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.email.service.impl;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDSendMailWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSendMailToHeadDepartmentWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TSendMailToSupervisorWhenOpenExamPaperResponse;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.utils.PermissionDetail;
 import fplhn.udpm.examdistribution.infrastructure.config.email.modal.request.SendEmailPublicMockExamPaperRequest;
@@ -159,6 +160,43 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendEmailWhenHeadSubjectCreateExamShift(HSSendMailToHeadDepartmentWhenCreateExamShiftResponse hsSendMailWhenCreateExamShiftResponse, String password) {
 
+    }
+
+    @Override
+    public void sendEmailToSupervisorWhenOpenExamPaper(TSendMailToSupervisorWhenOpenExamPaperResponse tSendMailToSupervisorWhenOpenExamPaperResponse, String password) {
+        String[] toEmails = {
+                tSendMailToSupervisorWhenOpenExamPaperResponse.getAccountFptFirstSupervisor(),
+                tSendMailToSupervisorWhenOpenExamPaperResponse.getAccountFptSecondSupervisor()
+        };
+
+        String header = MailConstant.HEADER
+                .replace("${title}", "Thông báo sắp kết thúc ca thi");
+
+        String body = MailConstant.BODY_OPEN_EXAM_PAPER
+                .replace("${examShiftCode}", tSendMailToSupervisorWhenOpenExamPaperResponse.getExamShiftCode())
+                .replace("${examDate}", DateTimeUtil.parseLongToString(tSendMailToSupervisorWhenOpenExamPaperResponse.getExamDate()))
+                .replace("${room}", tSendMailToSupervisorWhenOpenExamPaperResponse.getRoom())
+                .replace("${shift}", tSendMailToSupervisorWhenOpenExamPaperResponse.getShift())
+                .replace("${classSubjectCode}", tSendMailToSupervisorWhenOpenExamPaperResponse.getClassSubjectCode())
+                .replace("${subjectName}", tSendMailToSupervisorWhenOpenExamPaperResponse.getSubjectName())
+                .replace("${password}", password);
+
+        String footer = MailConstant.FOOTER;
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom(fromEmail);
+            mimeMessageHelper.setTo(toEmails);
+            mimeMessageHelper.setText(header + body + footer, true);
+            mimeMessageHelper.setSubject(MailConstant.SUBJECT);
+            mimeMessageHelper.addInline("logoImage", resource);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -20,20 +20,26 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             SELECT
             	es.id as id,
             	es.exam_shift_code as examShiftCode,
+            	es.shift as shift,
             	es.room as room,
+            	s2.name as subjectName,
             	s.staff_code as codeFirstSupervisor,
             	s.name as nameFirstSupervisor,
+            	s3.staff_code as codeSecondSupervisor,
+            	s3.name as nameSecondSupervisor,
             	es.exam_shift_status as status
             FROM
             	exam_shift es
             JOIN staff s ON
             	es.id_first_supervisor = s.id
+            JOIN staff s3 ON
+            	es.id_second_supervisor = s3.id
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
             JOIN subject s2 ON
             	cs.id_subject = s2.id
             JOIN subject_by_subject_group sbsg ON
-             	sbsg.id_subject = s2.id
+            	sbsg.id_subject = s2.id
             JOIN subject_group sg ON
             	sbsg.id_subject_group = sg.id
             JOIN head_subject_by_semester hsbs ON
@@ -42,8 +48,8 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             	sg.id_department_facility = :#{#hsExamShiftRequest.departmentFacilityId}
                 AND hsbs.id_semester = :#{#hsExamShiftRequest.semesterId}
                 AND hsbs.id_staff = :#{#hsExamShiftRequest.staffId}
-            	AND es.exam_date >= :#{#hsExamShiftRequest.currentDate}
-            	AND es.shift = :#{#hsExamShiftRequest.currentShift}
+            	AND es.exam_date = :#{#hsExamShiftRequest.currentDate}
+            	AND es.shift >= :#{#hsExamShiftRequest.currentShift}
             	AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
             """, nativeQuery = true)
     List<HSAllExamShiftResponse> getAllExamShift(HSExamShiftRequest hsExamShiftRequest);

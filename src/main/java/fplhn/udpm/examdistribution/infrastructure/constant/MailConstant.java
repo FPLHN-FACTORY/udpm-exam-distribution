@@ -109,14 +109,13 @@ public class MailConstant {
                 </ul>
             """;
 
-    public static final String BODY_REJECT_EXAM_PAPER = """
-                <h4>Thông tin đề thi</h4>
+    public static final String BODY_OPEN_EXAM_PAPER = """
                 <ul>
-                    <li>Mã đề: ${examPaperCode}</li>
-                    <li>Thời gian từ chối: ${timeSend}</li>
-                    <li>Môn: ${subjectName}</li>
-                    <li>Chuyên ngành: ${majorName}</li>
-                    <li>Bộ môn: ${departmentName}</li>
+                    <li>Phòng thi: ${examShiftCode} - ${room}</li>
+                    <li>Ngày thi: ${examDate} - Ca: ${shift}</li>
+                    <li>Lớp: ${classSubjectCode}</li>
+                    <li>Môn thi: ${subjectName}</li>
+                    <li>Mật khẩu mở đề thi: ${password}</li>
                 </ul>
             """;
 

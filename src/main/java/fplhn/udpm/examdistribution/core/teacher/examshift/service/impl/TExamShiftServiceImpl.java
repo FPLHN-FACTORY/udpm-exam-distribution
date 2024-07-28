@@ -81,10 +81,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                          .equals(sessionHelper.getCurrentUserId())
-                  || (examShift.get().getSecondSupervisor() != null
-                      && examShift.get().getSecondSupervisor().getId()
-                              .equals(sessionHelper.getCurrentUserId()));
+                .equals(sessionHelper.getCurrentUserId())
+                || (examShift.get().getSecondSupervisor() != null
+                && examShift.get().getSecondSupervisor().getId()
+                .equals(sessionHelper.getCurrentUserId()));
 
         if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
@@ -128,7 +128,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
-                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+                    && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
                         HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
             }
@@ -268,7 +268,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
     }
 
     @Override
-    public ResponseObject<?> startExamShift(String examShiftCode, String passwordExamPaperShift) {
+    public ResponseObject<?> startExamShift(String examShiftCode) {
         try {
             Optional<ExamShift> examShift = findExamShiftByCode(examShiftCode);
             if (examShift.isEmpty()) {
@@ -295,17 +295,14 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã có đề thi rồi!");
             }
 
-            ResponseObject<?> validatePassword = validatePassword(passwordExamPaperShift);
-            if (validatePassword != null) {
-                return validatePassword;
-            }
+            String password = PasswordUtils.generatePassword();
 
             String salt = PasswordUtils.generateSalt();
-            String password = PasswordUtils.getSecurePassword(passwordExamPaperShift, salt);
+            String securePassword = PasswordUtils.getSecurePassword(password, salt);
 
-//            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
-//            }
+            if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Phòng thi không có sinh viên!");
+            }
 
             ExamPaperShift examPaperShift = new ExamPaperShift();
             examPaperShift.setExamShift(examShift.get());
@@ -316,7 +313,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             long endTime = startTime + (5 * 60 * 1000);
             examPaperShift.setStartTime(startTime);
             examPaperShift.setEndTime(endTime);
-            examPaperShift.setHash(password);
+            examPaperShift.setHash(securePassword);
             examPaperShift.setSalt(salt);
 
             tExamPaperShiftExtendRepository.save(examPaperShift);
@@ -336,6 +333,9 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                     new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
 
             emailService.sendEmailWhenStartExamShift(tExamShiftExtendRepository.getHeadSubjectAndContentSendMail(examShiftCode));
+
+            emailService.sendEmailToSupervisorWhenOpenExamPaper(tExamShiftExtendRepository
+                    .sendMailToSupervisorWhenOpenExamPaper(examShiftCode), password);
 
             return new ResponseObject<>(
                     new TStartExamShiftResponse(
