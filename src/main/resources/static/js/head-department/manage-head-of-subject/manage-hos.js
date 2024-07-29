@@ -63,8 +63,11 @@ const getListHeadSubject = (
                     </td>
                     <td>${staff.semesterInfo ? ('<span class="tag tag-warning">' + staff.semesterInfo + '</span>') : '<span class="tag tag-warning">Empty</span>'}</td>
                     <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;" class="text-center">
-                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Phân công môn học"
-                           onclick="showModalModifyAssignSubject('${staff.id}', '${staff.staffName}', '${staff.staffCode}')">
+                        <a 
+                            data-bs-toggle="tooltip" 
+                            data-bs-title="Phân công nhóm môn học"
+                            style="cursor: pointer;"
+                            onclick="showModalModifyAssignSubject('${staff.id}', '${staff.staffName}', '${staff.staffCode}')">
                             <i class="fa-solid fa-eye" style="cursor: pointer; margin-left: 10px;"></i>
                         </a>
                     </td>
@@ -72,6 +75,7 @@ const getListHeadSubject = (
 
             $('#manageHOSTableBody').html(staffs);
             createPagination(responseBody?.data?.totalPages || 1, page);
+            callToolTip();
         },
         error: (error) => showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
     });
