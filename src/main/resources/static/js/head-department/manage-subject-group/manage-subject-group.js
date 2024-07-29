@@ -14,6 +14,12 @@ $(document).ready(() => {
     $('#querySearchSubjectGroup').on('input', handleListenQuerySearch);
 
     $('#filterSubject').on('input', handleFilterSubject);
+
+    $('#querySearchSemester').change(() => {
+        subjectGroupParams.semesterId = $('#querySearchSemester').val();
+        getSubjectGroups();
+    });
+
 });
 
 const userInfo = getExamDistributionInfo();
@@ -80,6 +86,14 @@ const getSubjectGroups = () => {
         contentType: "application/json",
         success: (responseBody) => {
             const subjectGroups = responseBody?.data?.data || [];
+            if (subjectGroups.length === 0) {
+                $('#manageSubjectGroupTableBody').html(`
+                    <tr>
+                        <td colspan="4" class="text-center">Không có dữ liệu</td>
+                    </tr>`);
+                $('#paginationSubjectGroup').html('');
+                return;
+            }
             updateTableBody('#manageSubjectGroupTableBody', subjectGroups, (subjectGroup) => `
                 <tr>
                     <td>${subjectGroup.orderNumber}</td>
