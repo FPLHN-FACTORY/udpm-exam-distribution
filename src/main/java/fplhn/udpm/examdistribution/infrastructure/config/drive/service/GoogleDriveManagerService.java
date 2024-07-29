@@ -21,6 +21,8 @@ public interface GoogleDriveManagerService {
 
     void createPermissionForEmail(String id, PermissionDetail permissionDetail);
 
+    void deletePermissionForEmail(String id, String email);
+
     GoogleDriveFileDTO uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail);
 
     String getFolderId(String folderName);

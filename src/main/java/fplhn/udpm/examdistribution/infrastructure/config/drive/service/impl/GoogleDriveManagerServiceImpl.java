@@ -117,6 +117,31 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
     }
 
     @Override
+    public void deletePermissionForEmail(String id, String email) {
+        try {
+            List<Permission> permissions = googleDriveConfig.getDrive().permissions().list(id).execute().getPermissions();
+
+            String permissionId = null;
+            for (Permission permission : permissions) {
+                System.out.println("Type: " + permission.getType());
+                System.out.println("Role: " + permission.getRole());
+                System.out.println("Email Address: " + permission.getEmailAddress());
+                System.out.println("==================================");
+//                if (email.equals(permission.getEmailAddress())) {
+//                    permissionId = permission.getId();
+//                    break;
+//                }
+            }
+
+//            if (permissionId != null) {
+//                googleDriveConfig.getDrive().permissions().delete(id, permissionId).execute();
+//            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public GoogleDriveFileDTO uploadFile(MultipartFile multipartFile, String folderName, PermissionDetail permissionDetail) {
         if (multipartFile == null) return null;
 

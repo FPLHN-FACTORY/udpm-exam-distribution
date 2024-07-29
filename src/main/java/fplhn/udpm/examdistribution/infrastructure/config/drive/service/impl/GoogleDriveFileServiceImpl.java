@@ -121,6 +121,11 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
     }
 
     @Override
+    public void deleteShareFile(String fileId, String gmail) {
+        googleDriveManagerService.deletePermissionForEmail(fileId, gmail);
+    }
+
+    @Override
     public Resource loadFile(String fileId) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {

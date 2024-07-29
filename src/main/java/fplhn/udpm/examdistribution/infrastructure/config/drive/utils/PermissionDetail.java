@@ -14,7 +14,9 @@ import lombok.Setter;
 public class PermissionDetail {
 
     private String type;
+
     private String role;
+
     private String emailAddress;
 
 }

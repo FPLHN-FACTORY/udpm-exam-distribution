@@ -1,49 +1,33 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListSubjectResponse;
-import fplhn.udpm.examdistribution.repository.SubjectRepository;
+import fplhn.udpm.examdistribution.entity.SharePermissionExamPaper;
+import fplhn.udpm.examdistribution.repository.SharePermissionExamPaperRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface UEPSubjectExtendRepository extends SubjectRepository {
+public interface UEPSharePermissionExamPaperExtendRepository extends SharePermissionExamPaperRepository {
 
-    @Query(value = """
-            SELECT
-            	s.id AS id,
-            	s.name AS name
-            FROM
-                head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
-            JOIN subject s ON
-                s.id = sbsg.id_subject
-            WHERE
-                hsbs.id_staff = :userId AND
-                hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0
-            """, countQuery = """
-            SELECT
-            	COUNT(hsbs.id)
-            FROM
-                head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
-            JOIN subject s ON
-                s.id = sbsg.id_subject
-            WHERE
-                hsbs.id_staff = :userId AND
-                hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0
-            """, nativeQuery = true)
-    List<ListSubjectResponse> getListSubject(String userId, String departmentFacilityId, String semesterId);
+    @Query("""
+            SELECT spep
+            FROM SharePermissionExamPaper spep
+            WHERE spep.block.id = :blockId AND
+                  spep.facility.id = :facilityId AND
+                  spep.staff.id = :staffId AND
+                  spep.examPaper.id = :examPaperId
+            """)
+    Optional<SharePermissionExamPaper> findByExamPaperIdAndStaffId(String examPaperId,String staffId, String blockId, String facilityId);
+
+    @Query("""
+            SELECT spep
+            FROM SharePermissionExamPaper spep
+            WHERE spep.examPaper.id = :examPaperId AND
+                  spep.block.id = :blockId AND
+                  spep.facility.id = :facilityId
+            """)
+    List<SharePermissionExamPaper> getListSharePermissionExamPaperByExamPaperId(String examPaperId, String blockId, String facilityId);
 
 }

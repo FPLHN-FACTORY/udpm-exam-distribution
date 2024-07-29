@@ -6,8 +6,17 @@ $(document).ready(function () {
     onChangePageSizeFirstTab();
 });
 //----------------------------------------------------------------------------------------------------------------------
+let listMockExamPaperPublic = [];
+
+//START: getter
+const getListMockExamPaperPublic = () => listMockExamPaperPublic;
+//END: getter
 
 //START: setter
+const setListMockExamPaperPublic = (value) => {
+    listMockExamPaperPublic = value;
+};
+
 const setValueSubject = (value) => {
     $("#subjectId").val(value);
 };
@@ -124,12 +133,19 @@ const fetchListExamPaper = (
                          <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
             const examPapers = responseData.map(item => {
                 return `<tr>
-                            <td>${item.orderNumber}</td>
+                            <td class="d-flex justify-content-between align-items-center">
+                                ${item.orderNumber}
+                                ${
+                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                        `<input type="checkbox" onclick="handlePushInListPublic('${item.id}')"/>`
+                        : ""
+                }
+                            </td>
                             <td>
                                 <a target="_blank" href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
                             </td>
@@ -153,15 +169,14 @@ $('#pagination').empty();
                                     ></i>
                                 </span>
                                 ${
-                                    item.examPaperType === "MOCK_EXAM_PAPER" ?
-                                        `<span onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
-                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
-                                        </span>`
-                                        : ""
-                                }
-                                <span onclick="handleDeleteExamPaper('${item.id}')">
-                                    <i 
-                                        class="fa-solid fa-shuffle"
+                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                        `<span onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
+                                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
+                                                        </span>`
+                        : ""
+                }
+                                <span onclick="handleOpenModalSharePermission('${item.subjectId}','${item.examPaperId}')" style="margin: 0 3px;">
+                                    <i class="fa-solid fa-share-nodes"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
@@ -183,6 +198,69 @@ $('#pagination').empty();
         }
     });
 };
+
+const handlePushInListPublic = (examPaperId) => {
+    const examPaperIdFound = getListMockExamPaperPublic().find(item => item === examPaperId);
+    if (examPaperIdFound === undefined) {
+        setListMockExamPaperPublic([
+            ...getListMockExamPaperPublic(),
+            examPaperId
+        ]);
+    } else {
+        setListMockExamPaperPublic(getListMockExamPaperPublic().filter(item => item !== examPaperId));
+    }
+};
+
+$("#button-public-exam-paper").on("click", () => {
+    if (getListMockExamPaperPublic().length === 0) {
+        showToastError("Vui lòng chọn đề thi trước khi công khai");
+    } else {
+        swal({
+            title: "Xác nhận",
+            text: getListMockExamPaperPublic().length === 1 ? "Bạn có chắc muốn công khai đề thi thử này không?" :
+                "Bạn có chắc muốn công khai các đề thi thử này không?"
+            ,
+            type: "warning",
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: "Hủy",
+                    className: "btn btn-black",
+                },
+                confirm: {
+                    text: "Công khai",
+                    className: "btn btn-black",
+                },
+            },
+        }).then((willDelete) => {
+            if (willDelete) {
+                showLoading();
+                $.ajax({
+                    url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/public-mock-exam-paper",
+                    data: JSON.stringify({
+                        listExamPaperId: getListMockExamPaperPublic()
+                    }),
+                    contentType: "application/json",
+                    method: "POST",
+                    success: function (responseBody) {
+                        showToastSuccess(responseBody?.message);
+                        fetchListExamPaper();
+                        hideLoading();
+                    },
+                    error: function (error) {
+                        const messageErr = error?.responseJSON?.message;
+                        if (messageErr) {
+                            showToastError(messageErr);
+                        } else {
+                            showToastError("Có lỗi xảy ra");
+                        }
+                        hideLoading();
+                    }
+                });
+            }
+        });
+    }
+});
 
 const handleSearchListExamPaper = () => {
     fetchListExamPaper();

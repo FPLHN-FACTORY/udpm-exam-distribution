@@ -22,6 +22,7 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	ROW_NUMBER() OVER(ORDER BY ep.id DESC) AS orderNumber,
              	ep.path AS fileId,
              	ep.exam_paper_code AS examPaperCode,
+             	ep.id AS examPaperId,
              	ep.exam_paper_type AS examPaperType,
              	ep.created_exam_paper_date AS createdDate,
              	ep.exam_paper_status AS status,

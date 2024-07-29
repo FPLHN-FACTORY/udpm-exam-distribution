@@ -3,6 +3,9 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
 import jakarta.validation.Valid;
 
@@ -22,6 +25,12 @@ public interface UploadExamPaperService {
 
     ResponseObject<?> updateExamPaper(@Valid UpdateExamPaperRequest request);
 
-    ResponseObject<?> sendEmailPublicExamPaper(String examPaperId);
+    ResponseObject<?> sendEmailPublicMockExamPaper(String examPaperId);
+
+    ResponseObject<?> sendEmailPublicMockExamPaper(PublicMockExamPaperRequest request);
+
+    ResponseObject<?> getListStaffBySubjectId(String subjectId, ListStaffBySubjectIdRequest request);
+
+    ResponseObject<?> sharePermissionExamPaper(SharePermissionExamPaperRequest request);
 
 }

@@ -26,6 +26,8 @@ public interface GoogleDriveFileService {
 
     void shareFile(String fileId, String gmail);
 
+    void deleteShareFile(String fileId, String gmail);
+
     Resource loadFile(String fileId) throws IOException;
 
     String getFileName(String fileId);
