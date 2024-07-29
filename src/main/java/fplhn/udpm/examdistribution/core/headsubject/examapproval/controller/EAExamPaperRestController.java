@@ -52,9 +52,9 @@ public class EAExamPaperRestController {
         return Helper.createResponseEntity(hsExamApprovalService.approvalExam(request));
     }
 
-    @DeleteMapping
+    @PutMapping("/reject")
     public ResponseEntity<?> deleteExamPaper(@RequestParam(value = "examPaperId", defaultValue = "0") String examPaperId) {
-        return Helper.createResponseEntity(hsExamApprovalService.deleteExamPaper(examPaperId));
+        return Helper.createResponseEntity(hsExamApprovalService.rejectExamPaper(examPaperId));
     }
 
 }

@@ -17,8 +17,6 @@ public interface EAExamPaperService {
 
     ResponseObject<?> approvalExam(EAExamApprovalRequest request);
 
-    ResponseObject<?> deleteExamPaper(String examPaperId);
-
-    void cleanExamPaper();
+    ResponseObject<?> rejectExamPaper(String examPaperId);
 
 }

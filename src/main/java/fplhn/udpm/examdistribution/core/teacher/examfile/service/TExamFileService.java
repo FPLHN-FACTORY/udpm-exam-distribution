@@ -23,4 +23,6 @@ public interface TExamFileService {
 
     ResponseObject<?> getCount(String subjectId);
 
+    void cleanExamPaper();
+
 }
