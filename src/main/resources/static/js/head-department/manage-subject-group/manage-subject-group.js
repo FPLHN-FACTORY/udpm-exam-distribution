@@ -104,11 +104,17 @@ const getSubjectGroups = () => {
                         </span>
                     </td>
                     <td class="text-center">
-                        <i class="fa fa-edit" style="width: 1px; text-wrap: nowrap; padding: 0 10px;" 
-                           onclick="showUpdateSubjectGroupModal('${subjectGroup.id}', '${subjectGroup.attachRoleName}')"></i>
+                        <i 
+                            class="fa fa-edit" 
+                            style="width: 1px; text-wrap: nowrap; padding: 0 10px; cursor: pointer;"
+                            onclick="showUpdateSubjectGroupModal('${subjectGroup.id}', '${subjectGroup.attachRoleName}')"
+                            data-bs-toggle="tooltip" 
+                            data-bs-title="Chỉnh sửa nhóm môn học"
+                           ></i>
                     </td>
                 </tr>`);
             createPagination('#paginationSubjectGroup', responseBody?.data?.totalPages || 1, subjectGroupParams.page, 'changePageSubjectGroup');
+            callToolTip();
         },
         error: (error) => {
             showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
