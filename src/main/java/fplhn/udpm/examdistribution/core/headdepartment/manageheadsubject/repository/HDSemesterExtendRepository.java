@@ -17,6 +17,7 @@ public interface HDSemesterExtendRepository extends SemesterRepository {
                         CONCAT(s.name, ' - ', s.year) AS semesterInfo
                     FROM
                         semester s
+                    ORDER BY s.start_time DESC
                     """,
             nativeQuery = true
     )
