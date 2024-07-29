@@ -75,8 +75,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
 
         if (studentExamShift.isEmpty()
-            || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
             return false;
         }
 
@@ -95,7 +95,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             Optional<ExamShift> existingExamShift = sExamShiftExtendRepository
                     .findByExamShiftCode(sExamShiftRequest.getExamShiftCodeJoin());
             if (existingExamShift.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
             }
 
@@ -103,7 +103,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             boolean passwordMatch = PasswordUtils.verifyUserPassword(sExamShiftRequest.getPasswordJoin(),
                     examShift.getHash(), examShift.getSalt());
             if (!passwordMatch) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Phòng thi không tồn tại hoặc mật khẩu không đúng!");
             }
 
@@ -112,14 +112,14 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             if (studentExamShiftExist.isPresent()) {
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
                 if (examStudentStatus.equals(ExamStudentStatus.KICKED)
-                    || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
+                        || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
                     studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                     sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                             new NotificationResponse(
                                     "Sinh viên "
-                                    + existingStudent.get().getStudentCode()
-                                    + " yêu cầu tham gia phòng thi!"));
+                                            + existingStudent.get().getStudentCode()
+                                            + " yêu cầu tham gia phòng thi!"));
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                 } else {
@@ -135,20 +135,6 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                             HttpStatus.OK, "Tham gia phòng thi thành công!");
                 }
 
-            } else if (Objects.equals(sStudentExamShiftExtendRepository
-                    .countStudentInExamShift(examShift.getExamShiftCode()), examShift.getTotalStudent())) {
-                StudentExamShift studentExamShift = new StudentExamShift();
-                studentExamShift.setStudent(existingStudent.get());
-                studentExamShift.setExamShift(examShift);
-                studentExamShift.setJoinTime(sExamShiftRequest.getJoinTime());
-                studentExamShift.setExamStudentStatus(ExamStudentStatus.REJOINED);
-                studentExamShift.setStatus(EntityStatus.ACTIVE);
-                sStudentExamShiftExtendRepository.save(studentExamShift);
-                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
-                        new NotificationResponse(
-                                "Sinh viên "
-                                + existingStudent.get().getStudentCode()
-                                + " yêu cầu tham gia phòng thi!"));
             } else {
                 String examPaperShiftId = tExamPaperShiftExtendRepository
                         .findExamPaperShiftIdByExamShiftCode(examShift.getExamShiftCode());
@@ -156,7 +142,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     long currentTime = System.currentTimeMillis();
                     if (currentTime > examPaperShift.getStartTime() + (1 * 60 * 1000)) {
-                        return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                                 "Đã quá thời gian thi!");
                     }
                 }
@@ -172,14 +158,14 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                         new NotificationResponse(
                                 "Sinh viên "
-                                + existingStudent.get().getStudentCode()
-                                + " đã tham gia phòng thi!"));
+                                        + existingStudent.get().getStudentCode()
+                                        + " đã tham gia phòng thi!"));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                     HttpStatus.OK, "Tham gia phòng thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi tham gia phòng thi: {}", e.getMessage());
+            log.error("Lỗi khi tham gia phòng thi: ", e);
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi tham gia phòng thi!");
         }
     }
@@ -190,7 +176,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             return new ResponseObject<>(sExamShiftExtendRepository.getExamShiftByCode(examShiftCode),
                     HttpStatus.OK, "Lấy thông tin ca thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy thông tin ca thi: {}", e.getMessage());
+            log.error("Lỗi khi lấy thông tin ca thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin ca thi!");
         }
@@ -208,7 +194,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                     "Lấy file quy định thi thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy file quy định thi: {}", e.getMessage());
+            log.error("Lỗi khi lấy file quy định thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy file quy định thi!"
             );
@@ -221,7 +207,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             return new ResponseObject<>(sExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
                     HttpStatus.OK, "Lấy path đề thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy path đề thi: {}", e.getMessage());
+            log.error("Lỗi khi lấy path đề thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy path đề thi!");
         }
@@ -236,7 +222,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                     new SFileResourceResponse(data, fileResponse.getFilename()),
                     HttpStatus.OK, "Lấy đề thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy đề thi: {}", e.getMessage());
+            log.error("Lỗi khi lấy đề thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy path đề thi!");
         }
@@ -251,13 +237,13 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             boolean passwordMatch = PasswordUtils.verifyUserPassword(sOpenExamPaperRequest.getPasswordOpen(),
                     examPaperShift.getHash(), examPaperShift.getSalt());
             if (!passwordMatch) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Mật khẩu không đúng!");
             }
 
             return new ResponseObject<>(null, HttpStatus.OK, "Mở đề thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi mở đề thi: {}", e.getMessage());
+            log.error("Lỗi khi mở đề thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi mở đề thi!");
         }
@@ -288,7 +274,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             return new ResponseObject<>(null, HttpStatus.OK,
                     "Cập nhật trạng thái sinh viên trong ca thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi cập nhật trạng thái sinh viên trong ca thi: {}", e.getMessage());
+            log.error("Lỗi khi cập nhật trạng thái sinh viên trong ca thi: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi cập nhật trạng thái sinh viên trong ca thi!");
         }

@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.core.teacher.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TSendMailToSupervisorWhenOpenExamPaperResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -84,5 +85,35 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
                 es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     THeadSubjectAndContentSendMailResponse getHeadSubjectAndContentSendMail(String examShiftCode);
+
+    @Query(value = """
+            SELECT
+            	es.exam_shift_code as examShiftCode,
+            	es.room as room,
+            	es.exam_date as examDate,
+            	es.shift as shift,
+            	cs.class_subject_code as classSubjectCode,
+            	s3.name as subjectName,
+            	s1.account_fe as accountFeFirstSupervisor,
+            	s1.account_fpt as accountFptFirstSupervisor,
+            	s2.account_fe as accountFeSecondSupervisor,
+            	s2.account_fpt as accountFptSecondSupervisor,
+            	ep.`path` as pathExamPaper
+            FROM
+            	exam_shift es
+            JOIN staff s1 ON
+            	es.id_first_supervisor = s1.id
+            JOIN staff s2 ON
+            	es.id_second_supervisor = s2.id
+            JOIN exam_paper_shift eps ON
+            	es.id = eps.id_exam_shift
+            JOIN exam_paper ep ON
+            	ep.id = eps.id_exam_paper
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN subject s3 ON
+            	cs.id_subject = s3.id
+            """, nativeQuery = true)
+    TSendMailToSupervisorWhenOpenExamPaperResponse sendMailToSupervisorWhenOpenExamPaper(String examShiftCode);
 
 }

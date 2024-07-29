@@ -60,9 +60,9 @@ public class TExamShiftRestController {
         return Helper.createResponseEntity(tExamShiftService.refuseStudent(examShiftCode, studentId));
     }
 
-    @PutMapping(value = "/{examShiftCode}/start", consumes = "text/plain")
-    public ResponseEntity<?> startExamShift(@PathVariable String examShiftCode, @RequestBody String passwordExamPaperShift) {
-        return Helper.createResponseEntity(tExamShiftService.startExamShift(examShiftCode, passwordExamPaperShift));
+    @PutMapping(value = "/{examShiftCode}/start")
+    public ResponseEntity<?> startExamShift(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(tExamShiftService.startExamShift(examShiftCode));
     }
 
     @GetMapping("/path")

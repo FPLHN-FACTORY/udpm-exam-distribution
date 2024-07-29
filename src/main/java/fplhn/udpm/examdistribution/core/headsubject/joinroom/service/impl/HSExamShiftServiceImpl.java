@@ -15,6 +15,7 @@ import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
@@ -33,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -55,6 +57,8 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
 
     private final GoogleDriveFileService googleDriveFileService;
 
+    private final EmailService emailService;
+
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
@@ -67,13 +71,13 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> getAllExamShift() {
         try {
-            Long currentTimeMillis = DateTimeUtil.getCurrentTimeMillis();
+            Long currentDateWithoutTime = DateTimeUtil.getCurrentDateWithoutTime();
             String currentShiftString = Shift.getCurrentShift().toString();
             HSExamShiftRequest hsExamShiftRequest = new HSExamShiftRequest();
             hsExamShiftRequest.setDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
             hsExamShiftRequest.setSemesterId(sessionHelper.getCurrentSemesterId());
             hsExamShiftRequest.setStaffId(sessionHelper.getCurrentUserId());
-            hsExamShiftRequest.setCurrentDate(currentTimeMillis);
+            hsExamShiftRequest.setCurrentDate(currentDateWithoutTime);
             hsExamShiftRequest.setCurrentShift(currentShiftString);
             return new ResponseObject<>(hsExamShiftExtendRepository
                     .getAllExamShift(hsExamShiftRequest), HttpStatus.OK, "Lấy danh sách ca thi thành công!");
@@ -87,6 +91,20 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> createExamShift(HSCreateExamShiftRequest hsCreateExamShiftRequest) {
         try {
+            Long currentDateWithoutTime = DateTimeUtil.getCurrentDateWithoutTime();
+
+            if (hsCreateExamShiftRequest.getExamDate() < currentDateWithoutTime) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Ngày thi không hợp lệ!");
+            }
+
+            if (Objects.equals(hsCreateExamShiftRequest.getExamDate(), currentDateWithoutTime)
+                    && Shift.valueOf(hsCreateExamShiftRequest.getShift())
+                    .compareTo(Objects.requireNonNull(Shift.getCurrentShift())) < 0) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Ca thi không hợp lệ!");
+            }
+
             Optional<ClassSubject> existingClassSubject = hsClassSubjectExtendRepository
                     .findById(hsCreateExamShiftRequest.getClassSubjectId());
             if (existingClassSubject.isEmpty()) {
@@ -140,36 +158,25 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                         "Giám thị 2 không tồn tại!");
             }
 
-
-//        ResponseObject<?> validateShift = validateShift(createExamShiftRequest.getShift());
-//        if (validateShift != null) {
-//            return validateShift;
-//        }
-
-            Long currentTimeMillis = DateTimeUtil.getCurrentTimeMillis();
-            String currentShiftString = Shift.getCurrentShift().toString();
-
-            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
-                    existingFirstSupervisor.get().getId(), currentTimeMillis, currentShiftString) == 1) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 1 đang là giám thị ở ca thi khác!");
-            }
-
-            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
-                    existingSecondSupervisor.get().getId(), currentTimeMillis, currentShiftString) == 1) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 2 đang là giám thị ở ca thi khác!");
-            }
-
-            ResponseObject<?> validatePassword = validatePassword(hsCreateExamShiftRequest.getPassword());
-            if (validatePassword != null) {
-                return validatePassword;
-            }
+//            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
+//                    existingFirstSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 1 đang là giám thị ở ca thi khác!");
+//            }
+//
+//            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
+//                    existingSecondSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 2 đang là giám thị ở ca thi khác!");
+//            }
 
             String examShiftCode = CodeGenerator.generateRandomCode();
+            String password = PasswordUtils.generatePassword();
 
             String salt = PasswordUtils.generateSalt();
-            String password = PasswordUtils.getSecurePassword(hsCreateExamShiftRequest.getPassword(), salt);
+            String securePassword = PasswordUtils.getSecurePassword(password, salt);
 
             ExamShift examShift = new ExamShift();
             examShift.setClassSubject(existingClassSubject.get());
@@ -179,12 +186,24 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
             examShift.setExamDate(hsCreateExamShiftRequest.getExamDate());
             examShift.setShift(Shift.valueOf(hsCreateExamShiftRequest.getShift()));
             examShift.setRoom(hsCreateExamShiftRequest.getRoom());
-            examShift.setTotalStudent(hsCreateExamShiftRequest.getTotalStudent());
-            examShift.setHash(password);
+            examShift.setHash(securePassword);
             examShift.setSalt(salt);
             examShift.setStatus(EntityStatus.ACTIVE);
             examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
             hsExamShiftExtendRepository.save(examShift);
+
+            Optional<Staff> headDepartment = hsStaffExtendRepository.findHeadDepartmentById(
+                    sessionHelper.getCurrentUserDepartmentFacilityId());
+
+            String currentShiftString = Shift.getCurrentShift().toString();
+            emailService.sendEmailToHeadDepartmentWhenCreateExamShift(
+                    hsExamShiftExtendRepository.getContentSendMailToHeadDepartment(
+                            currentShiftString, currentDateWithoutTime,
+                            sessionHelper.getCurrentUserDepartmentFacilityId()),
+                    password, headDepartment.get().getAccountFpt());
+
+            emailService.sendEmailWhenHeadSubjectCreateExamShift(hsExamShiftExtendRepository
+                    .getContentSendMailToSupervisor(examShiftCode), password);
 
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.CREATED, "Tạo ca thi thành công!");
@@ -193,15 +212,6 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                     "Lỗi khi tạo ca thi!");
         }
-    }
-
-    private ResponseObject<?> validatePassword(String password) {
-        String regex = "^[a-zA-Z0-9]{6,15}$";
-        if (!password.matches(regex)) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                    "Mật khẩu phải từ 6 -> 15 ký tự và không được chứa ký tự đặc biệt!");
-        }
-        return null;
     }
 
     @Override

@@ -19,6 +19,8 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
+            <span id="shiftsData" th:text="${shifts}" hidden></span>
+            <span id="currentShift" th:text="${currentShift}" hidden></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
                     <h2>Phòng thi</h2>
@@ -63,15 +65,14 @@
                         <div class="row">
                             <div class="col">
                                 <div class="mb-3">
-                                    <label for="modifyShift" class="form-label">Ca</label>
-                                    <input type="text" class="form-control" id="modifyShift" th:value="${currentShift}"
-                                           disabled required>
+                                    <label for="modifyExamDate" class="form-label">Ngày thi</label>
+                                    <input type="date" class="form-control" id="modifyExamDate" required>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="mb-3">
-                                    <label for="modifyExamDate" class="form-label">Ngày thi</label>
-                                    <input type="text" class="form-control" id="modifyExamDate" disabled required>
+                                    <label for="modifyShift" class="form-label">Ca</label>
+                                    <select class="form-control" id="modifyShift" required></select>
                                 </div>
                             </div>
                         </div>
@@ -124,16 +125,6 @@
                             <select class="form-select" id="modifyFacilityChildId" required>
                                 <option value="">Chọn campus</option>
                             </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyTotalStudent" class="form-label">Tổng số sinh viên</label>
-                            <input type="text" class="form-control" id="modifyTotalStudent" required>
-                            <div class="invalid-feedback" id="totalStudentError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyPassword" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="modifyPassword" required>
-                            <div class="invalid-feedback" id="passwordError"></div>
                         </div>
                     </form>
                 </div>

@@ -47,10 +47,6 @@ $(document).ready(function () {
     getPathFilePDFExamPaper(examShiftCode);
 
     $('#examShiftStart').click(function () {
-        openModalStartExamShift();
-    });
-
-    $('#modifyExamShiftStartButton').click(function () {
         examShiftStartSubmit();
     });
 
@@ -443,11 +439,8 @@ const getStudentRejoin = () => {
 }
 
 const examShiftStart = () => {
-    const passwordStart = $('#modifyPasswordStart').val()
     $.ajax({
         type: "PUT",
-        contentType: 'text/plain',
-        data: passwordStart,
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start',
         success: function (responseBody) {
         },
@@ -669,17 +662,9 @@ const examShiftStartSubmit = () => {
     }).then((willApprove) => {
         if (willApprove) {
             examShiftStart();
-            $('#examShiftStartModal').modal('hide');
         }
     });
 };
-
-const openModalStartExamShift = () => {
-    $('#modifyPasswordStart').val('');
-    $(`#passwordStartError`).text('');
-    $(`#modifyPasswordStart`).removeClass('is-invalid');
-    $('#examShiftStartModal').modal('show');
-}
 
 const openModalRemoveStudent = (studentId) => {
     $('#studentIdRemove').val(studentId);

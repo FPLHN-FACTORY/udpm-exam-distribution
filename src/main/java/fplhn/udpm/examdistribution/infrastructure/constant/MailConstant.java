@@ -86,27 +86,36 @@ public class MailConstant {
             """;
 
     public static final String BODY_START_EXAM_SHIFT = """
-            <html>
-                <body>
-                    <p>Phòng thi: ${examShiftCode} - ${room}</p>
-                    <p>Ngày thi: ${examDate} - Ca: ${shift}</p>
-                    <p>Lớp: ${classSubjectCode}</p>
-                    <p>Môn thi: ${subjectName}</p>
-                    <p>Giám thị 1: ${nameFirstSupervisor} - ${codeFirstSupervisor}</p>
-                    <p>Giám thị 2: ${nameSecondSupervisor} - ${codeSecondSupervisor}</p>
-                    <p>Link đề thi: <a href="https://drive.google.com/file/d/${pathExamPaper}/view">Tại đây</a></p>
-                </body>
-            </html>
+                <ul>
+                    <li>Phòng thi: ${examShiftCode} - ${room}</li>
+                    <li>Ngày thi: ${examDate} - Ca: ${shift}</li>
+                    <li>Lớp: ${classSubjectCode}</li>
+                    <li>Môn thi: ${subjectName}</li>
+                    <li>Giám thị 1: ${nameFirstSupervisor} - ${codeFirstSupervisor}</li>
+                    <li>Giám thị 2: ${nameSecondSupervisor} - ${codeSecondSupervisor}</li>
+                    <li>Link đề thi: <a href="https://drive.google.com/file/d/${pathExamPaper}/view">Tại đây</a></li>
+                </ul>
             """;
 
-    public static final String BODY_REJECT_EXAM_PAPER = """
-                <h4>Thông tin đề thi</h4>
+    public static final String BODY_CREATE_EXAM_SHIFT = """
                 <ul>
-                    <li>Mã đề: ${examPaperCode}</li>
-                    <li>Thời gian từ chối: ${timeSend}</li>
-                    <li>Môn: ${subjectName}</li>
-                    <li>Chuyên ngành: ${majorName}</li>
-                    <li>Bộ môn: ${departmentName}</li>
+                    <li>Phòng thi: ${examShiftCode} - ${room}</li>
+                    <li>Mật khẩu: ${password}</li>
+                    <li>Ngày thi: ${examDate} - Ca: ${shift}</li>
+                    <li>Lớp: ${classSubjectCode}</li>
+                    <li>Môn thi: ${subjectName}</li>
+                    <li>Giám thị 1: ${nameFirstSupervisor} - ${codeFirstSupervisor}</li>
+                    <li>Giám thị 2: ${nameSecondSupervisor} - ${codeSecondSupervisor}</li>
+                </ul>
+            """;
+
+    public static final String BODY_OPEN_EXAM_PAPER = """
+                <ul>
+                    <li>Phòng thi: ${examShiftCode} - ${room}</li>
+                    <li>Ngày thi: ${examDate} - Ca: ${shift}</li>
+                    <li>Lớp: ${classSubjectCode}</li>
+                    <li>Môn thi: ${subjectName}</li>
+                    <li>Mật khẩu mở đề thi: ${password}</li>
                 </ul>
             """;
 
