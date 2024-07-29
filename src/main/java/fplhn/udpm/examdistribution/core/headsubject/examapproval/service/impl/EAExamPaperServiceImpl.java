@@ -4,7 +4,6 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamApprovalRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EASenEmailRejectExamPaper;
-import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TExamPaperCleanAfterSevenDayResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EAExamPaperRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EASubjectRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.service.EAExamPaperService;
@@ -22,13 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service

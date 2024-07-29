@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.infrastructure.config.email.service.impl;
 
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDSendMailWhenCreateExamShiftResponse;
+import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EASenEmailRejectExamPaper;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSendMailToHeadDepartmentWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSendMailToSupervisorWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
@@ -273,6 +274,40 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setText(header + body + footer, true);
             mimeMessageHelper.setSubject(MailConstant.SUBJECT);
             mimeMessageHelper.addInline("logoImage", resource);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendEmailWhenRejectExamPaper(EASenEmailRejectExamPaper request) {
+        String toEmail = request.getSendToEmailAddress();
+
+        String header = MailConstant.HEADER
+                .replace("${title}", "Thông báo đề thi bị từ chối.");
+
+        String body = MailConstant.BODY_REJECT_EXAM_PAPER
+                .replace("${examPaperCode}", request.getExamPaperCode())
+                .replace("${timeSend}", DateTimeUtil.parseLongToString(request.getTimeReject().getTime()))
+                .replace("${subjectName}", request.getSubjectName())
+                .replace("${majorName}", request.getMajorName())
+                .replace("${departmentName}", request.getDepartmentName());
+
+        String footer = MailConstant.FOOTER;
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom("lucvanluat@gmail.com");
+            mimeMessageHelper.setTo(toEmail);
+//            mimeMessageHelper.setBcc(request.getListEmailBcc());
+            mimeMessageHelper.setText(header + body + footer, true);
+            mimeMessageHelper.setSubject(MailConstant.SUBJECT);
+            mimeMessageHelper.addInline("logoImage", resource);
+
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
