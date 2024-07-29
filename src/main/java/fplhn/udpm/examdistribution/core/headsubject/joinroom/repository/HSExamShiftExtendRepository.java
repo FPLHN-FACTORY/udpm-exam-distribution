@@ -234,10 +234,13 @@ public interface HSExamShiftExtendRepository extends ExamShiftRepository {
             	sbsg.id_subject_group = sg.id
             JOIN department_facility df ON
                 sg.id_department_facility = df.id
-            JOIN staff s4 ON
-                df.id_staff = s4.id
+            WHERE
+                es.shift = :shift
+                AND es.exam_date = :examDate
+                AND df.id = :departmentFacilityId
             """, nativeQuery = true)
-    List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> getContentSendMailToHeadDepartment();
+    List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse>
+    getContentSendMailToHeadDepartment(String shift, Long examDate, String departmentFacilityId);
 
     @Query(value = """
             SELECT

@@ -15,6 +15,7 @@ import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
@@ -55,6 +56,8 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     private final SessionHelper sessionHelper;
 
     private final GoogleDriveFileService googleDriveFileService;
+
+    private final EmailService emailService;
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
@@ -155,19 +158,19 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                         "Giám thị 2 không tồn tại!");
             }
 
-            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
-                    existingFirstSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
-                    hsCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 1 đang là giám thị ở ca thi khác!");
-            }
-
-            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
-                    existingSecondSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
-                    hsCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 2 đang là giám thị ở ca thi khác!");
-            }
+//            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
+//                    existingFirstSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 1 đang là giám thị ở ca thi khác!");
+//            }
+//
+//            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
+//                    existingSecondSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 2 đang là giám thị ở ca thi khác!");
+//            }
 
             String examShiftCode = CodeGenerator.generateRandomCode();
             String password = PasswordUtils.generatePassword();
@@ -188,6 +191,19 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
             examShift.setStatus(EntityStatus.ACTIVE);
             examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
             hsExamShiftExtendRepository.save(examShift);
+
+            Optional<Staff> headDepartment = hsStaffExtendRepository.findHeadDepartmentById(
+                    sessionHelper.getCurrentUserDepartmentFacilityId());
+
+            String currentShiftString = Shift.getCurrentShift().toString();
+            emailService.sendEmailToHeadDepartmentWhenCreateExamShift(
+                    hsExamShiftExtendRepository.getContentSendMailToHeadDepartment(
+                            currentShiftString, currentDateWithoutTime,
+                            sessionHelper.getCurrentUserDepartmentFacilityId()),
+                    password, headDepartment.get().getAccountFpt());
+
+            emailService.sendEmailWhenHeadSubjectCreateExamShift(hsExamShiftExtendRepository
+                    .getContentSendMailToSupervisor(examShiftCode), password);
 
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.CREATED, "Tạo ca thi thành công!");

@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.email.service.impl;
 
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDSendMailWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSendMailToHeadDepartmentWhenCreateExamShiftResponse;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSendMailToSupervisorWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TSendMailToSupervisorWhenOpenExamPaperResponse;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
@@ -20,6 +21,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -158,7 +160,85 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmailWhenHeadSubjectCreateExamShift(HSSendMailToHeadDepartmentWhenCreateExamShiftResponse hsSendMailWhenCreateExamShiftResponse, String password) {
+    public void sendEmailWhenHeadSubjectCreateExamShift(HSSendMailToSupervisorWhenCreateExamShiftResponse hsSendMailToSupervisorWhenCreateExamShiftResponse, String password) {
+        String[] toEmails = {
+                hsSendMailToSupervisorWhenCreateExamShiftResponse.getAccountFptFirstSupervisor(),
+                hsSendMailToSupervisorWhenCreateExamShiftResponse.getAccountFptSecondSupervisor()
+        };
+
+        String header = MailConstant.HEADER
+                .replace("${title}", "Thông báo ca thi đã được tạo");
+
+        String body = MailConstant.BODY_CREATE_EXAM_SHIFT
+                .replace("${examShiftCode}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getExamShiftCode())
+                .replace("${examDate}", DateTimeUtil.parseLongToString(hsSendMailToSupervisorWhenCreateExamShiftResponse.getExamDate()))
+                .replace("${room}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getRoom())
+                .replace("${shift}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getShift())
+                .replace("${classSubjectCode}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getClassSubjectCode())
+                .replace("${subjectName}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getSubjectName())
+                .replace("${nameFirstSupervisor}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getNameFirstSupervisor())
+                .replace("${codeFirstSupervisor}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getCodeFirstSupervisor())
+                .replace("${nameSecondSupervisor}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getNameSecondSupervisor())
+                .replace("${codeSecondSupervisor}", hsSendMailToSupervisorWhenCreateExamShiftResponse.getCodeSecondSupervisor())
+                .replace("${password}", password);
+
+        String footer = MailConstant.FOOTER;
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom(fromEmail);
+            mimeMessageHelper.setTo(toEmails);
+            mimeMessageHelper.setText(header + body + footer, true);
+            mimeMessageHelper.setSubject(MailConstant.SUBJECT);
+            mimeMessageHelper.addInline("logoImage", resource);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendEmailToHeadDepartmentWhenCreateExamShift(List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses, String password, String accountFptHeadDepartment) {
+        String header = MailConstant.HEADER
+                .replace("${title}", "Thông báo ca thi chuẩn bị diễn ra");
+
+        StringBuilder bodyBuilder = new StringBuilder();
+        for (HSSendMailToHeadDepartmentWhenCreateExamShiftResponse response : hsSendMailToHeadDepartmentWhenCreateExamShiftResponses) {
+            String bodyPart = MailConstant.BODY_CREATE_EXAM_SHIFT
+                    .replace("${examShiftCode}", response.getExamShiftCode())
+                    .replace("${examDate}", DateTimeUtil.parseLongToString(response.getExamDate()))
+                    .replace("${room}", response.getRoom())
+                    .replace("${shift}", response.getShift())
+                    .replace("${classSubjectCode}", response.getClassSubjectCode())
+                    .replace("${subjectName}", response.getSubjectName())
+                    .replace("${nameFirstSupervisor}", response.getNameFirstSupervisor())
+                    .replace("${codeFirstSupervisor}", response.getCodeFirstSupervisor())
+                    .replace("${nameSecondSupervisor}", response.getNameSecondSupervisor())
+                    .replace("${codeSecondSupervisor}", response.getCodeSecondSupervisor())
+                    .replace("${password}", password);
+            bodyBuilder.append(bodyPart);
+        }
+
+        String body = bodyBuilder.toString();
+        String footer = MailConstant.FOOTER;
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom(fromEmail);
+            mimeMessageHelper.setTo(accountFptHeadDepartment);
+            mimeMessageHelper.setText(header + body + footer, true);
+            mimeMessageHelper.setSubject(MailConstant.SUBJECT);
+            mimeMessageHelper.addInline("logoImage", resource);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
