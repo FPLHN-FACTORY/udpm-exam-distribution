@@ -44,7 +44,7 @@ const fetchSearchSubject = (
             if (responseData.length === 0) {
                 $('#subjectTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="6" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
 $('#pagination').empty();
@@ -58,13 +58,13 @@ $('#pagination').empty();
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamRule('${subject.id}')" class="fs-6">
+                                <span data-bs-toggle="tooltip" data-bs-title="Tải quy định" onclick="handleOpenModalExamRule('${subject.id}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-6">
+                                <span data-bs-toggle="tooltip" data-bs-title="Chi tiết quy định" onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-eye"
                                         style="cursor: pointer; margin-left: 10px;"
@@ -76,6 +76,7 @@ $('#pagination').empty();
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');

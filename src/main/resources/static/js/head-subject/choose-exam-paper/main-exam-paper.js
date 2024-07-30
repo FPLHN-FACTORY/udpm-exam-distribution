@@ -272,7 +272,7 @@ const fetchListExamPaper = (
             if (responseData.length === 0) {
                 $('#examPaperTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="11" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
                 return;
@@ -311,7 +311,10 @@ const fetchListExamPaper = (
                                 ${
                                     item.isUpdateFile == true ?
                                         `
-                                        <span style="margin: 0 3px" onclick="handleRedirectUpdateContentFile('${item.id}')">
+                                        <span style="margin: 0 3px"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="Cập nhật nội dung đề thi"
+                                        onclick="handleRedirectUpdateContentFile('${item.id}')">
                                             <i 
                                                 class="fa-solid fa-file-pen"
                                                 style="cursor: pointer;"
@@ -319,24 +322,40 @@ const fetchListExamPaper = (
                                         </span>
                                         ` : ""
                                 }
-                                <span style="margin: 0 3px" onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')">
+                                <span style="margin: 0 3px"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Cập nhật đề thi"
+                                    onclick="handleOpenModalExamPaper('${item.fileId}',2,'${item.examPaperType}','${item.majorFacilityId}','${item.subjectId}','${item.id}')"
+                                >
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}',1)" style="margin: 0 3px;">
+                                <span
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Chi tiết đề thi"
+                                    onclick="handleOpenModalExamPaper('${item.fileId}',1)" style="margin: 0 3px;"
+                                >
                                     <i class="fa-solid fa-eye"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;">
+                                <span
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Tải đề thi"
+                                    onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;"
+                                >
                                     <i 
                                         class="fa-solid fa-file-arrow-down"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleDeleteExamPaper('${item.id}')" style="margin: 0 3px">
+                                <span
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Thay đổi trạng thái"
+                                    onclick="handleDeleteExamPaper('${item.id}')" style="margin: 0 3px"
+                                >
                                     <i 
                                         class="fa-solid fa-shuffle"
                                         style="cursor: pointer;"
@@ -348,6 +367,7 @@ const fetchListExamPaper = (
             $('#examPaperTableBody').html(examPapers);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPaginationFirstPage(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;

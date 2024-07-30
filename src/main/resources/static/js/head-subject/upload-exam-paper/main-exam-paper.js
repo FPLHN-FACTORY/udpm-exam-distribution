@@ -130,7 +130,7 @@ const fetchListExamPaper = (
             if (responseData.length === 0) {
                 $('#examPaperTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="10" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
                 $('#pagination').empty();
@@ -157,25 +157,36 @@ const fetchListExamPaper = (
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalExamPaper('${item.fileId}')" style="margin: 0 3px;">
+                                <span 
+                                    data-bs-toggle="tooltip" data-bs-title="Chi tiết đề thi"
+                                    onclick="handleOpenModalExamPaper('${item.fileId}')" style="margin: 0 3px;"
+                                >
                                     <i class="fa-solid fa-eye"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;">
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Tải đề thi"
+                                    onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;"
+                                >
                                     <i 
                                         class="fa-solid fa-file-arrow-down"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
                                 ${
-                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
-                        `<span onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
-                                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
-                                                        </span>`
-                        : ""
-                }
-                                <span onclick="handleOpenModalSharePermission('${item.subjectId}','${item.examPaperId}')" style="margin: 0 3px;">
+                                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                                        `<span
+                                            data-bs-toggle="tooltip" data-bs-title="Công khai đề thi"
+                                            onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
+                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
+                                        </span>`
+                                        : ""
+                                }
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Chia sẻ quyền truy cập"
+                                    onclick="handleOpenModalSharePermission('${item.subjectId}','${item.examPaperId}')" style="margin: 0 3px;"
+                                >
                                     <i class="fa-solid fa-share-nodes"
                                         style="cursor: pointer;"
                                     ></i>
@@ -186,6 +197,7 @@ const fetchListExamPaper = (
             $('#examPaperTableBody').html(examPapers);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPaginationFirstPage(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;
