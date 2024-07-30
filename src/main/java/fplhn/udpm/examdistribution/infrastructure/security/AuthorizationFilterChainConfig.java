@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static fplhn.udpm.examdistribution.utils.Helper.appendWildcard;
@@ -49,7 +50,13 @@ public class AuthorizationFilterChainConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        List<String> AL = new ArrayList<>(List.of(ALLOWED_ORIGIN));
+        List<String> AL = new ArrayList<>();
+        if (ALLOWED_ORIGIN.contains(",")) {
+            String[] origins = ALLOWED_ORIGIN.split(",");
+            Collections.addAll(AL, origins);
+        } else {
+            AL.add(ALLOWED_ORIGIN);
+        }
         AL.addAll(GOOGLE_DRIVE_API_ORIGINS);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
