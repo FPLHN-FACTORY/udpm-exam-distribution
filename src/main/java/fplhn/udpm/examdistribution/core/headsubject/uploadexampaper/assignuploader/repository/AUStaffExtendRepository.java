@@ -57,10 +57,13 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     ) AS isAssigned
             FROM staff_major_facility smf
             LEFT JOIN staff s ON s.id = smf.id_staff
+            LEFT JOIN class_subject cs ON cs.id_staff = s.id
             WHERE smf.id_major_facility = :majorFacilityId AND
                   smf.id_staff <> :userId AND
+                  cs.id_block = :blockId AND
+                  cs.id_subject = :#{#request.subjectId} AND
                   smf.status = 0 AND
-                  s.status = 0 
+                  s.status = 0
             AND (
                  (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                  (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -74,10 +77,13 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     SELECT COUNT(smf.id)
                     FROM staff_major_facility smf
                     LEFT JOIN staff s ON s.id = smf.id_staff
-                    WHERE   smf.id_major_facility = :majorFacilityId AND
-                            smf.id_staff <> :userId AND
-                            smf.status = 0 AND
-                            s.status = 0
+                    LEFT JOIN class_subject cs ON cs.id_staff = s.id
+                    WHERE smf.id_major_facility = :majorFacilityId AND
+                          smf.id_staff <> :userId AND
+                          cs.id_block = :blockId AND
+                          cs.id_subject = :#{#request.subjectId} AND
+                          smf.status = 0 AND
+                          s.status = 0
                       AND (
                            (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
                            (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
@@ -88,6 +94,10 @@ public interface AUStaffExtendRepository extends StaffRepository {
                           )
                                       """,
             nativeQuery = true)
-    Page<StaffResponse> getAllStaff(Pageable pageable, String majorFacilityId, FindStaffRequest request, String userId, String semesterId);
+    Page<StaffResponse> getAllStaff(
+            Pageable pageable, String majorFacilityId,
+            FindStaffRequest request, String userId,
+            String semesterId, String blockId
+    );
 
 }
