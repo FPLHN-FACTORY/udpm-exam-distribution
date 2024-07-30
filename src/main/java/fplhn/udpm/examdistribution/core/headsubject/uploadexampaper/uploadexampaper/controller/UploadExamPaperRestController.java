@@ -4,6 +4,9 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.UploadExamPaperService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,7 +81,22 @@ public class UploadExamPaperRestController {
 
     @PostMapping("/send-email-public-exam-paper/{examPaperId}")
     public ResponseEntity<?> sendEmailPublicExamPaper(@PathVariable String examPaperId) {
-        return Helper.createResponseEntity(uploadExamPaperService.sendEmailPublicExamPaper(examPaperId));
+        return Helper.createResponseEntity(uploadExamPaperService.sendEmailPublicMockExamPaper(examPaperId));
+    }
+
+    @PostMapping("/public-mock-exam-paper")
+    public ResponseEntity<?> publicMockExamPaper(@RequestBody PublicMockExamPaperRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.sendEmailPublicMockExamPaper(request));
+    }
+
+    @GetMapping("/staffs/{subjectId}")
+    public ResponseEntity<?> getListStaffBySubjectId(@PathVariable String subjectId, ListStaffBySubjectIdRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.getListStaffBySubjectId(subjectId, request));
+    }
+
+    @PostMapping("/share-permission-exam-paper")
+    public ResponseEntity<?> sharePermissionExamPaper(@RequestBody SharePermissionExamPaperRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.sharePermissionExamPaper(request));
     }
 
 }

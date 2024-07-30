@@ -102,14 +102,18 @@
                                 </div>
                                 <!-- Filter -->
                                 <div class="shadow p-4 bg-white rounded">
-                                    <div class="mt-4 mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
                                         <h4 style="margin-bottom: 0">Danh sách đề thi</h4>
+                                        <button class="btn btn-black" id="button-public-exam-paper">
+                                            <i class="fa-solid fa-bullhorn fs-5"></i>
+                                            Công khai đề thi thử
+                                        </button>
                                     </div>
                                     <div class="table-responsive mt-4">
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
-                                                <td>STT</td>
+                                                <td class="text-center">STT</td>
                                                 <td>Mã đề thi</td>
                                                 <td>Môn</td>
                                                 <td>Chuyên ngành</td>
@@ -237,6 +241,85 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Share Permission -->
+    <div class="modal modal-xl fade" id="sharePermissionModal" tabindex="-1" aria-labelledby="sharePermissionModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chia sẻ quyền truy cập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="staffCode">Tìm kiếm</label>
+                                <input type="text" id="searchSharePermission" placeholder="Tìm kiếm theo Mã, Tên, Email FPT, Email FE" class="form-control">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="buttonFilterSharePermission" type="button"
+                                    class="btn btn-black">Tìm kiếm
+                            </button>
+                            <button
+                                    type="reset"
+                                    class="btn"
+                                    id="resetFilterSharePermission"
+                                    style="background-color: var(--common-button-color); color: white;"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách giảng viên</h4>
+                            <button class="btn btn-black" id="button-share-permission">
+                                <i class="fa-solid fa-bullhorn fs-5"></i>
+                                Chia sẻ quyền truy cập
+                            </button>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã giảng viên</td>
+                                    <td>Tên giảng viên</td>
+                                    <td>Email FPT</td>
+                                    <td>Email FE</td>
+                                    <td>Chọn</td>
+                                </tr>
+                                </thead>
+                                <tbody id="sharePermissionTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationSharePermission">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeSharePermission" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Share Permission -->
 
     <!-- Modal Modify Assign Uploader -->
     <div class="modal modal-xl fade" id="assignUploaderModal" tabindex="-1" aria-labelledby="assignUploaderModal"
@@ -456,6 +539,7 @@
         <script th:src="@{/js/head-subject/upload-exam-paper/main-exam-paper.js}"></script>
         <script th:src="@{/js/head-subject/upload-exam-paper/manipulate-exam-paper.js}"></script>
         <script th:src="@{/js/head-subject/assign-uploader/upload-sample-exam-paper.js}"></script>
+        <script th:src="@{/js/head-subject/upload-exam-paper/share-permission.js}"></script>
     </div>
     <div th:case="false">
         <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -479,6 +563,7 @@
         <script th:src="@{/js/minified/head-subject/upload-exam-paper/main-exam-paper.js}"></script>
         <script th:src="@{/js/minified/head-subject/upload-exam-paper/manipulate-exam-paper.js}"></script>
         <script th:src="@{/js/minified/head-subject/assign-uploader/upload-sample-exam-paper.js}"></script>
+        <script th:src="@{/js/minified/head-subject/upload-exam-paper/share-permission.js}"></script>
     </div>
 </div>
 </body>

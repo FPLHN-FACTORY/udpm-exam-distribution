@@ -4,6 +4,7 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.config.GoogleDriveConfig;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
@@ -103,14 +104,24 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
     }
 
     @Override
-    public void createPermissionForEmail(String id, PermissionDetail permissionDetail) {
+    public Permission createPermissionForEmail(String id, PermissionDetail permissionDetail) {
         Permission permission = setPermission(permissionDetail);
 
         try {
-            googleDriveConfig.getDrive()
+            Permission createdPermission = googleDriveConfig.getDrive()
                     .permissions()
                     .create(id, permission)
                     .execute();
+            return createdPermission;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deletePermissionForEmail(String id, String permissionId) {
+        try {
+            googleDriveConfig.getDrive().permissions().delete(id, permissionId).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -35,7 +35,7 @@ public class GoogleDriveConfig {
                     HTTP_TRANSPORT,
                     JacksonFactory.getDefaultInstance(),
                     this.googleCredential()
-            ).build();
+            ).setApplicationName("Exam Distribution").build();
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
