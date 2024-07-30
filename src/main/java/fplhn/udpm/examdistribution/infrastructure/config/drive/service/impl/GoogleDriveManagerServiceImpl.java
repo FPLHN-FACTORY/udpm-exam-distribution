@@ -4,6 +4,7 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.config.GoogleDriveConfig;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
@@ -103,39 +104,24 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
     }
 
     @Override
-    public void createPermissionForEmail(String id, PermissionDetail permissionDetail) {
+    public Permission createPermissionForEmail(String id, PermissionDetail permissionDetail) {
         Permission permission = setPermission(permissionDetail);
 
         try {
-            googleDriveConfig.getDrive()
+            Permission createdPermission = googleDriveConfig.getDrive()
                     .permissions()
                     .create(id, permission)
                     .execute();
+            return createdPermission;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void deletePermissionForEmail(String id, String email) {
+    public void deletePermissionForEmail(String id, String permissionId) {
         try {
-            List<Permission> permissions = googleDriveConfig.getDrive().permissions().list(id).execute().getPermissions();
-
-            String permissionId = null;
-            for (Permission permission : permissions) {
-                System.out.println("Type: " + permission.getType());
-                System.out.println("Role: " + permission.getRole());
-                System.out.println("Email Address: " + permission.getEmailAddress());
-                System.out.println("==================================");
-//                if (email.equals(permission.getEmailAddress())) {
-//                    permissionId = permission.getId();
-//                    break;
-//                }
-            }
-
-//            if (permissionId != null) {
-//                googleDriveConfig.getDrive().permissions().delete(id, permissionId).execute();
-//            }
+            googleDriveConfig.getDrive().permissions().delete(id, permissionId).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

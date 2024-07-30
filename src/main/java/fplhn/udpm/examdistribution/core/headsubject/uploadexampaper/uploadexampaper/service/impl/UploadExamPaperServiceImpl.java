@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.impl;
 
+import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
@@ -539,24 +540,24 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                         "Không tìm thấy đề thi này"
                 );
             }
-//
-//            Optional<Block> blockOptional = blockRepository.findById(sessionHelper.getCurrentBlockId());
-//            if (blockOptional.isEmpty()) {
-//                return new ResponseObject<>(
-//                        null,
-//                        HttpStatus.NOT_FOUND,
-//                        "Không tìm thấy block hiện tại"
-//                );
-//            }
-//
-//            Optional<Facility> facilityOptional = facilityRepository.findById(sessionHelper.getCurrentUserFacilityId());
-//            if (facilityOptional.isEmpty()) {
-//                return new ResponseObject<>(
-//                        null,
-//                        HttpStatus.NOT_FOUND,
-//                        "Không tìm thấy cơ sở hiện tại"
-//                );
-//            }
+
+            Optional<Block> blockOptional = blockRepository.findById(sessionHelper.getCurrentBlockId());
+            if (blockOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy block hiện tại"
+                );
+            }
+
+            Optional<Facility> facilityOptional = facilityRepository.findById(sessionHelper.getCurrentUserFacilityId());
+            if (facilityOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy cơ sở hiện tại"
+                );
+            }
 
             List<SharePermissionExamPaper> listPermissionExamPaperRequest = sharePermissionExamPaperRepository.getListSharePermissionExamPaperByExamPaperId(
                     examPaperOptional.get().getId(),
@@ -567,29 +568,30 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             listPermissionExamPaperRequest.forEach(item -> {
                 googleDriveFileService.deleteShareFile(
                         item.getExamPaper().getPath(),
-                        item.getStaff().getAccountFpt()
+                        item.getPermissionId()
                 );
-//                sharePermissionExamPaperRepository.delete(item);
+                sharePermissionExamPaperRepository.delete(item);
             });
 
-//            Arrays.stream(request.getListStaffId()).forEach(staffId -> {
-//                Optional<Staff> staffOptional = staffRepository.findById(staffId);
-//
-//                if (staffOptional.isPresent()) {
-//                    SharePermissionExamPaper sharePermissionExamPaper = new SharePermissionExamPaper();
-//                    sharePermissionExamPaper.setBlock(blockOptional.get());
-//                    sharePermissionExamPaper.setFacility(facilityOptional.get());
-//                    sharePermissionExamPaper.setStaff(staffOptional.get());
-//                    sharePermissionExamPaper.setExamPaper(examPaperOptional.get());
-//                    sharePermissionExamPaper.setStatus(EntityStatus.ACTIVE);
-//                    sharePermissionExamPaperRepository.save(sharePermissionExamPaper);
-//
-//                    googleDriveFileService.shareFile(
-//                            examPaperOptional.get().getPath(),
-//                            staffOptional.get().getAccountFpt()
-//                    );
-//                }
-//            });
+            Arrays.stream(request.getListStaffId()).forEach(staffId -> {
+                Optional<Staff> staffOptional = staffRepository.findById(staffId);
+
+                if (staffOptional.isPresent()) {
+                    SharePermissionExamPaper sharePermissionExamPaper = new SharePermissionExamPaper();
+                    sharePermissionExamPaper.setBlock(blockOptional.get());
+                    sharePermissionExamPaper.setFacility(facilityOptional.get());
+                    sharePermissionExamPaper.setStaff(staffOptional.get());
+                    sharePermissionExamPaper.setExamPaper(examPaperOptional.get());
+                    sharePermissionExamPaper.setStatus(EntityStatus.ACTIVE);
+                    Permission permission = googleDriveFileService.shareFile(
+                            examPaperOptional.get().getPath(),
+                            staffOptional.get().getAccountFpt()
+                    );
+                    sharePermissionExamPaper.setPermissionId(permission.getId());
+
+                    sharePermissionExamPaperRepository.save(sharePermissionExamPaper);
+                }
+            });
 
             return new ResponseObject<>(
                     null,

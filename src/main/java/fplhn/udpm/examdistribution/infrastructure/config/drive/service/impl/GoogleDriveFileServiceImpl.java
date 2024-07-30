@@ -2,6 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.drive.service.impl;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
@@ -109,7 +110,7 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
     }
 
     @Override
-    public void shareFile(String fileId, String gmail) {
+    public Permission shareFile(String fileId, String gmail) {
         PermissionDetail permissionDetail = PermissionDetail
                 .builder()
                 .emailAddress(gmail)
@@ -117,12 +118,12 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
                 .role("reader")
                 .build();
 
-        googleDriveManagerService.createPermissionForEmail(fileId, permissionDetail);
+        return googleDriveManagerService.createPermissionForEmail(fileId, permissionDetail);
     }
 
     @Override
-    public void deleteShareFile(String fileId, String gmail) {
-        googleDriveManagerService.deletePermissionForEmail(fileId, gmail);
+    public void deleteShareFile(String fileId, String permissionId) {
+        googleDriveManagerService.deletePermissionForEmail(fileId, permissionId);
     }
 
     @Override

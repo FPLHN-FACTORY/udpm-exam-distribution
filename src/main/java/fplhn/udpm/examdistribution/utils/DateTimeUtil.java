@@ -51,4 +51,8 @@ public class DateTimeUtil {
         return instant.toEpochMilli();
     }
 
+    public static LocalDate convertToLocalDate(Date date) {
+        return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
+    }
+
 }

@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -37,5 +38,8 @@ public class SharePermissionExamPaper extends PrimaryEntity implements Serializa
     @ManyToOne
     @JoinColumn(name = "id_facility")
     private Facility facility;
+
+    @Column(name = "id_permission")
+    private String permissionId;
 
 }

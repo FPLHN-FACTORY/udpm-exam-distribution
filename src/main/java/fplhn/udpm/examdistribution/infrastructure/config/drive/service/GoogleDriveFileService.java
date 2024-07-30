@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.infrastructure.config.drive.service;
 
+import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +25,9 @@ public interface GoogleDriveFileService {
 
     void moveToFolder(String fileId, String folderId);
 
-    void shareFile(String fileId, String gmail);
+    Permission shareFile(String fileId, String gmail);
 
-    void deleteShareFile(String fileId, String gmail);
+    void deleteShareFile(String fileId, String permissionId);
 
     Resource loadFile(String fileId) throws IOException;
 
