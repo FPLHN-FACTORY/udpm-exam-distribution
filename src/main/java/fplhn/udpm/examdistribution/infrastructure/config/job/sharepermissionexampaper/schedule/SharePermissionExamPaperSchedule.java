@@ -28,11 +28,6 @@ public class SharePermissionExamPaperSchedule {
 
     private final GoogleDriveFileService googleDriveFileService;
 
-    @PostConstruct
-    void postConstruct() {
-        removePermissionExamPaper();
-    }
-
     @Scheduled(cron = "0 50 23 * * *")
     void cronRemovePermissionExamPaper() {
         removePermissionExamPaper();
