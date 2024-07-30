@@ -7,6 +7,10 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -16,9 +20,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        List<String> AL = new ArrayList<>();
+        if (ALLOWED_ORIGIN.contains(",")) {
+            String[] origins = ALLOWED_ORIGIN.split(",");
+            Collections.addAll(AL, origins);
+        } else {
+            AL.add(ALLOWED_ORIGIN);
+        }
         registry
                 .addEndpoint("/ws")
-                .setAllowedOrigins(ALLOWED_ORIGIN)
+                .setAllowedOrigins(AL.toArray(new String[0]))
                 .withSockJS();
     }
 
