@@ -14,12 +14,17 @@ const jsFiles = glob.sync(jsFilesPattern);
 
 jsFiles.forEach(jsFile => {
     const content = fs.readFileSync(jsFile, 'utf-8');
-    console.log(`Original content of ${jsFile}:`, content); // Log original content
+    console.log(`Original content of ${jsFile}:`, content);
 
     try {
         terser.minify(content, {
             mangle: {
-                keep_classnames: true
+                keep_classnames: false,
+                keep_fnames: false
+            },
+            compress: {
+                drop_console: true,
+                drop_debugger: true
             },
             toplevel: true
         }).then(minified => {
@@ -48,12 +53,17 @@ const jsFilesDirect = glob.sync(jsFilesDirectPattern);
 
 jsFilesDirect.forEach(jsFile => {
     const content = fs.readFileSync(jsFile, 'utf-8');
-    console.log(`Original content of ${jsFile}:`, content); // Log original content
+    console.log(`Original content of ${jsFile}:`, content);
 
     try {
         terser.minify(content, {
             mangle: {
-                keep_classnames: true
+                keep_classnames: false,
+                keep_fnames: false
+            },
+            compress: {
+                drop_console: true,
+                drop_debugger: true
             },
             toplevel: true
         }).then(minified => {
