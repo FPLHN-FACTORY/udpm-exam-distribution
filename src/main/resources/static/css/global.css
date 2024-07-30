@@ -100,35 +100,48 @@ tr:nth-child(even) {
 }
 
 .pagination > li.page-item.disabled > a {
-    color: white !important;
+    color: #cccccc !important;
+    cursor: not-allowed;
+}
+
+.pagination > li.page-item.disabled {
+    cursor: not-allowed;
 }
 
 #pagination-major-facilities > li.page-item.disabled > a {
-    color: white !important;
+    color: #cccccc !important;
 }
 
 .pagination > li > a {
-    color: white !important;
+    color: #666666 !important;
+    background-color: #f8f9fa;
+    cursor: pointer;
 }
 
 #pagination-major-facilities > li > a {
-    color: white !important;
+    color: #666666 !important;
+    background-color: #f8f9fa;
+    cursor: pointer;
 }
 
 .pagination .page-link {
     border: none;
-    background-color: var(--common-button-main-color);
-    color: white;
+    background-color: #f8f9fa;
+    color: #666666;
+    cursor: pointer;
 }
 
 .pagination .page-item.active .page-link {
     background-color: var(--common-button-main-color);
-    color: white;
+    color: white !important;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .pagination .page-link:hover {
     background-color: var(--common-button-main-color);
-    color: white;
+    color: white !important;
+    cursor: pointer;
 }
 
 /*Loading Style*/
@@ -196,7 +209,7 @@ tr:nth-child(even) {
     color: #fff;
 }
 
-.btn-selected{
+.btn-selected {
     background-color: #FFD35A !important;
     color: #070707 !important;
 }
