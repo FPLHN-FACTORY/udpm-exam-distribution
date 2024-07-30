@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
             ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
-            mimeMessageHelper.setFrom("nguyenvimanhnqt@gmail.com");
+            mimeMessageHelper.setFrom(fromEmail);
             mimeMessageHelper.setTo(toEmail);
             mimeMessageHelper.setBcc(request.getListEmailBcc());
             mimeMessageHelper.setText(header + body + footer, true);

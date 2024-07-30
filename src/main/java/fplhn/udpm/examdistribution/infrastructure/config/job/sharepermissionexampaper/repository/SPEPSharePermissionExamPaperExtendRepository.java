@@ -13,9 +13,8 @@ public interface SPEPSharePermissionExamPaperExtendRepository extends SharePermi
     @Query("""
             SELECT spep
             FROM SharePermissionExamPaper spep
-            WHERE spep.block.id = :blockId AND
-                  spep.facility.id = :facilityId
+            WHERE spep.block.id = :blockId
             """)
-    List<SharePermissionExamPaper> listSharePermissionExamPaper(String blockId,String facilityId);
+    List<SharePermissionExamPaper> listSharePermissionExamPaper(String blockId);
 
 }
