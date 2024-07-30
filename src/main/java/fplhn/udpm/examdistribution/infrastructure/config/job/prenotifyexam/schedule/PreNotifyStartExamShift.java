@@ -9,7 +9,6 @@ import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.repos
 import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.repository.SCHDExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.repository.SCHDSemesterExtendRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.response.ExamShiftCommingInfoResponse;
-import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import lombok.AllArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,15 +45,9 @@ public class PreNotifyStartExamShift {
     @Scheduled(cron = "${schedule.prepare.exam.cron}")
     public void preNotifyStartExamShift() {
         log.info("----------------- Start pre notify start exam shift -----------------");
-        Shift shift = getCommingShift();
-        if (shift == null) {
-            log.info("No shift is comming");
-            log.info("----------------- End pre notify start exam shift -----------------");
-            return;
-        }
 
         List<ExamShift> examShiftsComming = schdExamShiftExtendRepository
-                .findByExamDateAndShift(DateTimeUtil.getCurrentTime(), shift);
+                .findByExamDate(DateTimeUtil.getCurrentTime());
 
         if (examShiftsComming.isEmpty()) {
             log.info("No exam shift is comming");
@@ -67,7 +59,6 @@ public class PreNotifyStartExamShift {
 
         List<ExamShiftCommingInfoResponse> examShiftCommingInfoResponses = schdExamShiftExtendRepository
                 .getContentSendMail(
-                        shift.name(),
                         DateTimeUtil.getCurrentTime(),
                         semesterRepository.getReferenceById(getCurrentSemesterId()).getId()
                 );
@@ -85,15 +76,15 @@ public class PreNotifyStartExamShift {
         log.info("----------------- End pre notify start exam shift -----------------");
     }
 
-    private Shift getCommingShift() {
-        LocalTime now = LocalTime.now().plusMinutes(15);
-        for (Shift shift : Shift.values()) {
-            if ((now.isAfter(shift.getStartTime()) || now.equals(shift.getStartTime())) && now.isBefore(shift.getEndTime())) {
-                return shift;
-            }
-        }
-        return null;
-    }
+//    private Shift getCommingShift() {
+//        LocalTime now = LocalTime.now().plusMinutes(15);
+//        for (Shift shift : Shift.values()) {
+//            if ((now.isAfter(shift.getStartTime()) || now.equals(shift.getStartTime())) && now.isBefore(shift.getEndTime())) {
+//                return shift;
+//            }
+//        }
+//        return null;
+//    }
 
     private List<ExamShiftInfoAttachWithPassword> generateExamShiftInfo(List<ExamShift> examShifts) {
         return examShifts.stream().map(examShift -> {
@@ -108,8 +99,10 @@ public class PreNotifyStartExamShift {
         }).collect(Collectors.toList());
     }
 
-    private void processExamShiftCommingInfoResponses(List<ExamShiftCommingInfoResponse> responses,
-                                                      List<ExamShiftInfoAttachWithPassword> passwords) {
+    private void processExamShiftCommingInfoResponses(
+            List<ExamShiftCommingInfoResponse> responses,
+            List<ExamShiftInfoAttachWithPassword> passwords
+    ) {
         responses.forEach(response -> {
             Optional<ExamShiftInfoAttachWithPassword> infoOptional = passwords.stream()
                     .filter(e -> e.getExamShiftCode().equals(response.getExamShiftCode()))
@@ -118,6 +111,7 @@ public class PreNotifyStartExamShift {
                 response.setPassword(infoOptional.get().getPassword());
                 schdExamShiftExtendRepository.findByExamShiftCode(response.getExamShiftCode())
                         .ifPresent(examShift -> {
+                            if (examShift.getHash() != null || examShift.getSalt() != null) return;
                             examShift.setHash(infoOptional.get().getHash());
                             examShift.setSalt(infoOptional.get().getSalt());
                             schdExamShiftExtendRepository.save(examShift);
@@ -128,8 +122,10 @@ public class PreNotifyStartExamShift {
         });
     }
 
-    private void notifyHeadsAndSupervisors(List<ExamShiftCommingInfoResponse> responses,
-                                           List<ExamShiftInfoAttachWithPassword> passwords) {
+    private void notifyHeadsAndSupervisors(
+            List<ExamShiftCommingInfoResponse> responses,
+            List<ExamShiftInfoAttachWithPassword> passwords
+    ) {
         List<String> accountFptHeadDepartment = responses.stream()
                 .map(ExamShiftCommingInfoResponse::getDepartmentFacilityId)
                 .map(schdDepartmentFacilityRepository::findHeadDepartmentByDepartmentFacilityId)
@@ -234,4 +230,5 @@ public class PreNotifyStartExamShift {
                 .findFirst()
                 .orElse(null);
     }
+
 }

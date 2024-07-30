@@ -55,14 +55,13 @@ public interface SCHDExamShiftExtendRepository extends ExamShiftRepository {
             JOIN Semester s4 ON
             	hsbs.semester.id = s4.id
             WHERE
-                es.shift = :shift
-                AND es.examDate = :examDate
+                es.examDate = :examDate
                 AND s4.id = :currentSemesterId
             """)
     List<ExamShiftCommingInfoResponse>
-    getContentSendMail(String shift, Long examDate, String currentSemesterId);
+    getContentSendMail(Long examDate, String currentSemesterId);
 
-    List<ExamShift> findByExamDateAndShift(Long examDate, Shift shift);
+    List<ExamShift> findByExamDate(Long examDate);
 
     Optional<ExamShift> findByExamShiftCode(String examShiftCode);
 
