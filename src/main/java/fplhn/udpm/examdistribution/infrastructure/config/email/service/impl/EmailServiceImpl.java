@@ -10,6 +10,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDri
 import fplhn.udpm.examdistribution.infrastructure.config.drive.utils.PermissionDetail;
 import fplhn.udpm.examdistribution.infrastructure.config.email.modal.request.SendEmailPublicMockExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
+import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.response.ExamShiftCommingInfoResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.MailConstant;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import jakarta.mail.MessagingException;
@@ -202,7 +203,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmailToHeadDepartmentWhenCreateExamShift(List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses, String password, String accountFptHeadDepartment) {
+    public void sendEmailToHeadDepartmentWhenExamShiftComming(List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses, String password, String accountFptHeadDepartment) {
         String header = MailConstant.HEADER
                 .replace("${title}", "Thông báo ca thi chuẩn bị diễn ra");
 
@@ -220,6 +221,50 @@ public class EmailServiceImpl implements EmailService {
                     .replace("${nameSecondSupervisor}", response.getNameSecondSupervisor())
                     .replace("${codeSecondSupervisor}", response.getCodeSecondSupervisor())
                     .replace("${password}", password);
+            bodyBuilder.append(bodyPart);
+        }
+
+        String body = bodyBuilder.toString();
+        String footer = MailConstant.FOOTER;
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom(fromEmail);
+            mimeMessageHelper.setTo(accountFptHeadDepartment);
+            mimeMessageHelper.setText(header + body + footer, true);
+            mimeMessageHelper.setSubject(MailConstant.SUBJECT);
+            mimeMessageHelper.addInline("logoImage", resource);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void sendEmailToHeadDepartmentAndSubjectWhenExamShiftComming(
+            List<ExamShiftCommingInfoResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses,
+            String accountFptHeadDepartment
+    ) {
+        String header = MailConstant.HEADER
+                .replace("${title}", "Thông báo ca thi chuẩn bị diễn ra");
+
+        StringBuilder bodyBuilder = new StringBuilder();
+        for (ExamShiftCommingInfoResponse response : hsSendMailToHeadDepartmentWhenCreateExamShiftResponses) {
+            String bodyPart = MailConstant.BODY_CREATE_EXAM_SHIFT
+                    .replace("${examShiftCode}", response.getExamShiftCode())
+                    .replace("${examDate}", DateTimeUtil.parseLongToString(response.getExamDate()))
+                    .replace("${room}", response.getRoom())
+                    .replace("${shift}", response.getShift())
+                    .replace("${classSubjectCode}", response.getClassSubjectCode())
+                    .replace("${subjectName}", response.getSubjectName())
+                    .replace("${nameFirstSupervisor}", response.getNameFirstSupervisor())
+                    .replace("${codeFirstSupervisor}", response.getCodeFirstSupervisor())
+                    .replace("${nameSecondSupervisor}", response.getNameSecondSupervisor())
+                    .replace("${codeSecondSupervisor}", response.getCodeSecondSupervisor())
+                    .replace("${password}", response.getPassword());
             bodyBuilder.append(bodyPart);
         }
 

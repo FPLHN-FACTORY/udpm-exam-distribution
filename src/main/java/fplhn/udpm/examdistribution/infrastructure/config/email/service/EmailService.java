@@ -7,6 +7,7 @@ import fplhn.udpm.examdistribution.core.headsubject.joinroom.model.response.HSSe
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TSendMailToSupervisorWhenOpenExamPaperResponse;
 import fplhn.udpm.examdistribution.infrastructure.config.email.modal.request.SendEmailPublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.infrastructure.config.job.prenotifyexam.response.ExamShiftCommingInfoResponse;
 
 import java.util.List;
 
@@ -23,8 +24,16 @@ public interface EmailService {
             HSSendMailToSupervisorWhenCreateExamShiftResponse hsSendMailToSupervisorWhenCreateExamShiftResponse, String password
     );
 
-    void sendEmailToHeadDepartmentWhenCreateExamShift(
-            List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses, String password, String accountFptHeadDepartment);
+    void sendEmailToHeadDepartmentWhenExamShiftComming(
+            List<HSSendMailToHeadDepartmentWhenCreateExamShiftResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses,
+            String password,
+            String accountFptHeadDepartment
+    );
+
+    void sendEmailToHeadDepartmentAndSubjectWhenExamShiftComming(
+            List<ExamShiftCommingInfoResponse> hsSendMailToHeadDepartmentWhenCreateExamShiftResponses,
+            String accountFptHeadDepartment
+    );
 
     void sendEmailToSupervisorWhenOpenExamPaper(
             TSendMailToSupervisorWhenOpenExamPaperResponse tSendMailToSupervisorWhenOpenExamPaperResponse, String password);
