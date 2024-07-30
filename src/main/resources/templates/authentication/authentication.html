@@ -110,17 +110,36 @@
     <div th:insert="~{fragment/loading/loading :: loading}"></div>
     <!--  Loading  -->
 </div>
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
-<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
-<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
-<script th:src="@{/js/constants.js}"></script>
-<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
-<script th:src="@{/js/toast-custom.js}"></script>
-<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
-<script th:src="@{/js/authentication/authentication.js}"></script>
+
+<div th:switch="${isDevelopment}">
+    <div th:case="true">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/toast-custom.js}"></script>
+        <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/authentication/authentication.js}"></script>
+    </div>
+    <div th:case="false">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/minified/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/minified/toast-custom.js}"></script>
+        <script th:src="@{/js/minified/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/minified/authentication/authentication.js}"></script>
+    </div>
+</div>
 </body>
 </html>
