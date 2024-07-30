@@ -43,4 +43,16 @@ public class DateTimeUtil {
         return instant.toEpochMilli();
     }
 
+    public static Long getCurrentDateWithoutTime() {
+        LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
+        LocalDateTime startOfDay = currentDate.atStartOfDay();
+        ZonedDateTime zonedDateTime = startOfDay.atZone(ZoneId.systemDefault());
+        Instant instant = zonedDateTime.toInstant();
+        return instant.toEpochMilli();
+    }
+
+    public static LocalDate convertToLocalDate(Date date) {
+        return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
+    }
+
 }

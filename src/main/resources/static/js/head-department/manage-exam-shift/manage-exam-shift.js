@@ -80,8 +80,9 @@ const getListExamShift = () => {
                         <td>${examShift.shift}</td>
                         <td style="text-align: center;">
                             ${examShift.isCanEdit === 1 ?
-                    `<i class="fas fa-edit" style="cursor: pointer;" onclick="showModalEditExamShift('${examShift.id}')"></i>` :
-                    '<span class="tag tag-danger">Ca thi đã/đang diễn ra</span>'}
+                    `<i class="fas fa-edit" style="cursor: pointer;" data-bs-toggle="tooltip" 
+                                    data-bs-title="Chỉnh sửa ca thi" onclick="showModalEditExamShift('${examShift.id}')"></i>` :
+                    '<span class="tag tag-danger">Ca thi đã / đang diễn ra</span>'}
                         </td>
                     </tr>`;
             });
@@ -89,6 +90,7 @@ const getListExamShift = () => {
             $('#manageExamShiftTableBody').html(examShifts.join(''));
             const totalPages = res?.data?.totalPages || 1;
             createPagination(totalPages, examShiftParams.page);
+            callToolTip();
         },
         error: (error) => {
             console.error(error);

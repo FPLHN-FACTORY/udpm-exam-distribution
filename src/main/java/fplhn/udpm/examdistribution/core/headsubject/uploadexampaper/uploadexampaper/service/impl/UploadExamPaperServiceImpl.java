@@ -1,21 +1,30 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.impl;
 
+import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPBlockExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPClassSubjectExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPMajorFacilityExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSharePermissionExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPUploadExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.UploadExamPaperService;
 import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
+import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
+import fplhn.udpm.examdistribution.entity.SharePermissionExamPaper;
+import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
@@ -40,8 +49,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,9 +71,13 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     private final UEPBlockExtendRepository blockRepository;
 
+    private final UEPFacilityExtendRepository facilityRepository;
+
     private final UEPClassSubjectExtendRepository classSubjectRepository;
 
     private final GoogleDriveFileService googleDriveFileService;
+
+    private final UEPSharePermissionExamPaperExtendRepository sharePermissionExamPaperRepository;
 
     private final RedisService redisService;
 
@@ -72,38 +87,69 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
 
     @Override
     public ResponseObject<?> getListCurrentSubject() {
-        String userId = sessionHelper.getCurrentUserId();
+        try {
+            String userId = sessionHelper.getCurrentUserId();
 
-        String semesterId = sessionHelper.getCurrentSemesterId();
-        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
-        return new ResponseObject<>(
-                subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
-                HttpStatus.OK,
-                "Lấy danh sách môn học thành công"
-        );
+            String semesterId = sessionHelper.getCurrentSemesterId();
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+            return new ResponseObject<>(
+                    subjectRepository.getListSubject(userId, departmentFacilityId, semesterId),
+                    HttpStatus.OK,
+                    "Lấy danh sách môn học thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy danh sách môn học không thành công"
+            );
+        }
     }
 
     @Override
     public ResponseObject<?> getListStaff() {
-        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
-        return new ResponseObject<>(
-                staffRepository.getListStaff(departmentFacilityId),
-                HttpStatus.OK,
-                "Lấy danh sách nhân viên thành công"
-        );
+        try {
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+            return new ResponseObject<>(
+                    staffRepository.getListStaff(departmentFacilityId),
+                    HttpStatus.OK,
+                    "Lấy danh sách nhân viên thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy danh sách nhân viên không thành công"
+            );
+        }
     }
 
     @Override
     public ResponseObject<?> getAllExamPaper(ListExamPaperRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        String userId = sessionHelper.getCurrentUserId();
-        String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
-        String semesterId = sessionHelper.getCurrentSemesterId();
-        return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString())),
-                HttpStatus.OK,
-                "Lấy thành công danh sách đề thi"
-        );
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            String userId = sessionHelper.getCurrentUserId();
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+            String semesterId = sessionHelper.getCurrentSemesterId();
+            return new ResponseObject<>(
+                    PageableObject.of(examPaperRepository.getListExamPaper(
+                            pageable, request,
+                            userId, departmentFacilityId,
+                            semesterId, ExamPaperStatus.WAITING_APPROVAL.toString())
+                    ),
+                    HttpStatus.OK,
+                    "Lấy danh sách đề thi thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy danh sách đề thi không thành công"
+            );
+        }
     }
 
     @Override
@@ -139,7 +185,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                     "Tìm thấy file thành công"
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
@@ -171,10 +217,11 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Thay đổi trạng thái đề thi không thành công"
             );
         }
     }
@@ -260,10 +307,11 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                     "Tải đề thi thành công"
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Tải đề thi không thành công"
             );
         }
     }
@@ -330,16 +378,17 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                     "Cập nhật đề thi thành công"
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Chỉnh sửa đề thi không thành công"
             );
         }
     }
 
     @Override
-    public ResponseObject<?> sendEmailPublicExamPaper(String examPaperId) {
+    public ResponseObject<?> sendEmailPublicMockExamPaper(String examPaperId) {
         try {
             Optional<ExamPaper> optionalExamPaper = examPaperRepository.findById(examPaperId);
             if (optionalExamPaper.isEmpty()) {
@@ -370,39 +419,191 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                         "Môn học này chưa được xếp lớp học"
                 );
             }
-            SendEmailPublicMockExamPaperRequest sendEmailPublicMocExamPaper = new SendEmailPublicMockExamPaperRequest();
-            sendEmailPublicMocExamPaper.setListEmailBcc(listEmailStaff);
-            sendEmailPublicMocExamPaper.setExamPaperCode(optionalExamPaper.get().getExamPaperCode());
-            sendEmailPublicMocExamPaper.setTimeSend(new Date());
-            sendEmailPublicMocExamPaper.setSubjectName(optionalExamPaper.get().getSubject().getName());
-            sendEmailPublicMocExamPaper.setMajorName(optionalExamPaper.get().getMajorFacility().getMajor().getName());
-            sendEmailPublicMocExamPaper.setDepartmentName(optionalExamPaper.get().getMajorFacility().getMajor().getDepartment().getName());
-            sendEmailPublicMocExamPaper.setSemesterName(
-                    optionalExamPaper.get().getBlock().getSemester().getSemesterName()
-                    +
-                    " "
-                    +
-                    optionalExamPaper.get().getBlock().getSemester().getYear()
-                    +
-                    " - "
-                    +
-                    optionalExamPaper.get().getBlock().getName().name());
-            emailService.sendEmailPublicMockExamPaper(sendEmailPublicMocExamPaper);
 
             ExamPaper examPaper = optionalExamPaper.get();
             examPaper.setIsPublic(true);
             examPaperRepository.save(examPaper);
 
+            this.sendEmailPublicMockExamPaper(listEmailStaff, examPaper);
+
             return new ResponseObject<>(
                     null,
                     HttpStatus.OK,
-                    "Đề thi đã được public tới những giảng viên dạy môn " + examPaper.getSubject().getName()
+                    "Đề thi đã được công khai tới những giảng viên dạy môn " + examPaper.getSubject().getName()
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Có lỗi xảy ra trong quá trình thực thi"
+                    "Có lỗi xảy ra trong quá trình công khai đề thi thử"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> sendEmailPublicMockExamPaper(PublicMockExamPaperRequest request) {
+        try {
+            String blockId = sessionHelper.getCurrentBlockId();
+            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+
+            Arrays.stream(request.getListExamPaperId()).forEach(examPaperId -> {
+                Optional<ExamPaper> optionalExamPaper = examPaperRepository.findById(examPaperId);
+                if (optionalExamPaper.isPresent()) {
+                    ExamPaper examPaper = optionalExamPaper.get();
+                    examPaper.setIsPublic(true);
+                    examPaperRepository.save(examPaper);
+
+                    String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(
+                            blockId,
+                            examPaper.getSubject().getId(),
+                            departmentFacilityId
+                    );
+                    this.sendEmailPublicMockExamPaper(listEmailStaff, optionalExamPaper.get());
+                }
+            });
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Đề thi đã được công khai thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Có lỗi xảy ra trong quá trình công khai đề thi thử"
+            );
+        }
+    }
+
+    private void sendEmailPublicMockExamPaper(String[] listBcc, ExamPaper examPaper) {
+        SendEmailPublicMockExamPaperRequest sendEmailPublicMocExamPaper = new SendEmailPublicMockExamPaperRequest();
+        sendEmailPublicMocExamPaper.setListEmailBcc(listBcc);
+        sendEmailPublicMocExamPaper.setExamPaperCode(examPaper.getExamPaperCode());
+        sendEmailPublicMocExamPaper.setTimeSend(new Date());
+        sendEmailPublicMocExamPaper.setSubjectName(examPaper.getSubject().getName());
+        sendEmailPublicMocExamPaper.setMajorName(examPaper.getMajorFacility().getMajor().getName());
+        sendEmailPublicMocExamPaper.setDepartmentName(examPaper.getMajorFacility().getMajor().getDepartment().getName());
+        sendEmailPublicMocExamPaper.setSemesterName(
+                examPaper.getBlock().getSemester().getSemesterName()
+                +
+                " "
+                +
+                examPaper.getBlock().getSemester().getYear()
+                +
+                " - "
+                +
+                examPaper.getBlock().getName().name());
+        emailService.sendEmailPublicMockExamPaper(sendEmailPublicMocExamPaper);
+
+        Arrays.stream(listBcc).forEach(staff -> {
+            googleDriveFileService.shareFile(
+                    examPaper.getPath(),
+                    staff
+            );
+        });
+    }
+
+    @Override
+    public ResponseObject<?> getListStaffBySubjectId(String subjectId, ListStaffBySubjectIdRequest request) {
+        try {
+            String blockId = sessionHelper.getCurrentBlockId();
+            String facilityId = sessionHelper.getCurrentUserFacilityId();
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            return new ResponseObject<>(
+                    PageableObject.of(staffRepository.getListStaffBySubjectId(
+                            pageable, subjectId, blockId, facilityId, request)
+                    ),
+                    HttpStatus.OK,
+                    "Lấy danh sách môn học thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy danh sách môn học không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> sharePermissionExamPaper(SharePermissionExamPaperRequest request) {
+        try {
+            Optional<ExamPaper> examPaperOptional = examPaperRepository.findById(request.getExamPaperId());
+            if (examPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy đề thi này"
+                );
+            }
+
+            Optional<Block> blockOptional = blockRepository.findById(sessionHelper.getCurrentBlockId());
+            if (blockOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy block hiện tại"
+                );
+            }
+
+            Optional<Facility> facilityOptional = facilityRepository.findById(sessionHelper.getCurrentUserFacilityId());
+            if (facilityOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy cơ sở hiện tại"
+                );
+            }
+
+            List<SharePermissionExamPaper> listPermissionExamPaperRequest = sharePermissionExamPaperRepository.getListSharePermissionExamPaperByExamPaperId(
+                    examPaperOptional.get().getId(),
+                    sessionHelper.getCurrentBlockId(),
+                    sessionHelper.getCurrentUserFacilityId()
+            );
+
+            listPermissionExamPaperRequest.forEach(item -> {
+                googleDriveFileService.deleteShareFile(
+                        item.getExamPaper().getPath(),
+                        item.getPermissionId()
+                );
+                sharePermissionExamPaperRepository.delete(item);
+            });
+
+            Arrays.stream(request.getListStaffId()).forEach(staffId -> {
+                Optional<Staff> staffOptional = staffRepository.findById(staffId);
+
+                if (staffOptional.isPresent()) {
+                    SharePermissionExamPaper sharePermissionExamPaper = new SharePermissionExamPaper();
+                    sharePermissionExamPaper.setBlock(blockOptional.get());
+                    sharePermissionExamPaper.setFacility(facilityOptional.get());
+                    sharePermissionExamPaper.setStaff(staffOptional.get());
+                    sharePermissionExamPaper.setExamPaper(examPaperOptional.get());
+                    sharePermissionExamPaper.setStatus(EntityStatus.ACTIVE);
+                    Permission permission = googleDriveFileService.shareFile(
+                            examPaperOptional.get().getPath(),
+                            staffOptional.get().getAccountFpt()
+                    );
+                    sharePermissionExamPaper.setPermissionId(permission.getId());
+
+                    sharePermissionExamPaperRepository.save(sharePermissionExamPaper);
+                }
+            });
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Cập nhật quyền truy cập thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Chia sẻ quyền truy cập không thành công"
             );
         }
     }

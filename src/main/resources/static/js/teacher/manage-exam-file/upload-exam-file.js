@@ -398,6 +398,11 @@ function validateInput() {
 
 }
 
+const clearFilter = () => {
+    $('#staff-upload-find').val('');
+    $('#startEndDate').val('');
+}
+
 const handleUploadExamFile = () => {
 
     if (validateInput()) {
@@ -432,6 +437,8 @@ const handleUploadExamFile = () => {
                     processData: false, // Không xử lý dữ liệu, để nguyên dạng `FormData`
                     success: function (responseBody) {
                         showToastSuccess(responseBody.message);
+                        clearFilter();
+                        fetchExamPapers(1, $('#pageSize').val(), $('#staff-upload-find').val()?.trim());
                         hideLoading();
                     },
                     error: function (error) {

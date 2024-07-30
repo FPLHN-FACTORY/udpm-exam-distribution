@@ -1,16 +1,16 @@
 package fplhn.udpm.examdistribution.core.headsubject.examapproval.repository;
 
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.response.EAExamPaperCleanAfterSeventDayResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.response.EAExamPaperResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -60,15 +60,13 @@ public interface EAExamPaperRepository extends ExamPaperRepository {
             , nativeQuery = true)
     Page<EAExamPaperResponse> getExamApprovals(Pageable pageable, EAExamPaperRequest request, String idHeadSubject, String semesterId, String departmentFacilityId);
 
-    @Query(value = """
-            SELECT ep.id as id,
-            	   ep.path as path
-			FROM exam_paper ep
-			WHERE (ep.created_exam_paper_date + :dateTimeOf7Day) > :now
-			AND ep.exam_paper_status LIKE 'WAITING_APPROVAL'
-            """,nativeQuery = true)
-    List<EAExamPaperCleanAfterSeventDayResponse> findAllExamPaperStatusAndCreatedDate(Long dateTimeOf7Day, Long now);
-
     Optional<ExamPaper> findByPath(String fileId);
+
+    @Transactional
+    @Modifying
+    @Query(value = """
+    UPDATE exam_paper SET exam_paper_status = 'REJECTED' WHERE id = :examPaperId
+    """,nativeQuery = true)
+    void rejectExamPaper(String examPaperId);
 
 }

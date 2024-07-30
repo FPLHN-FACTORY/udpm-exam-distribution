@@ -3,13 +3,14 @@ package fplhn.udpm.examdistribution.core.headsubject.examapproval.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamApprovalRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.response.EAExamPaperCleanAfterSeventDayResponse;
+import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EASenEmailRejectExamPaper;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EAExamPaperRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.repository.EASubjectRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.service.EAExamPaperService;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperType;
@@ -20,13 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,6 +42,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
 
     private final RedisService redisService;
 
+    private final EmailService emailService;
     @Override
     public ResponseObject<?> getExamApprovals(EAExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
@@ -138,45 +138,56 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
         );
     }
 
+//    @Override
+//    public ResponseObject<?> deleteExamPaper(String examPaperId) {
+//        Optional<ExamPaper> examPaper = examApprovalRepository.findById(examPaperId);
+//        if (examPaper.isEmpty()) {
+//            return new ResponseObject<>(null,
+//                    HttpStatus.BAD_REQUEST,
+//                    "Đề không tồn tại"
+//            );
+//        }
+//        String fileId = examPaper.get().getPath();
+//
+//        examApprovalRepository.deleteById(examPaper.get().getId());
+//
+//        try {
+//            googleDriveFileService.deleteById(fileId);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return new ResponseObject<>(
+//                null,
+//                HttpStatus.OK,
+//                "Xóa đề thành công"
+//        );
+//    }
+
     @Override
-    public ResponseObject<?> deleteExamPaper(String examPaperId) {
+    public ResponseObject<?> rejectExamPaper(String examPaperId) {
         Optional<ExamPaper> examPaper = examApprovalRepository.findById(examPaperId);
         if (examPaper.isEmpty()) {
-            return new ResponseObject<>(null,
+            return new ResponseObject<>(
+                    null,
                     HttpStatus.BAD_REQUEST,
                     "Đề không tồn tại"
             );
         }
-        String fileId = examPaper.get().getPath();
-
-        examApprovalRepository.deleteById(examPaper.get().getId());
-
-        try {
-            googleDriveFileService.deleteById(fileId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        examApprovalRepository.rejectExamPaper(examPaperId);
+        EASenEmailRejectExamPaper rejectInfo = new EASenEmailRejectExamPaper();
+        rejectInfo.setTimeReject(new Date());
+        rejectInfo.setExamPaperCode(examPaper.get().getExamPaperCode());
+        rejectInfo.setSubjectName(examPaper.get().getSubject().getName());
+        rejectInfo.setSendToEmailAddress(examPaper.get().getStaffUpload().getAccountFe());
+        rejectInfo.setMajorName(examPaper.get().getMajorFacility().getMajor().getName());
+        rejectInfo.setDepartmentName(examPaper.get().getSubject().getDepartment().getName());
+        emailService.sendEmailWhenRejectExamPaper(rejectInfo);
         return new ResponseObject<>(
                 null,
                 HttpStatus.OK,
-                "Xóa đề thành công"
+                "Từ chối đề thành công"
         );
     }
-
-    @Override
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void cleanExamPaper() {
-        Long SEVEN_DAY = 604800000L;
-        List<EAExamPaperCleanAfterSeventDayResponse> examPapers = examApprovalRepository.findAllExamPaperStatusAndCreatedDate(SEVEN_DAY, new Date().getTime());
-        for (EAExamPaperCleanAfterSeventDayResponse examPaper : examPapers) {
-            try {
-                examApprovalRepository.deleteById(examPaper.getId());
-                googleDriveFileService.deleteById(examPaper.getPath());
-            } catch (Exception e) {
-            }
-        }
-    }
-
 
 }

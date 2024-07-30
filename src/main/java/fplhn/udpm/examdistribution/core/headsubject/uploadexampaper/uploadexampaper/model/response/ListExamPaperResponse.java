@@ -15,6 +15,8 @@ public interface ListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
     String getExamPaperCode();
 
+    String getExamPaperId();
+
     String getStaffName();
 
     Long getCreatedDate();

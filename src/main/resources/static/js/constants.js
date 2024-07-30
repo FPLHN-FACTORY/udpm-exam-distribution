@@ -250,6 +250,17 @@ const getExamDate = () => {
     $('#modifyExamDate').val(today);
 };
 
+const fetchShifts = () => {
+    let shifts = $('#shiftsData').text().trim().slice(1, -1).split(',').map(shift => shift.trim());
+    let currentShift = $('#currentShift').text().trim();
+
+    const shiftOptions = shifts.map((shift, index) => {
+        return `<option value="${shift}" ${shift === currentShift ? 'selected' : ''}>${shift}</option>`;
+    });
+
+    $('#modifyShift').html(shiftOptions);
+};
+
 const checkExtensionInstalled = async () => {
     return true;
     // try {

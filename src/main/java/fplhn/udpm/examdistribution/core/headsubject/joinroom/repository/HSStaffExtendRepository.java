@@ -70,4 +70,24 @@ public interface HSStaffExtendRepository extends StaffRepository {
                         """, nativeQuery = true)
     HSStaffResponse findSecondSupervisorIdByExamShiftCode(String examShiftCode);
 
+    @Query(value = """
+            SELECT
+            	s.id,
+            	s.staff_code,
+            	s.name,
+            	s.account_fe,
+            	s.account_fpt,
+            	s.picture,
+            	s.status,
+            	s.created_date,
+            	s.last_modified_date
+            FROM
+            	staff s
+            JOIN department_facility df on
+            	s.id = id_staff
+            WHERE
+            	df.id = :departmentFacilityId
+            """, nativeQuery = true)
+    Optional<Staff> findHeadDepartmentById(String departmentFacilityId);
+
 }

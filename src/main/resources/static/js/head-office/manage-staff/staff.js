@@ -406,7 +406,6 @@ function changeFile(input) {
         showToastError("Định dạng tệp tin không hợp lệ.");
         return;
     }
-
     if (file.size > maxSize) {
         showToastError("Kích thước tệp tin không được vượt quá 50MB.");
         return;
@@ -417,6 +416,7 @@ function changeFile(input) {
 
     $('#btn_upload').removeClass('disabled');
     fileUpload = file;
+    input.value = null;
 };
 
 function submitUpload() {
