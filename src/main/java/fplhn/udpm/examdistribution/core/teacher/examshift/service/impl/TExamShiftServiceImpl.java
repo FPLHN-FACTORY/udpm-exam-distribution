@@ -81,10 +81,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId())
-                || (examShift.get().getSecondSupervisor() != null
-                && examShift.get().getSecondSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId()));
+                          .equals(sessionHelper.getCurrentUserId())
+                  || (examShift.get().getSecondSupervisor() != null
+                      && examShift.get().getSecondSupervisor().getId()
+                              .equals(sessionHelper.getCurrentUserId()));
 
         if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
@@ -128,7 +128,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
-                    && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
                         HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
             }
@@ -310,7 +310,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
             examPaperShift.setStatus(EntityStatus.ACTIVE);
             long startTime = System.currentTimeMillis();
-            long endTime = startTime + (5 * 60 * 1000);
+            long endTime = startTime + 60 * 60 * 1000;
             examPaperShift.setStartTime(startTime);
             examPaperShift.setEndTime(endTime);
             examPaperShift.setHash(securePassword);
