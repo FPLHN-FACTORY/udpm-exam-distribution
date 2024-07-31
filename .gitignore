@@ -44,6 +44,7 @@ out/
 
 ### MINIFIED JS ###
 /src/main/resources/static/js/minified/
+/src/main/resources/static/css/minified/
 
 ### NODE MODULES ###
 /node_modules/

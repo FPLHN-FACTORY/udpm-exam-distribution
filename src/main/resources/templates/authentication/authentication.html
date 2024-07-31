@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center"
-                 style="margin: 70px 150px 0 150px">
+                 style="gap: 50px;margin: 70px 150px 0 150px">
                 <div onclick="handleRedirectGoogleLogin(1)" class="image-permission">
                     <img type="button" style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
                          th:src="@{/assets/image/BanDaoTao.png}" alt="Ảnh Ban đào tạo"/>
@@ -85,16 +85,16 @@
                         </div>
                     </button>
                 </div>
-<!--                <div onclick="handleRedirectGoogleLogin(5)" class="image-permission">-->
-<!--                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"-->
-<!--                         th:src="@{/assets/image/QLDT.png}" alt="Ảnh Sinh Viên"/>-->
-<!--                    <button type="button" class="btn-custom btn-primary px-3 mt-3">-->
-<!--                        <div class="d-flex align-items-center">-->
-<!--                            <i class="fs-4 fa-solid fa-user"></i>-->
-<!--                            <span class="fs-4 ms-2">Sinh Viên</span>-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div>-->
+                <div onclick="handleRedirectGoogleLogin(5)" class="image-permission">
+                    <img style="width: 200px; height: auto; transition: transform 0.3s ease 0s;"
+                         th:src="@{/assets/image/QLDT.png}" alt="Ảnh Sinh Viên"/>
+                    <button type="button" class="btn-custom btn-primary px-3 mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fs-4 fa-solid fa-user"></i>
+                            <span class="fs-4 ms-2">Sinh Viên</span>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
         <div style="min-height: calc(120px + 0vh); display: flex; justify-content: center; align-items: center; z-index: 1000; font-size: 1.3rem;">
@@ -110,17 +110,36 @@
     <div th:insert="~{fragment/loading/loading :: loading}"></div>
     <!--  Loading  -->
 </div>
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
-<script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
-<script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
-<script th:src="@{/js/constants.js}"></script>
-<script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
-<script th:src="@{/js/toast-custom.js}"></script>
-<script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
-<script th:src="@{/js/authentication/authentication.js}"></script>
+
+<div th:switch="${isDevelopment}">
+    <div th:case="true">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/toast-custom.js}"></script>
+        <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/authentication/authentication.js}"></script>
+    </div>
+    <div th:case="false">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/minified/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/minified/toast-custom.js}"></script>
+        <script th:src="@{/js/minified/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/minified/authentication/authentication.js}"></script>
+    </div>
+</div>
 </body>
 </html>

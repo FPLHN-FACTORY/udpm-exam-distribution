@@ -65,7 +65,7 @@ const fetchSearchSubject = (
             if (responseData.length === 0) {
                 $('#subjectTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="6" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
 $('#pagination').empty();
@@ -79,21 +79,33 @@ $('#pagination').empty();
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalSampleExamPaper(1,'${subject.id}','${subject.fileId}')" class="fs-6">
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Tải đề thi mẫu"
+                                    style="margin: 0 3px"
+                                    onclick="handleOpenModalSampleExamPaper(1,'${subject.id}','${subject.fileId}')" class="fs-6"
+                                >
                                     <i 
                                         class="fa-solid fa-cloud-arrow-up"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalSampleExamPaper(2,'${subject.id}','${subject.fileId}')" class="fs-6" style="margin: 0 3px;">
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Chi tiết đề thi mẫu"
+                                    style="margin: 0 3px"
+                                    onclick="handleOpenModalSampleExamPaper(2,'${subject.id}','${subject.fileId}')" class="fs-6" style="margin: 0 3px;"
+                                >
                                     <i 
                                         class="fa-solid fa-eye"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
-                                <span onclick="handleOpenModalAssignUpload('${subject.id}','${subject.subjectName}')" class="fs-6">
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Phân người phát đề"
+                                    style="margin: 0 3px"
+                                    onclick="handleOpenModalAssignUpload('${subject.id}','${subject.subjectName}')" class="fs-6"
+                                >
                                     <i 
-                                        class="fa-solid fa-pen-to-square"
+                                        class="fa-solid fa-person"
                                         style="cursor: pointer;"
                                     ></i>
                                 </span>
@@ -103,6 +115,7 @@ $('#pagination').empty();
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
@@ -390,7 +403,7 @@ const fetchSearchStaff = (
             if (responseData.length === 0) {
                 $('#assignUploaderTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="7" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
 $('#pagination').empty();

@@ -16,8 +16,6 @@ public final class MappingConstants {
     // Constant representing the API version prefix
     public static final String API_VERSION_PREFIX = "/api/v1";
 
-    public static final String REDIRECT_AUTHENTICATION_STUDENT = "/auth-student";
-
     // Constants representing the full paths for various resources
     public static final String API_HEAD_SUBJECT_PREFIX = API_VERSION_PREFIX + HEAD_SUBJECT;
     public static final String API_HEAD_OFFICE_PREFIX = API_VERSION_PREFIX + HEAD_OFFICE;

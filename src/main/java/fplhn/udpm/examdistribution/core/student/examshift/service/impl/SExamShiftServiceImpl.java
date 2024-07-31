@@ -1,16 +1,16 @@
 package fplhn.udpm.examdistribution.core.student.examshift.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.student.examshift.model.request.SOpenExamPaperRequest;
-import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamPaperExtendRepository;
-import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamPaperShiftRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SFileResourceResponse;
+import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamPaperExtendRepository;
+import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamPaperShiftRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.repository.SExamShiftExtendRepository;
-import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
-import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExamShiftExtendRepository;
+import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExtendRepository;
+import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
@@ -35,7 +35,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -75,8 +74,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
 
         if (studentExamShift.isEmpty()
-                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+            || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
             return false;
         }
 
@@ -112,14 +111,14 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             if (studentExamShiftExist.isPresent()) {
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
                 if (examStudentStatus.equals(ExamStudentStatus.KICKED)
-                        || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
+                    || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
                     studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                     sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                             new NotificationResponse(
                                     "Sinh viên "
-                                            + existingStudent.get().getStudentCode()
-                                            + " yêu cầu tham gia phòng thi!"));
+                                    + existingStudent.get().getStudentCode()
+                                    + " yêu cầu tham gia phòng thi!"));
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                 } else {
@@ -141,7 +140,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime > examPaperShift.getStartTime() + (1 * 60 * 1000)) {
+                    if (currentTime > examPaperShift.getStartTime() + (10 * 60 * 1000)) {
                         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                                 "Đã quá thời gian thi!");
                     }
@@ -158,8 +157,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                         new NotificationResponse(
                                 "Sinh viên "
-                                        + existingStudent.get().getStudentCode()
-                                        + " đã tham gia phòng thi!"));
+                                + existingStudent.get().getStudentCode()
+                                + " đã tham gia phòng thi!"));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),

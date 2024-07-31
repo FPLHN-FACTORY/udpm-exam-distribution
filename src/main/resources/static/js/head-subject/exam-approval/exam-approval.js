@@ -150,7 +150,7 @@ function getExamPapers(
             if (responseBody?.data?.content?.length === 0) {
                 $('#examPaperTableBody').html(`
                     <tr>
-                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="6" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
                 $('#pagination').empty();
@@ -164,33 +164,34 @@ function getExamPapers(
                             <td>${exam.staffUpload}</td>
                             <td>${formatDateTime(exam.createdExamPaperDate)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                           <a> 
+                            <span data-bs-toggle="tooltip" data-bs-title="Phê duyệt đề thi"> 
                                 <i
                                     onclick="handleOpenModalExamApproval('${exam.id}')"
-                                    class="fs-4 fa-solid fa-square-check"
+                                    class="fs-5 fa-solid fa-square-check"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
-                                </a>
-                                 <a>
+                            </span>
+                            <span data-bs-toggle="tooltip" data-bs-title="Từ chối phê duyệt">
                                 <i
                                     onclick="handleRejectedApproval('${exam.id}')"
-                                    class="fs-4 fa-solid fa-square-xmark"
+                                    class="fs-5 fa-solid fa-square-xmark"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
-                                </a>
-                                <a>
+                            </span>
+                            <span data-bs-toggle="tooltip" data-bs-title="Chi tiết đề thi">
                                 <i
                                     onclick="handleDetail('${exam.path}')"
-                                    class="fs-4 fas fas fa-eye"
+                                    class="fs-5 fas fas fa-eye"
                                     style="cursor: pointer; margin-left: 10px;"
                                 ></i>
-                                </a>
+                            </span>
                             </td>
                         </tr>`;
             });
             $('#examPaperTableBody').html(examPapers);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
+            callToolTip();
         },
         error: function (error) {
             showToastError('Có lỗi xảy ra khi lấy dữ liệu đề thi');

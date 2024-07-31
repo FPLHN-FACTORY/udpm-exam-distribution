@@ -62,10 +62,10 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
         return hsExamShiftExtendRepository.findByExamShiftCode(examShiftCode).isPresent() &&
-                hsExamShiftExtendRepository.getExamShiftByRequest(
-                        examShiftCode,
-                        sessionHelper.getCurrentUserDepartmentFacilityId(),
-                        sessionHelper.getCurrentSemesterId()).isPresent();
+               hsExamShiftExtendRepository.getExamShiftByRequest(
+                       examShiftCode,
+                       sessionHelper.getCurrentUserDepartmentFacilityId(),
+                       sessionHelper.getCurrentSemesterId()).isPresent();
     }
 
     @Override
@@ -99,8 +99,8 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
             }
 
             if (Objects.equals(hsCreateExamShiftRequest.getExamDate(), currentDateWithoutTime)
-                    && Shift.valueOf(hsCreateExamShiftRequest.getShift())
-                    .compareTo(Objects.requireNonNull(Shift.getCurrentShift())) < 0) {
+                && Shift.valueOf(hsCreateExamShiftRequest.getShift())
+                           .compareTo(Objects.requireNonNull(Shift.getCurrentShift())) < 0) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Ca thi không hợp lệ!");
             }
@@ -196,11 +196,15 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                     sessionHelper.getCurrentUserDepartmentFacilityId());
 
             String currentShiftString = Shift.getCurrentShift().toString();
-            emailService.sendEmailToHeadDepartmentWhenCreateExamShift(
+            emailService.sendEmailToHeadDepartmentWhenExamShiftComming(
                     hsExamShiftExtendRepository.getContentSendMailToHeadDepartment(
-                            currentShiftString, currentDateWithoutTime,
-                            sessionHelper.getCurrentUserDepartmentFacilityId()),
-                    password, headDepartment.get().getAccountFpt());
+                            currentShiftString,
+                            currentDateWithoutTime,
+                            sessionHelper.getCurrentUserDepartmentFacilityId()
+                    ),
+                    password,
+                    headDepartment.get().getAccountFpt()
+            );
 
             emailService.sendEmailWhenHeadSubjectCreateExamShift(hsExamShiftExtendRepository
                     .getContentSendMailToSupervisor(examShiftCode), password);

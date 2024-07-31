@@ -44,4 +44,8 @@ public enum Shift {
         return null;
     }
 
+    public static String getShift(Shift shift) {
+        return shift.name();
+    }
+
 }

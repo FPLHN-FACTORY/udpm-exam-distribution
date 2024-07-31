@@ -82,11 +82,17 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
     @Override
     public ResponseObject<?> getAllStaff(FindStaffRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String userId = sessionHelper.getCurrentUserId();
-        String semesterId = sessionHelper.getCurrentSemesterId();
-        String majorFacilityId = sessionHelper.getCurrentUserMajorFacilityId();
         return new ResponseObject<>(
-                PageableObject.of(staffExtendRepository.getAllStaff(pageable, majorFacilityId, request, userId, semesterId)),
+                PageableObject.of(
+                        staffExtendRepository.getAllStaff(
+                                pageable,
+                                sessionHelper.getCurrentUserMajorFacilityId(),
+                                request,
+                                sessionHelper.getCurrentUserId(),
+                                sessionHelper.getCurrentSemesterId(),
+                                sessionHelper.getCurrentBlockId()
+                        )
+                ),
                 HttpStatus.OK,
                 "Lấy thành công danh sách nhân viên"
         );
