@@ -30,6 +30,9 @@ import java.io.Serializable;
 @EntityListeners(SubjectListener.class)
 public class Subject extends PrimaryEntity implements Serializable {
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    private String code;
+
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;
@@ -52,5 +55,9 @@ public class Subject extends PrimaryEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_department")
     private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "id_exam_rule")
+    private ExamRule examRule;
 
 }

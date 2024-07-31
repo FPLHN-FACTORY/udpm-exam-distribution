@@ -4,14 +4,11 @@ import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
@@ -21,23 +18,17 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "exam_classification")
-public class ExamClassification extends PrimaryEntity implements Serializable {
+@Table(name = "exam_rule")
+public class ExamRule extends PrimaryEntity implements Serializable {
 
-    @Nationalized
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    private String code;
+
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
+    @Nationalized
     private String name;
 
-    @Column(name = "file_id")
+    @Column(name = "file_id", length = EntityProperties.LENGTH_NAME)
     private String fileId;
-
-    @ManyToOne
-    @JoinColumn(name = "department_facility_id")
-    private DepartmentFacility departmentFacility;
-
-    @ManyToOne
-    @JoinColumn(name = "id_semester")
-    private Semester semester;
 
 }
