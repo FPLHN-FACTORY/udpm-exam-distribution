@@ -8,6 +8,9 @@ const ApiConstant = {
     // Constant representing the API version prefix
     API_VERSION_PREFIX: "/api/v1",
 
+    // Constants representing the common API paths
+    API_COMMON: "/api/v1/common",
+
     // Constants representing the full paths for various resources
     API_HEAD_SUBJECT_PREFIX: "/api/v1/head-subject",
     API_HEAD_OFFICE_PREFIX: "/api/v1/head-office",

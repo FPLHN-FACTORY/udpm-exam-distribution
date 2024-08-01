@@ -16,6 +16,9 @@ public final class MappingConstants {
     // Constant representing the API version prefix
     public static final String API_VERSION_PREFIX = "/api/v1";
 
+    // Constants representing the common API
+    public static final String API_COMMON = API_VERSION_PREFIX + "/common";
+
     // Constants representing the full paths for various resources
     public static final String API_HEAD_SUBJECT_PREFIX = API_VERSION_PREFIX + HEAD_SUBJECT;
     public static final String API_HEAD_OFFICE_PREFIX = API_VERSION_PREFIX + HEAD_OFFICE;
@@ -38,8 +41,7 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_OFFICE_STAFF_SUBJECT = HEAD_OFFICE + "/staff-subject";
 
     // Constants representing the redirect paths for various resources under head department
-    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
-    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP = HEAD_DEPARTMENT + "/subject-group";
+    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HEAD_SUBJECTS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = HEAD_DEPARTMENT + "/join-room";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_EXAM_SHIFT = HEAD_DEPARTMENT + "/exam-shift";
 
@@ -69,12 +71,11 @@ public final class MappingConstants {
     public static final String API_HEAD_OFFICE_STAFF_SUBJECT = API_HEAD_OFFICE_PREFIX + "/staff-subject";
 
     // Constants representing the full paths for various resources under head department
-    public static final String API_HEAD_DEPARTMENT_MANAGE_HOS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_HEAD_SUBJECTS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/subjects";
     public static final String API_HEAD_DEPARTMENT_CLASS_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/class-subjects";
     public static final String API_HEAD_DEPARTMENT_BLOCK = API_HEAD_DEPARTMENT_PREFIX + "/blocks";
     public static final String API_HEAD_DEPARTMENT_CAMPUS = API_HEAD_DEPARTMENT_PREFIX + "/campuses";
-    public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT_GROUP = API_HEAD_DEPARTMENT_PREFIX + "/subject-group";
     public static final String API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = API_HEAD_DEPARTMENT_PREFIX + "/join-room";
     public static final String API_HEAD_DEPARTMENT_STAFF = API_HEAD_DEPARTMENT_PREFIX + "/staffs";
     public static final String API_HEAD_DEPARTMENT_STUDENT = API_HEAD_DEPARTMENT_PREFIX + "/students";

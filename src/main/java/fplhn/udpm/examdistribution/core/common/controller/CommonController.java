@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.common;
+package fplhn.udpm.examdistribution.core.common.controller;
 
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import org.springframework.stereotype.Controller;
