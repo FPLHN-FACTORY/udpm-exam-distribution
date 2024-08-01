@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    fetchSearchSubject();
+    fetchListExamRule();
     onChangePageSize();
 });
 
@@ -7,24 +7,26 @@ $(document).ready(function () {
 const examDistributionInfor = getExamDistributionInfo();
 //END: Exam Distribution Information
 
-const fetchSearchSubject = (
+const getGlobalParamsSearch = () => {
+    return {
+        valueSearch: $("#valueSearch").val()
+    }
+}
+
+const resetGlobalParamsSearch = () => {
+    $("#valueSearch").val("");
+};
+
+const fetchListExamRule = (
     page = 1,
-    size = $('#pageSize').val(),
-    paramSearch = {
-        subjectCode: "",
-        subjectName: "",
-        staffId: examDistributionInfor.userId
-    },
 ) => {
     const params = {
         page: page,
-        size: size,
-        subjectCode: paramSearch.subjectCode,
-        subjectName: paramSearch.subjectName,
-        staffId: paramSearch.staffId
+        size: $('#pageSize').val(),
+        valueSearch: getGlobalParamsSearch().valueSearch
     };
 
-    let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/subject/" + examDistributionInfor.departmentFacilityId + '?';
+    let url = ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/exam-rule" + '?';
 
     for (let [key, value] of Object.entries(params)) {
         if (value) {
@@ -42,38 +44,42 @@ const fetchSearchSubject = (
             hideLoading();
             const responseData = responseBody?.data?.data;
             if (responseData.length === 0) {
-                $('#subjectTableBody').html(`
+                $('#examRuleTableBody').html(`
                     <tr>
-                         <td colspan="6" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
-$('#pagination').empty();
+                $('#pagination').empty();
                 return;
             }
-            const subjects = responseData.map(subject => {
+            const examRules = responseData.map(examRule => {
                 return `<tr>
-                            <td>${subject.orderNumber}</td>
-                            <td>${subject.subjectCode}</td>
-                            <td>${subject.subjectName}</td>
-                            <td>${subject.departmentName}</td>
-                            <td>${convertSubjectType(subject.subjectType)}</td>
+                            <td>${examRule.orderNumber}</td>
+                            <td>${examRule.name}</td>
+                            <td>${convertStatus(examRule.status)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span data-bs-toggle="tooltip" data-bs-title="Tải quy định" onclick="handleOpenModalExamRule('${subject.id}')" class="fs-6">
+                                <span data-bs-toggle="tooltip" data-bs-title="Tải quy định" onclick="handleOpenModalExamRule(2)" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span data-bs-toggle="tooltip" data-bs-title="Chi tiết quy định" onclick="handleOpenModalDetailExamRule('${subject.fileId}','${subject.id}')" class="fs-6">
+                                <span data-bs-toggle="tooltip" data-bs-title="Chi tiết quy định" onclick="handleOpenModalDetailExamRule('${examRule.id}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-eye"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
+                                <span data-bs-toggle="tooltip" data-bs-title="Chọn môn học" onclick="handleOpenModalSubject('${examRule.id}')" class="fs-6">
+                                    <i 
+                                        class="fa-regular fa-circle-check"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
                             </td>
                         </tr>`;
             });
-            $('#subjectTableBody').html(subjects);
+            $('#examRuleTableBody').html(examRules);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
             createPagination(totalPages, page);
             callToolTip();
@@ -86,19 +92,6 @@ $('#pagination').empty();
 };
 
 //------------------------------------------------------function--------------------------------------------------------
-
-const getGlobalParamsSearch = () => {
-    return {
-        subjectCode: $("#subjectCode").val(),
-        subjectName: $("#subjectName").val(),
-        staffId: examDistributionInfor.userId
-    }
-}
-
-const resetGlobalParamsSearch = () => {
-    $("#subjectCode").val("");
-    $("#subjectName").val("");
-};
 
 const createPagination = (totalPages, currentPage) => {
     let paginationHtml = '';
@@ -150,38 +143,33 @@ const createPagination = (totalPages, currentPage) => {
 };
 
 const changePage = (page) => {
-    fetchSearchSubject(page, $('#pageSize').val(), getGlobalParamsSearch());
+    fetchListExamRule(page);
 };
 
 const onChangePageSize = () => {
     $("#pageSize").on("change", function () {
         resetGlobalParamsSearch();
-        fetchSearchSubject(1, $('#pageSize').val(), getGlobalParamsSearch());
+        fetchListExamRule(1);
     });
 };
 
-const handleSearchSubject = () => {
-    fetchSearchSubject(1, $('#pageSize').val(), getGlobalParamsSearch());
+const handleSearchExamRule = () => {
+    fetchListExamRule(1);
 };
 
 const handleClearSearch = () => {
     resetGlobalParamsSearch();
-    fetchSearchSubject();
+    fetchListExamRule();
 };
 //------------------------------------------------------function--------------------------------------------------------
 
-const convertSubjectType = (status) => {
+const convertStatus = (status) => {
     switch (status) {
-        case "TRADITIONAL":
-            return '<span class="tag tag-success">TRADITIONAL</span>';
-        case 'ONLINE':
-            return '<span class="tag tag-cyan">ONLINE</span>';
-        case 'BLEND':
-            return '<span class="tag tag-blue">BLEND</span>';
-        case 'TRUC_TUYEN':
-            return '<span class="tag tag-lime">TRUC_TUYEN</span>';
+        case 0:
+            return '<span class="tag tag-success">Đang sử dụng</span>';
+        case 1:
+            return '<span class="tag tag-danger">Ngưng sử dụng</span>';
         default:
             return '<span class="tag tag-secondary">Không xác định</span>';
     }
 }
-

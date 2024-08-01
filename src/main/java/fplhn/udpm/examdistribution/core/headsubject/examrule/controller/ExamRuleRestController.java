@@ -1,8 +1,9 @@
 package fplhn.udpm.examdistribution.core.headsubject.examrule.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.GetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,19 +30,29 @@ public class ExamRuleRestController {
 
     private final ExamRuleService examRuleService;
 
-    @GetMapping("/subject/{departmentFacilityId}")
-    public ResponseEntity<?> getAllSubject(@PathVariable String departmentFacilityId, FindSubjectRequest request) {
-        return Helper.createResponseEntity(examRuleService.getAllSubject(departmentFacilityId, request));
+    @GetMapping("/exam-rule")
+    public ResponseEntity<?> getAllExamRule(FindExamRuleRequest request) {
+        return Helper.createResponseEntity(examRuleService.getAllExamRule(request));
     }
 
-    @PostMapping("/upload/{subjectId}")
-    public ResponseEntity<?> uploadExamRule(@PathVariable String subjectId, @ModelAttribute UploadExamRuleRequest request) {
-        return Helper.createResponseEntity(examRuleService.uploadExamRule(subjectId, request));
+    @PostMapping("/exam-rule")
+    public ResponseEntity<?> createExamRule(@ModelAttribute UploadExamRuleRequest request) {
+        return Helper.createResponseEntity(examRuleService.createExamRule(request));
     }
 
-    @GetMapping("/file")
-    public ResponseEntity<?> getFile(GetFileRequest request) {
-        ResponseObject<?> responseObject = examRuleService.getFile(request);
+    @GetMapping("/subjects")
+    public ResponseEntity<?> getListSubject(FindSubjectRequest request) {
+        return Helper.createResponseEntity(examRuleService.getListSubject(request));
+    }
+
+    @PostMapping("/choose-exam-rule")
+    public ResponseEntity<?> chooseExamRule(@RequestBody ChooseExamRuleRequest request) {
+        return Helper.createResponseEntity(examRuleService.chooseExamRule(request));
+    }
+
+    @GetMapping("/file/{id}")
+    public ResponseEntity<?> getFile(@PathVariable String id) {
+        ResponseObject<?> responseObject = examRuleService.getFile(id);
         if (responseObject.getStatus().equals(HttpStatus.OK)) {
             FileResponse fileResponse = (FileResponse) responseObject.getData();
             return ResponseEntity.ok()

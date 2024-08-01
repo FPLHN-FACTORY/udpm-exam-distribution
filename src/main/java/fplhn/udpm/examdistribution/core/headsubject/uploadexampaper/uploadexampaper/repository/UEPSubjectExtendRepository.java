@@ -16,33 +16,33 @@ public interface UEPSubjectExtendRepository extends SubjectRepository {
             	s.name AS name
             FROM
                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sbsg.id_subject
+                s.id = hsbs.id_subject
+            JOIN department d ON
+                d.id = s.id_department
+            JOIN department_facility df ON
+                df.id_department = d.id
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0
+                df.id = :departmentFacilityId AND
+                hsbs.status = 0
             """, countQuery = """
             SELECT
             	COUNT(hsbs.id)
             FROM
                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sbsg.id_subject
+                s.id = hsbs.id_subject
+            JOIN department d ON
+                d.id = s.id_department
+            JOIN department_facility df ON
+                df.id_department = d.id
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0
+                df.id = :departmentFacilityId AND
+                hsbs.status = 0
             """, nativeQuery = true)
     List<ListSubjectResponse> getListSubject(String userId, String departmentFacilityId, String semesterId);
 

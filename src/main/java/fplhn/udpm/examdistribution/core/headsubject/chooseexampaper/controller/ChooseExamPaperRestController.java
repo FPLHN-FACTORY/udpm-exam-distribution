@@ -1,9 +1,10 @@
 package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service.ChooseExamPaperService;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -53,8 +55,8 @@ public class ChooseExamPaperRestController {
     }
 
     @GetMapping("/file")
-    public ResponseEntity<?> getFile(@RequestParam(name = "fileId") String fileId) throws IOException {
-        return Helper.createResponseEntity(chooseExamPaperService.getFile(fileId));
+    public ResponseEntity<?> getFile(CEPGetFileRequest request) throws IOException {
+        return Helper.createResponseEntity(chooseExamPaperService.getFile(request));
     }
 
     @DeleteMapping("/{id}")
@@ -85,6 +87,11 @@ public class ChooseExamPaperRestController {
     @PostMapping("/choose/{examPaperId}")
     public ResponseEntity<?> chooseExamPaper(@PathVariable String examPaperId) {
         return Helper.createResponseEntity(chooseExamPaperService.chooseExamPaper(examPaperId));
+    }
+
+    @PostMapping("/pdf-to-docx")
+    public ResponseEntity<?> convertPdfToDocx(@RequestParam("file") MultipartFile file) {
+        return chooseExamPaperService.convertPdfToDocx(file);
     }
 
 }

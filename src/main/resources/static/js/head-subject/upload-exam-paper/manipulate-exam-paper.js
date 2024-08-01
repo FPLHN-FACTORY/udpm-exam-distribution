@@ -79,37 +79,56 @@ const onChangeChoosePDFFile = () => {
 onChangeChoosePDFFile();
 
 const handleDownloadExamPaper = (fileId) => {
-    showLoading();
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/file",
-        data: {
-            fileId: fileId,
+    swal({
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn tải đề thi này với dạng PDF không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Xác nhận",
+                className: "btn btn-black",
+            },
         },
-        success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
-            const blob = new Blob([pdfData], {type: 'application/pdf'});
-            // Tạo đối tượng URL từ Blob
-            const url = URL.createObjectURL(blob);
+    }).then((willDelete) => {
+        if (willDelete) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER + "/file",
+                data: {
+                    fileId: fileId,
+                },
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    // Tạo đối tượng URL từ Blob
+                    const url = URL.createObjectURL(blob);
 
-            // Tạo và nhấp vào liên kết để tải tệp
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'file.pdf'; // Đặt tên cho file tải về
-            document.body.appendChild(link);
-            link.click();
+                    // Tạo và nhấp vào liên kết để tải tệp
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf'; // Đặt tên cho file tải về
+                    document.body.appendChild(link);
+                    link.click();
 
-            // Xóa đối tượng URL sau khi tải
-            URL.revokeObjectURL(url);
-            hideLoading();
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
+                    // Xóa đối tượng URL sau khi tải
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
         }
     });
 };

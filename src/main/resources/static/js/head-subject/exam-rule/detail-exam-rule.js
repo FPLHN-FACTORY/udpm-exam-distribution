@@ -8,35 +8,18 @@ const scaleDetail = 1.5;
 const $pdfCanvasDetail = $("#pdf-canvas-detail")[0];
 const ctxDetail = $pdfCanvasDetail.getContext("2d");
 
-let stateSubjectIdDetail = "";
 // END: state
 
-//START: getter
-const getStateSubjectIdDetail = () => stateSubjectIdDetail;
-//END: getter
 
-//START: setter
-const setStateSubjectIdDetail = (value) => {
-    stateSubjectIdDetail = value;
-}
+const handleOpenModalDetailExamRule = (examRuleId) => {
 
-//END: setter
+    handleSolveViewWhenOpenModalDetail();
 
+    //reset lai page 1
+    pageNumDetail = 1;
+    handleFetchExamRule(examRuleId);
 
-const handleOpenModalDetailExamRule = (fileId, subjectId) => {
-    if(fileId === "" || fileId === "null"){
-        showToastError("Môn học này chưa được tải quy định đề thi");
-    }else{
-        setStateSubjectIdDetail(subjectId);
-
-        handleSolveViewWhenOpenModalDetail();
-
-        //reset lai page 1
-        pageNumDetail = 1;
-        handleFetchExamRule(fileId);
-
-        $("#detailExamRuleModal").modal("show");
-    }
+    $("#detailExamRuleModal").modal("show");
 };
 
 const handleSolveViewWhenOpenModalDetail = () => { // ẩn đi view pdf và paging của nó
@@ -51,15 +34,11 @@ const showViewAndPagingPdfDetail = (totalPage) => { // hiển thị view và pag
     }
 };
 
-const handleFetchExamRule = (fileId) => {
+const handleFetchExamRule = (examRuleId) => {
     showLoading();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/file",
-        data: {
-            fileId: fileId,
-            subjectId: getStateSubjectIdDetail()
-        },
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/file/" + examRuleId,
         success: function (responseBody) {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             pdfjsLibDetail

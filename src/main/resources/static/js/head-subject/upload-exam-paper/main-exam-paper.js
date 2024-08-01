@@ -2,7 +2,6 @@ $(document).ready(function () {
     fetchListCurrentSubject();
     fetchListStaff();
 
-    fetchListExamPaper();
     onChangePageSizeFirstTab();
 });
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,9 +53,8 @@ const fetchListCurrentSubject = () => {
             const subjects = responseBody?.data?.map((item) => {
                 return `<option value="${item.id}">${item.name}</option>`
             });
-            subjects.unshift('<option value="">--Chọn môn học--</option>');
-            $('#exam-paper-subject').html(subjects);
             $('#subjectId').html(subjects);
+            fetchListExamPaper();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;

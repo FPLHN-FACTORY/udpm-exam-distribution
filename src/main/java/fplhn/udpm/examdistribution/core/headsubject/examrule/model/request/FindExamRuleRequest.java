@@ -8,10 +8,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class FindSubjectRequest extends PageableRequest {
+public class FindExamRuleRequest extends PageableRequest {
 
     private String valueSearch;
-
-    private String examRuleId;
 
 }

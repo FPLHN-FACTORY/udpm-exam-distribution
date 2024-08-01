@@ -2,7 +2,6 @@ package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.repository;
 
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.response.CEPListExamPaperResponse;
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.response.CEPListMajorFacilityResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -51,32 +49,30 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                 ) AS isUpdateFile
             FROM
                  head_subject_by_semester hsbs
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = hsbs.id_subject_group
-            JOIN subject_group sg ON
-                 sg.id = sbsg.id_subject_group
             JOIN subject subj ON
-             	subj.id = sbsg.id_subject
+             	subj.id = hsbs.id_subject
             JOIN exam_paper ep ON
                  ep.id_subject = subj.id
-             JOIN major_facility mf ON
+            JOIN block b ON
+                b.id = ep.id_block
+            JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
-             JOIN major m ON
+            JOIN major m ON
              	m.id = mf.id_major
-             JOIN staff st ON
+            JOIN staff st ON
              	st.id = ep.id_staff_upload
-             JOIN department_facility df ON
+            JOIN department_facility df ON
              	df.id = mf.id_department_facility
-             JOIN facility f ON
+            JOIN facility f ON
              	f.id = df.id_facility
-             WHERE ep.exam_paper_status <> :examPaperStatus AND
+            WHERE ep.exam_paper_status <> :examPaperStatus AND
                    ep.exam_paper_type <> :examPaperType AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
                    ep.status = 0 AND
                    hsbs.status = 0 AND
-                   (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
-                   (:#{#request.blockId} IS NULL OR ep.id_block LIKE CONCAT('%', TRIM(:#{#request.blockId}) ,'%')) AND
+                   (:#{#request.semesterId} IS NULL OR b.id_semester = :#{#request.semesterId} ) AND
+                   (:#{#request.blockId} IS NULL OR ep.id_block = :#{#request.blockId} ) AND
                    (:#{#request.subjectId} IS NULL OR subj.id LIKE CONCAT('%', TRIM(:#{#request.subjectId}) ,'%')) AND
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))
@@ -85,32 +81,30 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	COUNT(hsbs.id)
             FROM
                  head_subject_by_semester hsbs
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = hsbs.id_subject_group
-            JOIN subject_group sg ON
-                 sg.id = sbsg.id_subject_group
             JOIN subject subj ON
-             	subj.id = sbsg.id_subject
+             	subj.id = hsbs.id_subject
             JOIN exam_paper ep ON
                  ep.id_subject = subj.id
-             JOIN major_facility mf ON
+            JOIN block b ON
+                b.id = ep.id_block
+            JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
-             JOIN major m ON
+            JOIN major m ON
              	m.id = mf.id_major
-             JOIN staff st ON
+            JOIN staff st ON
              	st.id = ep.id_staff_upload
-             JOIN department_facility df ON
+            JOIN department_facility df ON
              	df.id = mf.id_department_facility
-             JOIN facility f ON
+            JOIN facility f ON
              	f.id = df.id_facility
-             WHERE ep.exam_paper_status <> :examPaperStatus AND
+            WHERE ep.exam_paper_status <> :examPaperStatus AND
                    ep.exam_paper_type <> :examPaperType AND
                    mf.id_department_facility = :departmentFacilityId AND
                    hsbs.id_staff = :userId AND
                    ep.status = 0 AND
                    hsbs.status = 0 AND
-                   (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE CONCAT('%', TRIM(:#{#request.semesterId}) ,'%')) AND
-                   (:#{#request.blockId} IS NULL OR ep.id_block LIKE CONCAT('%', TRIM(:#{#request.blockId}) ,'%')) AND
+                   (:#{#request.semesterId} IS NULL OR b.id_semester = :#{#request.semesterId} ) AND
+                   (:#{#request.blockId} IS NULL OR ep.id_block = :#{#request.blockId} ) AND
                    (:#{#request.subjectId} IS NULL OR subj.id LIKE CONCAT('%', TRIM(:#{#request.subjectId}) ,'%')) AND
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))

@@ -21,4 +21,6 @@ public interface StaffResponse extends IsIdentify, HasOrderNumber {
 
     Integer getIsHasSampleExamPaper();
 
+    Integer haveTaught();
+
 }
