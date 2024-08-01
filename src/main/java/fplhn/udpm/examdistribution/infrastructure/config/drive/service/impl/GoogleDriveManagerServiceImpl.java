@@ -4,13 +4,13 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
-import com.google.api.services.drive.model.PermissionList;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.config.GoogleDriveConfig;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.utils.PermissionDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +27,9 @@ import java.util.List;
 public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService {
 
     private final GoogleDriveConfig googleDriveConfig;
+
+    @Value("${google.drive.parent.folder.id}")
+    private String parentFolderId;
 
     @Override
     public List<File> findAll() {
@@ -165,7 +168,7 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
 
     @Override
     public String getFolderId(String folderName) {
-        String parentId = null;
+        String parentId = parentFolderId;
 
         for (String name : folderName.split("/")) {
             parentId = findOrCreateFolder(parentId, name);
