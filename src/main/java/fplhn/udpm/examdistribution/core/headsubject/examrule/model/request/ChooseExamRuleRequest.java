@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetFileRequest {
+public class ChooseExamRuleRequest {
 
-    private String fileId;
+    private String examRuleId;
 
     private String subjectId;
 

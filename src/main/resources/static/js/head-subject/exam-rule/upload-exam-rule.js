@@ -11,34 +11,34 @@ const $pdfCanvas = $("#pdf-canvas")[0];
 const ctx = $pdfCanvas.getContext("2d");
 
 let fileExamRule = new File([], "emptyFile");
-let stateSubjectId = "";
 // END: state
 
 // START: getter
-const getStateSubjectId = () => stateSubjectId;
+const getValueFileInput = () => fileExamRule;
+const getExamRuleName = () => $("#exam-rule-name").val();
 // END: getter
 
 // START: setter
-const setStateSubjectId = (subjectId) => {
-    stateSubjectId = subjectId;
-};
-// END: setter
-
-const getValueFileInput = () => fileExamRule;
-
 const setValueFileInput = (value) => {
     fileExamRule = value;
 };
+
+const setExamRuleName = (value) => {
+    $("#exam-rule-name").val(value);
+};
+// END: setter
 
 const clearValueFileInput = () => {
     $("#file-pdf-input").val("");
     fileExamRule = new File([], "emptyFile");
 };
 
-const handleOpenModalExamRule = (subjectId) => {
-    setStateSubjectId(subjectId);
-
+const handleOpenModalExamRule = (status) => {
     clearValueFileInput();
+    setExamRuleName("");
+    handleResetFieldsError();
+
+    $("#examRuleModalTitle").text(status === 1 ? "Thêm quy định thi" : "Cập nhật quy định thi");
 
     //reset lai page 1
     pageNum = 1;
@@ -47,11 +47,14 @@ const handleOpenModalExamRule = (subjectId) => {
     $("#examRuleModal").modal("show");
 };
 
+const handleResetFieldsError = () => {
+    $('.form-control').removeClass('is-invalid');
+    $("#nameError").text("");
+};
+
 const handleSolveViewWhenOpenModal = () => { // ẩn đi view pdf và paging của nó
     $("#paging-pdf").prop("hidden", true);
     $("#pdf-viewer").prop("hidden", true);
-
-    $("#word-container").prop("hidden", true);
 };
 
 const handleOpenChooseFilePdf = () => {
@@ -61,7 +64,7 @@ const handleOpenChooseFilePdf = () => {
 
 const handleConfirmUploadExamRule = () => {
     if (getValueFileInput().size === 0 || getValueFileInput().name === "emptyFile") {
-        showToastError("Nội quy thi chưa được tải");
+        showToastError("Quy định phòng thi chưa được tải");
     } else {
         swal({
             title: "Xác nhận",
@@ -87,29 +90,42 @@ const handleConfirmUploadExamRule = () => {
 };
 
 const handleUploadExamRule = () => {
+    handleResetFieldsError();
+
     showLoading();
 
     const data = new FormData();
     data.append("file", getValueFileInput());
+    data.append("name", getExamRuleName());
 
     $.ajax({
         type: "POST",
-        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/upload/" + getStateSubjectId(),
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/exam-rule",
         data: data,
         contentType: false,
         processData: false,
         success: function (responseBody) {
             showToastSuccess(responseBody.message);
 
-            fetchSearchSubject();
+            fetchListExamRule();
+
+            $("#examRuleModal").modal("hide");
 
             hideLoading();
         },
         error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
+            const myError = error?.responseJSON;
+            $('.form-control').removeClass('is-invalid');
+
+            if (myError?.length > 0) {
+                myError.forEach(err => {
+                    $(`#${err.fieldError}Error`).text(err.message);
+                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                });
+            } else if (myError.message) {
+                showToastError(myError.message);
             } else {
-                showToastError('Có lỗi xảy ra');
+                showToastError("Có lỗi xảy ra");
             }
             hideLoading();
         },

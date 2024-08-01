@@ -60,7 +60,6 @@ public class CreateExamPaperServiceImpl implements CreateExamPaperService {
 
     @Override
     public ResponseEntity<?> convertPdfToDocx(MultipartFile file) {
-
         if (file.isEmpty()) {
             return new ResponseEntity<>("Bạn chưa tải lên file PDF", HttpStatus.NOT_FOUND);
         }
@@ -74,22 +73,17 @@ public class CreateExamPaperServiceImpl implements CreateExamPaperService {
         }
 
         try {
-            // Tạo tài liệu Word mới
             XWPFDocument doc = new XWPFDocument();
 
-            // Mở file PDF
             PDDocument pdfDocument = PDDocument.load(file.getInputStream());
             PDFTextStripper stripper = new PDFTextStripper();
 
-            // Đọc file PDF từ trang đầu tiên đến trang cuối cùng
             String text = stripper.getText(pdfDocument);
 
-            // Tạo đoạn văn và thêm văn bản vào tài liệu Word
             XWPFParagraph p = doc.createParagraph();
             XWPFRun run = p.createRun();
             run.setText(text);
 
-            // Ghi tài liệu Word ra ByteArrayOutputStream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             doc.write(out);
             byte[] docxBytes = out.toByteArray();

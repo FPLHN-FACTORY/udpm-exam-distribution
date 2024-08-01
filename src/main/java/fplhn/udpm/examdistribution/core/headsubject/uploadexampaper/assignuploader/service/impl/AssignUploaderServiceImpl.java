@@ -89,8 +89,7 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
                                 sessionHelper.getCurrentUserMajorFacilityId(),
                                 request,
                                 sessionHelper.getCurrentUserId(),
-                                sessionHelper.getCurrentSemesterId(),
-                                sessionHelper.getCurrentBlockId()
+                                sessionHelper.getCurrentSemesterId()
                         )
                 ),
                 HttpStatus.OK,

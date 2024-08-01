@@ -37,14 +37,10 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                 exam_paper_by_semester epbs
             JOIN exam_paper ep ON
                  ep.id = epbs.id_exam_paper
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject = ep.id_subject
             JOIN subject subj ON
-             	subj.id = sbsg.id_subject
-            JOIN subject_group sg ON
-                sg.id = sbsg.id_subject_group
+             	subj.id = ep.id_subject
             JOIN head_subject_by_semester hsbs ON
-                hsbs.id_subject_group = sg.id
+                hsbs.id_subject = subj.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
              JOIN major m ON
@@ -71,14 +67,10 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                 exam_paper_by_semester epbs
             JOIN exam_paper ep ON
                  ep.id = epbs.id_exam_paper
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject = ep.id_subject
             JOIN subject subj ON
-             	subj.id = sbsg.id_subject
-            JOIN subject_group sg ON
-                sg.id = sbsg.id_subject_group
+             	subj.id = ep.id_subject
             JOIN head_subject_by_semester hsbs ON
-                hsbs.id_subject_group = sg.id
+                hsbs.id_subject = subj.id
              JOIN major_facility mf ON
              	mf.id = ep.id_major_facility
              JOIN major m ON

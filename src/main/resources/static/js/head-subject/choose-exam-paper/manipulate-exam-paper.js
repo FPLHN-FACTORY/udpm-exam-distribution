@@ -162,7 +162,7 @@ const handleFetchExamRulePDF = (fileId) => {
         type: "GET",
         url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
         data: {
-            fileId: fileId,
+            fileId: fileId
         },
         success: function (responseBody) {
             const data = responseBody?.data?.data;
@@ -223,35 +223,55 @@ const onChangeChoosePDFFile = () => {
 onChangeChoosePDFFile();
 
 const handleDownloadExamPaper = (fileId) => {
-    showLoading();
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
-        data: {
-            fileId: fileId,
+    swal({
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn tải đề thi này với dạng PDF không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Xác nhận",
+                className: "btn btn-black",
+            },
         },
-        success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody.data.data), c => c.charCodeAt(0));
-            const blob = new Blob([pdfData], {type: 'application/pdf'});
-            const url = URL.createObjectURL(blob);
+    }).then((willDelete) => {
+        if (willDelete) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
+                data: {
+                    fileId: fileId
+                },
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody.data.data), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    const url = URL.createObjectURL(blob);
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'file.pdf';
-            document.body.appendChild(link);
-            link.click();
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf';
+                    document.body.appendChild(link);
+                    link.click();
 
-            // Xóa đối tượng URL sau khi tải
-            URL.revokeObjectURL(url);
-            hideLoading();
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
+                    URL.revokeObjectURL(url);
+
+                    $("#confirmDownloadModal").modal("hide");
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
         }
     });
 };

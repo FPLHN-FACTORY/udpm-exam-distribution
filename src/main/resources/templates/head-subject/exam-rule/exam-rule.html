@@ -23,7 +23,7 @@
         <div class="container">
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="p-4">
-                    <h2>Quy định phòng thi</h2>
+                    <h2>Quy định thi</h2>
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
@@ -31,16 +31,12 @@
                         <form id="filterForm">
                             <div class="row">
                                 <div class="col form-group">
-                                    <label for="subjectCode">Mã môn học</label>
-                                    <input type="text" id="subjectCode" class="form-control">
-                                </div>
-                                <div class="col form-group">
-                                    <label for="subjectName">Tên môn học</label>
-                                    <input type="text" id="subjectName" class="form-control">
+                                    <label for="valueSearch">Tìm kiếm</label>
+                                    <input type="text" id="valueSearch" placeholder="Tìm kiếm theo Mã, Tên" class="form-control">
                                 </div>
                             </div>
                             <div class="text-center">
-                                <button onclick="handleSearchSubject()" id="buttonFilter" type="button" class="btn btn-black">Tìm kiếm</button>
+                                <button onclick="handleSearchExamRule()" id="buttonFilter" type="button" class="btn btn-black">Tìm kiếm</button>
                                 <button
                                         onclick="handleClearSearch()"
                                         type="reset"
@@ -55,26 +51,27 @@
                     </div>
                     <!-- Filter -->
                     <div class="shadow p-4 bg-white rounded">
-                        <div class="mt-4">
-                            <h4>Danh sách môn học</h4>
+                        <div class="d-flex justify-content-between mt-4">
+                            <h4>Danh sách quy định thi</h4>
+                            <button onclick="handleOpenModalExamRule(1)" class="btn btn-black">
+                                Tải quy định
+                            </button>
                         </div>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <td>STT</td>
-                                    <td>Mã môn học</td>
-                                    <td>Tên môn học</td>
-                                    <td>Bộ môn</td>
-                                    <td>Loại môn học</td>
+                                    <td>Tên quy định</td>
+                                    <td>Trạng thái</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
                                 </tr>
                                 </thead>
-                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tbody id="examRuleTableBody" class="table-group-divider">
                                 <tr>
-                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                    <td colspan="4" class="text-center">Không có dữ liệu</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -104,20 +101,27 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Quản lý quy định phòng thi</h5>
+                    <h5 class="modal-title" id="examRuleModalTitle">Thêm quy định thi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center">
-                        <input type="file" id="file-pdf-input" hidden accept="application/pdf" />
-                        <button type="button" onclick="handleOpenChooseFilePdf()" class="btn btn-black">
-                            <i class="fa-solid fa-file-import"></i>
-                            Upload
-                        </button>
-                        <button type="button" onclick="handleConfirmUploadExamRule()" class="btn btn-black">
-                            <i class="fa-solid fa-upload"></i>
-                            Tải nội quy
-                        </button>
+                    <div id="view-add-edit">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <span class="text-danger"> * </span> Tên nội quy </label>
+                            <input type="text" id="exam-rule-name" placeholder="Nhập tên nội quy thi" class="form-control">
+                            <div class="text-danger" id="nameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <span class="text-danger"> * </span> Đề thi </label>
+                            <div>
+                                <button onclick="handleOpenChooseFilePdf()" class="btn btn-black">
+                                    <i class="fas fa-file-excel"></i> Chọn quy định thi
+                                </button>
+                                <input type="file" id="file-pdf-input" hidden accept="application/pdf"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="mt-4">
                         <div id="pdf-viewer" hidden>
@@ -128,6 +132,13 @@
                             <button class="btn btn-black" id="next-page">Next</button>
                             <p>Page: <span id="page-num"></span> / <span id="total-page"></span></p>
                         </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                    <div class="text-center d-flex justify-content-end gap-3">
+                        <button onclick="handleConfirmUploadExamRule()" type="button" id="btn-upload-exam-file"
+                                class="btn btn-black">Tải quy định thi
+                        </button>
                     </div>
                 </div>
             </div>
@@ -157,6 +168,80 @@
         </div>
     </div>
     <!-- Modal Detail Exam Rule -->
+
+    <!-- Modal Subject -->
+    <div class="modal modal-xl fade" id="subjectModal" tabindex="-1" aria-labelledby="subjectModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quản lý danh sách môn học</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="subjectNameSearch">Tìm kiếm</label>
+                                <input type="text" id="subjectNameSearch" placeholder="Tìm kiếm theo Tên" class="form-control">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="buttonFilterSubject" type="button"
+                                    class="btn btn-black">Tìm kiếm
+                            </button>
+                            <button
+                                    type="reset"
+                                    class="btn"
+                                    id="buttonResetFilterSubject"
+                                    style="background-color: var(--common-button-color); color: white;"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="mt-4">
+                            <h4>Danh sách môn học</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã môn học</td>
+                                    <td>Tên môn học</td>
+                                    <td>Chọn</td>
+                                </tr>
+                                </thead>
+                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationSubject">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeSubject" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Subject -->
+
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 
@@ -179,6 +264,7 @@
         <script th:src="@{/js/user-info-handler.js}"></script>
         <script th:src="@{/js/loading.js}"></script>
         <script th:src="@{/webjars/pdf-js/2.10.377/build/pdf.js}"></script>
+        <script th:src="@{/js/head-subject/exam-rule/choose-subject.js}"></script>
         <script th:src="@{/js/head-subject/exam-rule/exam-rule.js}"></script>
         <script th:src="@{/js/head-subject/exam-rule/detail-exam-rule.js}"></script>
         <script th:src="@{/js/head-subject/exam-rule/upload-exam-rule.js}"></script>
@@ -201,6 +287,7 @@
         <script th:src="@{/js/minified/user-info-handler.js}"></script>
         <script th:src="@{/js/minified/loading.js}"></script>
         <script th:src="@{/webjars/pdf-js/2.10.377/build/pdf.js}"></script>
+        <script th:src="@{/js/minified/head-subject/exam-rule/choose-subject.js}"></script>
         <script th:src="@{/js/minified/head-subject/exam-rule/exam-rule.js}"></script>
         <script th:src="@{/js/minified/head-subject/exam-rule/detail-exam-rule.js}"></script>
         <script th:src="@{/js/minified/head-subject/exam-rule/upload-exam-rule.js}"></script>

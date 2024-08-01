@@ -40,9 +40,10 @@ const ApiConstant = {
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/head-subject/exam-approval",
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/head-subject/exam-rule",
     REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
-    REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
     REDIRECT_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/head-subject/create-exam-paper",
-    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/update-exam-paper",
+    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/uep-update-exam-paper",
+    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER_SUBJECT: "/head-subject/uep-subject",
+    REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
 
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
@@ -84,9 +85,9 @@ const ApiConstant = {
     API_HEAD_SUBJECT_BLOCK: "/api/v1/head-subject/blocks",
     API_HEAD_SUBJECT_CAMPUS: "/api/v1/head-subject/campuses",
     API_HEAD_SUBJECT_CLASS_SUBJECT: "/api/v1/head-subject/class-subjects",
-    API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
     API_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/api/v1/head-subject/create-exam-paper",
     API_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/api/v1/head-subject/update-exam-paper",
+    API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",

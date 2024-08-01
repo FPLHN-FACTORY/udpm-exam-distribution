@@ -180,7 +180,7 @@ const getExamShiftByCode = () => {
                 showToastError(error.responseJSON?.message);
             }
         }
-    })
+    });
 }
 
 const getPathFilePDFExamPaper = (examShiftCode) => {

@@ -3,7 +3,6 @@ package fplhn.udpm.examdistribution.core.headsubject.examapproval.service;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamApprovalRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examapproval.model.request.EAExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.GetFileRequest;
 
 import java.io.IOException;
 

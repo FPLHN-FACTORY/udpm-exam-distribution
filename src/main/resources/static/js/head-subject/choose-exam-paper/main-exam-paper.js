@@ -94,8 +94,8 @@ const fetchListSubject = (semesterId) => {
             const subjects = responseBody?.data?.map((item) => {
                 return `<option value="${item.id}">${item.name}</option>`
             });
-            subjects.unshift('<option value="">--Chọn môn học--</option>');
             $('#subjectId').html(subjects);
+            fetchListExamPaper();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;
@@ -222,7 +222,7 @@ const selectBlockNow = (listBlock) => {
     listBlock.forEach(item => {
         if (item.startTime < now && now < item.endTime) {
             setValueBlock(item.id);
-            fetchListExamPaper();
+            fetchListCurrentSubject();
 
             isFoundBlock = true;
         }

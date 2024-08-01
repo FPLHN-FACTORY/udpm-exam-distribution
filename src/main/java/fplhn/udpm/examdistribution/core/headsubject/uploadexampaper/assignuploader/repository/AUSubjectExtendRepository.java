@@ -30,19 +30,17 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
             	s.created_date AS createdDate
             FROM
                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sbsg.id_subject
+                s.id = hsbs.id_subject
             JOIN department d ON
-                s.id_department = d.id
+                d.id = s.id_department
+            JOIN department_facility df ON
+                df.id_department = d.id
             WHERE
                 hsbs.id_staff = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0 AND
+                df.id = :departmentFacilityId AND
+                hsbs.status = 0 AND
                 (
                     (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
                     (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))
@@ -52,19 +50,17 @@ public interface AUSubjectExtendRepository extends SubjectRepository {
             SELECT COUNT(hsbs.id)
             FROM
                 head_subject_by_semester hsbs
-            JOIN subject_group sg ON
-                sg.id = hsbs.id_subject_group
-            JOIN subject_by_subject_group sbsg ON
-                sbsg.id_subject_group = sg.id
             JOIN subject s ON
-                s.id = sbsg.id_subject
+                s.id = hsbs.id_subject
             JOIN department d ON
-                s.id_department = d.id
+                d.id = s.id_department
+            JOIN department_facility df ON
+                df.id_department = d.id
             WHERE
                 hsbs.id_staff = :#{#request.staffId} AND
                 hsbs.id_semester = :semesterId AND
-                sg.id_department_facility = :departmentFacilityId AND
-                sg.status = 0 AND
+                df.id = :departmentFacilityId AND
+                hsbs.status = 0 AND
                 (
                     (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%', TRIM(:#{#request.subjectCode}), '%')) AND
                     (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%', TRIM(:#{#request.subjectName}), '%'))

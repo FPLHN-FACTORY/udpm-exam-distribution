@@ -2,32 +2,45 @@ package fplhn.udpm.examdistribution.core.headsubject.examrule.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.GetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERExamRuleExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
+import fplhn.udpm.examdistribution.entity.ExamRule;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class ExamRuleServiceImpl implements ExamRuleService {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamRuleServiceImpl.class);
+
+    private final ERExamRuleExtendRepository examRuleRepository;
 
     private final ERSubjectExtendRepository subjectRepository;
 
@@ -40,24 +53,25 @@ public class ExamRuleServiceImpl implements ExamRuleService {
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     @Override
-    public ResponseObject<?> getAllSubject(String departmentFacilityId, FindSubjectRequest request) {
+    public ResponseObject<?> getAllExamRule(FindExamRuleRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
-        String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
-                PageableObject.of(subjectRepository.getAllSubject(pageable, departmentFacilityId, semesterId, request)),
+                PageableObject.of(examRuleRepository.getAllExamRule(
+                        pageable, request)
+                ),
                 HttpStatus.OK,
-                "Lấy thành công danh sách môn học"
+                "Lấy thành công danh sách quy định thi"
         );
     }
 
     @Override
-    public ResponseObject<?> uploadExamRule(String subjectId, UploadExamRuleRequest request) {
+    public ResponseObject<?> createExamRule(@Valid UploadExamRuleRequest request) {
         try {
             if (request.getFile().isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
-                        "Nội quy thi chưa được tải"
+                        "Nội quy phòng thi chưa được tải"
                 );
             }
 
@@ -65,22 +79,19 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy thi không được lớn hơn 5MB"
+                        "Nội quy phòng thi không được lớn hơn 5MB"
                 );
             }
 
-            Subject putSubject = subjectRepository.getReferenceById(subjectId);
-
-            if (putSubject.getPathExamRule() != null) {
-                googleDriveFileService.deleteById(putSubject.getPathExamRule());
-            }
-
-            String folderName = "ExamRule/" + putSubject.getSubjectCode();
+            String folderName = "ExamRule/" + request.getName();
 
             GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
-            String fileId = googleDriveFileDTO.getId();
-            putSubject.setPathExamRule(fileId);
-            subjectRepository.save(putSubject);
+
+            ExamRule examRule = new ExamRule();
+            examRule.setName(request.getName());
+            examRule.setStatus(EntityStatus.ACTIVE);
+            examRule.setFileId(googleDriveFileDTO.getId());
+            examRuleRepository.save(examRule);
 
             return new ResponseObject<>(
                     null,
@@ -98,27 +109,27 @@ public class ExamRuleServiceImpl implements ExamRuleService {
     }
 
     @Override
-    public ResponseObject<?> getFile(GetFileRequest request) {
+    public ResponseObject<?> getFile(String id) {
         try {
-            Optional<Subject> isSubjectExist = subjectRepository.findById(request.getSubjectId());
-            if (isSubjectExist.isEmpty()) {
+            Optional<ExamRule> examRuleOptional = examRuleRepository.findById(id);
+            if (examRuleOptional.isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
-                        "Không tìm thấy môn học này!"
+                        "Không tìm thấy nội quy này!"
                 );
             }
 
-            Subject subject = isSubjectExist.get();
-            if (subject.getPathExamRule() == null || subject.getPathExamRule().isEmpty()) {
+            ExamRule examRule = examRuleOptional.get();
+            if (examRule.getFileId() == null) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
-                        "Môn học này chưa được tải quy định đề thi"
+                        "Quy định này chưa có quy định thi"
                 );
             }
 
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + request.getSubjectId();
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + id;
 
             Object redisValue = redisService.get(redisKey);
             if (redisValue != null) {
@@ -128,7 +139,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                         "success"
                 );
             }
-            Resource fileResponse = googleDriveFileService.loadFile(request.getFileId());
+            Resource fileResponse = googleDriveFileService.loadFile(examRuleOptional.get().getFileId());
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
             redisService.set(redisKey, data);
 
@@ -146,6 +157,83 @@ public class ExamRuleServiceImpl implements ExamRuleService {
             );
         }
 
+    }
+
+    @Override
+    public ResponseObject<?> getListSubject(FindSubjectRequest request) {
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            return new ResponseObject<>(
+                    PageableObject.of(subjectRepository.getListSubject(
+                            pageable,
+                            sessionHelper.getCurrentUserId(),
+                            sessionHelper.getCurrentUserDepartmentFacilityId(),
+                            sessionHelper.getCurrentSemesterId(),
+                            request
+                    )),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách môn học"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy không thành công danh sách môn học"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> chooseExamRule(ChooseExamRuleRequest request) {
+        Optional<ExamRule> examRuleOptional = examRuleRepository.findById(request.getExamRuleId());
+        if (examRuleOptional.isEmpty()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_FOUND,
+                    "Không tìm thấy quy định thi này"
+            );
+        }
+
+        Optional<Subject> subjectOptional = subjectRepository.findById(request.getSubjectId());
+        if (subjectOptional.isEmpty()) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_FOUND,
+                    "Không tìm thấy môn học này"
+            );
+        }
+
+        Subject subject = subjectOptional.get();
+
+        if (subjectOptional.get().getExamRule() == null ||
+            !subjectOptional.get().getExamRule().getId().equalsIgnoreCase(request.getExamRuleId())) {
+            subject.setExamRule(examRuleOptional.get());
+            subjectRepository.save(subject);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Cập nhật quy định thi cho môn học " + subject.getName() + " thành công"
+            );
+        }
+
+        if (subjectOptional.get().getExamRule().getId().equalsIgnoreCase(request.getExamRuleId())) {
+            subject.setExamRule(null);
+            subjectRepository.save(subject);
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Cập nhật quy định thi cho môn học " + subject.getName() + " thành công"
+            );
+        }
+
+
+        return new ResponseObject<>(
+                null,
+                HttpStatus.OK,
+                "Cập nhật quy định thi cho môn học " + subject.getName() + " thành công"
+        );
     }
 
 };
