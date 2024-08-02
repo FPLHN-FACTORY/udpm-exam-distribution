@@ -31,6 +31,13 @@ public interface CEPUploadExamPaperExtendRepository extends ExamPaperRepository 
              	f.name AS facilityName,
              	mf.id AS majorFacilityId,
              	(
+             	    SELECT COUNT(eps.id_exam_paper)
+             	    FROM exam_paper_shift eps
+             	    WHERE
+             	        eps.id_exam_paper = ep.id AND
+             	        eps.status = 0
+             	) AS totalUsed,
+             	(
              	    SELECT
              	        CASE
              	            WHEN COUNT(epbs.id) > 0 THEN 1
