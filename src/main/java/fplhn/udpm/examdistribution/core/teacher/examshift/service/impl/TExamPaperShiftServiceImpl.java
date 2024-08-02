@@ -31,7 +31,7 @@ public class TExamPaperShiftServiceImpl implements TExamPaperShiftService {
 
             return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật trạng thái ca thi thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi cập nhật trạng thái ca thi: {}", e.getMessage());
+            log.error("Lỗi khi cập nhật trạng thái ca thi: ", e);
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi cập nhật trạng thái ca thi!");
         }
     }

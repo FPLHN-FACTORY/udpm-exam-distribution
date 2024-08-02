@@ -13,7 +13,9 @@
     <title>Student - Trang chủ</title>
 </head>
 <body>
+<div class="overlay" style="display: none; background-color: red; height: 100vh;"></div>
 <div class="wrapper">
+
     <div class="main-panel" style="width: 100%;">
         <div th:insert="~{fragment/header/common-header-student :: common-header-student}"></div>
         <div class="container">
@@ -22,7 +24,7 @@
             <span th:text="${examPaperId}" hidden id="examPaperId"></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="d-flex justify-content-between mb-2">
-                    <h2 id="examShiftCode">Phòng thi - Mã tham gia: </h2>
+                    <h2 id="examShift">Phòng thi: - Lớp: </h2>
                     <div>
                         <button
                                 class="btn"
@@ -105,11 +107,6 @@
                             style="background-color: var(--common-button-color); color: white;">Đóng
                     </button>
                     <button type="button" class="btn" id="modifyExamPaperOpenButton"
-                            style="background-color: var(--common-button-color); color: white;"
-                    >
-                        Mở đề
-                    </button>
-                    <button type="button" class="btn" id="modifyExamPaperOpenButtonTabTracker"
                             style="background-color: var(--common-button-color); color: white;"
                     >
                         Mở đề

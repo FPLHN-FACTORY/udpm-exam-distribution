@@ -69,7 +69,18 @@ const getExamShiftByCode = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const examShift = responseBody?.data;
-                $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+                $('#examShift').text(
+                    "Phòng thi: " + examShift.subjectName
+                    + " - Lớp: " + examShift.classSubjectCode
+                );
+                $('#examShiftCodePassword').text(
+                    "Mã phòng: " + examShift.examShiftCode
+                    + " - Mật khẩu: " + examShift.password
+                );
+                if (examShift.examPaperPassword !== null) {
+                    $('#examPaperPassword').prop('hidden', false);
+                    $('#examPaperPassword').text("Mật khẩu mở đề: " + examShift.examPaperPassword);
+                }
                 fetchFilePDFExamRule(examShift.pathExamRule);
             }
         },
@@ -191,7 +202,7 @@ const countStudentInExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const students = responseBody?.data;
-                $('#studentCount').text("Tổng Số Sinh Viên: " + students);
+                $('#studentCount').text("Tổng số: " + students);
             }
         },
         error: function (error) {
@@ -443,6 +454,12 @@ const examShiftStart = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start',
         success: function (responseBody) {
+            $('#examShiftStart').prop('hidden', true);
+            const examPaper = responseBody?.data;
+            if (examPaper.password !== null) {
+                $('#examPaperPassword').text('Mật khẩu mở đề: ' + examPaper.password);
+                $('#examPaperPassword').prop('hidden', false);
+            }
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -545,8 +562,10 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                startCountdown(startTime, endTime);
-                fetchFilePDFExamPaper(fileId);
+                if (fileId !== null && startTime !== null && endTime !== null) {
+                    startCountdown(startTime, endTime);
+                    fetchFilePDFExamPaper(fileId);
+                }
             }
         },
         error: function (error) {

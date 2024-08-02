@@ -24,7 +24,7 @@ public class HDSubjectServiceImpl implements HDSubjectService {
                     "Lấy danh sách môn học thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách môn học: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách môn học: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.OK, "Lỗi khi lấy danh sách môn học!"
             );

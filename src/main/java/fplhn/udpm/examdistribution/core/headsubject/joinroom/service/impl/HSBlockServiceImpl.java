@@ -28,7 +28,7 @@ public class HSBlockServiceImpl implements HSBlockService {
                     "Lấy danh sách block thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách block: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách block: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.OK, "Lỗi khi lấy danh sách block!"
             );
@@ -44,7 +44,7 @@ public class HSBlockServiceImpl implements HSBlockService {
                     "Lấy id block thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy id block: {}", e.getMessage());
+            log.error("Lỗi khi lấy id block: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy id block!"
             );

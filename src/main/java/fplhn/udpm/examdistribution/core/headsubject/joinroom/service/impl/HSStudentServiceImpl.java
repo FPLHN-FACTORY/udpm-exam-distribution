@@ -29,7 +29,7 @@ public class HSStudentServiceImpl implements HSStudentService {
                     "Lấy thông tin danh sách sinh viên thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy thông tin danh sách sinh viên: {}", e.getMessage());
+            log.error("Lỗi khi lấy thông tin danh sách sinh viên: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi không lấy được danh sách sinh viên!"
             );

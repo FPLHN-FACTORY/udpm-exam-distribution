@@ -21,6 +21,7 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.exam_shift_code as examShiftCode,
             	es.shift as shift,
             	es.room as room,
+            	cs.class_subject_code as classSubjectCode,
             	s2.name as subjectName,
             	s.staff_code as codeFirstSupervisor,
             	s.name as nameFirstSupervisor,
@@ -54,21 +55,7 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
 
     @Query(value = """
             SELECT
-            	es.id,
-            	es.exam_shift_code,
-            	es.exam_date,
-            	es.shift,
-            	es.room,
-            	es.id_first_supervisor,
-            	es.id_second_supervisor,
-            	es.id_subject_class,
-            	es.total_student,
-            	es.salt,
-            	es.hash,
-            	es.exam_shift_status,
-            	es.status,
-            	es.created_date,
-            	es.last_modified_date
+            	es.*
             FROM
             	exam_shift es
             JOIN staff s ON
@@ -120,8 +107,11 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
     @Query(value = """
             SELECT
             	es.id as id,
-            	es.exam_shift_code as examShiftCode,
-            	s.path_exam_rule as pathExamRule
+             	es.exam_shift_code as examShiftCode,
+             	s.name as subjectName,
+             	cs.class_subject_code as classSubjectCode,
+             	es.password as password,
+             	s.path_exam_rule as pathExamRule
             FROM
             	exam_shift es
             JOIN class_subject cs ON

@@ -17,6 +17,8 @@ public interface SExamShiftExtendRepository extends ExamShiftRepository {
             SELECT
             	es.id as id,
             	es.exam_shift_code as examShiftCode,
+            	s.name as subjectName,
+            	cs.class_subject_code as classSubjectCode,
             	s.path_exam_rule as pathExamRule
             FROM
             	exam_shift es
