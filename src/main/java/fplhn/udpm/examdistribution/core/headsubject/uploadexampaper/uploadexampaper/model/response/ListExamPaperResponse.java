@@ -31,4 +31,6 @@ public interface ListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
     String getMajorFacilityId();
 
+    String getTotalUsed();
+
 }
