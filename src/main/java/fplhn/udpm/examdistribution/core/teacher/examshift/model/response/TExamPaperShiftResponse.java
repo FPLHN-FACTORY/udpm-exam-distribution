@@ -8,4 +8,6 @@ public interface TExamPaperShiftResponse extends IsIdentify {
 
     String getExamPaperId();
 
+    String getPassword();
+
 }

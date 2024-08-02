@@ -15,7 +15,6 @@ import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
-import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
@@ -56,8 +55,6 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
     private final SessionHelper sessionHelper;
 
     private final GoogleDriveFileService googleDriveFileService;
-
-    private final EmailService emailService;
 
     @Override
     public boolean getExamShiftByRequest(String examShiftCode) {
@@ -103,6 +100,10 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Ca thi không hợp lệ!");
             }
+
+//            if (validateShift(hdCreateExamShiftRequest.getShift()) != null) {
+//                return validateShift(hdCreateExamShiftRequest.getShift());
+//            }
 
             Optional<ClassSubject> existingClassSubject = hdClassSubjectExtendRepository
                     .findById(hdCreateExamShiftRequest.getClassSubjectId());
@@ -155,26 +156,26 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Giám thị 2 không tồn tại!");
             }
 
-            if (hdExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
-                    existingFirstSupervisor.get().getId(), hdCreateExamShiftRequest.getExamDate(),
-                    hdCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 1 đang là giám thị ở ca thi khác!");
-            }
-
-            if (hdExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
-                    existingSecondSupervisor.get().getId(), hdCreateExamShiftRequest.getExamDate(),
-                    hdCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 2 đang là giám thị ở ca thi khác!");
-            }
+//            if (hdExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
+//                    existingFirstSupervisor.get().getId(), hdCreateExamShiftRequest.getExamDate(),
+//                    hdCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 1 đang là giám thị ở ca thi khác!");
+//            }
+//
+//            if (hdExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
+//                    existingSecondSupervisor.get().getId(), hdCreateExamShiftRequest.getExamDate(),
+//                    hdCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 2 đang là giám thị ở ca thi khác!");
+//            }
 
 
             String examShiftCode = CodeGenerator.generateRandomCode();
             String password = PasswordUtils.generatePassword();
 
-            String salt = PasswordUtils.generateSalt();
-            String securePassword = PasswordUtils.getSecurePassword(password, salt);
+//            String salt = PasswordUtils.generateSalt();
+//            String securePassword = PasswordUtils.getSecurePassword(password, salt);
 
             ExamShift examShift = new ExamShift();
             examShift.setClassSubject(existingClassSubject.get());
@@ -184,13 +185,14 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
             examShift.setExamDate(hdCreateExamShiftRequest.getExamDate());
             examShift.setShift(Shift.valueOf(hdCreateExamShiftRequest.getShift()));
             examShift.setRoom(hdCreateExamShiftRequest.getRoom());
-            examShift.setHash(securePassword);
-            examShift.setSalt(salt);
+//            examShift.setHash(securePassword);
+//            examShift.setSalt(salt);
+            examShift.setPassword(password);
             examShift.setStatus(EntityStatus.ACTIVE);
             examShift.setExamShiftStatus(ExamShiftStatus.NOT_STARTED);
             hdExamShiftExtendRepository.save(examShift);
 
-            emailService.sendEmailWhenHeadDepartmentCreateExamShift(hdExamShiftExtendRepository.getContentSendMail(examShiftCode), password);
+            log.info("Password: " + password);
 
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.CREATED, "Tạo ca thi thành công!");
@@ -199,6 +201,14 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
             return new ResponseObject<>(null,
                     HttpStatus.BAD_REQUEST, "Lỗi khi tạo ca thi!");
         }
+    }
+
+    private ResponseObject<?> validateShift(String shift) {
+        Shift shiftEnum = Shift.valueOf(shift);
+        if (shiftEnum.ordinal() > Shift.CA6.ordinal()) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Ca thi không hợp lệ!");
+        }
+        return null;
     }
 
     @Override

@@ -41,10 +41,13 @@ public class ExamPaperShift extends PrimaryEntity implements Serializable {
     @Column(name = "exam_shift_status")
     private ExamShiftStatus examShiftStatus;
 
-    @Column(name = "hash")
-    private String hash;
+//    @Column(name = "hash")
+//    private String hash;
+//
+//    @Column(name = "salt")
+//    private String salt;
 
-    @Column(name = "salt")
-    private String salt;
+    @Column(name = "password")
+    private String password;
 
 }

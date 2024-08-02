@@ -10,6 +10,8 @@ public interface HDAllExamShiftResponse extends IsIdentify {
 
     String getRoom();
 
+    String getClassSubjectCode();
+
     String getSubjectName();
 
     String getCodeFirstSupervisor();

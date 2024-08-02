@@ -22,7 +22,7 @@ public class HSStaffServiceImpl implements HSStaffService {
                     .findFirstSupervisorIdByExamShiftCode(examShiftCode),
                     HttpStatus.OK, "Lấy thông tin giám thị 1 thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy thông tin giám thị 1: {}", e.getMessage());
+            log.error("Lỗi khi lấy thông tin giám thị 1: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin giám thị 1!");
         }
@@ -35,7 +35,7 @@ public class HSStaffServiceImpl implements HSStaffService {
                     .findSecondSupervisorIdByExamShiftCode(examShiftCode),
                     HttpStatus.OK, "Lấy thông tin giám thị 2 thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy thông tin giám thị 2: {}", e.getMessage());
+            log.error("Lỗi khi lấy thông tin giám thị 2: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin giám thị 2!");
         }

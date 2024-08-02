@@ -24,7 +24,7 @@ public class HSFacilityChildServiceImpl implements HSFacilityChildService {
                     "Lấy danh sách campus thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách campus: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách campus: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách campus!"
             );

@@ -55,4 +55,8 @@ public class DateTimeUtil {
         return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
     }
 
+    public static void main(String[] args) {
+        System.out.println(getCurrentDateWithoutTime());
+    }
+
 }

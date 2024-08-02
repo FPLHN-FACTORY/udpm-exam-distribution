@@ -15,15 +15,7 @@ public interface HDSStaffExtendRepository extends StaffRepository {
 
     @Query(value = """
             SELECT
-            	s.id,
-            	s.staff_code,
-            	s.name,
-            	s.account_fe,
-            	s.account_fpt,
-            	s.picture,
-            	s.status,
-            	s.created_date,
-            	s.last_modified_date
+            	s.*
             FROM
             	staff s
             JOIN staff_major_facility smf ON
