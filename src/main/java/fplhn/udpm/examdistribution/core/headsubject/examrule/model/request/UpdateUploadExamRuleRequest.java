@@ -7,7 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class UploadExamRuleRequest {
+public class UpdateUploadExamRuleRequest {
+
+    private String id;
 
     private MultipartFile file;
 

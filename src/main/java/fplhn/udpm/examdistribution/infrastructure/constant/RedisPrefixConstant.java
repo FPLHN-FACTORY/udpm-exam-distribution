@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.infrastructure.constant;
 
 public class RedisPrefixConstant {
 
-    public static final String REDIS_PREFIX_DETAIL_EXAM_RULE = "redis_exam_rule_";
+    public static final String REDIS_PREFIX_EXAM_RULE = "redis_exam_rule_";
 
     public static final String REDIS_PREFIX_SAMPLE_EXAM_PAPER = "redis_sample_exam_paper_";
 

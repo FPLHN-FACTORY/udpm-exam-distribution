@@ -2,8 +2,10 @@ package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
+import fplhn.udpm.examdistribution.infrastructure.listener.ExamRuleListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +21,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "exam_rule")
+@EntityListeners(ExamRuleListener.class)
 public class ExamRule extends PrimaryEntity implements Serializable {
 
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)

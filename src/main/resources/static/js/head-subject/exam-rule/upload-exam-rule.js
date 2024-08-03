@@ -11,11 +11,15 @@ const $pdfCanvas = $("#pdf-canvas")[0];
 const ctx = $pdfCanvas.getContext("2d");
 
 let fileExamRule = new File([], "emptyFile");
+let stateAddOrUpdateExamRule;
+let stateExamRuleId;
 // END: state
 
 // START: getter
 const getValueFileInput = () => fileExamRule;
 const getExamRuleName = () => $("#exam-rule-name").val();
+const getStateAddOrUpdateExamRule = () => stateAddOrUpdateExamRule;
+const getStateExamRuleId = () => stateExamRuleId;
 // END: getter
 
 // START: setter
@@ -26,6 +30,18 @@ const setValueFileInput = (value) => {
 const setExamRuleName = (value) => {
     $("#exam-rule-name").val(value);
 };
+
+const setStateAddOrUpdateExamRule = (value) => {
+    stateAddOrUpdateExamRule = value;
+};
+
+const setStateExamRuleId = (value) => {
+    stateExamRuleId = value;
+};
+
+const setStateExamRuleName = (value) => {
+    $("#exam-rule-name").val(value);
+}
 // END: setter
 
 const clearValueFileInput = () => {
@@ -33,18 +49,73 @@ const clearValueFileInput = () => {
     fileExamRule = new File([], "emptyFile");
 };
 
-const handleOpenModalExamRule = (status) => {
+const handleOpenModalExamRule = (status, examRuleId, examRuleName) => {
     clearValueFileInput();
     setExamRuleName("");
     handleResetFieldsError();
 
-    $("#examRuleModalTitle").text(status === 1 ? "Thêm quy định thi" : "Cập nhật quy định thi");
+    setStateWhenOpenModal(status, examRuleId, examRuleName);
+    if(status === 2){
+        handleFetchExamRulePDF(examRuleId);
+    }
 
     //reset lai page 1
     pageNum = 1;
     // ẩn đi view pdf và paging của nó
     handleSolveViewWhenOpenModal();
     $("#examRuleModal").modal("show");
+};
+
+const setStateWhenOpenModal = (status, examRuleId, examRuleName) => {
+    $("#examRuleModalTitle").text(status === 1 ? "Thêm quy định thi" : "Cập nhật quy định thi");
+    setStateAddOrUpdateExamRule(status);
+    setStateExamRuleId(examRuleId);
+    setStateExamRuleName(examRuleName);
+};
+
+const handleFetchExamRulePDF = (id) => {
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/file/" + id,
+        success: function (responseBody) {
+            convertAndShowPdf(responseBody);
+
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
+
+const convertAndShowPdf = (data) => {
+    const pdfData = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+
+    const blob = new Blob([pdfData], {type: 'application/pdf'});
+    const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
+    setValueFileInput(file);
+
+    renderPdfInView(pdfData);
+};
+
+const renderPdfInView = (pdfData) => {
+    pdfjsLib
+        .getDocument({data: pdfData})
+        .promise.then(function (pdfDoc_) {
+        pdfDoc = pdfDoc_;
+
+        $("#total-page").text(pdfDoc.numPages);
+
+        renderPage(pdfDoc, pageNum, "#page-num", pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
+
+        showViewAndPagingPdf(pdfDoc.numPages, "#pdf-viewer", "#paging-pdf");
+    });
 };
 
 const handleResetFieldsError = () => {
@@ -68,7 +139,8 @@ const handleConfirmUploadExamRule = () => {
     } else {
         swal({
             title: "Xác nhận",
-            text: "Bạn có chắc muốn tải đề thi này không?",
+            text: getStateAddOrUpdateExamRule() === 1 ? "Bạn có chắc muốn tải đề thi này không?" :
+                "Bạn có chắc muốn cập nhật đề thi này không?",
             type: "warning",
             buttons: {
                 cancel: {
@@ -97,9 +169,12 @@ const handleUploadExamRule = () => {
     const data = new FormData();
     data.append("file", getValueFileInput());
     data.append("name", getExamRuleName());
+    if (getStateAddOrUpdateExamRule() === 2) {
+        data.append("id", getStateExamRuleId());
+    }
 
     $.ajax({
-        type: "POST",
+        type: getStateAddOrUpdateExamRule() === 1 ? "POST" : "PUT",
         url: ApiConstant.API_HEAD_SUBJECT_MANAGE_EXAM_RULE + "/exam-rule",
         data: data,
         contentType: false,
