@@ -1,0 +1,14 @@
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background: url(../../../assets/image/bg-simple.jpg) no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.custom-gap {
+    gap: 150px;
+}

@@ -60,6 +60,7 @@ function handleSubmitPracticeRoom() {
                 success: function (responseBody) {
                     if (responseBody?.status === 'OK') {
                         showToastSuccess(responseBody.message);
+                        handleChange();
                     }
                     hideLoading();
                 },

@@ -1,12 +1,12 @@
 package fplhn.udpm.examdistribution.core.headsubject.examrule.controller;
 
+import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.CreateUploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UpdateUploadExamRuleRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;

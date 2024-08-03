@@ -81,8 +81,8 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
             );
         }
         practiceRoom.setSubject(subject.get());
-        practiceRoom.setPassword(CodeGenerator.generateRandomCode().substring(0, 6));
-        practiceRoom.setPracticeRoomCode(subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
+        practiceRoom.setPassword(CodeGenerator.generateRandomCode().substring(0, 6).toUpperCase());
+        practiceRoom.setPracticeRoomCode(subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3).toUpperCase());
 
         practiceRoomRepository.save(practiceRoom);
         return new ResponseObject<>(

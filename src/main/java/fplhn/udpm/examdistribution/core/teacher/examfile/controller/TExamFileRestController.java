@@ -1,16 +1,14 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
+import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileService;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

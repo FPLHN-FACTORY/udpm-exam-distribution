@@ -11,7 +11,7 @@ const getListMappingScreenConstant = () => {
         {status: 2, role: "TRUONG_MON", redirect: "head-subject", facility: getFacilityId()},
         {status: 3, role: "CHU_NHIEM_BO_MON", redirect: "head-department", facility: getFacilityId()},
         {status: 4, role: "GIANG_VIEN", redirect: "teacher", facility: getFacilityId()},
-        {status: 5, role: "SINH_VIEN", redirect: "student", facility: getFacilityId()}
+        {status: 5, role: "SINH_VIEN", redirect: "student/choose-exam-type", facility: getFacilityId()}
     ]
 }
 

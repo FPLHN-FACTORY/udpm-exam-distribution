@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.headsubject.examrule.model.response;
+package fplhn.udpm.examdistribution.core.common.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

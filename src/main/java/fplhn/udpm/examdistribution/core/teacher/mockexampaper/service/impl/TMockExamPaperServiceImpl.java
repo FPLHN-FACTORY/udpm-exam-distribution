@@ -52,8 +52,9 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
 
     @Override
     public ResponseObject<?> getMockExams(TMockExamPaperRequest request) {
+        String facilityId = (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID);
         return new ResponseObject<>(
-                examPaperRepository.getMockExamPapers(request),
+                examPaperRepository.getMockExamPapers(request,facilityId),
                 HttpStatus.OK,
                 "Lấy danh sách đề thì thử thành công");
     }

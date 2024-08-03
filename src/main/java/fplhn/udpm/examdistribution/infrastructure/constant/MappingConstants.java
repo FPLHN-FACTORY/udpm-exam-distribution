@@ -128,9 +128,12 @@ public final class MappingConstants {
 
     // Constants representing the full paths for various resources under student
     public static final String REDIRECT_STUDENT_EXAM_SHIFT = STUDENT + "/exam-shift";
+    public static final String REDIRECT_STUDENT_PRACTICE_ROOM = STUDENT + "/practice-room";
+    public static final String REDIRECT_STUDENT_CHOOSE_EXAM_TYPE = STUDENT + "/choose-exam-type";
 
-    // Constants representing the full paths for various resources under teacher
+    // Constants representing the full paths for various resources under student
     public static final String API_STUDENT_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift";
+    public static final String API_STUDENT_PRACTICE_ROOM = API_STUDENT_PREFIX + "/practice-room";
     public static final String API_STUDENT_JOIN_EXAM_SHIFT = API_STUDENT_PREFIX + "/exam-shift/join";
     public static final String API_STUDENT_TRACKER = API_STUDENT_PREFIX + "/tracker";
 
