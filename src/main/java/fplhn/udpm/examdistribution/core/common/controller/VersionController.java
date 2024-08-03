@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.common;
+package fplhn.udpm.examdistribution.core.common.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

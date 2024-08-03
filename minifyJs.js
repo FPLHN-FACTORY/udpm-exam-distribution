@@ -27,7 +27,8 @@ jsFiles.forEach(jsFile => {
                 drop_console: true,
                 drop_debugger: true
             },
-            toplevel: true
+            toplevel: true,
+            sourceMap: false // Disable source map generation
         }).then(minified => {
             const outputFilePath = path.join(outputDir, path.basename(jsFile));
             if (minified.code && minified.code.trim().length > 0) {
@@ -66,7 +67,8 @@ jsFilesDirect.forEach(jsFile => {
                 drop_console: true,
                 drop_debugger: true
             },
-            toplevel: true
+            toplevel: true,
+            sourceMap: false // Disable source map generation
         }).then(minified => {
             const outputFilePath = path.join(outputDir, path.basename(jsFile));
             if (minified.code && minified.code.trim().length > 0) {
@@ -102,7 +104,7 @@ cssFiles.forEach(cssFile => {
     console.log(`Original content of ${cssFile}:`, content);
 
     try {
-        const minified = new CleanCSS().minify(content);
+        const minified = new CleanCSS({sourceMap: false}).minify(content); // Disable source map generation
         const outputFilePath = path.join(cssOutputDir, path.basename(cssFile));
         if (minified.styles && minified.styles.trim().length > 0) {
             fs.writeFileSync(outputFilePath, minified.styles);

@@ -37,6 +37,10 @@ public class Helper {
                 ));
     }
 
+    public static Pageable createPageable(PageableRequest request) {
+        return createPageable(request, "createdDate");
+    }
+
     public static ResponseEntity<?> createResponseEntity(ResponseObject<?> responseObject) {
         return new ResponseEntity<>(responseObject, responseObject.getStatus());
     }
