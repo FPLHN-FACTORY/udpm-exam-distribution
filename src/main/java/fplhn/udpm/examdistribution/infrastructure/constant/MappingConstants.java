@@ -44,6 +44,7 @@ public final class MappingConstants {
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_HEAD_SUBJECTS = HEAD_DEPARTMENT + "/manage-head-of-subjects";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = HEAD_DEPARTMENT + "/join-room";
     public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_EXAM_SHIFT = HEAD_DEPARTMENT + "/exam-shift";
+    public static final String REDIRECT_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT = HEAD_DEPARTMENT + "/manage-class-subjects";
 
     // Constants representing the redirect paths for various resources under head subject
     public static final String REDIRECT_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER = HEAD_SUBJECT + "/upload-exam-paper";
@@ -74,6 +75,7 @@ public final class MappingConstants {
     public static final String API_HEAD_DEPARTMENT_MANAGE_HEAD_SUBJECTS = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_HEAD_DEPARTMENT_MANAGE_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/subjects";
     public static final String API_HEAD_DEPARTMENT_CLASS_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/class-subjects";
+    public static final String API_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/manage-class-subjects";
     public static final String API_HEAD_DEPARTMENT_BLOCK = API_HEAD_DEPARTMENT_PREFIX + "/blocks";
     public static final String API_HEAD_DEPARTMENT_CAMPUS = API_HEAD_DEPARTMENT_PREFIX + "/campuses";
     public static final String API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM = API_HEAD_DEPARTMENT_PREFIX + "/join-room";

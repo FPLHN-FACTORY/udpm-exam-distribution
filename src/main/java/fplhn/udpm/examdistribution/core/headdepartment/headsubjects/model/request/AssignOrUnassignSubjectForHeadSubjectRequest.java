@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AssignSubjectForHeadSubjectRequest {
+public class AssignOrUnassignSubjectForHeadSubjectRequest {
 
     @NotNull(message = "SubjectId is required")
     private String subjectId;

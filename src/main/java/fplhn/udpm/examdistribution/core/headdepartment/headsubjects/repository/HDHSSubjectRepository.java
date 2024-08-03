@@ -64,8 +64,10 @@ public interface HDHSSubjectRepository extends SubjectRepository {
                       d.id = df.id_department
                     WHERE
                       df.id = :#{#request.departmentFacilityId}
-                      AND (:#{#request.q} IS NULL OR s.subject_code LIKE CONCAT('%',:#{#request.q},'%'))
-                      AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%'))
+                      AND (:#{#request.q} IS NULL OR (
+                          s.subject_code LIKE CONCAT('%',:#{#request.q},'%')
+                          OR s.name LIKE CONCAT('%',:#{#request.q},'%')
+                      ))
                     """,
             countQuery = """
                     SELECT COUNT(DISTINCT s.id)
@@ -81,8 +83,10 @@ public interface HDHSSubjectRepository extends SubjectRepository {
                         d.id = df.id_department
                     WHERE
                         df.id = :#{#request.departmentFacilityId}
-                        AND (:#{#request.q} IS NULL OR s.subject_code LIKE CONCAT('%',:#{#request.q},'%'))
-                        AND (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%'))
+                        AND (:#{#request.q} IS NULL OR (
+                            s.subject_code LIKE CONCAT('%',:#{#request.q},'%')
+                            OR s.name LIKE CONCAT('%',:#{#request.q},'%')
+                        ))
                     """,
             nativeQuery = true
     )

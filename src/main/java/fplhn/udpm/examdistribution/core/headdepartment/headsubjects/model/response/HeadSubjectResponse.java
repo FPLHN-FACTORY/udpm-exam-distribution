@@ -15,4 +15,6 @@ public interface HeadSubjectResponse extends IsIdentify, HasOrderNumber {
 
     Short getIsAssigned();
 
+    Integer getAssignedCount();
+
 }

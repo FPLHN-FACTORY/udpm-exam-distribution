@@ -37,6 +37,7 @@ const ApiConstant = {
     REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
     REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT: "/head-department/manage-subjects",
     REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/head-department/join-room",
+    REDIRECT_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT: "/head-department/manage-class-subjects",
 
     // Constants representing the redirect paths for various resources under head subject
     REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/head-subject/assign-uploader",
@@ -75,6 +76,7 @@ const ApiConstant = {
     API_HEAD_DEPARTMENT_STUDENT: "/api/v1/head-department/students",
     API_HEAD_DEPARTMENT_FILE: "/api/v1/head-department/file",
     API_HEAD_DEPARTMENT_EXAM_SHIFT: "/api/v1/head-department/exam-shift",
+    API_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT: "/api/v1/head-department/manage-class-subjects",
 
     // Constants representing the full paths for various resources under head subject
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",

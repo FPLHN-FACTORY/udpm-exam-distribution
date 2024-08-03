@@ -12,12 +12,14 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/webjars/select2/css/select2.css}">
     <link rel="stylesheet" th:href="@{/css/common/tag.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
 </head>
 <body>
 <div class="wrapper">
     <div th:insert="~{fragment/sidebar/sidebar-head-department:: sidebar-head-of-department}"></div>
+    <!-- Main Panel -->
     <div class="main-panel">
         <div class="main-header">
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
@@ -29,7 +31,7 @@
                 </div>
                 <div class="p-4">
                     <!-- Filter -->
-                    <div class="shadow p-4 bg-white rounded">
+                    <div class="shadow p-4 bg-white rounded mb-4">
                         <h4><i class="fa-solid fa-filter"></i> Bộ lọc</h4>
                         <div class="row mt-4 mb-4">
                             <div class="col">
@@ -62,6 +64,7 @@
                                     <td>Email FPT</td>
                                     <td>Email FE</td>
                                     <td>Phân công</td>
+                                    <td class="text-center">Số lượng môn đang phụ trách</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
@@ -69,7 +72,7 @@
                                 </thead>
                                 <tbody id="manageHeadSubjectsTableBody" class="table-group-divider">
                                 <tr>
-                                    <td colspan="7" class="text-center">Không có dữ liệu</td>
+                                    <td colspan="8" class="text-center">Không có dữ liệu</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -95,17 +98,91 @@
             </div>
         </div>
     </div>
+    <!-- Main Panel -->
+    <!-- Modal Show Subject to Assign   -->
+    <div class="modal fade" id="modalShowSubjectToAssign" tabindex="-1"
+         aria-labelledby="modalShowSubjectToAssignLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalShowSubjectToAssignLabel">Danh sách môn học</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 bg-white rounded mb-4">
+                        <h4><i class="fa-solid fa-filter"></i> Bộ lọc</h4>
+                        <div class="row mt-4 mb-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="searchSubjectToAssign">Tìm kiếm</label>
+                                    <input type="text" class="form-control" id="searchSubjectToAssign"
+                                           placeholder="Nhập mã môn học hoặc tên môn học">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="ant-table">
+                            <thead>
+                            <tr>
+                                <td>STT</td>
+                                <td>Mã môn học</td>
+                                <td>Tên môn học</td>
+                                <td>Loại môn học</td>
+                                <td class="text-center">Phân công</td>
+                            </tr>
+                            </thead>
+                            <tbody id="showSubjectToAssignTableBody" class="table-group-divider">
+                            <tr>
+                                <td colspan="5" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-center gap-3">
+                        <div class="d-flex align-items-center">
+                            <nav>
+                                <ul class="pagination" id="paginationShowSubjectToAssign">
+                                </ul>
+                            </nav>
+                        </div>
+                        <select class="form-select" id="pageSizeShowSubjectToAssign"
+                                style="width: 100px;">
+                            <option value="5">5 bản ghi / Trang</option>
+                            <option value="10">10 bản ghi / Trang</option>
+                            <option value="20">20 bản ghi / Trang</option>
+                            <option value="50">50 bản ghi / Trang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal Show Subject By Head Subject   -->
     <div class="modal fade" id="modalShowSubjectByHeadSubject" tabindex="-1"
          aria-labelledby="modalShowSubjectByHeadSubjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalShowSubjectByHeadSubjectLabel">Danh sách môn học</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex align-items-center w-100">
+                        <select
+                                class="form-select me-2"
+                                id="selectNewHeadSubject"
+                        >
+                        </select>
+                        <button
+                                class="btn btn-black ms-2 text-nowrap"
+                                id="btnAssignNewHeadSubject"
+                        >
+                            Phân công
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table class="ant-table">
                             <thead>
@@ -150,6 +227,7 @@
         <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
         <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
         <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/webjars/select2/js/select2.full.js}"></script>
         <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
         <script th:src="@{/js/sidebar-track.js}"></script>
@@ -169,6 +247,7 @@
         <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
         <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
         <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/webjars/select2/js/select2.full.js}"></script>
         <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
         <script th:src="@{/js/minified/sidebar-track.js}"></script>
