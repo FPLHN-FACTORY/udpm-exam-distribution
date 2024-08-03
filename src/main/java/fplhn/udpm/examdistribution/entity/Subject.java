@@ -30,9 +30,6 @@ import java.io.Serializable;
 @EntityListeners(SubjectListener.class)
 public class Subject extends PrimaryEntity implements Serializable {
 
-    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
-    private String code;
-
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;
@@ -45,9 +42,6 @@ public class Subject extends PrimaryEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Nationalized
     private SubjectType subjectType;
-
-    @Column(name = "path_exam_rule")
-    private String pathExamRule;
 
     @Column(name = "created_time")
     private Long createdTime;
