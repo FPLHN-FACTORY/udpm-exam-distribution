@@ -61,7 +61,7 @@ const getListExamShift = () => {
         success: (res) => {
             const data = res?.data?.data || [];
             if (data.length === 0) {
-                $('#manageExamShiftTableBody').html('<tr><td colspan="8" style="text-align: center;">Không có dữ liệu</td></tr>');
+                $('#manageExamShiftTableBody').html('<tr><td colspan="10" style="text-align: center;">Không có dữ liệu</td></tr>');
                 $('#paginationExamShift').empty();
                 return;
             }
