@@ -20,7 +20,6 @@ public interface ERExamRuleExtendRepository extends ExamRuleRepository {
                 ROW_NUMBER() OVER(
                     ORDER BY er.id DESC
                 ) AS orderNumber,
-                er.code AS code,
                 er.name AS name,
                 er.file_id AS fileId,
                 er.status AS status
