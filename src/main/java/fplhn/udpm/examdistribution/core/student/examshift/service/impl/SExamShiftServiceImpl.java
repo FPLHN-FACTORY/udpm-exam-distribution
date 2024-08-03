@@ -19,6 +19,7 @@ import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
@@ -100,16 +101,14 @@ public class SExamShiftServiceImpl implements SExamShiftService {
 
             ExamShift examShift = existingExamShift.get();
 
-//            boolean passwordMatch = PasswordUtils.verifyUserPassword(sExamShiftRequest.getPasswordJoin(),
-//                    examShift.getHash(), examShift.getSalt());
-//            if (!passwordMatch) {
-//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-//                        "Ca thi không tồn tại hoặc mật khẩu không đúng!");
-//            }
-
             if (!examShift.getPassword().equals(sExamShiftRequest.getPasswordJoin())) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Ca thi không tồn tại hoặc mật khẩu không đúng!");
+            }
+
+            if (examShift.getExamShiftStatus().equals(ExamShiftStatus.FINISHED)) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Ca thi đã kết thúc!");
             }
 
             Optional<StudentExamShift> studentExamShiftExist = sStudentExamShiftExtendRepository
@@ -146,7 +145,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime > examPaperShift.getStartTime() + (10 * 60 * 1000)) {
+                    if (currentTime > examPaperShift.getStartTime() + (2 * 60 * 1000)) {
                         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                                 "Đã quá thời gian thi!");
                     }

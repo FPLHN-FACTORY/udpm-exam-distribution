@@ -77,6 +77,7 @@ const fetchSubjects = () => {
         url: ApiConstant.API_HEAD_SUBJECT_SUBJECT + classSubjectCodeUrl + subjectClassCodeVal,
         success: function (responseBody) {
             if (responseBody?.data) {
+                console.log("Môn thi: ", responseBody?.data);
                 const subjects = responseBody?.data?.map((subject, index) => {
                     return `<option value="${subject.id}">${subject.subjectCode} - ${subject.subjectName}</option>`;
                 });

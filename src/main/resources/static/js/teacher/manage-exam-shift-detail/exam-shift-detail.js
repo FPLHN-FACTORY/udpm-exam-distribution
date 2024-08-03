@@ -540,7 +540,6 @@ const updateExamShiftStatus = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/update-status',
         success: function (responseBody) {
-            window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT;
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -748,13 +747,15 @@ const startCountdown = (startTime, endTime) => {
         if (distanceToEnd > 0) {
             let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
-            $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
+            $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
             clearInterval(countdown);
             $('#examShiftStart').prop('hidden', true);
             $('#completeExamShift').prop('hidden', false);
             $('#countdown').text("Đã kết thúc!");
             showToastSuccess('Đã hết giờ làm bài thi!')
+            updateExamPaperShiftStatus();
+            updateExamShiftStatus();
         }
     }, 1000);
 }
@@ -768,8 +769,7 @@ const completeExamShift = () => {
         dangerMode: false,
     }).then((willComplete) => {
         if (willComplete) {
-            updateExamPaperShiftStatus();
-            updateExamShiftStatus();
+            window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT;
         }
     });
 };

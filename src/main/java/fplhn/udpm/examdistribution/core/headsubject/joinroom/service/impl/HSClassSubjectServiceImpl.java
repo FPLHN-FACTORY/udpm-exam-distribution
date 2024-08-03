@@ -28,14 +28,15 @@ public class HSClassSubjectServiceImpl implements HSClassSubjectService {
             Optional<HSClassSubjectResponse> existingClassSubject = hsClassSubjectExtendRepository.getClassSubject(
                     classSubjectCode,
                     sessionHelper.getCurrentUserDepartmentFacilityId(),
-                    sessionHelper.getCurrentSemesterId()
+                    sessionHelper.getCurrentBlockId(),
+                    sessionHelper.getCurrentUserMajorFacilityId()
             );
 
             if (existingClassSubject.isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
-                        "Mã lớp môn không tồn tại hoặc không thuộc bộ môn này!"
+                        "Mã lớp môn không tồn tại hoặc không thuộc bộ môn / chuyên ngành này!"
                 );
             }
 

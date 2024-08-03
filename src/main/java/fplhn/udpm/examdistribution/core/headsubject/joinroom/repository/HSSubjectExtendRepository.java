@@ -21,7 +21,8 @@ public interface HSSubjectExtendRepository extends SubjectRepository {
             	s.id = cs.id_subject
             WHERE
             	cs.class_subject_code = :classSubjectCode
+            	AND cs.id_block = :blockId
             """, nativeQuery = true)
-    List<HSSubjectResponse> findAllByClassSubjectCode(String classSubjectCode);
+    List<HSSubjectResponse> findAllByClassSubjectCode(String classSubjectCode, String blockId);
 
 }
