@@ -14,4 +14,6 @@ public class TSubjectMockExamRequest extends PageableRequest {
 
     private String semester;
 
+    private String block;
+
 }

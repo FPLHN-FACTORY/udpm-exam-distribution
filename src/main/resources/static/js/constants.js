@@ -106,6 +106,7 @@ const ApiConstant = {
     API_TEACHER_CAMPUS: "/api/v1/teacher/campuses",
     API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
     API_TEACHER_STAFF: "/api/v1/teacher/staffs",
+    API_TEACHER_PRACTICE_ROOM: "/api/v1/teacher/practice-room",
     API_TEACHER_EXAM_PAPER_SHIFT: "/api/v1/teacher/exam-paper-shift",
     API_TEACHER_TRACK_HISTORY: "/api/v1/teacher/track-history",
 

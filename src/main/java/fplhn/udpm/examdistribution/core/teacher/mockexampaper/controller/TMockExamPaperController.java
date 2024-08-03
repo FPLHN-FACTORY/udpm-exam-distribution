@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(MappingConstants.REDIRECT_TEACHER_MOCK_EXAM_PAPER)
-public class MockExamPaperController {
+public class TMockExamPaperController {
 
     @GetMapping
     public String viewMockExamPaper() {

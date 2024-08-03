@@ -19,7 +19,7 @@ import java.util.Base64;
 @RestController
 @RequestMapping(MappingConstants.API_TEACHER_MOCK_EXAM_PAPER)
 @RequiredArgsConstructor
-public class MockExamPaperRestController {
+public class TMockExamPaperRestController {
 
     private final TMockExamPaperService mockExamPaperService;
 
@@ -39,7 +39,7 @@ public class MockExamPaperRestController {
     }
 
     @GetMapping("/file")
-    public ResponseEntity<?> getFile(@RequestParam(value = "idMockExamPaper",defaultValue = "0") String idMockExamPaper) throws IOException {
+    public ResponseEntity<?> getFile(@RequestParam(value = "idMockExamPaper", defaultValue = "0") String idMockExamPaper) throws IOException {
         ResponseObject<?> responseObject = mockExamPaperService.getFile(idMockExamPaper);
         if (responseObject.getStatus().equals(HttpStatus.OK)) {
             Resource resource = (Resource) responseObject.getData();
