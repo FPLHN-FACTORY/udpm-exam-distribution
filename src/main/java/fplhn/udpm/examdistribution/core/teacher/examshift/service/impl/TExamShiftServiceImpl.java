@@ -79,10 +79,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                          .equals(sessionHelper.getCurrentUserId())
-                  || (examShift.get().getSecondSupervisor() != null
-                      && examShift.get().getSecondSupervisor().getId()
-                              .equals(sessionHelper.getCurrentUserId()));
+                .equals(sessionHelper.getCurrentUserId())
+                || (examShift.get().getSecondSupervisor() != null
+                && examShift.get().getSecondSupervisor().getId()
+                .equals(sessionHelper.getCurrentUserId()));
 
         if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
@@ -133,7 +133,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
-                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+                    && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
                         HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
             }
@@ -285,7 +285,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
             String password = PasswordUtils.generatePassword();
             long startTime = System.currentTimeMillis();
-            long endTime = startTime + (2 * 60 * 1000);
+            long endTime = startTime + (5 * 60 * 1000);
 
             Optional<TExamPaperShiftResponse> examPaperShiftOptional
                     = tExamPaperShiftExtendRepository.findExamPaperShiftByExamShiftCode(examShiftCode);
@@ -313,7 +313,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             List<String> getListIdExamPaper
-                    = tExamPaperBySemesterExtendRepository.getListIdExamPaper(departmentFacilityId, subjectId);
+                    = tExamPaperBySemesterExtendRepository
+                    .getListIdExamPaper(departmentFacilityId, subjectId, sessionHelper.getCurrentSemesterId());
 
             if (getListIdExamPaper.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT, "Không có đề thi nào!");
@@ -368,7 +369,6 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT_START,
                     new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
-
 
             return new ResponseObject<>(
                     new TStartExamShiftResponse(

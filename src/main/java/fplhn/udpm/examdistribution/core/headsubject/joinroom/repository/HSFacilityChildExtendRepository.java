@@ -23,7 +23,8 @@ public interface HSFacilityChildExtendRepository extends FacilityChildRepository
             WHERE
             	cs.class_subject_code = :classSubjectCode
             	AND s.id = :subjectId
+            	AND cs.id_block = :blockId
             """, nativeQuery = true)
-    List<HSFacilityChildResponse> findAllByClassSubjectCodeAndSubjectId(String classSubjectCode, String subjectId);
+    List<HSFacilityChildResponse> findAllByClassSubjectCodeAndSubjectId(String classSubjectCode, String subjectId, String blockId);
 
 }

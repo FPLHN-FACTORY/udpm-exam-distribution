@@ -23,14 +23,16 @@ public class HSBlockServiceImpl implements HSBlockService {
         try {
             return new ResponseObject<>(
                     hsBlockExtendRepository.findAllByClassSubjectCodeAndSubjectId(
-                            classSubjectCode, subjectId, sessionHelper.getCurrentSemesterId()),
+                            classSubjectCode, subjectId,
+                            sessionHelper.getCurrentSemesterId(),
+                            sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy danh sách block thành công!"
             );
         } catch (Exception e) {
             log.error("Lỗi khi lấy danh sách block: ", e);
             return new ResponseObject<>(
-                    null, HttpStatus.OK, "Lỗi khi lấy danh sách block!"
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách block!"
             );
         }
     }

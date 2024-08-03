@@ -23,7 +23,9 @@ public class HDBlockServiceImpl implements HDBlockService {
         try {
             return new ResponseObject<>(
                     hdBlockExtendRepository.findAllByClassSubjectCodeAndSubjectId(
-                            classSubjectCode, subjectId, sessionHelper.getCurrentSemesterId()),
+                            classSubjectCode, subjectId,
+                            sessionHelper.getCurrentSemesterId(),
+                            sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy danh sách block thành công!"
             );

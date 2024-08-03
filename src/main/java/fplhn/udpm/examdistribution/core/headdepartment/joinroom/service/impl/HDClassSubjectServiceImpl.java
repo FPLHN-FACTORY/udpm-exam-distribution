@@ -26,9 +26,10 @@ public class HDClassSubjectServiceImpl implements HDClassSubjectService {
     @Override
     public ResponseObject<?> getClassSubject(String classSubjectCode) {
         try {
-            Optional<HDClassSubjectResponse> existingClassSubject
-                    = hdClassSubjectExtendRepository.getClassSubject(classSubjectCode,
-                    sessionHelper.getCurrentUserDepartmentFacilityId());
+            Optional<HDClassSubjectResponse> existingClassSubject = hdClassSubjectExtendRepository.getClassSubject(
+                    classSubjectCode,
+                    sessionHelper.getCurrentUserDepartmentFacilityId(),
+                    sessionHelper.getCurrentBlockId());
 
             if (existingClassSubject.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,

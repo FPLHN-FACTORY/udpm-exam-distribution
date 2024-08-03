@@ -43,7 +43,7 @@ public interface HDSStaffExtendRepository extends StaffRepository {
             	s.id = es.id_first_supervisor
             WHERE
             	es.exam_shift_code = :examShiftCode
-                        """, nativeQuery = true)
+            """, nativeQuery = true)
     HDStaffResponse findFirstSupervisorIdByExamShiftCode(String examShiftCode);
 
     @Query(value = """

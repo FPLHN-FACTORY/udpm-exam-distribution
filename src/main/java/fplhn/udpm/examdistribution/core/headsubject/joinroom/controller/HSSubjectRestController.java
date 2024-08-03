@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.joinroom.controller;
 
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.service.HDSubjectService;
+import fplhn.udpm.examdistribution.core.headsubject.joinroom.service.HSSubjectService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(MappingConstants.API_HEAD_SUBJECT_SUBJECT)
 public class HSSubjectRestController {
 
-    private final HDSubjectService hdSubjectService;
+    private final HSSubjectService hsSubjectService;
 
     @GetMapping
     public ResponseEntity<?> findAllByClassSubjectCode(String classSubjectCode) {
-        return Helper.createResponseEntity(hdSubjectService.findAllByClassSubjectCode(classSubjectCode));
+        return Helper.createResponseEntity(hsSubjectService.findAllByClassSubjectCode(classSubjectCode));
     }
 
 }

@@ -23,9 +23,11 @@ public interface HSBlockExtendRepository extends BlockRepository {
             WHERE
             	cs.class_subject_code = :classSubjectCode
             	AND b.id_semester = :semesterId
+            	AND b.id = :blockId
                 AND s.id = :subjectId
             """, nativeQuery = true)
-    List<HSBlockResponse> findAllByClassSubjectCodeAndSubjectId(String classSubjectCode, String subjectId, String semesterId);
+    List<HSBlockResponse> findAllByClassSubjectCodeAndSubjectId(
+            String classSubjectCode, String subjectId, String semesterId, String blockId);
 
     @Query(value = """
             SELECT

@@ -266,6 +266,8 @@ const connect = () => {
     });
 };
 
+let checkInternetInterval;
+
 const startCountdown = (startTime, endTime) => {
     let endTimeDate = new Date(endTime).getTime();
     let checkTime = new Date(startTime).getTime() + 0.2 * 60 * 1000;
@@ -277,19 +279,25 @@ const startCountdown = (startTime, endTime) => {
 
         if (now >= checkTime && !hasChecked) {
             hasChecked = true;
-            setInterval(checkInternetConnection, 1000);
+            checkInternetInterval = setInterval(checkInternetConnection, 1000);
         }
 
         if (distanceToEnd > 0) {
             let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
-            $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
+            $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
+            if (checkInternetInterval) {
+                clearInterval(checkInternetInterval);
+                $('body').children().show();
+                $('.overlay').hide();
+            }
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
             $('#openExamPaper').prop('hidden', false);
             $('#countdown').prop('hidden', true);
             $('#examShiftPaper').prop('hidden', true);
+            updateExamPaperShiftStatus();
         }
     }, 1000);
 }
@@ -299,7 +307,6 @@ const updateExamPaperShiftStatus = () => {
         type: "PUT",
         url: ApiConstant.API_STUDENT_EXAM_SHIFT + '/' + examShiftCode + '/update-exam-student-status',
         success: function (responseBody) {
-            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -332,7 +339,7 @@ const completeExamShift = () => {
         dangerMode: false,
     }).then((willComplete) => {
         if (willComplete) {
-            updateExamPaperShiftStatus();
+            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         }
     });
 };
@@ -358,6 +365,6 @@ function checkInternetConnection() {
         .catch(() => {
             $('body').children().show();
             $('.overlay').hide();
-        });
+        })
 }
 

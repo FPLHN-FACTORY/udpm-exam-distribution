@@ -23,7 +23,7 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
              	s.name as subjectName,
              	cs.class_subject_code as classSubjectCode,
              	es.password as password,
-             	s.path_exam_rule as pathExamRule,
+             	er.file_id as pathExamRule,
              	eps.password as examPaperPassword
             FROM
             	exam_shift es
@@ -31,6 +31,8 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
             	es.id_subject_class = cs.id
             LEFT JOIN subject s ON
             	cs.id_subject = s.id
+            LEFT JOIN exam_rule er ON
+                s.id_exam_rule = er.id
             LEFT JOIN exam_paper_shift eps ON
                 es.id = eps.id_exam_shift
             WHERE
@@ -77,77 +79,77 @@ public interface TExamShiftExtendRepository extends ExamShiftRepository {
             """, nativeQuery = true)
     Integer countStudentInExamShift(String examShiftCode);
 
-    @Query(value = """
-            SELECT
-            	es.exam_shift_code as examShiftCode,
-            	es.room as room,
-            	es.exam_date as examDate,
-            	es.shift as shift,
-            	cs.class_subject_code as classSubjectCode,
-            	s3.name as subjectName,
-            	s1.name as nameFirstSupervisor,
-            	s1.staff_code as codeFirstSupervisor,
-            	s2.name as nameSecondSupervisor,
-            	s2.staff_code as codeSecondSupervisor,
-            	ep.`path` as pathExamPaper,
-            	s4.account_fe as accountFeHeadSubject,
-            	s4.account_fpt as accountFptHeadSubject
-            FROM
-            	exam_shift es
-            JOIN staff s1 ON
-            	es.id_first_supervisor = s1.id
-            JOIN staff s2 ON
-            	es.id_second_supervisor = s2.id
-            JOIN exam_paper_shift eps ON
-            	es.id = eps.id_exam_shift
-            JOIN exam_paper ep ON
-            	ep.id = eps.id_exam_paper
-            JOIN class_subject cs ON
-            	es.id_subject_class = cs.id
-            JOIN subject s3 ON
-            	cs.id_subject = s3.id
-            JOIN subject_by_subject_group sbsg ON
-            	sbsg.id_subject = s3.id
-            JOIN subject_group sg ON
-            	sbsg.id_subject_group = sg.id
-            JOIN head_subject_by_semester hsbs ON
-            	sg.id = hsbs.id_subject_group
-            JOIN staff s4 ON
-            	hsbs.id_staff = s4.id
-            WHERE
-                es.exam_shift_code = :examShiftCode
-            """, nativeQuery = true)
-    THeadSubjectAndContentSendMailResponse getHeadSubjectAndContentSendMail(String examShiftCode);
+//    @Query(value = """
+//            SELECT
+//            	es.exam_shift_code as examShiftCode,
+//            	es.room as room,
+//            	es.exam_date as examDate,
+//            	es.shift as shift,
+//            	cs.class_subject_code as classSubjectCode,
+//            	s3.name as subjectName,
+//            	s1.name as nameFirstSupervisor,
+//            	s1.staff_code as codeFirstSupervisor,
+//            	s2.name as nameSecondSupervisor,
+//            	s2.staff_code as codeSecondSupervisor,
+//            	ep.`path` as pathExamPaper,
+//            	s4.account_fe as accountFeHeadSubject,
+//            	s4.account_fpt as accountFptHeadSubject
+//            FROM
+//            	exam_shift es
+//            JOIN staff s1 ON
+//            	es.id_first_supervisor = s1.id
+//            JOIN staff s2 ON
+//            	es.id_second_supervisor = s2.id
+//            JOIN exam_paper_shift eps ON
+//            	es.id = eps.id_exam_shift
+//            JOIN exam_paper ep ON
+//            	ep.id = eps.id_exam_paper
+//            JOIN class_subject cs ON
+//            	es.id_subject_class = cs.id
+//            JOIN subject s3 ON
+//            	cs.id_subject = s3.id
+//            JOIN subject_by_subject_group sbsg ON
+//            	sbsg.id_subject = s3.id
+//            JOIN subject_group sg ON
+//            	sbsg.id_subject_group = sg.id
+//            JOIN head_subject_by_semester hsbs ON
+//            	sg.id = hsbs.id_subject_group
+//            JOIN staff s4 ON
+//            	hsbs.id_staff = s4.id
+//            WHERE
+//                es.exam_shift_code = :examShiftCode
+//            """, nativeQuery = true)
+//    THeadSubjectAndContentSendMailResponse getHeadSubjectAndContentSendMail(String examShiftCode);
 
-    @Query(value = """
-            SELECT
-            	es.exam_shift_code as examShiftCode,
-            	es.room as room,
-            	es.exam_date as examDate,
-            	es.shift as shift,
-            	cs.class_subject_code as classSubjectCode,
-            	s3.name as subjectName,
-            	s1.account_fe as accountFeFirstSupervisor,
-            	s1.account_fpt as accountFptFirstSupervisor,
-            	s2.account_fe as accountFeSecondSupervisor,
-            	s2.account_fpt as accountFptSecondSupervisor,
-            	ep.`path` as pathExamPaper
-            FROM
-            	exam_shift es
-            JOIN staff s1 ON
-            	es.id_first_supervisor = s1.id
-            JOIN staff s2 ON
-            	es.id_second_supervisor = s2.id
-            JOIN exam_paper_shift eps ON
-            	es.id = eps.id_exam_shift
-            JOIN exam_paper ep ON
-            	ep.id = eps.id_exam_paper
-            JOIN class_subject cs ON
-            	es.id_subject_class = cs.id
-            JOIN subject s3 ON
-            	cs.id_subject = s3.id
-            """, nativeQuery = true)
-    TSendMailToSupervisorWhenOpenExamPaperResponse sendMailToSupervisorWhenOpenExamPaper(String examShiftCode);
+//    @Query(value = """
+//            SELECT
+//            	es.exam_shift_code as examShiftCode,
+//            	es.room as room,
+//            	es.exam_date as examDate,
+//            	es.shift as shift,
+//            	cs.class_subject_code as classSubjectCode,
+//            	s3.name as subjectName,
+//            	s1.account_fe as accountFeFirstSupervisor,
+//            	s1.account_fpt as accountFptFirstSupervisor,
+//            	s2.account_fe as accountFeSecondSupervisor,
+//            	s2.account_fpt as accountFptSecondSupervisor,
+//            	ep.`path` as pathExamPaper
+//            FROM
+//            	exam_shift es
+//            JOIN staff s1 ON
+//            	es.id_first_supervisor = s1.id
+//            JOIN staff s2 ON
+//            	es.id_second_supervisor = s2.id
+//            JOIN exam_paper_shift eps ON
+//            	es.id = eps.id_exam_shift
+//            JOIN exam_paper ep ON
+//            	ep.id = eps.id_exam_paper
+//            JOIN class_subject cs ON
+//            	es.id_subject_class = cs.id
+//            JOIN subject s3 ON
+//            	cs.id_subject = s3.id
+//            """, nativeQuery = true)
+//    TSendMailToSupervisorWhenOpenExamPaperResponse sendMailToSupervisorWhenOpenExamPaper(String examShiftCode);
 
     @Query(value = """
             SELECT
