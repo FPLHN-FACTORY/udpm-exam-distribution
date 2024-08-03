@@ -3,9 +3,10 @@ package fplhn.udpm.examdistribution.core.headsubject.examrule.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.CreateUploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UpdateUploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERExamRuleExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
@@ -53,18 +54,26 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
     @Override
     public ResponseObject<?> getAllExamRule(FindExamRuleRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-                PageableObject.of(examRuleRepository.getAllExamRule(
-                        pageable, request)
-                ),
-                HttpStatus.OK,
-                "Lấy thành công danh sách quy định thi"
-        );
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            return new ResponseObject<>(
+                    PageableObject.of(examRuleRepository.getAllExamRule(
+                            pageable, request)
+                    ),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách quy định thi"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Lấy không thành công danh sách quy định thi"
+            );
+        }
     }
 
     @Override
-    public ResponseObject<?> createExamRule(@Valid UploadExamRuleRequest request) {
+    public ResponseObject<?> createExamRule(@Valid CreateUploadExamRuleRequest request) {
         try {
             if (request.getFile().isEmpty()) {
                 return new ResponseObject<>(
@@ -128,7 +137,7 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                 );
             }
 
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + id;
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + id;
 
             Object redisValue = redisService.get(redisKey);
             if (redisValue != null) {
@@ -148,11 +157,11 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                     "success"
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ResponseObject<>(
-                    "Quy định thi không tồn tại",
+                    null,
                     HttpStatus.OK,
-                    "success"
+                    "Quy định thi không tồn tại"
             );
         }
 
@@ -233,6 +242,59 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                 HttpStatus.OK,
                 "Cập nhật quy định thi cho môn học " + subject.getName() + " thành công"
         );
+    }
+
+    @Override
+    public ResponseObject<?> updateExamRule(UpdateUploadExamRuleRequest request) {
+        try {
+            Optional<ExamRule> examRuleOptional = examRuleRepository.findById(request.getId());
+            if (examRuleOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.OK,
+                        "Không tìm thấy nội quy phòng thi này"
+                );
+            }
+
+            if (request.getFile().isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Nội quy phòng thi chưa được tải"
+                );
+            }
+
+            if (request.getFile().getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_ACCEPTABLE,
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
+                );
+            }
+
+            String folderName = "ExamRule/" + request.getName();
+
+            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
+
+            googleDriveFileService.deleteById(examRuleOptional.get().getFileId());
+
+            ExamRule examRule = examRuleOptional.get();
+            examRule.setName(request.getName());
+            examRule.setFileId(googleDriveFileDTO.getId());
+            examRuleRepository.save(examRule);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Cập nhật nội quy thi thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Cập nhật nội quy thi không thành công"
+            );
+        }
     }
 
 };

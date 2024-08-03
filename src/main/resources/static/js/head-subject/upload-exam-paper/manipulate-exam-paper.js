@@ -21,12 +21,12 @@ const handleOpenChooseFilePdf = () => {
 const handleOpenModalExamPaper = (fileId) => {
     showViewByStatus();
 
-    handleFetchExamRulePDF(fileId);
+    handleFetchExamPaperPDF(fileId);
 
     $("#examPaperModal").modal("show");
 };
 
-const handleFetchExamRulePDF = (fileId) => {
+const handleFetchExamPaperPDF = (fileId) => {
     showLoading();
     $.ajax({
         type: "GET",

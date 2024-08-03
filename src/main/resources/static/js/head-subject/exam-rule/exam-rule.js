@@ -58,7 +58,8 @@ const fetchListExamRule = (
                             <td>${examRule.name}</td>
                             <td>${convertStatus(examRule.status)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span data-bs-toggle="tooltip" data-bs-title="Tải quy định" onclick="handleOpenModalExamRule(2)" class="fs-6">
+                                <span data-bs-toggle="tooltip" data-bs-title="Tải quy định"
+                                onclick="handleOpenModalExamRule(2,'${examRule.id}','${examRule.name}')" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"

@@ -4,7 +4,8 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UploadExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.CreateUploadExamRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UpdateUploadExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +38,13 @@ public class ExamRuleRestController {
     }
 
     @PostMapping("/exam-rule")
-    public ResponseEntity<?> createExamRule(@ModelAttribute UploadExamRuleRequest request) {
+    public ResponseEntity<?> createExamRule(@ModelAttribute CreateUploadExamRuleRequest request) {
         return Helper.createResponseEntity(examRuleService.createExamRule(request));
+    }
+
+    @PutMapping("/exam-rule")
+    public ResponseEntity<?> updateExamRule(@ModelAttribute UpdateUploadExamRuleRequest request) {
+        return Helper.createResponseEntity(examRuleService.updateExamRule(request));
     }
 
     @GetMapping("/subjects")

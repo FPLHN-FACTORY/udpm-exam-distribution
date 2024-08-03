@@ -134,7 +134,7 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     handleResetFieldsError();
 
     if (status !== 3) {
-        handleFetchExamRulePDF(fileId);
+        handleFetchExamPaperPDF(fileId);
         if (status === 2) {
             setValueExamPaperType(examPaperType);
             setValueExamPaperSubjectId(subjectId);
@@ -156,7 +156,7 @@ const handleRedirectCreateExamPaper = () => {
     window.location.href = "/head-subject/create-exam-paper";
 }
 
-const handleFetchExamRulePDF = (fileId) => {
+const handleFetchExamPaperPDF = (fileId) => {
     showLoading();
     $.ajax({
         type: "GET",
@@ -166,14 +166,8 @@ const handleFetchExamRulePDF = (fileId) => {
         },
         success: function (responseBody) {
             const data = responseBody?.data?.data;
-            const fileName = responseBody?.data.fileName;
 
             convertAndShowPdf(data);
-            // if (fileName.endsWith(".docx")) {
-            //     convertEndShowDocx(data);
-            // } else {
-            //     convertEndShowPdf(data);
-            // }
 
             hideLoading();
         },

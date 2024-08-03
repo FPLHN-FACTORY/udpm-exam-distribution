@@ -46,7 +46,7 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                 hsbs.status = 0 AND
                 (
                     :#{#request.valueSearch} IS NULL OR s.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%') OR
-                    :#{#request.valueSearch} IS NULL OR s.code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')
+                    :#{#request.valueSearch} IS NULL OR s.subject_code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')
                 )
             """, countQuery = """
             SELECT
@@ -66,7 +66,7 @@ public interface ERSubjectExtendRepository extends SubjectRepository {
                 hsbs.status = 0 AND
                 (
                     :#{#request.valueSearch} IS NULL OR s.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%') OR
-                    :#{#request.valueSearch} IS NULL OR s.code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')
+                    :#{#request.valueSearch} IS NULL OR s.subject_code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')
                 )
             """, nativeQuery = true)
     Page<SubjectResponse> getListSubject(
