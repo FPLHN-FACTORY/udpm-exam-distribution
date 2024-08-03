@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.core.teacher.examfile.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
+import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -17,7 +17,6 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TMajorFacili
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TStaffRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TSubjectRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileService;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
@@ -37,8 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;

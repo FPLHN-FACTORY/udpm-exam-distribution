@@ -109,7 +109,7 @@ const fetchSearchSubject = (
                 <td>${subject.semesterName}</td>
                 <td>${subject.blockName}</td>
                 <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                    <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}')" 
+                    <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}','${subject.blockId}')" 
                        data-bs-toggle="tooltip" 
                         data-bs-title="Đề thi thử"
                         class="fs-4"> 

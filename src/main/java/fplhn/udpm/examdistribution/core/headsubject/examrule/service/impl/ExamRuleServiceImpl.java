@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.headsubject.examrule.service.impl;
 
+import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.ChooseExamRuleRequest;
@@ -7,7 +8,6 @@ import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.Creat
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.FindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.model.request.UpdateUploadExamRuleRequest;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERExamRuleExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.repository.ERSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.examrule.service.ExamRuleService;

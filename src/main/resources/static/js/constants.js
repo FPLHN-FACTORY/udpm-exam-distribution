@@ -120,6 +120,7 @@ const ApiConstant = {
 
     // Constants representing the full paths for various resources under student
     API_STUDENT_EXAM_SHIFT: "/api/v1/student/exam-shift",
+    API_STUDENT_PRACTICE_ROOM: "/api/v1/student/practice-room",
     API_STUDENT_JOIN_EXAM_SHIFT: "/api/v1/student/exam-shift/join",
     API_STUDENT_TRACKER: "/api/v1/student/tracker",
 

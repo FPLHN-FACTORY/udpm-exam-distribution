@@ -18,6 +18,7 @@ public interface TMEPSubjectRepository extends SubjectRepository {
                    s.subject_type AS subjectType,
                    CONCAT(s2.name,' - ',s2.year) AS semesterName,
                    b2.name AS blockName,
+                   b2.id as blockId,
                    CASE
                        WHEN b2.id = :currentBlockId THEN 'TRUE'
                        ELSE 'FALSE'

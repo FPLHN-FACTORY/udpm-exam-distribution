@@ -1,11 +1,4 @@
-$(document).ready(function () {
-    //add event search
-    $('#staff-upload-find').on('keyup', debounce(changeFormSearch))
-    $("#detailMockExamModal").on('hidden.bs.modal', function (e) {
-        $("#mockExamPaperModal").modal("show");
-    });
-})
-
+// START: state
 const pdfjsLibDetail = window["pdfjs-dist/build/pdf"];
 let pdfDocDetail = null;
 let pageNumDetail = 1;
@@ -14,6 +7,39 @@ let pageNumPendingDetail = null;
 const scaleDetail = 1.5;
 const $pdfCanvasDetail = $("#pdf-canvas-detail")[0];
 const ctxDetail = $pdfCanvasDetail.getContext("2d");
+
+function queueRenderPageDetail(num) {
+    if (pageRenderingDetail) {
+        pageNumPendingDetail = num;
+    } else {
+        renderPageDetail(num);
+    }
+}
+
+$(document).ready(function () {
+
+    $("#prev-page-detail").on("click", function () {
+        if (pageNumDetail <= 1) {
+            return;
+        }
+        pageNumDetail--;
+        queueRenderPageDetail(pageNumDetail);
+    });
+
+    $("#next-page-detail").on("click", function () {
+        if (pageNumDetail >= pdfDocDetail.numPages) {
+            return;
+        }
+        pageNumDetail++;
+        queueRenderPageDetail(pageNumDetail);
+    });
+    //add event search
+    $('#staff-upload-find').on('keyup', debounce(changeFormSearch))
+    $("#detailMockExamModal").on('hidden.bs.modal', function (e) {
+        $("#mockExamPaperModal").modal("show");
+    });
+})
+
 
 function changeFormSearch() {
     const startEndDate = $('#startEndDate').val().trim();
@@ -25,10 +51,11 @@ function changeFormSearch() {
         startDate = moment(startDateString, "DD/MM/YYYY").toDate().getTime();
         endDate = moment(endDateString, "DD/MM/YYYY").toDate().getTime();
     }
-    fetchMockExamPaper(idSubject, $('#staff-upload-find').val().trim(), startDate, endDate);
+    fetchMockExamPaper(idSubject, blockId, $('#staff-upload-find').val().trim(), startDate, endDate);
 }
 
 let idSubject = '';
+let blockId = '';
 
 function getStatusTypeExam(type) {
     switch (type) {
@@ -149,47 +176,72 @@ function handleDetailMockExamPaper(idMockExamPaper) {
 }
 
 const handleDownloadExamPaper = (fileId) => {
-    showLoading();
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/download",
-        data: {
-            fileId: fileId,
+    $('#mockExamPaperModal').modal('hide');
+    swal({
+        title: "Xác nhận tải đề thi thử?",
+        text: "Bạn chắc chắn muốn tải đề thi thử không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Xác nhận",
+                className: "btn btn-black",
+            },
         },
-        success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
-            const blob = new Blob([pdfData], {type: 'application/pdf'});
-            // Tạo đối tượng URL từ Blob
-            const url = URL.createObjectURL(blob);
+    }).then((confirm) => {
+        if (confirm) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/download",
+                data: {
+                    fileId: fileId,
+                },
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    // Tạo đối tượng URL từ Blob
+                    const url = URL.createObjectURL(blob);
 
-            // Tạo và nhấp vào liên kết để tải tệp
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'file.pdf'; // Đặt tên cho file tải về
-            document.body.appendChild(link);
-            link.click();
+                    // Tạo và nhấp vào liên kết để tải tệp
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf'; // Đặt tên cho file tải về
+                    document.body.appendChild(link);
+                    link.click();
 
-            // Xóa đối tượng URL sau khi tải
-            URL.revokeObjectURL(url);
-            hideLoading();
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
+                    // Xóa đối tượng URL sau khi tải
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                    $('#mockExamPaperModal').modal('show');
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
+        } else {
+            $('#mockExamPaperModal').modal('show');
         }
     });
 };
 
 const fetchMockExamPaper = (subjectId,
+                            blockId,
                             codeAndTeacher = null,
                             startDate = null,
                             endDate = null) => {
     const params = {
         idSubject: subjectId,
+        blockId: blockId,
         codeAndTeacher: codeAndTeacher,
         startDate: startDate,
         endDate: endDate
@@ -254,11 +306,12 @@ const fetchMockExamPaper = (subjectId,
     });
 }
 
-const handleOpenModalMockExam = (subjectId, subjectName) => {
+const handleOpenModalMockExam = (subjectId, subjectName, idBlock) => {
     idSubject = subjectId;
+    blockId = idBlock;
     setupDate();
     clearValueInput();
-    fetchMockExamPaper(subjectId);
+    fetchMockExamPaper(subjectId, idBlock);
     $('#labelMockExamPaper').text("Đề thi thử môn " + subjectName);
     $("#mockExamPaperModal").modal("show");
 };
