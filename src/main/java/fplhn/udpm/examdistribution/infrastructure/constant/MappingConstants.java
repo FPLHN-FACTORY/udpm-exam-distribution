@@ -113,6 +113,7 @@ public final class MappingConstants {
     // Constants representing the full paths for various resources under teacher
     public static final String API_TEACHER_EXAM_FILE = API_TEACHER_PREFIX + "/exam-file";
     public static final String API_TEACHER_MOCK_EXAM_PAPER = API_TEACHER_PREFIX + "/mock-exam-paper";
+    public static final String API_TEACHER_PRACTICE_ROOM = API_TEACHER_PREFIX + "/practice-room";
     public static final String API_TEACHER_EXAM_SHIFT = API_TEACHER_PREFIX + "/exam-shift";
     public static final String API_TEACHER_SUBJECT = API_TEACHER_PREFIX + "/subjects";
     public static final String API_TEACHER_BLOCK = API_TEACHER_PREFIX + "/blocks";

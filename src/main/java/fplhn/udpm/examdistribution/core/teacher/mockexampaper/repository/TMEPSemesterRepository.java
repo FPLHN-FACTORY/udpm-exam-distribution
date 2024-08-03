@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TSemesterRepository extends SemesterRepository {
+public interface TMEPSemesterRepository extends SemesterRepository {
 
     @Query(value = """
                 SELECT s.id AS id,

@@ -13,8 +13,13 @@ public interface TSubjectMockExamResponse extends IsIdentify, HasOrderNumber {
 
     String getSubjectType();
 
-    String getSubjectStatus();
-
     String getSemesterName();
 
+    String getBlockName();
+
+    Boolean getIsCurrentBlock();
+
+    Boolean getIsExistsPracticeRoom();
+
+    String getPracticeRoomId();
 }
