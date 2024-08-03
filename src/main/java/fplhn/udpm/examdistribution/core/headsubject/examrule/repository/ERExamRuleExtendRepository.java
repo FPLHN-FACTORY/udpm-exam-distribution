@@ -26,22 +26,16 @@ public interface ERExamRuleExtendRepository extends ExamRuleRepository {
                 er.status AS status
             FROM exam_rule er
             WHERE
-                (
-                    (:#{#request.valueSearch} IS NULL OR er.code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')) OR
-                    (:#{#request.valueSearch} IS NULL OR er.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%'))
-                ) AND
+                :#{#request.valueSearch} IS NULL OR er.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%') AND
                 er.status = 0
             """,
             countQuery = """
                     SELECT 	COUNT(er.id)
                     FROM exam_rule er
                     WHERE
-                        (
-                            (:#{#request.valueSearch} IS NULL OR er.code LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%')) OR
-                            (:#{#request.valueSearch} IS NULL OR er.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%'))
-                        ) AND
+                        :#{#request.valueSearch} IS NULL OR er.name LIKE CONCAT('%',TRIM(:#{#request.valueSearch}),'%') AND
                         er.status = 0
-                                    """, nativeQuery = true)
+            """, nativeQuery = true)
     Page<ExamRuleResponse> getAllExamRule(Pageable pageable, FindExamRuleRequest request);
 
 }
