@@ -16,6 +16,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFi
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
@@ -50,8 +51,6 @@ public class ExamRuleServiceImpl implements ExamRuleService {
 
     private final SessionHelper sessionHelper;
 
-    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
-
     @Override
     public ResponseObject<?> getAllExamRule(FindExamRuleRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
@@ -75,11 +74,11 @@ public class ExamRuleServiceImpl implements ExamRuleService {
                 );
             }
 
-            if (request.getFile().getSize() > MAX_FILE_SIZE) {
+            if (request.getFile().getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
-                        "Nội quy phòng thi không được lớn hơn 5MB"
+                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
                 );
             }
 

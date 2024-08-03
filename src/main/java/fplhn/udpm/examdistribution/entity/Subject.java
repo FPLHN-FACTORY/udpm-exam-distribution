@@ -30,9 +30,6 @@ import java.io.Serializable;
 @EntityListeners(SubjectListener.class)
 public class Subject extends PrimaryEntity implements Serializable {
 
-    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
-    private String code;
-
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;
