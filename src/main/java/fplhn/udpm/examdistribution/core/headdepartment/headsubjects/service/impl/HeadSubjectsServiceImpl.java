@@ -14,6 +14,7 @@ import fplhn.udpm.examdistribution.core.headdepartment.headsubjects.repository.H
 import fplhn.udpm.examdistribution.core.headdepartment.headsubjects.repository.HDHSSubjectRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.headsubjects.service.HeadSubjectsService;
 import fplhn.udpm.examdistribution.entity.HeadSubjectBySemester;
+import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.constant.Role;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static fplhn.udpm.examdistribution.utils.Helper.createPageable;
@@ -238,6 +240,79 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
                 HttpStatus.OK,
                 "Tìm kiếm nhân viên thành công"
         );
+    }
+
+    @Override
+    public ResponseObject<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester() {
+        String previousSemesterId = getPreviousSemesterId();
+        if (previousSemesterId == null) {
+            return ResponseObject.errorForward(
+                    "Không tìm thấy học kỳ trước",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+
+        List<HeadSubjectBySemester> headSubjectBySemesters = hdhsHeadSubjectBySemesterRepository
+                .findBySemester_Id(previousSemesterId);
+
+        if (headSubjectBySemesters.isEmpty()) {
+            return ResponseObject.errorForward(
+                    "Chưa phân công trưởng môn cho học kỳ trước",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+
+        for (HeadSubjectBySemester headSubjectBySemester : headSubjectBySemesters) {
+            Optional<HeadSubjectBySemester> headSubjectBySemesterOptional = hdhsHeadSubjectBySemesterRepository
+                    .findBySemester_IdAndSubject_IdAndFacility_Id(
+                            sessionHelper.getCurrentSemesterId(),
+                            headSubjectBySemester.getSubject().getId(),
+                            headSubjectBySemester.getFacility().getId()
+                    );
+            if (headSubjectBySemesterOptional.isEmpty()) {
+                HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
+                newHeadSubjectBySemester.setSemester(hdhsSemesterExtendRepository.getReferenceById(sessionHelper.getCurrentSemesterId()));
+                newHeadSubjectBySemester.setSubject(headSubjectBySemester.getSubject());
+                newHeadSubjectBySemester.setStaff(headSubjectBySemester.getStaff());
+                newHeadSubjectBySemester.setFacility(headSubjectBySemester.getFacility());
+                hdhsHeadSubjectBySemesterRepository.save(newHeadSubjectBySemester);
+            }
+        }
+
+        return ResponseObject.successForward(
+                HttpStatus.OK,
+                "Đồng bộ trưởng bộ môn từ học kỳ trước sang học kỳ hiện tại thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> checkCurrentSemesterHasHeadSubject() {
+        List<HeadSubjectBySemester> headSubjectBySemesters = hdhsHeadSubjectBySemesterRepository
+                .findBySemester_Id(sessionHelper.getCurrentSemesterId());
+        if (headSubjectBySemesters.isEmpty()) {
+            return new ResponseObject<>(
+                    true,
+                    HttpStatus.OK,
+                    "Học kỳ hiện tại chưa phân công trưởng bộ môn"
+            );
+        }
+        return new ResponseObject<>(
+                false,
+                HttpStatus.OK,
+                "Học kỳ hiện tại đã phân công trưởng bộ môn"
+        );
+    }
+
+    private String getPreviousSemesterId() {
+        Semester currentSemester = hdhsSemesterExtendRepository
+                .getReferenceById(Objects.requireNonNull(sessionHelper.getCurrentSemesterId()));
+        List<Semester> semesters = hdhsSemesterExtendRepository.findAll();
+        for (Semester semester : semesters) {
+            if (semester.getStartTime() <= currentSemester.getStartTime()) {
+                return semester.getId();
+            }
+        }
+        return null;
     }
 
 }
