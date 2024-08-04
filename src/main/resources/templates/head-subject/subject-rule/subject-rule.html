@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/css/kaiadmin.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
+    <link rel="stylesheet" th:href="@{/css/head-subject/exam-rule/exam-rule.css}">
+    <link rel="stylesheet" th:href="@{/css/common/tag.css}">
+    <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+    <title>Quản lý trưởng môn - Quy định môn học</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragment/sidebar/sidebar-head-subject :: sidebar-head-subject}"></div>
+    <div class="main-panel">
+        <div class="main-header">
+            <div th:insert="~{fragment/header/common-header :: common-header}"></div>
+        </div>
+        <div class="container">
+            <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
+                <div class="p-4">
+                    <h2>Quy định phòng thi</h2>
+                </div>
+                <div class="p-4">
+                    <!-- Filter -->
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label for="subjectCode">Mã môn học</label>
+                                    <input type="text" id="subjectCode" class="form-control">
+                                </div>
+                                <div class="col form-group">
+                                    <label for="subjectName">Tên môn học</label>
+                                    <input type="text" id="subjectName" class="form-control">
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button onclick="handleSearchSubject()" id="buttonFilter" type="button"
+                                        class="btn btn-black">Tìm kiếm
+                                </button>
+                                <button
+                                        onclick="handleClearSearch()"
+                                        type="reset"
+                                        class="btn"
+                                        id="resetFilter"
+                                        style="background-color: var(--common-button-color); color: white;"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Filter -->
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="mt-4">
+                            <h4>Danh sách môn học</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Mã môn học</td>
+                                    <td>Tên môn học</td>
+                                    <td>Bộ môn</td>
+                                    <td>Loại môn học</td>
+                                    <td
+                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody id="subjectTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Choose Exam Rule -->
+    <div class="modal modal-xl fade" id="examRuleModal" tabindex="-1" aria-labelledby="examRuleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chọn quy định thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="nameExamRuleSearch">Tên quy định</label>
+                                <input type="text" id="nameExamRuleSearch" class="form-control">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="button-filter-exam-rule" type="button"
+                                    class="btn btn-black">Tìm kiếm
+                            </button>
+                            <button
+                                    type="reset"
+                                    class="btn"
+                                    id="button-reset-filter-exam-rule"
+                                    style="background-color: var(--common-button-color); color: white;"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="mt-4">
+                            <h4>Danh sách quy định thi</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Tên quy định thi</td>
+                                    <td>Chọn quy định</td>
+                                </tr>
+                                </thead>
+                                <tbody id="examRuleTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationExamRule">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeExamRule" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Choose Exam Rule -->
+
+    <!-- Modal Update ExamTime-->
+    <div class="modal modal-xl fade" id="examTimeModal" tabindex="-1" aria-labelledby="examTimeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật thời gian thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 mb-4 bg-white rounded">
+                        <div class="row">
+                            <div class="col form-group">
+                                <label for="examTime">Thời gian thi(phút)</label>
+                                <input type="number" id="examTime" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn" id="button-update-exam-time"
+                            style="background-color: var(--common-button-color); color: white;"
+                    >
+                        Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Update ExamTime-->
+
+    <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
+</div>
+
+<div th:switch="${isDevelopment}">
+    <div th:case="true">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/sidebar-track.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/utils.js}"></script>
+        <script th:src="@{/js/toast-custom.js}"></script>
+        <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+        <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/user-info-handler.js}"></script>
+        <script th:src="@{/js/loading.js}"></script>
+        <script th:src="@{/webjars/pdf-js/2.10.377/build/pdf.js}"></script>
+        <script th:src="@{/js/head-subject/subject-rule/subject-rule.js}"></script>
+        <script th:src="@{/js/head-subject/subject-rule/exam-rule.js}"></script>
+        <script th:src="@{/js/head-subject/subject-rule/exam-time.js}"></script>
+    </div>
+    <div th:case="false">
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+        <script th:src="@{/plugins/js/jquery.sparkline/jquery.sparkline.min.js}"></script>
+        <script th:src="@{/plugins/js/kaiadmin/kaiadmin.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/minified/sidebar-track.js}"></script>
+        <script th:src="@{/webjars/js-cookie/js.cookie.js}"></script>
+        <script th:src="@{/js/minified/constants.js}"></script>
+        <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
+        <script th:src="@{/js/minified/utils.js}"></script>
+        <script th:src="@{/js/minified/toast-custom.js}"></script>
+        <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+        <script th:src="@{/js/minified/custom-toggle-theme/setting-demo.js}"></script>
+        <script th:src="@{/js/minified/user-info-handler.js}"></script>
+        <script th:src="@{/js/minified/loading.js}"></script>
+        <script th:src="@{/webjars/pdf-js/2.10.377/build/pdf.js}"></script>
+        <script th:src="@{/js/minified/head-subject/subject-rule/subject-rule.js}"></script>
+        <script th:src="@{/js/minified/head-subject/subject-rule/exam-rule.js}"></script>
+        <script th:src="@{/js/minified/head-subject/subject-rule/exam-time.js}"></script>
+    </div>
+</div>
+</body>
+</html>

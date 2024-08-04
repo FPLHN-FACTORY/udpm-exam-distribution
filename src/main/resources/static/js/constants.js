@@ -32,6 +32,7 @@ const ApiConstant = {
     REDIRECT_HEAD_OFFICE_STUDENT: "/head-office/students",
     REDIRECT_HEAD_OFFICE_CLASS_SUBJECT: "/head-office/class-subjects",
     REDIRECT_HEAD_OFFICE_ROLE: "/head-office/roles",
+    REDIRECT_HEAD_OFFICE_EXAM_RULE: "/head-office/exam-rule",
 
     // Constants representing the redirect paths for various resources under head department
     REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
@@ -42,7 +43,7 @@ const ApiConstant = {
     // Constants representing the redirect paths for various resources under head subject
     REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/head-subject/assign-uploader",
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/head-subject/exam-approval",
-    REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/head-subject/exam-rule",
+    REDIRECT_HEAD_SUBJECT_MANAGE_SUBJECT_RULE: "/head-subject/subject-rule",
     REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
     REDIRECT_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/head-subject/create-exam-paper",
     REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/uep-update-exam-paper",
@@ -63,6 +64,7 @@ const ApiConstant = {
     API_HEAD_OFFICE_STUDENT: "/api/v1/head-office/students",
     API_HEAD_OFFICE_CLASS_SUBJECT: "/api/v1/head-office/class-subjects",
     API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles",
+    API_HEAD_OFFICE_EXAM_RULE: "/api/v1/head-office/exam-rule",
 
     // Constants representing the full paths for various resources under head department
     API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/head-of-subjects",
@@ -82,7 +84,7 @@ const ApiConstant = {
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",
     API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER: "/api/v1/head-subject/upload-exam-paper",
     API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
-    API_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
+    API_HEAD_SUBJECT_MANAGE_SUBJECT_RULE: "/api/v1/head-subject/subject-rule",
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
     API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
     API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",

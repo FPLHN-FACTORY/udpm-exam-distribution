@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.controller;
 
-import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.common.base.FileResponse;
+import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -12,7 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(MappingConstants.API_TEACHER_EXAM_FILE)
@@ -32,7 +37,7 @@ public class TExamFileRestController {
     }
 
     @PostMapping("/upload/{subjectId}")
-    public ResponseEntity<?> uploadExamRule(@PathVariable String subjectId,TUploadExamFileRequest request) {
+    public ResponseEntity<?> uploadExamRule(@PathVariable String subjectId, TUploadExamFileRequest request) {
         return Helper.createResponseEntity(examFileService.uploadExamRule(subjectId, request));
     }
 
@@ -43,7 +48,7 @@ public class TExamFileRestController {
 
     @GetMapping("/sample-exam-paper/{subjectId}")
     public ResponseEntity<?> getSampleExamPaper(@PathVariable(value = "subjectId") String subjectId) {
-        ResponseObject<?>  responseObject = examFileService.getSampleExamPaper(subjectId);
+        ResponseObject<?> responseObject = examFileService.getSampleExamPaper(subjectId);
         if (responseObject.getStatus().equals(HttpStatus.BAD_REQUEST)) {
             return Helper.createResponseEntity(responseObject);
         } else {
@@ -66,7 +71,7 @@ public class TExamFileRestController {
     }
 
     @GetMapping("/detail-exam-paper")
-    public ResponseEntity<?> getExamPaper(@RequestParam(value = "examPaperId",defaultValue = "0") String examPaperId) {
+    public ResponseEntity<?> getExamPaper(@RequestParam(value = "examPaperId", defaultValue = "0") String examPaperId) {
         return Helper.createResponseEntity(examFileService.getExamPaper(examPaperId));
     }
 
