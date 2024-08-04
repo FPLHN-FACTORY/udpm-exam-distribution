@@ -31,7 +31,7 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                 d.id = s.id_department
             JOIN department_facility df ON
                 df.id_department = d.id
-            JOIN exam_rule er ON
+            LEFT JOIN exam_rule er ON
                 er.id = s.id_exam_rule
             WHERE
                 hsbs.id_staff = :userId AND
@@ -54,6 +54,8 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                 d.id = s.id_department
             JOIN department_facility df ON
                 df.id_department = d.id
+            LEFT JOIN exam_rule er ON
+                er.id = s.id_exam_rule
             WHERE
                 hsbs.id_staff = :userId AND
                 hsbs.id_semester = :semesterId AND

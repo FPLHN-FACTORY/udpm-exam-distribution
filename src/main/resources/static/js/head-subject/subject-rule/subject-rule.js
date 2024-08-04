@@ -58,13 +58,15 @@ const fetchSearchSubject = (
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span data-bs-toggle="tooltip" data-bs-title="Chọn quy định" class="fs-6">
+                                <span
+                                    onclick="handleOpenModalExamRule('${subject.id}')"
+                                    data-bs-toggle="tooltip" data-bs-title="Chọn quy định" class="fs-6">
                                     <i
                                         class="fa-solid fa-square-check"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
-                                <span data-bs-toggle="tooltip" data-bs-title="Cập nhật thời gian thi" class="fs-6">
+                                <span onclick="handleOpenModalExamTime('${subject.id}')" data-bs-toggle="tooltip" data-bs-title="Cập nhật thời gian thi" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
                                         style="cursor: pointer; margin-left: 10px;"
