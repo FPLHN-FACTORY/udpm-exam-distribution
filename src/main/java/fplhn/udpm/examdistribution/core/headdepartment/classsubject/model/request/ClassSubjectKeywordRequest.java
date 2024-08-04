@@ -14,4 +14,8 @@ public class ClassSubjectKeywordRequest extends PageableRequest {
 
     private Long startDate;
 
+    private String currentFacilityId;
+
+    private String currentDepartmentFacilityId;
+
 }

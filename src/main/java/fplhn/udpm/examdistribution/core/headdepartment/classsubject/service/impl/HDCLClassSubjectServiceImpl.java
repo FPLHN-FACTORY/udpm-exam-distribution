@@ -50,12 +50,13 @@ public class HDCLClassSubjectServiceImpl implements HDCLClassSubjectService {
 
     @Override
     public ResponseObject<?> getAllClassSubject(ClassSubjectRequest request) {
+        request.setCurrentFacilityId(sessionHelper.getCurrentUserFacilityId());
+        request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
                 PageableObject.of(HDCLClassSubjectExtendRepository.getSearchClassSubject(
                         pageable,
-                        request,
-                        sessionHelper.getCurrentUserFacilityId()
+                        request
                 )),
                 HttpStatus.OK, "Get all class subject successfully"
         );
@@ -63,12 +64,13 @@ public class HDCLClassSubjectServiceImpl implements HDCLClassSubjectService {
 
     @Override
     public ResponseObject<?> getAllClassSubjectByKeyword(ClassSubjectKeywordRequest request) {
+        request.setCurrentFacilityId(sessionHelper.getCurrentUserFacilityId());
+        request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
                 PageableObject.of(HDCLClassSubjectExtendRepository.getSearchClassSubjectByKeyword(
                         pageable,
-                        request,
-                        sessionHelper.getCurrentUserFacilityId()
+                        request
                 )),
                 HttpStatus.OK, "Get all class subject successfully"
         );

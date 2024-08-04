@@ -47,8 +47,15 @@ public interface HDCLClassSubjectExtendRepository extends ClassSubjectRepository
                     cs.id_subject = sb.id
                 JOIN staff st ON
                     cs.id_staff = st.id
+                JOIN staff_major_facility smf ON
+                            st.id = smf.id_staff
+                JOIN major_facility mf ON
+                    smf.id_major_facility = mf.id
+                JOIN department_facility df ON
+                    mf.id_department_facility = df.id
                 WHERE
-                    f.id = :currentFacilityId
+                    f.id = :#{#request.currentFacilityId}
+                    AND df.id = :#{#request.currentDepartmentFacilityId}
                     AND (fc.id LIKE CONCAT('%',:#{#request.facilityChildId},'%') OR :#{#request.facilityChildId} IS NULL)
                     AND (sb.name LIKE CONCAT('%',:#{#request.subjectName},'%') OR :#{#request.subjectName} IS NULL)
                     AND (st.name LIKE CONCAT('%',:#{#request.staffName},'%') OR :#{#request.staffName} IS NULL)
@@ -76,20 +83,30 @@ public interface HDCLClassSubjectExtendRepository extends ClassSubjectRepository
                             cs.id_subject = sb.id
                         JOIN staff st ON
                             cs.id_staff = st.id
+                        JOIN staff_major_facility smf ON
+                            st.id = smf.id_staff
+                        JOIN major_facility mf ON
+                            smf.id_major_facility = mf.id
+                        JOIN department_facility df ON
+                            mf.id_department_facility = df.id
                         WHERE
-                            f.id = :currentFacilityId
+                            f.id = :#{#request.currentFacilityId}
+                            AND df.id = :#{#request.currentDepartmentFacilityId}
                             AND (fc.id LIKE CONCAT('%',:#{#request.facilityChildId},'%') OR :#{#request.facilityChildId} IS NULL)
                             AND (sb.name LIKE CONCAT('%',:#{#request.subjectName},'%') OR :#{#request.subjectName} IS NULL)
                             AND (st.name LIKE CONCAT('%',:#{#request.staffName},'%') OR :#{#request.staffName} IS NULL)
                             AND (cs.day >= :#{#request.startDate} OR :#{#request.startDate} IS NULL)
                             AND (cs.day <= :#{#request.endDate} OR :#{#request.endDate} IS NULL)
                             AND (cs.shift LIKE CONCAT('%',:#{#request.shift},'%') OR :#{#request.shift} IS NULL)
-                            AND (cs.class_subject_code LIKE CONCAT('%',:#{#request.classSubjectCode},'%') 
+                            AND (cs.class_subject_code LIKE CONCAT('%',:#{#request.classSubjectCode},'%')
                             OR :#{#request.classSubjectCode} IS NULL)
                             ORDER BY cs.created_date DESC
                     """
             , nativeQuery = true)
-    Page<ClassSubjectResponse> getSearchClassSubject(Pageable pageable, ClassSubjectRequest request, String currentFacilityId);
+    Page<ClassSubjectResponse> getSearchClassSubject(
+            Pageable pageable,
+            ClassSubjectRequest request
+    );
 
     @Query(value = """
                 SELECT
@@ -120,8 +137,15 @@ public interface HDCLClassSubjectExtendRepository extends ClassSubjectRepository
                     cs.id_subject = sb.id
                 JOIN staff st ON
                     cs.id_staff = st.id
+                JOIN staff_major_facility smf ON
+                    st.id = smf.id_staff
+                JOIN major_facility mf ON
+                    smf.id_major_facility = mf.id
+                JOIN department_facility df ON
+                    mf.id_department_facility = df.id
                 WHERE
-                    f.id = :currentFacilityId
+                    f.id = :#{#request.currentFacilityId}
+                    AND df.id = :#{#request.currentDepartmentFacilityId}
                     AND (:#{#request.keyword} IS NULL OR fc.name LIKE CONCAT('%',:#{#request.keyword},'%')
                     OR sb.name LIKE CONCAT('%',:#{#request.keyword},'%')
                     OR st.name LIKE CONCAT('%',:#{#request.keyword},'%')
@@ -147,18 +171,29 @@ public interface HDCLClassSubjectExtendRepository extends ClassSubjectRepository
                             cs.id_subject = sb.id
                         JOIN staff st ON
                             cs.id_staff = st.id
+                        JOIN staff_major_facility smf ON
+                            st.id = smf.id_staff
+                        JOIN major_facility mf ON
+                            smf.id_major_facility = mf.id
+                        JOIN department_facility df ON
+                            mf.id_department_facility = df.id
                         WHERE
-                            f.id = :currentFacilityId
-                            AND (:#{#request.keyword} IS NULL OR fc.name LIKE CONCAT('%',:#{#request.keyword},'%') 
+                            f.id = :#{#request.currentFacilityId}
+                            AND df.id = :#{#request.currentDepartmentFacilityId}
+                            AND (:#{#request.keyword} IS NULL OR fc.name LIKE CONCAT('%',:#{#request.keyword},'%')
                             OR sb.name LIKE CONCAT('%',:#{#request.keyword},'%') 
                             OR st.name LIKE CONCAT('%',:#{#request.keyword},'%') 
                             OR cs.shift LIKE CONCAT('%',:#{#request.keyword},'%')
-                            OR cs.class_subject_code LIKE CONCAT('%',:#{#request.classSubjectCode},'%') 
+                            OR cs.class_subject_code LIKE CONCAT('%',:#{#request.keyword},'%') 
                             AND (cs.day >= :#{#request.startDate} OR :#{#request.startDate} IS NULL))
                         ORDER BY cs.created_date DESC
-                    """
-            , nativeQuery = true)
-    Page<ClassSubjectResponse> getSearchClassSubjectByKeyword(Pageable pageable, ClassSubjectKeywordRequest request , String currentFacilityId);
+                    """,
+            nativeQuery = true
+    )
+    Page<ClassSubjectResponse> getSearchClassSubjectByKeyword(
+            Pageable pageable,
+            ClassSubjectKeywordRequest request
+    );
 
     Optional<ClassSubject> findByClassSubjectCode(String classSubjectCode);
 
@@ -182,7 +217,7 @@ public interface HDCLClassSubjectExtendRepository extends ClassSubjectRepository
                 JOIN subject sb ON
                     cs.id_subject = sb.id
                 JOIN staff st ON
-                    cs.id_staff = st.id 
+                    cs.id_staff = st.id
                 WHERE cs.class_subject_code = :#{#classSubjectCode}
             """, nativeQuery = true)
     Integer duplicateClassSubjectCode(String classSubjectCode);

@@ -75,4 +75,16 @@ public class HeadSubjectsRestController {
         return createResponseEntity(headSubjectsService.searchStaff(request));
     }
 
+    @GetMapping("/subjects/sync")
+    public ResponseEntity<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester() {
+        return createResponseEntity(
+                headSubjectsService.syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester()
+        );
+    }
+
+    @GetMapping("/subjects/can-sync")
+    public ResponseEntity<?> checkCurrentSemesterHasHeadSubject() {
+        return createResponseEntity(headSubjectsService.checkCurrentSemesterHasHeadSubject());
+    }
+
 }

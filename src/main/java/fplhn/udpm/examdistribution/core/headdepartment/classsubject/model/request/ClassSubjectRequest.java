@@ -26,4 +26,8 @@ public class ClassSubjectRequest extends PageableRequest {
 
     private String classSubjectCode;
 
+    private String currentFacilityId;
+
+    private String currentDepartmentFacilityId;
+
 }

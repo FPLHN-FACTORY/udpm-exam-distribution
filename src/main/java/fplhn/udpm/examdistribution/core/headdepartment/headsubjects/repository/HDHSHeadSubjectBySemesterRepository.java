@@ -112,4 +112,6 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
             String currentRoleName
     );
 
+    List<HeadSubjectBySemester> findBySemester_Id(String semesterId);
+
 }

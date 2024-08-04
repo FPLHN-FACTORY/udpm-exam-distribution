@@ -39,6 +39,8 @@ $(document).ready(() => {
 
     getAllSemesterAndSelectCurrentSemester();
 
+    checkCanSyncData();
+
     addListenerToFiredEvent(
         ['#searchHeadSubjects', '#searchSemester'],
         'input',
@@ -62,6 +64,8 @@ $(document).ready(() => {
     $('#pageSizeShowSubjectByHeadSubject').on('change', function () {
         changeSizeViewSubjectsByHeadSubject($(this).val());
     });
+
+    $('#syncHeadSubjects').on('click', handleSyncData);
 
 });
 
@@ -416,7 +420,7 @@ const handleAssignSubject = (subjectId) => {
 
 const changePageSubjectsToAssign = (page) => {
     subjectAssignParams.page = page;
-    getSubjectsToAssign();
+    getSubjectsToAssign(currentHeadSubjectInfo.id);
 }
 
 const handleFilterSubjectsToAssign = debounce(() => {
@@ -428,6 +432,47 @@ const changeSizeSubjectsToAssign = (size) => {
     subjectAssignParams.size = size;
     getSubjectsToAssign(currentHeadSubjectInfo.id);
 }
+
+// SYNC DATA HEAD SUBJECT FROM PREVIOUS SEMESTER TO CURRENT SEMESTER
+
+const checkCanSyncData = () => {
+    $.ajax({
+        url: `${ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS}/subjects/can-sync`,
+        type: 'GET',
+        contentType: "application/json",
+        success: (data) => {
+            const canSync = data?.data;
+            if (!canSync) {
+                $('#syncHeadSubjects').addClass('d-none');
+            } else {
+                $('#syncHeadSubjects').removeClass('d-none');
+            }
+        }
+    });
+};
+
+const handleSyncData = () => {
+    showAlert(
+        'Xác nhận đồng bộ dữ liệu',
+        'Bạn có chắc chắn muốn đồng bộ dữ liệu từ học kỳ trước ?',
+        'info',
+        'Xác nhận',
+        () => {
+            $.ajax({
+                url: `${ApiConstant.API_HEAD_DEPARTMENT_MANAGE_HOS}/subjects/sync`,
+                type: 'PUT',
+                contentType: "application/json",
+                success: (data) => {
+                    showToastSuccess('Đồng bộ dữ liệu thành công !');
+                    getHeadSubjects();
+                },
+                error: (res) => {
+                    showToastError(res?.responseJSON?.message || 'Có lỗi xảy ra, vui lòng thử lại sau !');
+                }
+            });
+        }
+    );
+};
 
 //COMMON
 const getAllSemesterAndSelectCurrentSemester = () => {

@@ -9,6 +9,7 @@ import fplhn.udpm.examdistribution.core.headdepartment.classsubject.repository.H
 import fplhn.udpm.examdistribution.core.headdepartment.classsubject.repository.HDSemesterClassSubjectRepository;
 import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.exception.RestApiException;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,9 @@ public class HDClassSubjectCommonService {
     }
 
     public ResponseObject<?> getAllFacilityChild() {
-        Facility facility = HDFacilityClassSubjectRepository.findById(sessionHelper.getCurrentUserFacilityId()).orElseThrow(() -> new RuntimeException("Facility not found"));
+        Facility facility = HDFacilityClassSubjectRepository
+                .findById(sessionHelper.getCurrentUserFacilityId())
+                .orElseThrow(() -> new RestApiException("Facility not found"));
         return new ResponseObject<>(
                 HDFacilityChildClassSubjectRepository.findAllByFacilityAndStatus(facility, EntityStatus.ACTIVE),
                 HttpStatus.OK,
