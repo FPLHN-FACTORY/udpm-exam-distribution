@@ -10,6 +10,8 @@ public interface TExamShiftService {
 
     boolean findUsersInExamShift(String examShiftCode);
 
+    ResponseObject<?> getAllExamShift();
+
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
     ResponseObject<?> joinExamShift(@Valid TJoinExamShiftRequest tJoinExamShiftRequest);

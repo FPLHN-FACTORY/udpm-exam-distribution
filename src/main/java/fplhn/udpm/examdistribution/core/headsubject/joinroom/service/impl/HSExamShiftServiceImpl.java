@@ -140,49 +140,49 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
                         "Giám thị 1 và giám thị 2 không được trùng nhau!");
             }
 
-            Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
-                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getFirstSupervisorCode(),
-                            sessionHelper.getCurrentUserDepartmentFacilityId());
-            if (existingFirstSupervisor.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 1 không tồn tại hoặc không thuộc bộ môn này!");
-            }
-
-            Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
-                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getSecondSupervisorCode(),
-                            sessionHelper.getCurrentUserDepartmentFacilityId());
-            if (existingSecondSupervisor.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-                        "Giám thị 2 không tồn tại hoặc không thuộc bộ môn này!");
-            }
-
 //            Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
-//                    .findByStaffCode(hsCreateExamShiftRequest.getFirstSupervisorCode());
+//                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getFirstSupervisorCode(),
+//                            sessionHelper.getCurrentUserDepartmentFacilityId());
 //            if (existingFirstSupervisor.isEmpty()) {
 //                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-//                        "Giám thị 1 không tồn tại!");
+//                        "Giám thị 1 không tồn tại hoặc không thuộc bộ môn này!");
 //            }
 //
 //            Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
-//                    .findByStaffCode(hsCreateExamShiftRequest.getSecondSupervisorCode());
+//                    .findByStaffCodeAndDepartmentFacilityId(hsCreateExamShiftRequest.getSecondSupervisorCode(),
+//                            sessionHelper.getCurrentUserDepartmentFacilityId());
 //            if (existingSecondSupervisor.isEmpty()) {
 //                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
-//                        "Giám thị 2 không tồn tại!");
+//                        "Giám thị 2 không tồn tại hoặc không thuộc bộ môn này!");
 //            }
 
-            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
-                    existingFirstSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
-                    hsCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 1 đang là giám thị ở ca thi khác!");
+            Optional<Staff> existingFirstSupervisor = hsStaffExtendRepository
+                    .findByStaffCode(hsCreateExamShiftRequest.getFirstSupervisorCode());
+            if (existingFirstSupervisor.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                        "Giám thị 1 không tồn tại!");
             }
 
-            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
-                    existingSecondSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
-                    hsCreateExamShiftRequest.getShift()) == 1) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Giám thị 2 đang là giám thị ở ca thi khác!");
+            Optional<Staff> existingSecondSupervisor = hsStaffExtendRepository
+                    .findByStaffCode(hsCreateExamShiftRequest.getSecondSupervisorCode());
+            if (existingSecondSupervisor.isEmpty()) {
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
+                        "Giám thị 2 không tồn tại!");
             }
+
+//            if (hsExamShiftExtendRepository.countExistingFirstSupervisorByCurrentExamDateAndShift(
+//                    existingFirstSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 1 đang là giám thị ở ca thi khác!");
+//            }
+//
+//            if (hsExamShiftExtendRepository.countExistingSecondSupervisorByCurrentExamDateAndShift(
+//                    existingSecondSupervisor.get().getId(), hsCreateExamShiftRequest.getExamDate(),
+//                    hsCreateExamShiftRequest.getShift()) == 1) {
+//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+//                        "Giám thị 2 đang là giám thị ở ca thi khác!");
+//            }
 
             String examShiftCode;
             List<String> listExamShiftCode = hsExamShiftExtendRepository.getAllExamShiftCode();

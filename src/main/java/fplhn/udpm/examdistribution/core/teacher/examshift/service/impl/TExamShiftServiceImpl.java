@@ -25,7 +25,9 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
+import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.transaction.Transactional;
@@ -92,6 +94,22 @@ public class TExamShiftServiceImpl implements TExamShiftService {
     }
 
     @Override
+    public ResponseObject<?> getAllExamShift() {
+        try {
+            Long currentDateWithoutTime = DateTimeUtil.getCurrentDateWithoutTime();
+            String currentShiftString = Shift.getCurrentShift().toString();
+            String supervisorId = sessionHelper.getCurrentUserId();
+            return new ResponseObject<>(tExamShiftExtendRepository.findAllByExamDateAndShiftAndSupervisor(
+                    currentDateWithoutTime, currentShiftString, supervisorId),
+                    HttpStatus.OK, "Lấy tất cả ca thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy tất cả ca thi: ", e);
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy tất cả ca thi!");
+        }
+    }
+
+    @Override
     public ResponseObject<?> getExamShiftByCode(String examShiftCode) {
         try {
             return new ResponseObject<>(tExamShiftExtendRepository.getExamShiftByCode(examShiftCode),
@@ -108,26 +126,14 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         try {
             Optional<ExamShift> existingExamShift = findExamShiftByCode(tJoinExamShiftRequest.getExamShiftCodeJoin());
             if (existingExamShift.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
                         "Ca thi không tồn tại hoặc mật khẩu không đúng!");
             }
 
             ExamShift examShift = existingExamShift.get();
 
-//            if (!PasswordUtils.verifyUserPassword(tJoinExamShiftRequest
-//                    .getPasswordJoin(), examShift.getHash(), examShift.getSalt())) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                        "Ca thi không tồn tại hoặc mật khẩu không đúng!");
-//            }
-
-            if (!examShift.getPassword().equals(tJoinExamShiftRequest.getPasswordJoin())) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                        "Ca thi không tồn tại hoặc mật khẩu không đúng!"
-                );
-            }
-
             if (examShift.getExamShiftStatus() == ExamShiftStatus.FINISHED) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi đã kết thúc!");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Ca thi đã kết thúc!");
             }
 
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
@@ -135,7 +141,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
                     && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
-                        HttpStatus.CONFLICT, "Bạn không phải là giám thị trong ca thi này!");
+                        HttpStatus.BAD_REQUEST, "Bạn không phải là giám thị trong ca thi này!");
             }
 
             String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
@@ -280,7 +286,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             String subjectId = examShift.get().getClassSubject().getSubject().getId();
 
             if (countStudentInExamShift(examShiftCode).getData().equals(0)) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Ca thi không có sinh viên!");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Ca thi không có sinh viên!");
             }
 
             String password = PasswordUtils.generatePassword();
@@ -293,6 +299,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 ExamShift examShiftEntity
                         = tExamShiftExtendRepository.getReferenceById(examPaperShiftOptional.get().getExamShiftId());
                 examShiftEntity.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
+                tExamShiftExtendRepository.save(examShiftEntity);
+
                 ExamPaperShift examPaperShift
                         = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftOptional.get().getId());
                 examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
@@ -317,7 +325,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                     .getListIdExamPaper(departmentFacilityId, subjectId, sessionHelper.getCurrentSemesterId());
 
             if (getListIdExamPaper.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Không có đề thi nào!");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không có đề thi nào!");
             }
 
             Random random = new Random();
