@@ -450,16 +450,16 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
             Arrays.stream(request.getListExamPaperId()).forEach(examPaperId -> {
                 Optional<ExamPaper> optionalExamPaper = examPaperRepository.findById(examPaperId);
                 if (optionalExamPaper.isPresent()) {
-                    ExamPaper examPaper = optionalExamPaper.get();
-                    examPaper.setIsPublic(true);
-                    examPaperRepository.save(examPaper);
-
                     String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(
                             blockId,
-                            examPaper.getSubject().getId(),
+                            optionalExamPaper.get().getSubject().getId(),
                             departmentFacilityId
                     );
                     this.sendEmailPublicMockExamPaper(listEmailStaff, optionalExamPaper.get());
+
+                    ExamPaper examPaper = optionalExamPaper.get();
+                    examPaper.setIsPublic(true);
+                    examPaperRepository.save(examPaper);
                 }
             });
 
