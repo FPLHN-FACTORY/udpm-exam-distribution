@@ -459,6 +459,7 @@ const examShiftStart = () => {
             if (examPaper.password !== null) {
                 $('#examPaperPassword').text('Mật khẩu mở đề: ' + examPaper.password);
                 $('#examPaperPassword').prop('hidden', false);
+                downloadExamPaper(examPaper.fileId);
             }
         },
         error: function (error) {
@@ -564,8 +565,39 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 if (fileId !== null && startTime !== null && endTime !== null) {
                     startCountdown(startTime, endTime);
                     fetchFilePDFExamPaper(fileId);
+
                 }
             }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
+        }
+    });
+}
+
+const downloadExamPaper = (fileId) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + "/file",
+        data: {
+            fileId: fileId
+        },
+        success: function (responseBody) {
+            const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
+            const blob = new Blob([pdfData], {type: 'application/pdf'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'exam-paper.pdf';
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
         },
         error: function (error) {
             if (error?.responseJSON?.message) {

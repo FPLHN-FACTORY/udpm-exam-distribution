@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TExamShiftWhenStartExamRequest;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponseStartExamResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
@@ -15,6 +16,39 @@ import java.util.Optional;
 
 @Repository
 public interface TExamShiftExtendRepository extends ExamShiftRepository {
+
+    @Query(value = """
+            SELECT 
+            	es.id as id,
+            	es.exam_shift_code as examShiftCode,
+            	es.shift as shift,
+            	es.room as room,
+            	cs.class_subject_code as classSubjectCode,
+            	s2.name as subjectName,
+            	s.staff_code as codeFirstSupervisor,
+            	s.name as nameFirstSupervisor,
+            	s3.staff_code as codeSecondSupervisor,
+            	s3.name as nameSecondSupervisor,
+            	es.exam_shift_status as status
+            FROM
+            	exam_shift es
+            JOIN staff s ON
+            	es.id_first_supervisor = s.id
+            JOIN staff s3 ON
+            	es.id_second_supervisor = s3.id
+            JOIN class_subject cs ON
+            	es.id_subject_class = cs.id
+            JOIN block b ON
+            	cs.id_block = b.id
+            JOIN subject s2 ON
+            	cs.id_subject = s2.id
+            WHERE
+            	es.exam_date = :examDate
+            	AND es.shift = :shift
+            	AND (es.id_first_supervisor = :supervisorId OR es.id_second_supervisor = :supervisorId)
+            	AND es.exam_shift_status IN ('NOT_STARTED', 'IN_PROGRESS')
+                        """, nativeQuery = true)
+    List<TAllExamShiftResponse> findAllByExamDateAndShiftAndSupervisor(Long examDate, String shift, String supervisorId);
 
     @Query(value = """
             SELECT
