@@ -60,7 +60,7 @@ $(document).ready(function () {
     });
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
     let today = new Date();
     let day = String(today.getDate()).padStart(2, '0');
     let month = String(today.getMonth() + 1).padStart(2, '0');
@@ -77,6 +77,7 @@ const fetchSubjects = () => {
         url: ApiConstant.API_HEAD_SUBJECT_SUBJECT + classSubjectCodeUrl + subjectClassCodeVal,
         success: function (responseBody) {
             if (responseBody?.data) {
+                console.log("Môn thi: ", responseBody?.data);
                 const subjects = responseBody?.data?.map((subject, index) => {
                     return `<option value="${subject.id}">${subject.subjectCode} - ${subject.subjectName}</option>`;
                 });
@@ -320,10 +321,16 @@ const getExamShifts = () => {
                                     <div class="u-text">
                                         <h3>${examShift.examShiftCode}</h3>
                                         <p class="text-muted">Phòng thi: ${examShift.room} - ${examShift.shift}</p>
+                                        <p class="text-muted">Lớp: ${examShift.classSubjectCode}</p>
                                         <p class="text-muted">Môn thi: ${examShift.subjectName}</p>
                                         <p class="text-muted">Giám thị 1: ${examShift.codeFirstSupervisor}</p>
                                         <p class="text-muted">Giám thị 2: ${examShift.codeSecondSupervisor}</p>
-                                        <p class="text-muted">Trạng thái: ${examShift.status}</p>
+                                        <p class="text-muted">Trạng thái: ${
+                        examShift.status === 'NOT_STARTED' ? 'Chưa bắt đầu' :
+                            examShift.status === 'IN_PROGRESS' ? 'Đang diễn ra' :
+                                examShift.status === 'FINISHED' ? 'Đã kết thúc' : 'Không xác định'
+                    }
+                                        </p>
                                     </div>
                                 </div>
                             </div>

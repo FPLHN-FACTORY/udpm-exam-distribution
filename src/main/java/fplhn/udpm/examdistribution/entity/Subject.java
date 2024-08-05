@@ -43,14 +43,15 @@ public class Subject extends PrimaryEntity implements Serializable {
     @Nationalized
     private SubjectType subjectType;
 
-    @Column(name = "path_exam_rule")
-    private String pathExamRule;
-
     @Column(name = "created_time")
     private Long createdTime;
 
     @ManyToOne
     @JoinColumn(name = "id_department")
     private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "id_exam_rule")
+    private ExamRule examRule;
 
 }

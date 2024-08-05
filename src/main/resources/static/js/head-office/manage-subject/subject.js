@@ -3,11 +3,11 @@ $(document).ready(function () {
 
     getSubjects();
 
-    handleAddEvent($('#subjectCode'), 'keyup',handleSearch);
-    handleAddEvent($('#subjectName'), 'keyup',handleSearch);
-    handleAddEvent($('#departmentId'), 'change',handleSearch);
-    handleAddEvent($('#subjectType'), 'change',handleSearch);
-    handleAddEvent($('#startDate'), 'change',handleSearch);
+    handleAddEvent($('#subjectCode'), 'keyup', handleSearch);
+    handleAddEvent($('#subjectName'), 'keyup', handleSearch);
+    handleAddEvent($('#departmentId'), 'change', handleSearch);
+    handleAddEvent($('#subjectType'), 'change', handleSearch);
+    handleAddEvent($('#startDate'), 'change', handleSearch);
 
     $('#modifySubjectButton').on('click', function () {
         submitSubjectForm();
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 });
 
-function  handleSearch() {
+function handleSearch() {
     const subjectCode = $('#subjectCode').val().trim();
     const subjectName = $('#subjectName').val().trim();
     const departmentId = $('#departmentId').val();
@@ -166,90 +166,106 @@ const createPagination = (totalPages, currentPage) => {
 }
 
 const createSubject = () => {
-    $('#subjectModalLabel').text('Cập nhật môn học');
-    const subjectName = $('#modifySubjectName').val().trim();
-    const subjectCode = $('#modifySubjectCode').val().trim();
-    const departmentId = $('#modifyDepartmentId').val();
-    const subjectType = $('#modifySubjectType').val();
-    const startDate = $('#modifyStartDate').val();
+    showAlert(
+        "Xác nhận thêm môn học",
+        "Bạn có chắc chắn muốn thêm môn học này không?",
+        "info",
+        "Xác nhận",
+        () => {
+            $('#subjectModalLabel').text('Cập nhật môn học');
+            const subjectName = $('#modifySubjectName').val().trim();
+            const subjectCode = $('#modifySubjectCode').val().trim();
+            const departmentId = $('#modifyDepartmentId').val();
+            const subjectType = $('#modifySubjectType').val();
+            const startDate = $('#modifyStartDate').val();
 
-    $('#loading-ele').show();
-    $.ajax({
-        type: "POST",
-        url: ApiConstant.API_HEAD_OFFICE_SUBJECT,
-        data: JSON.stringify({
-            subjectName: subjectName,
-            subjectCode: subjectCode,
-            departmentId: departmentId,
-            subjectType: subjectType,
-            startDate: new Date(startDate).getTime()
-        }),
-        contentType: "application/json",
-        success: function (responseBody) {
-            if (responseBody) {
-                showToastSuccess('Thêm môn học thành công');
-                getSubjects();
-                $('#subjectModal').modal('hide');
-            }
-            $('#loading-ele').hide();
+            $('#loading-ele').show();
+            $.ajax({
+                type: "POST",
+                url: ApiConstant.API_HEAD_OFFICE_SUBJECT,
+                data: JSON.stringify({
+                    subjectName: subjectName,
+                    subjectCode: subjectCode,
+                    departmentId: departmentId,
+                    subjectType: subjectType,
+                    startDate: new Date(startDate).getTime()
+                }),
+                contentType: "application/json",
+                success: function (responseBody) {
+                    if (responseBody) {
+                        showToastSuccess('Thêm môn học thành công');
+                        getSubjects();
+                        $('#subjectModal').modal('hide');
+                    }
+                    $('#loading-ele').hide();
+                },
+                error: function (error) {
+                    $('.form-control').removeClass('is-invalid');
+                    if (error?.responseJSON?.length > 0) {
+                        error.responseJSON.forEach(err => {
+                            $(`#${err.fieldError}Error`).text(err.message);
+                            $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                        });
+                    } else {
+                        showToastError('Có lỗi xảy ra khi thêm môn học');
+                    }
+                    $('#loading-ele').hide();
+                }
+            });
         },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
-                });
-            } else {
-                showToastError('Có lỗi xảy ra khi thêm môn học');
-            }
-            $('#loading-ele').hide();
-        }
-    });
-}
+    );
+};
 
 const updateSubject = () => {
-    const subjectName = $('#modifySubjectName').val().trim();
-    const subjectCode = $('#modifySubjectCode').val().trim();
-    const departmentId = $('#modifyDepartmentId').val();
-    const subjectType = $('#modifySubjectType').val();
-    const startDate = $('#modifyStartDate').val();
-    const subjectId = $('#subjectId').val();
+    showAlert(
+        "Xác nhận cập nhật môn học",
+        "Bạn có chắc chắn muốn cập nhật môn học này không?",
+        "info",
+        "Xác nhận",
+        () => {
+            const subjectName = $('#modifySubjectName').val().trim();
+            const subjectCode = $('#modifySubjectCode').val().trim();
+            const departmentId = $('#modifyDepartmentId').val();
+            const subjectType = $('#modifySubjectType').val();
+            const startDate = $('#modifyStartDate').val();
+            const subjectId = $('#subjectId').val();
 
-    $('#loading-ele').show();
-    $.ajax({
-        type: "PUT",
-        url: ApiConstant.API_HEAD_OFFICE_SUBJECT + `/${subjectId}`,
-        data: JSON.stringify({
-            subjectName: subjectName,
-            subjectCode: subjectCode,
-            departmentId: departmentId,
-            subjectType: subjectType,
-            startDate: new Date(startDate).getTime()
-        }),
-        contentType: "application/json",
-        success: function (responseBody) {
-            if (responseBody) {
-                showToastSuccess('Cập nhật môn học thành công');
-                getSubjects();
-                $('#subjectModal').modal('hide');
-            }
-            $('#loading-ele').hide();
+            $('#loading-ele').show();
+            $.ajax({
+                type: "PUT",
+                url: ApiConstant.API_HEAD_OFFICE_SUBJECT + `/${subjectId}`,
+                data: JSON.stringify({
+                    subjectName: subjectName,
+                    subjectCode: subjectCode,
+                    departmentId: departmentId,
+                    subjectType: subjectType,
+                    startDate: new Date(startDate).getTime()
+                }),
+                contentType: "application/json",
+                success: function (responseBody) {
+                    if (responseBody) {
+                        showToastSuccess('Cập nhật môn học thành công');
+                        getSubjects();
+                        $('#subjectModal').modal('hide');
+                    }
+                    $('#loading-ele').hide();
+                },
+                error: function (error) {
+                    $('.form-control').removeClass('is-invalid');
+                    if (error?.responseJSON?.length > 0) {
+                        error.responseJSON.forEach(err => {
+                            $(`#${err.fieldError}Error`).text(err.message);
+                            $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
+                        });
+                    } else {
+                        showToastError('Có lỗi xảy ra khi cập nhật môn học');
+                    }
+                    $('#loading-ele').hide();
+                }
+            });
         },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
-                });
-            } else {
-                showToastError('Có lỗi xảy ra khi cập nhật môn học');
-            }
-            $('#loading-ele').hide();
-        }
-    });
-}
+    );
+};
 
 const openModalAddSubject = () => {
     $('#subjectId').val('');
@@ -315,29 +331,9 @@ const fetchDepartments = () => {
 
 const submitSubjectForm = () => {
     if ($('#subjectId').val() === '') {
-        swal({
-            title: "Xác nhận thêm môn học",
-            text: "Bạn có chắc chắn muốn thêm môn học này không?",
-            icon: "info",
-            buttons: true,
-            dangerMode: false,
-        }).then((willCreate) => {
-            if (willCreate) {
-                createSubject();
-            }
-        });
+        createSubject();
     } else {
-        swal({
-            title: "Xác nhận cập nhật môn học",
-            text: "Bạn có chắc chắn muốn cập nhật môn học này không?",
-            icon: "info",
-            buttons: true,
-            dangerMode: false,
-        }).then((willUpdate) => {
-            if (willUpdate) {
-                updateSubject();
-            }
-        });
+        updateSubject();
     }
 }
 

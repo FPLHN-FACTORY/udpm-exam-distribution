@@ -26,9 +26,10 @@ public class HDClassSubjectServiceImpl implements HDClassSubjectService {
     @Override
     public ResponseObject<?> getClassSubject(String classSubjectCode) {
         try {
-            Optional<HDClassSubjectResponse> existingClassSubject
-                    = hdClassSubjectExtendRepository.getClassSubject(classSubjectCode,
-                    sessionHelper.getCurrentUserDepartmentFacilityId());
+            Optional<HDClassSubjectResponse> existingClassSubject = hdClassSubjectExtendRepository.getClassSubject(
+                    classSubjectCode,
+                    sessionHelper.getCurrentUserDepartmentFacilityId(),
+                    sessionHelper.getCurrentBlockId());
 
             if (existingClassSubject.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
@@ -41,7 +42,7 @@ public class HDClassSubjectServiceImpl implements HDClassSubjectService {
                     "Lấy lớp môn thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy lớp môn: {}", e.getMessage());
+            log.error("Lỗi khi lấy lớp môn: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy lớp môn!"
             );
@@ -57,7 +58,7 @@ public class HDClassSubjectServiceImpl implements HDClassSubjectService {
                     "Lấy id lớp môn thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy id lớp môn: {}", e.getMessage());
+            log.error("Lỗi khi lấy id lớp môn: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy lớp môn!"
             );

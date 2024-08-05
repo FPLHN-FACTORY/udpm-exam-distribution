@@ -11,8 +11,10 @@ import java.util.Date;
 
 public class DateTimeUtil {
 
+    public static String DATE_FORMAT = "dd/MM/yyyy";
+
     public static Long parseStringToLong(String date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         try {
             Date dateConvert = dateFormat.parse(date);
             return dateConvert.getTime();
@@ -27,7 +29,7 @@ public class DateTimeUtil {
     }
 
     public static String parseLongToString(Long date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         return dateFormat.format(new Date(date));
     }
 
@@ -53,6 +55,10 @@ public class DateTimeUtil {
 
     public static LocalDate convertToLocalDate(Date date) {
         return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getCurrentDateWithoutTime());
     }
 
 }

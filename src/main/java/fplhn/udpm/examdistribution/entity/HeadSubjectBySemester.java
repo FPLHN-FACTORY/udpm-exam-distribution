@@ -27,11 +27,15 @@ public class HeadSubjectBySemester extends PrimaryEntity implements Serializable
     private Staff staff;
 
     @ManyToOne
-    @JoinColumn(name = "id_subject_group")
-    private SubjectGroup subjectGroup;
+    @JoinColumn(name = "id_subject")
+    private Subject subject;
 
     @ManyToOne
     @JoinColumn(name = "id_semester")
     private Semester semester;
+
+    @ManyToOne
+    @JoinColumn(name = "id_facility")
+    private Facility facility;
 
 }

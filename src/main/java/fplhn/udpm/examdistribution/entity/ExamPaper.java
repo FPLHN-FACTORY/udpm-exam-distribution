@@ -64,15 +64,11 @@ public class ExamPaper extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_block")
     private Block block;
 
-    @ManyToOne
-    @JoinColumn(name = "id_exam_classification")
-    private ExamClassification examClassification;
-
     @Column(name = "is_public")
     private Boolean isPublic;
 
     @Lob
-    @Column(name = "content_file",length = 16777216)
+    @Column(name = "content_file", length = 16777216)
     private String contentFile;
 
 }

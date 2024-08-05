@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service.imp
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.repository.CEPBlockExtendRepository;
@@ -36,18 +37,26 @@ import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -138,16 +147,21 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
         String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
         String semesterId = sessionHelper.getCurrentSemesterId();
         return new ResponseObject<>(
-                PageableObject.of(examPaperRepository.getListExamPaper(pageable, request, userId, departmentFacilityId, semesterId, ExamPaperStatus.WAITING_APPROVAL.toString(), ExamPaperType.SAMPLE_EXAM_PAPER.toString())),
+                PageableObject.of(examPaperRepository.getListExamPaper(
+                        pageable, request,
+                        userId, departmentFacilityId,
+                        semesterId, ExamPaperStatus.WAITING_APPROVAL.toString(),
+                        ExamPaperType.SAMPLE_EXAM_PAPER.toString())
+                ),
                 HttpStatus.OK,
                 "Lấy thành công danh sách đề thi"
         );
     }
 
     @Override
-    public ResponseObject<?> getFile(String fileId) {
+    public ResponseObject<?> getFile(CEPGetFileRequest request) {
         try {
-            if (fileId.trim().isEmpty()) {
+            if (request.getFileId().trim().isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.BAD_REQUEST,
@@ -155,7 +169,14 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            Optional<ExamPaper> examPaper = examPaperRepository.findByPath(fileId);
+            Optional<ExamPaper> examPaper = examPaperRepository.findByPath(request.getFileId());
+            if (examPaper.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.BAD_REQUEST,
+                        "Không tìm thấy đề thi này"
+                );
+            }
 
             String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + examPaper.get().getId();
             Object redisValue = redisService.get(redisKey);
@@ -163,17 +184,15 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 return new ResponseObject<>(
                         new FileResponse(redisValue.toString(), "fileName"),
                         HttpStatus.OK,
-                        "Tìm thấy file thành công"
+                        "Tìm thấy đề thi thành công"
                 );
             }
 
-            Resource resource = googleDriveFileService.loadFile(fileId);
-
-            String fileName = googleDriveFileService.getFileName(fileId);
+            Resource resource = googleDriveFileService.loadFile(request.getFileId());
+            String fileName = googleDriveFileService.getFileName(request.getFileId());
 
             String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
             redisService.set(redisKey, data);
-
             return new ResponseObject<>(
                     new FileResponse(data, fileName),
                     HttpStatus.OK,
@@ -471,6 +490,46 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 HttpStatus.OK,
                 "Xóa thành công đề thi khỏi danh sách đề thi của học kỳ " + semesterOptional.get().getSemesterName()
         );
+    }
+
+    @Override
+    public ResponseEntity<?> convertPdfToDocx(MultipartFile file) {
+        if (file.isEmpty()) {
+            return new ResponseEntity<>("Bạn chưa tải lên file PDF", HttpStatus.NOT_FOUND);
+        }
+
+        if (!Objects.requireNonNull(file.getContentType()).equalsIgnoreCase("application/pdf")) {
+            return new ResponseEntity<>("Vui lòng tải lên file PDF", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        if (file.getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
+            return new ResponseEntity<>(GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE, HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        try {
+            XWPFDocument doc = new XWPFDocument();
+
+            PDDocument pdfDocument = PDDocument.load(file.getInputStream());
+            PDFTextStripper stripper = new PDFTextStripper();
+
+            String text = stripper.getText(pdfDocument);
+
+            XWPFParagraph p = doc.createParagraph();
+            XWPFRun run = p.createRun();
+            run.setText(text);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            doc.write(out);
+            byte[] docxBytes = out.toByteArray();
+
+            out.close();
+            pdfDocument.close();
+
+            return new ResponseEntity<>(docxBytes, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Convert file PDF to Docx không thành công", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

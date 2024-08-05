@@ -134,7 +134,7 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     handleResetFieldsError();
 
     if (status !== 3) {
-        handleFetchExamRulePDF(fileId);
+        handleFetchExamPaperPDF(fileId);
         if (status === 2) {
             setValueExamPaperType(examPaperType);
             setValueExamPaperSubjectId(subjectId);
@@ -156,24 +156,18 @@ const handleRedirectCreateExamPaper = () => {
     window.location.href = "/head-subject/create-exam-paper";
 }
 
-const handleFetchExamRulePDF = (fileId) => {
+const handleFetchExamPaperPDF = (fileId) => {
     showLoading();
     $.ajax({
         type: "GET",
         url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
         data: {
-            fileId: fileId,
+            fileId: fileId
         },
         success: function (responseBody) {
             const data = responseBody?.data?.data;
-            const fileName = responseBody?.data.fileName;
 
             convertAndShowPdf(data);
-            // if (fileName.endsWith(".docx")) {
-            //     convertEndShowDocx(data);
-            // } else {
-            //     convertEndShowPdf(data);
-            // }
 
             hideLoading();
         },
@@ -223,35 +217,55 @@ const onChangeChoosePDFFile = () => {
 onChangeChoosePDFFile();
 
 const handleDownloadExamPaper = (fileId) => {
-    showLoading();
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
-        data: {
-            fileId: fileId,
+    swal({
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn tải đề thi này với dạng PDF không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Xác nhận",
+                className: "btn btn-black",
+            },
         },
-        success: function (responseBody) {
-            const pdfData = Uint8Array.from(atob(responseBody.data.data), c => c.charCodeAt(0));
-            const blob = new Blob([pdfData], {type: 'application/pdf'});
-            const url = URL.createObjectURL(blob);
+    }).then((willDelete) => {
+        if (willDelete) {
+            showLoading();
+            $.ajax({
+                type: "GET",
+                url: ApiConstant.API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER + "/file",
+                data: {
+                    fileId: fileId
+                },
+                success: function (responseBody) {
+                    const pdfData = Uint8Array.from(atob(responseBody.data.data), c => c.charCodeAt(0));
+                    const blob = new Blob([pdfData], {type: 'application/pdf'});
+                    const url = URL.createObjectURL(blob);
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'file.pdf';
-            document.body.appendChild(link);
-            link.click();
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'file.pdf';
+                    document.body.appendChild(link);
+                    link.click();
 
-            // Xóa đối tượng URL sau khi tải
-            URL.revokeObjectURL(url);
-            hideLoading();
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            } else {
-                showToastError('Có lỗi xảy ra');
-            }
-            hideLoading();
+                    URL.revokeObjectURL(url);
+
+                    $("#confirmDownloadModal").modal("hide");
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
         }
     });
 };

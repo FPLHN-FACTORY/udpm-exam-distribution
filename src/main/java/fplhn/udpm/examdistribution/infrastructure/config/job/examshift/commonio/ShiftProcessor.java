@@ -87,7 +87,6 @@ public class ShiftProcessor implements ItemProcessor<ImportShiftRequest, ExamShi
 
         ExamShift examShift = new ExamShift();
         examShift.setShift(shift);
-        examShift.setTotalStudent(Integer.parseInt(item.getTotalStudent()));
         examShift.setClassSubject(classSubject.get());
         examShift.setExamDate(startDate);
         examShift.setExamShiftCode(CodeGenerator.generateRandomCode());

@@ -2,59 +2,51 @@ $(document).ready(function () {
 
     handleFetch();
 
-    onChangePageSize();
 
 //     add event for form search
     $('#subjectType').on('change', debounce(() => {
-        fetchSearchSubject(1,
-            $('#pageSize').val(),
-            {
-                subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
-                subjectType: $('#subjectType').val()?.trim(),
-                semester: $('#semesterFind').val()?.trim()
-            });
+        handleChange();
     }))
 
     $('#semesterFind').on('change', debounce(() => {
-        fetchSearchSubject(1,
-            $('#pageSize').val(),
-            {
-                subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
-                subjectType: $('#subjectType').val()?.trim(),
-                semester: $('#semesterFind').val()?.trim()
-            });
+        handleChange();
+    }))
+
+    $('#BlockFind').on('change', debounce(() => {
+        handleChange();
     }))
 
     $('#subjectAndDepartment').on('keyup', debounce(() => {
-        fetchSearchSubject(1,
-            $('#pageSize').val(),
-            {
-                subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
-                subjectType: $('#subjectType').val()?.trim(),
-                semester: $('#semesterFind').val()?.trim()
-            });
+        handleChange();
     }))
 
     $('#pageSize').on("change", debounce(() => {
-        fetchSearchSubject(1,
-            $('#pageSize').val(),
-            {
-                subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
-                subjectType: $('#subjectType').val()?.trim(),
-                semester: $('#semesterFind').val()?.trim()
-            });
+        handleChange();
     }));
 
 });
 
+function handleChange() {
+    fetchSearchSubject(1,
+        $('#pageSize').val(),
+        {
+            subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
+            subjectType: $('#subjectType').val()?.trim(),
+            semester: $('#semesterFind').val()?.trim(),
+            block: $('#BlockFind').val()?.trim()
+        });
+}
+
 const handleFetch = async () => {
     const recentlySemester = await fetchSemester();
+
     fetchSearchSubject(1,
         $('#pageSize').val(),
         {
             subjectAndDepartment: '',
             subjectType: '',
-            semester: recentlySemester ? recentlySemester : ''
+            semester: recentlySemester ? recentlySemester : '',
+            block: $('#BlockFind').val()?.trim()
         });
 }
 
@@ -70,7 +62,8 @@ const fetchSearchSubject = (
     paramSearch = {
         subjectAndDepartment: '',
         subjectType: '',
-        semester: ''
+        semester: '',
+        block: $('#BlockFind').val()?.trim()
     }
 ) => {
     const params = {
@@ -78,7 +71,8 @@ const fetchSearchSubject = (
         size: size,
         subjectAndDepartment: paramSearch.subjectAndDepartment,
         subjectType: paramSearch.subjectType,
-        semester: paramSearch.semester
+        semester: paramSearch.semester,
+        block: paramSearch.block
     };
 
     let url = ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/subject?";
@@ -90,12 +84,13 @@ const fetchSearchSubject = (
     }
 
     url = url.slice(0, -1);
-
+    showLoading();
     $.ajax({
         type: "GET",
         url: url,
         success: function (responseBody) {
             const responseData = responseBody?.data?.content;
+            hideLoading();
             if (responseData.length === 0) {
                 $('#subjectTableBody').html(`
                     <tr>
@@ -107,22 +102,44 @@ const fetchSearchSubject = (
             }
             const subjects = responseData.map(function (subject, index) {
                 return `<tr>
-                            <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>  
-                           <td>${subject.subjectName}</td>
-                           <td>${subject.departmentName}</td>
-                            <td>${getStatusType(subject.subjectType)}</td>
-                            <td>${subject.semesterName}</td>
-                            <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                                <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}')" 
-                                   data-bs-toggle="tooltip" 
-                                    data-bs-title="Đề thi thử"
-                                    class="fs-4"> 
-                                    <i  class="fa-solid fa-receipt"
-                                        style="cursor: pointer; margin-left: 10px;"
-                                    ></i>
-                                </span>
-                            </td>
-                        </tr>`;
+                <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>  
+                <td>${subject.subjectName}</td>
+                <td>${subject.departmentName}</td>
+                <td>${getStatusType(subject.subjectType)}</td>
+                <td>${subject.semesterName}</td>
+                <td>${subject.blockName}</td>
+                <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                    <span onclick="handleOpenModalMockExam('${subject.id}','${subject.subjectName}','${subject.blockId}')" 
+                       data-bs-toggle="tooltip" 
+                        data-bs-title="Đề thi thử"
+                        class="fs-4"> 
+                        <i class="fa-solid fa-receipt"
+                           style="cursor: pointer; margin-left: 10px;"
+                        ></i>
+                    </span>
+                    ${subject.isCurrentBlock ?
+                    subject.isExistsPracticeRoom ? `
+                        <span onclick="handleOpenModalPracticeRoomDetail('${subject.practiceRoomId}')" 
+                           data-bs-toggle="tooltip"
+                            data-bs-title="Thông tin phòng luyện tập"
+                            class="fs-4"> 
+                            <i class="fas fas fa-eye"
+                               style="cursor: pointer; margin-left: 10px;"
+                            ></i>
+                        </span>`
+                        :
+                        `<span onclick="handleOpenModalPracticeRoom('${subject.id}')" 
+                           data-bs-toggle="tooltip" 
+                            data-bs-title="Tạo phòng luyện tập"
+                            class="fs-4"> 
+                            <i class="fa-solid fa-landmark"
+                               style="cursor: pointer; margin-left: 10px;"
+                            ></i>
+                        </span>`
+                    :
+                    ''}
+                </td>
+            </tr>`;
             });
             $('#subjectTableBody').html(subjects);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
@@ -130,6 +147,7 @@ const fetchSearchSubject = (
             callToolTip();
         },
         error: function (error) {
+            hideLoading();
             showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
         }
     });
@@ -185,6 +203,21 @@ const fetchSemester = async () => {
     return recentlySemesterId;
 };
 
+const fetchBlock = (semesterId) => {
+    let url = ApiConstant.API_TEACHER_MOCK_EXAM_PAPER + "/block?id=" + semesterId;
+
+    $.ajax({
+        type: "GET",
+        url: url,
+        success: function (response) {
+            $('#semesterFind').html(semesters);
+        },
+        error: function (error) {
+        }
+    });
+
+}
+
 const getGlobalParamsSearch = () => {
     return {
         subjectCode: $("#subjectCode").val(),
@@ -192,11 +225,6 @@ const getGlobalParamsSearch = () => {
         staffId: examDistributionInfor.userId
     }
 }
-
-const resetGlobalParamsSearch = () => {
-    $("#subjectCode").val("");
-    $("#subjectName").val("");
-};
 
 const createPagination = (totalPages, currentPage) => {
     let paginationHtml = '';
@@ -243,7 +271,6 @@ const createPagination = (totalPages, currentPage) => {
             </li>
 `;
     }
-
     $('#pagination').html(paginationHtml);
 };
 
@@ -253,15 +280,9 @@ const changePage = (page) => {
         {
             subjectAndDepartment: $('#subjectAndDepartment').val()?.trim(),
             subjectType: $('#subjectType').val()?.trim(),
-            semester: $('#semesterFind').val()?.trim()
+            semester: $('#semesterFind').val()?.trim(),
+            block: $('#BlockFind').val()?.trim()
         });
-};
-
-const onChangePageSize = () => {
-    $("#pageSize").on("change", function () {
-        resetGlobalParamsSearch();
-        fetchSearchSubject(1, $('#pageSize').val(), getGlobalParamsSearch());
-    });
 };
 
 const handleSearchSubject = () => {

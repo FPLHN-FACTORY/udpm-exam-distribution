@@ -28,14 +28,15 @@ public class HSClassSubjectServiceImpl implements HSClassSubjectService {
             Optional<HSClassSubjectResponse> existingClassSubject = hsClassSubjectExtendRepository.getClassSubject(
                     classSubjectCode,
                     sessionHelper.getCurrentUserDepartmentFacilityId(),
-                    sessionHelper.getCurrentSemesterId()
+                    sessionHelper.getCurrentBlockId(),
+                    sessionHelper.getCurrentUserMajorFacilityId()
             );
 
             if (existingClassSubject.isEmpty()) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_FOUND,
-                        "Mã lớp môn không tồn tại hoặc không thuộc bộ môn này!"
+                        "Mã lớp môn không tồn tại hoặc không thuộc bộ môn / chuyên ngành này!"
                 );
             }
 
@@ -45,9 +46,9 @@ public class HSClassSubjectServiceImpl implements HSClassSubjectService {
                     "Lấy lớp môn thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy lớp môn: {}", e.getMessage());
+            log.error("Lỗi khi lấy lớp môn: ", e);
             return new ResponseObject<>(
-                    null, HttpStatus.OK, "Lỗi khi lấy lớp môn!"
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy lớp môn!"
             );
         }
     }
@@ -61,9 +62,9 @@ public class HSClassSubjectServiceImpl implements HSClassSubjectService {
                     "Lấy id lớp môn thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy id lớp môn: {}", e.getMessage());
+            log.error("Lỗi khi lấy id lớp môn: ", e);
             return new ResponseObject<>(
-                    null, HttpStatus.OK, "Lỗi khi lấy id lớp môn!"
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy id lớp môn!"
             );
         }
     }

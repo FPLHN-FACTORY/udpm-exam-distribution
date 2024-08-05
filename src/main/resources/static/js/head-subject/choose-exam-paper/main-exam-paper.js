@@ -94,8 +94,8 @@ const fetchListSubject = (semesterId) => {
             const subjects = responseBody?.data?.map((item) => {
                 return `<option value="${item.id}">${item.name}</option>`
             });
-            subjects.unshift('<option value="">--Chọn môn học--</option>');
             $('#subjectId').html(subjects);
+            fetchListExamPaper();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;
@@ -222,7 +222,7 @@ const selectBlockNow = (listBlock) => {
     listBlock.forEach(item => {
         if (item.startTime < now && now < item.endTime) {
             setValueBlock(item.id);
-            fetchListExamPaper();
+            fetchListCurrentSubject();
 
             isFoundBlock = true;
         }
@@ -272,7 +272,7 @@ const fetchListExamPaper = (
             if (responseData.length === 0) {
                 $('#examPaperTableBody').html(`
                     <tr>
-                         <td colspan="11" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="12" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
                 return;
@@ -288,6 +288,7 @@ const fetchListExamPaper = (
                             <td>${convertExamPaperType(item.examPaperType, item.isPublic)}</td>
                             <td>${item.staffName}</td>
                             <td>${formatDateTime(item.createdDate)}</td>
+                            <td>${item.totalUsed}</td>
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td>

@@ -49,7 +49,7 @@ public class SStudentServiceImpl implements SStudentService {
                     "Lấy thông tin danh sách sinh viên thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách sinh viên: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách sinh viên: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách sinh viên!"
             );
@@ -63,7 +63,7 @@ public class SStudentServiceImpl implements SStudentService {
                     .findAllStudentRejoinByExamShiftCode(examShiftCode),
                     HttpStatus.OK, "Lấy thông tin danh sách sinh viên chờ phê duyệt thành công!");
         } catch (Exception e) {
-            log.error("Lỗi khi lấy thông tin danh sách sinh viên chờ phê duyệt: {}", e.getMessage());
+            log.error("Lỗi khi lấy thông tin danh sách sinh viên chờ phê duyệt: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thông tin danh sách sinh viên chờ phê duyệt!"
             );

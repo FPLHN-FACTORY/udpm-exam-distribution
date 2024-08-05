@@ -5,8 +5,8 @@ import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMoc
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TSubjectMockExamRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TSemesterResponse;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMockExamPaperRepository;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMockExamSubjectRepository;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TSemesterRepository;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMEPSubjectRepository;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.TMEPSemesterRepository;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.service.TMockExamPaperService;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +27,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TMockExamPaperServiceImpl implements TMockExamPaperService {
 
-    private final TMockExamSubjectRepository mockExamPaperRepository;
+    private final TMEPSubjectRepository mockExamPaperRepository;
 
-    private final TSemesterRepository semesterRepository;
+    private final TMEPSemesterRepository semesterRepository;
 
     private final TMockExamPaperRepository examPaperRepository;
 
@@ -44,6 +43,8 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
         return new ResponseObject<>(
                 mockExamPaperRepository.getAllSubject(pageable,
                         (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_ID),
+                        (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID),
+                        (String) httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID),
                         request),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công");
@@ -51,8 +52,9 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
 
     @Override
     public ResponseObject<?> getMockExams(TMockExamPaperRequest request) {
+        String facilityId = (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID);
         return new ResponseObject<>(
-                examPaperRepository.getMockExamPapers(request),
+                examPaperRepository.getMockExamPapers(request,facilityId),
                 HttpStatus.OK,
                 "Lấy danh sách đề thì thử thành công");
     }
@@ -60,9 +62,9 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
     @Override
     public ResponseObject<?> getSemesters() {
         List<TSemesterResponse> semesters = semesterRepository.getSemester();
-        if (!semesters.isEmpty() && semesters.size()>1) {
+        if (!semesters.isEmpty() && semesters.size() > 1) {
             TSemesterResponse currentSemester = null;
-            for (int i =0 ;i < semesters.size(); i++) {
+            for (int i = 0; i < semesters.size(); i++) {
                 if (semesters.get(i).getId().equalsIgnoreCase(
                         httpSession.getAttribute(SessionConstant.CURRENT_SEMESTER_ID)
                                 .toString())) {
@@ -71,8 +73,8 @@ public class TMockExamPaperServiceImpl implements TMockExamPaperService {
                     break;
                 }
             }
-            if (currentSemester!=null){
-                semesters.set(0,currentSemester);
+            if (currentSemester != null) {
+                semesters.add(0, currentSemester);
             }
         }
         return new ResponseObject<>(semesters, HttpStatus.OK, "Lấy danh sách học kì thành công");

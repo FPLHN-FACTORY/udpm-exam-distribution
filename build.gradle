@@ -49,9 +49,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-client'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
 
-    implementation 'com.google.apis:google-api-services-drive:v3-rev20221023-2.0.0'
     implementation 'com.google.api-client:google-api-client:2.0.1'
     implementation 'com.google.api-client:google-api-client-jackson2:1.20.0'
+    implementation 'com.google.apis:google-api-services-drive:v3-rev20221023-2.0.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.1'
 
@@ -85,6 +85,7 @@ dependencies {
     runtimeOnly 'org.webjars.npm:toastify-js:1.12.0'
     runtimeOnly 'org.webjars:js-cookie:3.0.1'
     runtimeOnly 'org.webjars:select2:4.0.13'
+    runtimeOnly 'org.webjars.bower:momentjs:2.24.0'
     implementation 'org.webjars.bowergithub.ekoopmans:html2pdf:0.9.0'
     implementation 'org.webjars:pdf-js:2.10.377'
     implementation 'org.webjars:sockjs-client:1.5.1'

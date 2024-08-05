@@ -17,18 +17,22 @@ public interface HSClassSubjectExtendRepository extends ClassSubjectRepository {
             	cs.class_subject_code as classSubjectCode
             FROM
             	class_subject cs
-            JOIN subject s ON
+            JOIN subject s on
             	cs.id_subject = s.id
-            JOIN subject_by_subject_group sbsg ON
-            	sbsg.id_subject = s.id
-            JOIN subject_group sg ON
-            	sbsg.id_subject_group = sg.id
+            JOIN department d on
+            	s.id_department = d.id
+            JOIN department_facility df on
+            	d.id = df.id_department
+            JOIN major_facility mf on
+            	df.id = mf.id_department_facility
             WHERE
             	cs.class_subject_code = :classSubjectCode
-            	AND sg.id_department_facility = :departmentFacilityId
-            	AND sg.id_semester = :semesterId
+            	AND df.id = :departmentFacilityId
+            	AND cs.id_block = :blockId
+            	AND mf.id = :majorFacilityId
             """, nativeQuery = true)
-    Optional<HSClassSubjectResponse> getClassSubject(String classSubjectCode, String departmentFacilityId, String semesterId);
+    Optional<HSClassSubjectResponse> getClassSubject(
+            String classSubjectCode, String departmentFacilityId, String blockId, String majorFacilityId);
 
     @Query(value = """
             SELECT

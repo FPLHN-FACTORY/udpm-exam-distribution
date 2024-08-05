@@ -23,12 +23,14 @@ public class HDBlockServiceImpl implements HDBlockService {
         try {
             return new ResponseObject<>(
                     hdBlockExtendRepository.findAllByClassSubjectCodeAndSubjectId(
-                            classSubjectCode, subjectId, sessionHelper.getCurrentSemesterId()),
+                            classSubjectCode, subjectId,
+                            sessionHelper.getCurrentSemesterId(),
+                            sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy danh sách block thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách block: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách block: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách block!"
             );
@@ -44,7 +46,7 @@ public class HDBlockServiceImpl implements HDBlockService {
                     "Lấy id block thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy id block: {}", e.getMessage());
+            log.error("Lỗi khi lấy id block: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy id block!"
             );

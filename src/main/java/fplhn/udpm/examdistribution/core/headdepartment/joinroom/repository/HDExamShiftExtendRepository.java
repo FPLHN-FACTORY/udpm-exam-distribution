@@ -3,7 +3,6 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamShiftResponse;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDSendMailWhenCreateExamShiftResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +20,7 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             	es.exam_shift_code as examShiftCode,
             	es.shift as shift,
             	es.room as room,
+            	cs.class_subject_code as classSubjectCode,
             	s2.name as subjectName,
             	s.staff_code as codeFirstSupervisor,
             	s.name as nameFirstSupervisor,
@@ -54,21 +54,7 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
 
     @Query(value = """
             SELECT
-            	es.id,
-            	es.exam_shift_code,
-            	es.exam_date,
-            	es.shift,
-            	es.room,
-            	es.id_first_supervisor,
-            	es.id_second_supervisor,
-            	es.id_subject_class,
-            	es.total_student,
-            	es.salt,
-            	es.hash,
-            	es.exam_shift_status,
-            	es.status,
-            	es.created_date,
-            	es.last_modified_date
+            	es.*
             FROM
             	exam_shift es
             JOIN staff s ON
@@ -120,14 +106,19 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
     @Query(value = """
             SELECT
             	es.id as id,
-            	es.exam_shift_code as examShiftCode,
-            	s.path_exam_rule as pathExamRule
+             	es.exam_shift_code as examShiftCode,
+             	s.name as subjectName,
+             	cs.class_subject_code as classSubjectCode,
+             	es.password as password,
+             	er.file_id as pathExamRule
             FROM
             	exam_shift es
-            JOIN class_subject cs ON
+            JOIN class_subject cs on
             	es.id_subject_class = cs.id
-            JOIN subject s ON
+            JOIN subject s on
             	cs.id_subject = s.id
+            JOIN exam_rule er on
+            	s.id_exam_rule = er.id
             WHERE
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
@@ -169,6 +160,18 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             FROM
             	exam_shift es
             WHERE
+            	es.exam_date = :examDate
+            AND es.shift = :shift
+            AND es.id_subject_class = :classSubjectId
+            """, nativeQuery = true)
+    Integer countByExamDateAndShiftAndClassSubjectId(Long examDate, String shift, String classSubjectId);
+
+    @Query(value = """
+            SELECT
+            	COUNT(*)
+            FROM
+            	exam_shift es
+            WHERE
             	es.id_first_supervisor = :firstSupervisorId
             	AND es.exam_date = :examDate
             	AND es.shift = :shift
@@ -189,6 +192,14 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
 
     @Query(value = """
             SELECT
+            	es.exam_shift_code
+            FROM
+            	exam_shift es
+            """, nativeQuery = true)
+    List<String> getAllExamShiftCode();
+
+    @Query(value = """
+            SELECT
             	COUNT(*)
             FROM
             	student_exam_shift ses
@@ -200,45 +211,45 @@ public interface HDExamShiftExtendRepository extends ExamShiftRepository {
             """, nativeQuery = true)
     Integer countStudentInExamShift(String examShiftCode);
 
-    @Query(value = """
-            SELECT
-            	es.exam_shift_code as examShiftCode,
-             	es.room as room,
-             	es.exam_date as examDate,
-             	es.shift as shift,
-             	cs.class_subject_code as classSubjectCode,
-             	s3.name as subjectName,
-             	s.name as nameFirstSupervisor,
-             	s.staff_code as codeFirstSupervisor,
-             	s.account_fe as accountFeFirstSupervisor,
-             	s.account_fpt as accountFptFirstSupervisor,
-             	s2.name as nameSecondSupervisor,
-             	s2.staff_code as codeSecondSupervisor,
-             	s2.account_fe as accountFeSecondSupervisor,
-             	s2.account_fpt as accountFptSecondSupervisor,
-             	s4.account_fe as accountFeHeadSubject,
-             	s4.account_fpt as accountFptHeadSubject
-            FROM
-            	exam_shift es
-            JOIN staff s ON
-            	es.id_first_supervisor = s.id
-            JOIN staff s2 ON
-            	es.id_second_supervisor = s2.id
-            JOIN class_subject cs ON
-            	es.id_subject_class = cs.id
-            JOIN subject s3 ON
-            	cs.id_subject = s3.id
-            JOIN subject_by_subject_group sbsg ON
-            	sbsg.id_subject = s3.id
-            JOIN subject_group sg ON
-            	sbsg.id_subject_group = sg.id
-            JOIN head_subject_by_semester hsbs ON
-            	sg.id = hsbs.id_subject_group
-            JOIN staff s4 ON
-            	hsbs.id_staff = s4.id
-            WHERE
-                es.exam_shift_code = :examShiftCode
-            """, nativeQuery = true)
-    HDSendMailWhenCreateExamShiftResponse getContentSendMail(String examShiftCode);
+//    @Query(value = """
+//            SELECT
+//            	es.exam_shift_code as examShiftCode,
+//             	es.room as room,
+//             	es.exam_date as examDate,
+//             	es.shift as shift,
+//             	cs.class_subject_code as classSubjectCode,
+//             	s3.name as subjectName,
+//             	s.name as nameFirstSupervisor,
+//             	s.staff_code as codeFirstSupervisor,
+//             	s.account_fe as accountFeFirstSupervisor,
+//             	s.account_fpt as accountFptFirstSupervisor,
+//             	s2.name as nameSecondSupervisor,
+//             	s2.staff_code as codeSecondSupervisor,
+//             	s2.account_fe as accountFeSecondSupervisor,
+//             	s2.account_fpt as accountFptSecondSupervisor,
+//             	s4.account_fe as accountFeHeadSubject,
+//             	s4.account_fpt as accountFptHeadSubject
+//            FROM
+//            	exam_shift es
+//            JOIN staff s ON
+//            	es.id_first_supervisor = s.id
+//            JOIN staff s2 ON
+//            	es.id_second_supervisor = s2.id
+//            JOIN class_subject cs ON
+//            	es.id_subject_class = cs.id
+//            JOIN subject s3 ON
+//            	cs.id_subject = s3.id
+//            JOIN subject_by_subject_group sbsg ON
+//            	sbsg.id_subject = s3.id
+//            JOIN subject_group sg ON
+//            	sbsg.id_subject_group = sg.id
+//            JOIN head_subject_by_semester hsbs ON
+//            	sg.id = hsbs.id_subject_group
+//            JOIN staff s4 ON
+//            	hsbs.id_staff = s4.id
+//            WHERE
+//                es.exam_shift_code = :examShiftCode
+//            """, nativeQuery = true)
+//    HDSendMailWhenCreateExamShiftResponse getContentSendMail(String examShiftCode);
 
 }

@@ -53,6 +53,14 @@
                                     <select class="form-select" id="semesterFind" style="height: 60%;">
                                     </select>
                                 </div>
+                                <div class="col form-group">
+                                    <label for="BlockFind" class="form-label"> Block </label>
+                                    <select class="form-select" id="BlockFind" style="height: 60%;">
+                                        <option value="">Chọn block</option>
+                                        <option value="BLOCK_1">Block 1</option>
+                                        <option value="BLOCK_2">Block 2</option>
+                                    </select>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -70,6 +78,7 @@
                                     <td>Bộ môn</td>
                                     <td>Loại môn học</td>
                                     <td>Học kì</td>
+                                    <td>Block 2</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
@@ -121,7 +130,8 @@
                                 <div class="row">
                                     <div class="col form-group">
                                         <label for="staff-upload-find">Mã đề/Giảng viên upload</label>
-                                        <input type="text" id="staff-upload-find" class="form-control" style="height: 60%;">
+                                        <input type="text" id="staff-upload-find" class="form-control"
+                                               style="height: 60%;">
                                     </div>
                                     <div class="col form-group">
                                         <label for="staff-upload-find">Ngày upload</label>
@@ -164,7 +174,80 @@
         </div>
     </div>
     <!-- Modal Detail Mock Exam Paper -->
-    <div class="modal modal-xl fade" id="detailMockExamModal" tabindex="-1" aria-labelledby="detailExamRuleModalLabel" aria-hidden="true">
+
+    <!-- Modal create practiceRoom -->
+    <div class="modal fade" id="practiceRoomModal" tabindex="-1" aria-labelledby="procticeRoomModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="labelPracticeRoom">Tạo phòng thi thử </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="startEndDatePracticeRoom">Thời gian mở phòng</label>
+                            <input type="text" class="form-control" id="startEndDatePracticeRoom"
+                                   placeholder="Bắt đầu ⇀ Kết thúc" style="height: 60%;">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"> <span
+                                class="text-danger"> Bỏ trống thời gian sẽ tự động lấy theo thời gian của block  </span></label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: var(--common-button-color); color: white;">Đóng
+                        </button>
+                        <button type="button" class="btn btn-black" id="btn_upload"
+                                onclick="handleSubmitPracticeRoom()">Tải lên
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal detail practiceRoom -->
+    <div class="modal fade" id="practiceRoomDetailModal" tabindex="-1" aria-labelledby="practiceRoomDetailModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="labelPracticeRoomDetail">Thông tin phòng thi thử </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="subjectDetail">Môn</label>
+                        <input type="text" class="form-control" id="subjectDetail"
+                               placeholder="Start date ⇀ End date" style="height: 60%;" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="openTimeDetail" class="form-label"> Thời gian mở </label>
+                        <input type="text" class="form-control" id="openTimeDetail" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="practiceRoomCodeDetail" class="form-label"> Mã phòng </label>
+                        <input type="text" class="form-control" id="practiceRoomCodeDetail" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="practiceRoomPasswordDetail" class="form-label"> Mật khẩu </label>
+                        <input type="text" class="form-control" id="practiceRoomPasswordDetail" readonly>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: var(--common-button-color); color: white;">Đóng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-xl fade" id="detailMockExamModal" tabindex="-1" aria-labelledby="detailExamRuleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -204,10 +287,11 @@
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
 <!--datepicker -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script th:src="@{/webjars/momentjs/min/moment.min.js}"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script th:src="@{/webjars/pdf-js/2.10.377/build/pdf.js}"></script>
 <script th:src="@{/js/teacher/manage-mock-exam-paper/detail-mock-exam-paper.js}"></script>
+<script th:src="@{/js/teacher/manage-mock-exam-paper/practice-room.js}"></script>
 <script th:src="@{/js/teacher/manage-mock-exam-paper/mock-exam-paper.js}"></script>
 </body>
 </html>

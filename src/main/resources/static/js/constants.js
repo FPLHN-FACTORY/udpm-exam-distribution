@@ -8,6 +8,9 @@ const ApiConstant = {
     // Constant representing the API version prefix
     API_VERSION_PREFIX: "/api/v1",
 
+    // Constants representing the common API paths
+    API_COMMON: "/api/v1/common",
+
     // Constants representing the full paths for various resources
     API_HEAD_SUBJECT_PREFIX: "/api/v1/head-subject",
     API_HEAD_OFFICE_PREFIX: "/api/v1/head-office",
@@ -29,20 +32,23 @@ const ApiConstant = {
     REDIRECT_HEAD_OFFICE_STUDENT: "/head-office/students",
     REDIRECT_HEAD_OFFICE_CLASS_SUBJECT: "/head-office/class-subjects",
     REDIRECT_HEAD_OFFICE_ROLE: "/head-office/roles",
+    REDIRECT_HEAD_OFFICE_EXAM_RULE: "/head-office/exam-rule",
 
     // Constants representing the redirect paths for various resources under head department
     REDIRECT_HEAD_DEPARTMENT_MANAGE_HOS: "/head-department/manage-head-of-subjects",
     REDIRECT_HEAD_DEPARTMENT_MANAGE_SUBJECT: "/head-department/manage-subjects",
     REDIRECT_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM: "/head-department/join-room",
+    REDIRECT_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT: "/head-department/manage-class-subjects",
 
     // Constants representing the redirect paths for various resources under head subject
     REDIRECT_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/head-subject/assign-uploader",
     REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/head-subject/exam-approval",
-    REDIRECT_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/head-subject/exam-rule",
+    REDIRECT_HEAD_SUBJECT_MANAGE_SUBJECT_RULE: "/head-subject/subject-rule",
     REDIRECT_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/head-subject/join-room",
-    REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
     REDIRECT_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/head-subject/create-exam-paper",
-    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/update-exam-paper",
+    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/head-subject/uep-update-exam-paper",
+    REDIRECT_HEAD_SUBJECT_UPDATE_EXAM_PAPER_SUBJECT: "/head-subject/uep-subject",
+    REDIRECT_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/head-subject/choose-exam-paper",
 
     // Constants representing the full paths for various resources under head office
     API_HEAD_OFFICE_SUBJECT: "/api/v1/head-office/subjects",
@@ -58,6 +64,7 @@ const ApiConstant = {
     API_HEAD_OFFICE_STUDENT: "/api/v1/head-office/students",
     API_HEAD_OFFICE_CLASS_SUBJECT: "/api/v1/head-office/class-subjects",
     API_HEAD_OFFICE_ROLE: "/api/v1/head-office/roles",
+    API_HEAD_OFFICE_EXAM_RULE: "/api/v1/head-office/exam-rule",
 
     // Constants representing the full paths for various resources under head department
     API_HEAD_DEPARTMENT_MANAGE_HOS: "/api/v1/head-department/head-of-subjects",
@@ -71,12 +78,13 @@ const ApiConstant = {
     API_HEAD_DEPARTMENT_STUDENT: "/api/v1/head-department/students",
     API_HEAD_DEPARTMENT_FILE: "/api/v1/head-department/file",
     API_HEAD_DEPARTMENT_EXAM_SHIFT: "/api/v1/head-department/exam-shift",
+    API_HEAD_DEPARTMENT_MANAGE_CLASS_SUBJECT: "/api/v1/head-department/manage-class-subjects",
 
     // Constants representing the full paths for various resources under head subject
     API_HEAD_SUBJECT_MANAGE_ASSIGN_UPLOADER: "/api/v1/head-subject/assign-uploader",
     API_HEAD_SUBJECT_MANAGE_UPLOAD_EXAM_PAPER: "/api/v1/head-subject/upload-exam-paper",
     API_HEAD_SUBJECT_MANAGE_EXAM_APPROVAL: "/api/v1/head-subject/exam-approval",
-    API_HEAD_SUBJECT_MANAGE_EXAM_RULE: "/api/v1/head-subject/exam-rule",
+    API_HEAD_SUBJECT_MANAGE_SUBJECT_RULE: "/api/v1/head-subject/subject-rule",
     API_HEAD_SUBJECT_MANAGE_JOIN_ROOM: "/api/v1/head-subject/join-room",
     API_HEAD_SUBJECT_STAFF: "/api/v1/head-subject/staffs",
     API_HEAD_SUBJECT_STUDENT: "/api/v1/head-subject/students",
@@ -84,9 +92,9 @@ const ApiConstant = {
     API_HEAD_SUBJECT_BLOCK: "/api/v1/head-subject/blocks",
     API_HEAD_SUBJECT_CAMPUS: "/api/v1/head-subject/campuses",
     API_HEAD_SUBJECT_CLASS_SUBJECT: "/api/v1/head-subject/class-subjects",
-    API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
     API_HEAD_SUBJECT_CREATE_EXAM_PAPER: "/api/v1/head-subject/create-exam-paper",
     API_HEAD_SUBJECT_UPDATE_EXAM_PAPER: "/api/v1/head-subject/update-exam-paper",
+    API_HEAD_SUBJECT_CHOOSE_EXAM_PAPER: "/api/v1/head-subject/choose-exam-paper",
 
     // Constants representing the authentication
     AUTHENTICATION: "AUTHENTICATION",
@@ -105,6 +113,7 @@ const ApiConstant = {
     API_TEACHER_CAMPUS: "/api/v1/teacher/campuses",
     API_TEACHER_CLASS_SUBJECT: "/api/v1/teacher/class-subjects",
     API_TEACHER_STAFF: "/api/v1/teacher/staffs",
+    API_TEACHER_PRACTICE_ROOM: "/api/v1/teacher/practice-room",
     API_TEACHER_EXAM_PAPER_SHIFT: "/api/v1/teacher/exam-paper-shift",
     API_TEACHER_TRACK_HISTORY: "/api/v1/teacher/track-history",
 
@@ -113,6 +122,7 @@ const ApiConstant = {
 
     // Constants representing the full paths for various resources under student
     API_STUDENT_EXAM_SHIFT: "/api/v1/student/exam-shift",
+    API_STUDENT_PRACTICE_ROOM: "/api/v1/student/practice-room",
     API_STUDENT_JOIN_EXAM_SHIFT: "/api/v1/student/exam-shift/join",
     API_STUDENT_TRACKER: "/api/v1/student/tracker",
 

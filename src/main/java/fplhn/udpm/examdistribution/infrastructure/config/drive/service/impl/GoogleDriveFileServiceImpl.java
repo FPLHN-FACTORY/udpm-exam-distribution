@@ -8,6 +8,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDri
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveManagerService;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.utils.PermissionDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
     private final GoogleDriveManagerService googleDriveManagerService;
 
     private final Drive googleDrive;
+
+    @Value("${google.drive.share.email.default}")
+    private String emailShareDefault;
 
     @Override
     public List<GoogleDriveFileDTO> findAll() {
@@ -89,7 +93,7 @@ public class GoogleDriveFileServiceImpl implements GoogleDriveFileService {
             permissionDetail.setType("private");
             permissionDetail.setRole("private");
         }
-        permissionDetail.setEmailAddress("exam-distribution@exam-distribution-428417.iam.gserviceaccount.com");
+        permissionDetail.setEmailAddress(emailShareDefault);
 
         return googleDriveManagerService.uploadFile(file, folderName, permissionDetail);
     }

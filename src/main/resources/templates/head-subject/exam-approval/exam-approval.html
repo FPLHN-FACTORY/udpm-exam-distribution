@@ -71,27 +71,19 @@
                                 </tr>
                                 </tbody>
                             </table>
-                            <div class="d-flex justify-content-between align-items-center gap-3">
-                                <div>
-                                    <h4 class="float-start">
-                                        <i class="text-danger font-weight-bold">*** Chú ý:
-                                            Đề sau 7 ngày không được phê duyệt sẽ tự động xóa ***</i>
-                                    </h4>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="pagination">
+                                        </ul>
+                                    </nav>
                                 </div>
-                                <div class="d-flex justify-content-end align-items-center gap-3">
-                                    <div class="d-flex align-items-center">
-                                        <nav>
-                                            <ul class="pagination" id="pagination">
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                    <select class="form-select" id="pageSize" style="width: 100px;">
-                                        <option value="5">5 bản ghi / Trang</option>
-                                        <option value="10">10 bản ghi / Trang</option>
-                                        <option value="20">20 bản ghi / Trang</option>
-                                        <option value="50">50 bản ghi / Trang</option>
-                                    </select>
-                                </div>
+                                <select class="form-select" id="pageSize" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -137,8 +129,8 @@
                                 <span class="text-danger"> * </span> Phân loại đề </label>
                             <select class="form-select" style="height: 60%;" id="exam-paper-type" required>
                                 <option value="">-- Chọn loại đề --</option>
-                                <option value="OFFICIAL_EXAM_PAPER"> Đề thi thật </option>
-                                <option value="MOCK_EXAM_PAPER"> Đề thi thử </option>
+                                <option value="OFFICIAL_EXAM_PAPER"> Đề thi thật</option>
+                                <option value="MOCK_EXAM_PAPER"> Đề thi thử</option>
                             </select>
                             <div class="text-danger" id="exam-paper-type-error"></div>
                         </div>

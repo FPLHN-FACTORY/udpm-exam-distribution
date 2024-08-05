@@ -10,6 +10,8 @@ public class TMockExamPaperRequest {
 
     private String idSubject;
 
+    private String blockId;
+
     private String codeAndTeacher;
 
     private Long startDate;

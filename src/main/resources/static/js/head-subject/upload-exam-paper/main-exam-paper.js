@@ -2,7 +2,6 @@ $(document).ready(function () {
     fetchListCurrentSubject();
     fetchListStaff();
 
-    fetchListExamPaper();
     onChangePageSizeFirstTab();
 });
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,9 +53,8 @@ const fetchListCurrentSubject = () => {
             const subjects = responseBody?.data?.map((item) => {
                 return `<option value="${item.id}">${item.name}</option>`
             });
-            subjects.unshift('<option value="">--Chọn môn học--</option>');
-            $('#exam-paper-subject').html(subjects);
             $('#subjectId').html(subjects);
+            fetchListExamPaper();
         },
         error: function (error) {
             const messageErr = error?.responseJSON?.message;
@@ -130,7 +128,7 @@ const fetchListExamPaper = (
             if (responseData.length === 0) {
                 $('#examPaperTableBody').html(`
                     <tr>
-                         <td colspan="10" style="text-align: center;">Không có dữ liệu</td>
+                         <td colspan="11" style="text-align: center;">Không có dữ liệu</td>
                     </tr>
                 `);
                 $('#pagination').empty();
@@ -154,6 +152,7 @@ const fetchListExamPaper = (
                             <td>${convertExamPaperType(item.examPaperType, item.isPublic)}</td>
                             <td>${item.staffName}</td>
                             <td>${formatDateTime(item.createdDate)}</td>
+                            <td>${item.totalUsed}</td>
                             <td>${convertExamPaperStatus(item.status)}</td>
                             <td>${item.facilityName}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">

@@ -217,3 +217,8 @@ tr:nth-child(even) {
 .btn + .btn {
     margin-left: .5rem;
 }
+
+/*SELECT*/
+select {
+    height: 40px;
+}

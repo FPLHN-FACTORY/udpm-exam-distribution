@@ -6,6 +6,12 @@ public interface HDExamShiftResponse extends IsIdentify {
 
     String getExamShiftCode();
 
+    String getSubjectName();
+
+    String getClassSubjectCode();
+
+    String getPassword();
+
     String getPathExamRule();
 
 }

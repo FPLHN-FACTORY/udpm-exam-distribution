@@ -15,15 +15,7 @@ public interface HDSStaffExtendRepository extends StaffRepository {
 
     @Query(value = """
             SELECT
-            	s.id,
-            	s.staff_code,
-            	s.name,
-            	s.account_fe,
-            	s.account_fpt,
-            	s.picture,
-            	s.status,
-            	s.created_date,
-            	s.last_modified_date
+            	s.*
             FROM
             	staff s
             JOIN staff_major_facility smf ON
@@ -51,7 +43,7 @@ public interface HDSStaffExtendRepository extends StaffRepository {
             	s.id = es.id_first_supervisor
             WHERE
             	es.exam_shift_code = :examShiftCode
-                        """, nativeQuery = true)
+            """, nativeQuery = true)
     HDStaffResponse findFirstSupervisorIdByExamShiftCode(String examShiftCode);
 
     @Query(value = """

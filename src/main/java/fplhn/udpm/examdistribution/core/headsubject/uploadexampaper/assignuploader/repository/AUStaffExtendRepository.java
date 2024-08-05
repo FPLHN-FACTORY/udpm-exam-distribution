@@ -23,6 +23,16 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     (
                         SELECT
                             CASE
+                                WHEN COUNT(cs.id_staff) > 0 THEN 1
+                                ELSE 0
+                            END
+                        FROM staff sst
+                        LEFT JOIN class_subject cs ON cs.id_staff = sst.id
+                        WHERE sst.id = s.id
+                    ) AS haveTaught,
+                    (
+                        SELECT
+                            CASE
                                 WHEN COUNT(ep.id) > 0 THEN 1
                                 ELSE 0
                             END AS isHasSampleExamPaper
@@ -57,11 +67,26 @@ public interface AUStaffExtendRepository extends StaffRepository {
                     ) AS isAssigned
             FROM staff_major_facility smf
             LEFT JOIN staff s ON s.id = smf.id_staff
-            LEFT JOIN class_subject cs ON cs.id_staff = s.id
             WHERE smf.id_major_facility = :majorFacilityId AND
                   smf.id_staff <> :userId AND
-                  cs.id_block = :blockId AND
-                  cs.id_subject = :#{#request.subjectId} AND
+                  smf.status = 0 AND
+                  s.status = 0
+            AND (
+                 (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
+                 (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
+                )
+            AND (
+                 (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
+                 (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
+                )
+            ORDER BY haveTaught DESC
+            """,
+            countQuery = """
+            SELECT COUNT(smf.id)
+            FROM staff_major_facility smf
+            LEFT JOIN staff s ON s.id = smf.id_staff
+            WHERE smf.id_major_facility = :majorFacilityId AND
+                  smf.id_staff <> :userId AND
                   smf.status = 0 AND
                   s.status = 0
             AND (
@@ -73,31 +98,11 @@ public interface AUStaffExtendRepository extends StaffRepository {
                  (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
                 )
             """,
-            countQuery = """
-                    SELECT COUNT(smf.id)
-                    FROM staff_major_facility smf
-                    LEFT JOIN staff s ON s.id = smf.id_staff
-                    LEFT JOIN class_subject cs ON cs.id_staff = s.id
-                    WHERE smf.id_major_facility = :majorFacilityId AND
-                          smf.id_staff <> :userId AND
-                          cs.id_block = :blockId AND
-                          cs.id_subject = :#{#request.subjectId} AND
-                          smf.status = 0 AND
-                          s.status = 0
-                      AND (
-                           (:#{#request.staffName} IS NULL OR s.name LIKE :#{"%" + #request.staffName + "%"}) AND
-                           (:#{#request.staffCode} IS NULL OR s.staff_code LIKE :#{"%" + #request.staffCode + "%"})
-                          )
-                      AND (
-                           (:#{#request.accountFptOrFe} IS NULL OR s.account_fe LIKE :#{"%" + #request.accountFptOrFe + "%"}) OR
-                           (:#{#request.accountFptOrFe} IS NULL OR s.account_fpt LIKE :#{"%" + #request.accountFptOrFe + "%"})
-                          )
-                                      """,
             nativeQuery = true)
     Page<StaffResponse> getAllStaff(
             Pageable pageable, String majorFacilityId,
             FindStaffRequest request, String userId,
-            String semesterId, String blockId
+            String semesterId
     );
 
 }

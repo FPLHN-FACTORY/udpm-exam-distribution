@@ -2,9 +2,12 @@ package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ChooseExamPaperService {
 
@@ -20,7 +23,7 @@ public interface ChooseExamPaperService {
 
     ResponseObject<?> getAllExamPaper(CEPListExamPaperRequest request);
 
-    ResponseObject<?> getFile(String fileId);
+    ResponseObject<?> getFile(CEPGetFileRequest request);
 
     ResponseObject<?> deleteExamPaper(String examPaperId);
 
@@ -31,5 +34,7 @@ public interface ChooseExamPaperService {
     ResponseObject<?> sendEmailPublicExamPaper(String examPaperId);
 
     ResponseObject<?> chooseExamPaper(String examPaperId);
+
+    ResponseEntity<?> convertPdfToDocx(MultipartFile file);
 
 }

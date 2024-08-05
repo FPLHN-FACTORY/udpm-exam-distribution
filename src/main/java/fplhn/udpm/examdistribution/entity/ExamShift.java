@@ -52,17 +52,17 @@ public class ExamShift extends PrimaryEntity implements Serializable {
     @Column(name = "room")
     private String room;
 
-    @Column(name = "hash")
-    private String hash;
+//    @Column(name = "hash")
+//    private String hash;
+//
+//    @Column(name = "salt")
+//    private String salt;
 
-    @Column(name = "salt")
-    private String salt;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "exam_shift_status")
     @Enumerated(EnumType.STRING)
     private ExamShiftStatus examShiftStatus;
-
-    @Column(name = "total_student")
-    private Integer totalStudent;
 
 }

@@ -17,13 +17,17 @@ public interface SExamShiftExtendRepository extends ExamShiftRepository {
             SELECT
             	es.id as id,
             	es.exam_shift_code as examShiftCode,
-            	s.path_exam_rule as pathExamRule
+            	s.name as subjectName,
+            	cs.class_subject_code as classSubjectCode,
+            	er.file_id as pathExamRule
             FROM
             	exam_shift es
             JOIN class_subject cs ON
             	es.id_subject_class = cs.id
             JOIN subject s ON
             	cs.id_subject = s.id
+            JOIN exam_rule er ON
+                s.id_exam_rule = er.id
             WHERE
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)

@@ -26,7 +26,8 @@ public interface TExamPaperShiftExtendRepository extends ExamPaperShiftRepositor
                 SELECT
                 	eps.id as id,
                 	eps.id_exam_shift as examShiftId,
-                	eps.id_exam_paper as examPaperId
+                	eps.id_exam_paper as examPaperId,
+                	eps.password as password
                 FROM
                 	exam_paper_shift eps
                 JOIN exam_shift es ON

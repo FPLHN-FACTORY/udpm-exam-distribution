@@ -25,8 +25,9 @@ public interface TExamPaperBySemesterExtendRepository extends ExamPaperBySemeste
             WHERE
             	df.id = :departmentFacilityId
             	AND ep.id_subject = :subjectId
+            	AND epbs.id_semester = :semesterId
             	AND ep.exam_paper_type = 'OFFICIAL_EXAM_PAPER'
             """, nativeQuery = true)
-    List<String> getListIdExamPaper(String departmentFacilityId, String subjectId);
+    List<String> getListIdExamPaper(String departmentFacilityId, String subjectId, String semesterId);
 
 }

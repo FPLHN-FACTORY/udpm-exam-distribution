@@ -1,8 +1,8 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.service.impl;
 
+import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -17,7 +17,6 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TMajorFacili
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TStaffRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TSubjectRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileService;
-import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMockExamPaperRequest;
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
@@ -26,7 +25,11 @@ import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
-import fplhn.udpm.examdistribution.infrastructure.constant.*;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.ExamPaperStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.GoogleDriveConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.servlet.http.HttpSession;
@@ -37,8 +40,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -229,51 +230,51 @@ public class TExamFileImpl implements TExamFileService {
         String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                tExamPaperRepository.getExamPapers(pageable,request,staffId),
+                tExamPaperRepository.getExamPapers(pageable, request, staffId),
                 HttpStatus.OK,
                 "Lấy danh sách đề thi thành công");
     }
 
     @Override
     public ResponseObject<?> getExamPaper(String examPaperId) {
-      try{
-          String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-          Optional<String> fileId = tExamPaperRepository.getExamPaper(examPaperId,staffId);
-          if (fileId.isEmpty()) {
-              return new ResponseObject<>(
-                      null,
-                      HttpStatus.BAD_REQUEST,
-                      "Lấy đề thi thất bại");
-          }
-          String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + examPaperId;
-          Object redisValue = redisService.get(redisKey);
-          if (redisValue != null) {
-              return new ResponseObject<>(
-                      new FileResponse(redisValue.toString(), "fileName"),
-                      HttpStatus.OK,
-                      "Lấy đề thi thành công"
-              );
-          }
-          Resource resource = googleDriveFileService.loadFile(fileId.get());
-          String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
-          redisService.set(redisKey, data);
-          return new ResponseObject<>(
-                  new FileResponse(data, resource.getFilename()), HttpStatus.OK, "Lấy đề thi thành công"
-          );
-      }catch (Exception e){
-          e.printStackTrace();
-          return new ResponseObject<>(
-                  null,
-                  HttpStatus.BAD_REQUEST,
-                  "Có lỗi xảy ra khi lấy đề thi"
-          );
-      }
+        try {
+            String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+            Optional<String> fileId = tExamPaperRepository.getExamPaper(examPaperId, staffId);
+            if (fileId.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.BAD_REQUEST,
+                        "Lấy đề thi thất bại");
+            }
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_PAPER + examPaperId;
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new FileResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Lấy đề thi thành công"
+                );
+            }
+            Resource resource = googleDriveFileService.loadFile(fileId.get());
+            String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+            redisService.set(redisKey, data);
+            return new ResponseObject<>(
+                    new FileResponse(data, resource.getFilename()), HttpStatus.OK, "Lấy đề thi thành công"
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Có lỗi xảy ra khi lấy đề thi"
+            );
+        }
     }
 
     @Override
     public ResponseObject<?> getCount(String subjectId) {
         String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
-        Optional<TCountExamPaperByStatus> countExamPaperByStatus = tExamPaperRepository.countExamPaper(subjectId,staffId);
+        Optional<TCountExamPaperByStatus> countExamPaperByStatus = tExamPaperRepository.countExamPaper(subjectId, staffId);
         if (countExamPaperByStatus.isEmpty()) {
             return new ResponseObject<>(
                     null,

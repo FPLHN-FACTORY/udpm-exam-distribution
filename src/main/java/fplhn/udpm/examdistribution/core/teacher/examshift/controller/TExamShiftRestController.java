@@ -29,6 +29,11 @@ public class TExamShiftRestController {
 
     private final TExamShiftService tExamShiftService;
 
+    @GetMapping
+    public ResponseEntity<?> getAllExamShift() {
+        return Helper.createResponseEntity(tExamShiftService.getAllExamShift());
+    }
+
     @GetMapping("/{examShiftCode}")
     public ResponseEntity<?> getExamShiftByCode(@PathVariable String examShiftCode) {
         return Helper.createResponseEntity(tExamShiftService.getExamShiftByCode(examShiftCode));

@@ -1,6 +1,5 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.examrule.model.response.SubjectResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSubjectResponse;
 import fplhn.udpm.examdistribution.repository.SubjectRepository;
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface TSubjectRepository extends SubjectRepository {

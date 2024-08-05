@@ -11,4 +11,6 @@ public class TStartExamShiftResponse {
 
     private String fileId;
 
+    private String password;
+
 }

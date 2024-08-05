@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository.HDFacilityChildExtendRepository;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.service.HDFacilityChildService;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,16 +16,19 @@ public class HDFacilityChildServiceImpl implements HDFacilityChildService {
 
     private final HDFacilityChildExtendRepository hdFacilityChildExtendRepository;
 
+    private final SessionHelper sessionHelper;
+
     @Override
     public ResponseObject<?> findAllByClassSubjectCodeAndSubjectId(String classSubjectCode, String subjectId) {
         try {
             return new ResponseObject<>(
-                    hdFacilityChildExtendRepository.findAllByClassSubjectCodeAndSubjectId(classSubjectCode, subjectId),
+                    hdFacilityChildExtendRepository.findAllByClassSubjectCodeAndSubjectId(
+                            classSubjectCode, subjectId, sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy danh sách campus thành công!"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách campus: {}", e.getMessage());
+            log.error("Lỗi khi lấy danh sách campus: ", e);
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy danh sách campus!"
             );

@@ -50,7 +50,14 @@ const getExamShiftByCode = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const examShift = responseBody?.data;
-                $('#examShiftCode').text("Phòng thi - Mã tham gia: " + examShift.examShiftCode);
+                $('#examShift').text(
+                    "Phòng thi: " + examShift.subjectName
+                    + " - Lớp: " + examShift.classSubjectCode
+                );
+                $('#examShiftCodePassword').text(
+                    "Mã phòng: " + examShift.examShiftCode
+                    + " - Mật khẩu: " + examShift.password
+                );
                 fetchFilePDFExamRule(examShift.pathExamRule);
             }
         },
@@ -152,7 +159,7 @@ const countStudentInExamShift = () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 const students = responseBody?.data;
-                $('#studentCount').text("Tổng Số Sinh Viên: " + students);
+                $('#studentCount').text("Tổng số: " + students);
             }
         },
         error: function (error) {
@@ -460,7 +467,7 @@ const startCountdown = (startTime, endTime) => {
         if (distanceToEnd > 0) {
             let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
-            $('#countdown').text(minutesToEnd + "m " + secondsToEnd + "s ");
+            $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
             clearInterval(countdown);
             $('#examShiftStart').prop('hidden', true);
@@ -470,4 +477,6 @@ const startCountdown = (startTime, endTime) => {
         }
     }, 1000);
 }
+
+
 

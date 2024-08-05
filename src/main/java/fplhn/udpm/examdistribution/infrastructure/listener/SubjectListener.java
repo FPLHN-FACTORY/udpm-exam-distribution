@@ -13,7 +13,7 @@ public class SubjectListener {
 
     @PreUpdate
     public void preUpdate(Subject subject) {
-        String key = RedisPrefixConstant.REDIS_PREFIX_DETAIL_EXAM_RULE + subject.getId();
+        String key = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + subject.getId();
         if (redisService.get(key) != null) {
             redisService.delete(key);
         }
