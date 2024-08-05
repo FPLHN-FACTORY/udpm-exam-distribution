@@ -159,7 +159,7 @@ function showTimeMockExam(startTime) {
             }
             clearInterval(this);
         } else {
-            $('#timeMockExam').text('Tự động làm mới đề sau: ' + formatTimeMockExam(timeRemaining));
+            $('#timeMockExam').text(formatTimeMockExam(timeRemaining));
         }
     }, 500);
 }

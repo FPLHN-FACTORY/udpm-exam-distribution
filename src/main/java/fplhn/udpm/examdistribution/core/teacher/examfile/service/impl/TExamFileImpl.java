@@ -236,6 +236,26 @@ public class TExamFileImpl implements TExamFileService {
     }
 
     @Override
+    public ResponseObject<?> deleteExamPaper(String examPaperId) {
+        Optional<ExamPaper> examPaper = tExamPaperRepository.findById(examPaperId);
+        if (examPaper.isEmpty()){
+            return new ResponseObject<>(
+                    null, HttpStatus.NOT_FOUND, "Đề thi không tồn tại"
+            );
+        }
+        if (examPaper.get().getExamPaperStatus()==ExamPaperStatus.REJECTED){
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Chỉ được  xóa đề bị từ chối"
+            );
+        }
+        googleDriveFileService.deleteById(examPaper.get().getPath());
+        tExamPaperRepository.deleteById(examPaperId);
+        return new ResponseObject<>(
+                null, HttpStatus.OK, "Xóa đề thi thành công"
+        );
+    }
+
+    @Override
     public ResponseObject<?> getExamPaper(String examPaperId) {
         try {
             String staffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();

@@ -19,6 +19,8 @@ public interface TExamFileService {
 
     ResponseObject<?> getExamPapers(TExamFileRequest request);
 
+    ResponseObject<?> deleteExamPaper(String examPaperId);
+
     ResponseObject<?> getExamPaper(String examPaperId);
 
     ResponseObject<?> getCount(String subjectId);
