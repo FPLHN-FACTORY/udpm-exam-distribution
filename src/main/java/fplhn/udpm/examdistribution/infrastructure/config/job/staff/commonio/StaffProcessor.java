@@ -34,6 +34,7 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
 
     @Autowired
     private ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
+
     @Override
     public TranferStaffRole process(StaffExcelRequest item) throws Exception {
         try {
@@ -68,27 +69,10 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, TranferS
                 staffCode = item.getStaffCode();
             }
 
-            List<Staff> staffList = staffCustomRepository.findAllByStaffCode(staffCode);
-            StaffMajorFacility newStaffMajorFacility = new StaffMajorFacility();
-
+            List<Staff> staffList = staffCustomRepository.findAllByStaffCodeAndStatus(staffCode,EntityStatus.ACTIVE);
             if (!staffList.isEmpty()) {
-                Staff staff = staffList.get(0);
-                staff.setName(item.getName());
-                staff.setAccountFpt(item.getAccountFpt());
-                staff.setAccountFe(item.getAccountFe());
-                staff.setStatus(EntityStatus.ACTIVE);
-
-                List<StaffMajorFacility> staffMajorFacilities = staffMajorFacilityRepository.findAllByStaffAndFacility(staff.getId(), facilityCode);
-                if (staffMajorFacilities.isEmpty()) {
-                    newStaffMajorFacility.setStatus(EntityStatus.ACTIVE);
-                    newStaffMajorFacility.setMajorFacility(majorFacilities.get(0));
-                } else {
-                    StaffMajorFacility existingStaffMajorFacility = staffMajorFacilities.get(0);
-                    existingStaffMajorFacility.setStatus(EntityStatus.ACTIVE);
-                    existingStaffMajorFacility.setMajorFacility(majorFacilities.get(0));
-                    newStaffMajorFacility = existingStaffMajorFacility;
-                }
-                return new TranferStaffRole(staff, roles.get(0), newStaffMajorFacility);
+                log.error("Mã nhân viên đã tồn tại");
+                return null;
             }
 
             Staff staffNew = new Staff();

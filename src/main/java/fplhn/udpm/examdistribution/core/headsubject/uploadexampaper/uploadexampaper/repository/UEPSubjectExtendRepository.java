@@ -13,7 +13,7 @@ public interface UEPSubjectExtendRepository extends SubjectRepository {
     @Query(value = """
             SELECT
             	s.id AS id,
-            	s.name AS name
+            	CONCAT(s.subject_code,' - ',s.name) AS name
             FROM
                 head_subject_by_semester hsbs
             JOIN subject s ON

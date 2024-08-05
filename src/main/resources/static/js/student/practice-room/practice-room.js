@@ -137,6 +137,7 @@ const joinPracticeRoom = (isTakeNewMockExamPaper = true,
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             }
+            handleLeftRoom();
             hideLoading();
         }
     });
@@ -229,6 +230,8 @@ function handleShowMockContainer() {
 }
 
 function handleShowSectionContainer() {
+    $('#modifyPracticeRoomCodeJoin').val('');
+    $('#modifyPasswordJoin').val('');
     let mockContainer = $('#mockExamPaperContainer');
     let sectionContainer = $('#sectionContainer');
     if (sectionContainer.hasClass('d-none')) {
@@ -284,7 +287,6 @@ function queueRenderPageDetail(num) {
 }
 
 function handleLeftRoom() {
-    // Xóa ba mục khỏi localStorage
     localStorage.removeItem('startTime');
     localStorage.removeItem('mockExamPaper');
     localStorage.removeItem('practiceRoom');
