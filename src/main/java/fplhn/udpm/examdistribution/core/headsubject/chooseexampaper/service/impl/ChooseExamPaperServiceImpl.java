@@ -527,9 +527,20 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
             return new ResponseEntity<>(docxBytes, HttpStatus.OK);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ResponseEntity<>("Convert file PDF to Docx không thành công", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public ResponseObject<?> getListResource(String examPaperId) {
+//        Pageable pageable = Helper.createPageable(request, "createdDate");
+//        return new ResponseObject<>(
+//                PageableObject.of(),
+//                HttpStatus.OK,
+//                "Lấy thành công danh sách đề thi"
+//        );
+        return null;
     }
 
 }

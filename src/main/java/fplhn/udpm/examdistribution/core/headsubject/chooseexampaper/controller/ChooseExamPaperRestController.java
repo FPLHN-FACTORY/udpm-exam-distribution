@@ -2,9 +2,9 @@ package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service.ChooseExamPaperService;
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
 import lombok.RequiredArgsConstructor;
@@ -92,6 +92,11 @@ public class ChooseExamPaperRestController {
     @PostMapping("/pdf-to-docx")
     public ResponseEntity<?> convertPdfToDocx(@RequestParam("file") MultipartFile file) {
         return chooseExamPaperService.convertPdfToDocx(file);
+    }
+
+    @GetMapping("/resources/{examPaperId}")
+    public ResponseEntity<?> getListResource(@PathVariable String examPaperId) {
+        return Helper.createResponseEntity(null);
     }
 
 }
