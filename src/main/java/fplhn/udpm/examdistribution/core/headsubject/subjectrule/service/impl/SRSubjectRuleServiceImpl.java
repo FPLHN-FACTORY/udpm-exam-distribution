@@ -20,6 +20,7 @@ import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
 import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
@@ -246,7 +247,7 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
             examTimeBySubject.setExam_time(request.getExamTime());
             examTimeBySubject.setSubject(subjectOptional.get());
             examTimeBySubject.setFacility(facilityOptional.get());
-            examTimeBySubject.setAllowOnline(true);
+            examTimeBySubject.setAllowOnline(false);
             examTimeBySubjectRepository.save(examTimeBySubject);
             return new ResponseObject<>(
                     null,
@@ -301,15 +302,43 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
     @Override
     public ResponseObject<?> allowOnlineSubject(String subjectId) {
         try {
+            Optional<Subject> subjectOptional = subjectRepository.findById(subjectId);
+            if (subjectOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
+                );
+            }
+
+            Optional<Facility> facilityOptional = facilityRepository.findById(sessionHelper.getCurrentUserFacilityId());
+            if (facilityOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy cơ sở hiện tại"
+                );
+            }
+
             Optional<ExamTimeBySubject> examTimeBySubjectOptional = examTimeBySubjectRepository.findExamTimeBySubjectIdAndFacilityId(
                     subjectId,
                     sessionHelper.getCurrentUserFacilityId()
             );
             if (examTimeBySubjectOptional.isEmpty()) {
+                ExamTimeBySubject postExamTimeBySubject = new ExamTimeBySubject();
+                postExamTimeBySubject.setFacility(facilityOptional.get());
+                postExamTimeBySubject.setSubject(subjectOptional.get());
+                postExamTimeBySubject.setStatus(EntityStatus.ACTIVE);
+                postExamTimeBySubject.setAllowOnline(true);
+                postExamTimeBySubject.setExam_time(0L);
+
+                examTimeBySubjectRepository.save(postExamTimeBySubject);
                 return new ResponseObject<>(
                         null,
-                        HttpStatus.NOT_FOUND,
-                        "Không tìm thấy môn học này"
+                        HttpStatus.OK,
+                        postExamTimeBySubject.isAllowOnline() ?
+                                "Đã cập nhật môn học " + postExamTimeBySubject.getSubject().getName() + " là môn được dùng mạng" :
+                                "Đã cập nhật môn học " + postExamTimeBySubject.getSubject().getName() + " là môn không được dùng mạng"
                 );
             }
 

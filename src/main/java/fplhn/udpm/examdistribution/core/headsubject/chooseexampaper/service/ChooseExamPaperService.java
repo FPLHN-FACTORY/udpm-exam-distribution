@@ -37,4 +37,6 @@ public interface ChooseExamPaperService {
 
     ResponseEntity<?> convertPdfToDocx(MultipartFile file);
 
+    ResponseObject<?> getListResource(String examPaperId);
+
 }

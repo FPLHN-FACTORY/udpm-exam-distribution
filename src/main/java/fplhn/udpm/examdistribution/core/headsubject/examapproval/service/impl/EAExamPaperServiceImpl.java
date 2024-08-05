@@ -43,6 +43,7 @@ public class EAExamPaperServiceImpl implements EAExamPaperService {
     private final RedisService redisService;
 
     private final EmailService emailService;
+
     @Override
     public ResponseObject<?> getExamApprovals(EAExamPaperRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
