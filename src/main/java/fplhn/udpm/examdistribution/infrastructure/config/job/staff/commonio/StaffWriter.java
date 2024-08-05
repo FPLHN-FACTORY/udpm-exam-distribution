@@ -40,7 +40,7 @@ public class StaffWriter implements ItemWriter<TranferStaffRole> {
                 try {
                     // Save staff first
                     Staff staff = tranferStaffRole.getStaff();
-                    List<Staff> staffs = staffCustomRepository.findAllByStaffCode(staff.getStaffCode());
+                    List<Staff> staffs = staffCustomRepository.findAllByStaffCodeAndStatus(staff.getStaffCode(),EntityStatus.ACTIVE);
                     if (!staffs.isEmpty()) {
                         staff = staffs.get(0);
                     }

@@ -40,8 +40,21 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
 
     private final TMEPStudentPracticeRoomRepository studentPracticeRoomRepository;
 
+    private final TMockExamPaperRepository examPaperRepository;
     @Override
     public ResponseObject<?> createPracticeRoom(TPracticeRoomRequest request) {
+
+        String currentBlockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
+        String currentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
+        String currentStaffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+
+        if (examPaperRepository.getMockExamPapers(currentBlockId,request.getSubjectId(),currentFacilityId).isEmpty()){
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Môn học này chưa có đề thi thử được public"
+            );
+        }
 
         if (request.getEndDate() != null && new Date().getTime() > request.getEndDate()) {
             return new ResponseObject<>(
@@ -52,8 +65,6 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
         }
 
         PracticeRoom practiceRoom = new PracticeRoom();
-
-        String currentBlockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
         Optional<Block> currentBlock = blockRepository.findById(currentBlockId);
         practiceRoom.setBlock(currentBlock.get());
 
@@ -65,10 +76,8 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
             practiceRoom.setEndDate(request.getEndDate());
         }
 
-        String currentStaffId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
         practiceRoom.setStaff(staffRepository.findById(currentStaffId).get());
 
-        String currentFacilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
         practiceRoom.setFacility(facilityRepository.findById(currentFacilityId).get());
         practiceRoom.setStatus(EntityStatus.ACTIVE);
         Optional<Subject> subject = subjectRepository.findById(request.getSubjectId());

@@ -55,35 +55,39 @@ public interface TMEPSubjectRepository extends SubjectRepository {
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
             AND (:#{#request.block} IS NULL OR b2.name LIKE :#{#request.block})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})
-            GROUP BY CONCAT(s.subject_code, ' - ',s.name) ,
-                     d.name,
-                     s.id,
-                     s.subject_type,
-                     CONCAT(s2.name,' - ',s2.year),
-                     b2.name,
-                     CASE
-                        WHEN b2.id = :currentBlockId THEN 'TRUE'
-                        ELSE 'FALSE'
-                     END,
-                     CASE
-                     WHEN EXISTS (SELECT 1
-                                FROM practice_room pr
-                                WHERE pr.id_facility = :facilityId
+            GROUP BY  CONCAT(s.subject_code, ' - ', s.name),
+                      d.name,
+                      s.id,
+                      s.subject_type,
+                      CONCAT(s2.name, ' - ', s2.year),
+                      b2.name,
+                      b2.id,
+                      CASE
+                          WHEN b2.id = :currentBlockId THEN 'TRUE'
+                          ELSE 'FALSE'
+                      END,
+                      CASE
+                          WHEN EXISTS (
+                              SELECT 1
+                              FROM practice_room pr
+                              WHERE pr.id_facility = :facilityId
                                 AND pr.id_block = b2.id
                                 AND pr.id_staff = :staffId
                                 AND pr.id_subject = s.id
-                                AND pr.status = 0) THEN 'TRUE'
-                     ELSE 'FALSE'
-                     END,
-                     (SELECT pr.id
-                     FROM practice_room pr
-                     WHERE pr.id_facility = :facilityId
-                     AND pr.id_block = b2.id
-                     AND pr.id_staff = :staffId
-                     AND pr.id_subject = s.id
-                     AND pr.status = 0
-                     LIMIT 1),
-                     cs.id
+                                AND pr.status = 0
+                          ) THEN 'TRUE'
+                          ELSE 'FALSE'
+                      END,
+                      (
+                          SELECT pr.id
+                          FROM practice_room pr
+                          WHERE pr.id_facility = :facilityId
+                            AND pr.id_block = b2.id
+                            AND pr.id_staff = :staffId
+                            AND pr.id_subject = s.id
+                            AND pr.status = 0
+                          LIMIT 1
+                      )
             """,
             countQuery = """
             SELECT 	COUNT(cs.id)
@@ -100,35 +104,39 @@ public interface TMEPSubjectRepository extends SubjectRepository {
             AND (:#{#request.semester} IS NULL OR s2.id LIKE :#{#request.semester})
             AND (:#{#request.block} IS NULL OR b2.name LIKE :#{#request.block})
             AND (:#{#request.subjectType} IS NULL OR s.subject_type LIKE :#{"%" + #request.subjectType + "%"})
-            GROUP BY CONCAT(s.subject_code, ' - ',s.name) ,
-                     d.name,
-                     s.id,
-                     s.subject_type,
-                     CONCAT(s2.name,' - ',s2.year),
-                     b2.name,
-                     CASE
-                        WHEN b2.id = :currentBlockId THEN 'TRUE'
-                        ELSE 'FALSE'
-                     END,
-                     CASE
-                     WHEN EXISTS (SELECT 1
-                                FROM practice_room pr
-                                WHERE pr.id_facility = :facilityId
+            GROUP BY CONCAT(s.subject_code, ' - ', s.name),
+                      d.name,
+                      s.id,
+                      s.subject_type,
+                      CONCAT(s2.name, ' - ', s2.year),
+                      b2.name,
+                      b2.id,
+                      CASE
+                          WHEN b2.id = :currentBlockId THEN 'TRUE'
+                          ELSE 'FALSE'
+                      END,
+                      CASE
+                          WHEN EXISTS (
+                              SELECT 1
+                              FROM practice_room pr
+                              WHERE pr.id_facility = :facilityId
                                 AND pr.id_block = b2.id
                                 AND pr.id_staff = :staffId
                                 AND pr.id_subject = s.id
-                                AND pr.status = 0) THEN 'TRUE'
-                     ELSE 'FALSE'
-                     END,
-                     (SELECT pr.id
-                        FROM practice_room pr
-                        WHERE pr.id_facility = :facilityId
-                        AND pr.id_block = b2.id
-                        AND pr.id_staff = :staffId
-                        AND pr.id_subject = s.id
-                        AND pr.status = 0
-                        LIMIT 1),
-                     cs.id
+                                AND pr.status = 0
+                          ) THEN 'TRUE'
+                          ELSE 'FALSE'
+                      END,
+                      (
+                          SELECT pr.id
+                          FROM practice_room pr
+                          WHERE pr.id_facility = :facilityId
+                            AND pr.id_block = b2.id
+                            AND pr.id_staff = :staffId
+                            AND pr.id_subject = s.id
+                            AND pr.status = 0
+                          LIMIT 1
+                      )
             """, nativeQuery = true)
     Page<TSubjectMockExamResponse> getAllSubject(Pageable pageable, String staffId,String facilityId,String currentBlockId, TSubjectMockExamRequest request);
 
