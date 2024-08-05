@@ -50,6 +50,10 @@ $(document).ready(function () {
         examShiftStartSubmit();
     });
 
+    $('#examShiftStartTime').click(function () {
+        examShiftStartTimeSubmit();
+    });
+
     $('#completeExamShift').click(function () {
         completeExamShift();
     });
@@ -218,7 +222,6 @@ const getStudents = () => {
         type: "GET",
         url: ApiConstant.API_STUDENT_JOIN_EXAM_SHIFT + '/' + examShiftCode,
         success: function (responseBody) {
-            console.log(responseBody);
             if (responseBody?.data) {
                 const students = responseBody?.data;
                 $('#studentsContainer').empty();
@@ -238,7 +241,7 @@ const getStudents = () => {
                                         <h4>${student.name}</h4>
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
-                                        Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
+                                        Thời gian tham gia: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         <button class="btn position-absolute top-0 end-0 p-2 fs-3 lh-1" 
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
                                         ${student.isViolation === 0 ?
@@ -454,13 +457,27 @@ const examShiftStart = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start',
         success: function (responseBody) {
-            $('#examShiftStart').prop('hidden', true);
             const examPaper = responseBody?.data;
             if (examPaper.password !== null) {
                 $('#examPaperPassword').text('Mật khẩu mở đề: ' + examPaper.password);
                 $('#examPaperPassword').prop('hidden', false);
                 downloadExamPaper(examPaper.fileId);
             }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            }
+        }
+    });
+};
+
+const examShiftStartTime = () => {
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start-time',
+        success: function (responseBody) {
+            startCountdown(responseBody?.data?.startTime, responseBody?.data?.endTime);
         },
         error: function (error) {
             if (error?.responseJSON?.message) {
@@ -508,6 +525,10 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
         });
         stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
             const responseBody = JSON.parse(response.body);
@@ -562,10 +583,11 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                if (fileId !== null && startTime !== null && endTime !== null) {
-                    startCountdown(startTime, endTime);
+                if (fileId !== null) {
                     fetchFilePDFExamPaper(fileId);
-
+                }
+                if (startTime !== null && endTime !== null) {
+                    startCountdown(startTime, endTime);
                 }
             }
         },
@@ -617,6 +639,8 @@ const fetchFilePDFExamPaper = (fileId) => {
             fileId: fileId
         },
         success: function (responseBody) {
+            $('#examShiftStart').prop('hidden', true);
+            $('#examShiftStartTime').prop('hidden', false);
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             pdfjsLib
                 .getDocument({data: pdfData})
@@ -712,9 +736,25 @@ const examShiftStartSubmit = () => {
     }).then((willApprove) => {
         if (willApprove) {
             examShiftStart();
+            $('#examShiftStart').prop('hidden', true);
         }
     });
 };
+
+const examShiftStartTimeSubmit = () => {
+    swal({
+        title: "Xác nhận bắt đầu ca thi",
+        text: "Phát đề thi?",
+        icon: "info",
+        buttons: true,
+        dangerMode: false,
+    }).then((willApprove) => {
+        if (willApprove) {
+            examShiftStartTime();
+        }
+    });
+};
+
 
 const openModalRemoveStudent = (studentId) => {
     $('#studentIdRemove').val(studentId);
@@ -779,10 +819,13 @@ const startCountdown = (startTime, endTime) => {
         if (distanceToEnd > 0) {
             let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
+            $('#examShiftStart').prop('hidden', true);
+            $('#examShiftStartTime').prop('hidden', true);
             $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
             clearInterval(countdown);
             $('#examShiftStart').prop('hidden', true);
+            $('#examShiftStartTime').prop('hidden', true);
             $('#completeExamShift').prop('hidden', false);
             $('#countdown').text("Đã kết thúc!");
             showToastSuccess('Đã hết giờ làm bài thi!')

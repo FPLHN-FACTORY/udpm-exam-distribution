@@ -145,9 +145,21 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime > examPaperShift.getStartTime() + (2 * 60 * 1000)) {
-                        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-                                "Đã quá thời gian thi!");
+                    if (currentTime > examPaperShift.getStartTime() + (60 * 1000)) {
+                        StudentExamShift studentExamShift = new StudentExamShift();
+                        studentExamShift.setStudent(existingStudent.get());
+                        studentExamShift.setExamShift(examShift);
+                        studentExamShift.setJoinTime(sExamShiftRequest.getJoinTime());
+                        studentExamShift.setExamStudentStatus(ExamStudentStatus.REJOINED);
+                        studentExamShift.setStatus(EntityStatus.ACTIVE);
+                        sStudentExamShiftExtendRepository.save(studentExamShift);
+                        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
+                                new NotificationResponse(
+                                        "Sinh viên "
+                                                + existingStudent.get().getStudentCode()
+                                                + " yêu cầu tham gia ca thi!"));
+                        return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+                                HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                     }
                 }
 
@@ -233,17 +245,22 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     }
 
     @Override
+    public ResponseObject<?> getStartTimeEndTimeExamPaperByExamShiftCode(String examShiftCode) {
+        try {
+            return new ResponseObject<>(sExamPaperExtendRepository.getStartTimeEndTimeExamPaperByExamShiftCode(examShiftCode),
+                    HttpStatus.OK, "Lấy thời gian bắt đầu và kết thúc đề thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thời gian bắt đầu và kết thúc đề thi: ", e);
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thời gian bắt đầu và kết thúc đề thi!");
+        }
+    }
+
+    @Override
     public ResponseObject<?> openExamPaper(SOpenExamPaperRequest sOpenExamPaperRequest) {
         try {
             ExamPaperShift examPaperShift
                     = sExamPaperShiftRepository.getReferenceById(sOpenExamPaperRequest.getExamPaperShiftId());
-
-//            boolean passwordMatch = PasswordUtils.verifyUserPassword(sOpenExamPaperRequest.getPasswordOpen(),
-//                    examPaperShift.getHash(), examPaperShift.getSalt());
-//            if (!passwordMatch) {
-//                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
-//                        "Mật khẩu không đúng!");
-//            }
 
             if (!examPaperShift.getPassword().equals(sOpenExamPaperRequest.getPasswordOpen())) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,

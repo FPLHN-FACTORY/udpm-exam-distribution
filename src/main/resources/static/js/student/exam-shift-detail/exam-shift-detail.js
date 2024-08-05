@@ -15,26 +15,26 @@ const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
 
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault()
-});
-
-document.onkeydown = (e) => {
-    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
-
-    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
-        e.preventDefault();
-        return false;
-    }
-}
+// document.addEventListener('contextmenu', (e) => {
+//     e.preventDefault()
+// });
+//
+// document.onkeydown = (e) => {
+//     const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+//
+//     if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+//         e.preventDefault();
+//         return false;
+//     }
+// }
 
 $(document).ready(function () {
 
-    if (devtools.isOpen) {
-        while (true) {
-            console.log("Access denied")
-        }
-    }
+    // if (devtools.isOpen) {
+    //     while (true) {
+    //         console.log("Access denied")
+    //     }
+    // }
 
     getExamShiftByCode();
 
@@ -110,8 +110,10 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                if (fileId !== null && startTime !== null && endTime !== null) {
+                if (fileId !== null) {
                     fetchFilePDFExamPaper(fileId);
+                }
+                if (startTime !== null && endTime !== null) {
                     startCountdown(startTime, endTime);
                 }
             }
@@ -172,6 +174,30 @@ $("#next-page").on("click", function () {
     pageNum++;
     queueRenderPage(1, pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
 });
+
+const getStartTimeEndTimeExamPaper = (examShiftCode) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/start-time-end-time",
+        data: {
+            examShiftCode: examShiftCode
+        },
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const startTime = responseBody?.data?.startTime;
+                const endTime = responseBody?.data?.endTime;
+                if (startTime !== null && endTime !== null) {
+                    startCountdown(startTime, endTime);
+                }
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
+        }
+    });
+}
 
 const openExamPaper = () => {
     const openExamPaper = {
@@ -263,6 +289,11 @@ const connect = () => {
             showToastSuccess(responseBody.message);
             getPathFilePDFExamPaper(examShiftCode);
         });
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastSuccess(responseBody.message);
+            getStartTimeEndTimeExamPaper(examShiftCode);
+        });
     });
 };
 
@@ -270,7 +301,7 @@ let checkInternetInterval;
 
 const startCountdown = (startTime, endTime) => {
     let endTimeDate = new Date(endTime).getTime();
-    let checkTime = new Date(startTime).getTime() + 0.2 * 60 * 1000;
+    let checkTime = new Date(startTime).getTime() + 60 * 1000;
     let hasChecked = false;
 
     let countdown = setInterval(function () {
@@ -279,7 +310,7 @@ const startCountdown = (startTime, endTime) => {
 
         if (now >= checkTime && !hasChecked) {
             hasChecked = true;
-            checkInternetInterval = setInterval(checkInternetConnection, 1000);
+            checkInternetInterval = setInterval(checkInternetConnection, 5000);
         }
 
         if (distanceToEnd > 0) {
@@ -289,8 +320,7 @@ const startCountdown = (startTime, endTime) => {
         } else {
             if (checkInternetInterval) {
                 clearInterval(checkInternetInterval);
-                $('body').children().show();
-                $('.overlay').hide();
+                $('#overlay').hide();
             }
             clearInterval(countdown);
             showToastSuccess('Đã hết giờ làm bài thi!')
@@ -355,16 +385,16 @@ function checkInternetConnection() {
     fetch('https://www.google.com', {mode: 'no-cors'})
         .then(response => {
             if (!response.ok) {
-                $('body').children().hide();
-                $('.overlay').show();
+                // $('body *').css('background-color', 'red');
+                $('#overlay').show();
             } else {
-                $('body').children().show();
-                $('.overlay').hide();
+                // $('body *').css('background-color', '');
+                $('#overlay').hide();
             }
         })
         .catch(() => {
-            $('body').children().show();
-            $('.overlay').hide();
+            // $('body *').css('background-color', '');
+            $('#overlay').hide();
         })
 }
 

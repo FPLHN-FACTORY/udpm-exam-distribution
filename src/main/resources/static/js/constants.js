@@ -136,6 +136,7 @@ const TopicConstant = {
     TOPIC_STUDENT_EXAM_SHIFT_APPROVE: "/topic/student-exam-shift-approve",
     TOPIC_STUDENT_EXAM_SHIFT_REFUSE: "/topic/student-exam-shift-refuse",
     TOPIC_EXAM_SHIFT_START: "/topic/exam-shift-start",
+    TOPIC_EXAM_SHIFT_START_TIME: "/topic/exam-shift-start-time",
     TOPIC_TRACK_STUDENT: "/topic/track-student",
     TOPIC_STUDENT_REMOVE_TAB: "/topic/student-remove-tab",
     TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT: "/topic/head-subject-exam-shift-join",

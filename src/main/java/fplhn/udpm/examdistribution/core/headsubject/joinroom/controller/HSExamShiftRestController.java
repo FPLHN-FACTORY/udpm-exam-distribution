@@ -49,6 +49,12 @@ public class HSExamShiftRestController {
         return Helper.createResponseEntity(hsExamShiftService.getExamShiftByCode(examShiftCode));
     }
 
+    @GetMapping("/start-time-end-time")
+    public ResponseEntity<?> getStartTimeEndTimeExamPaperByExamShiftCode
+            (@RequestParam(name = "examShiftCode") String examShiftCode) {
+        return Helper.createResponseEntity(hsExamShiftService.getStartTimeEndTimeExamPaperByExamShiftCode(examShiftCode));
+    }
+
     @GetMapping("/{examShiftCode}/count-student")
     public ResponseEntity<?> countStudentInExamShift(@PathVariable String examShiftCode) {
         return Helper.createResponseEntity(hsExamShiftService.countStudentInExamShift(examShiftCode));
