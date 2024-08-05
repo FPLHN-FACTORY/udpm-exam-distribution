@@ -15,26 +15,26 @@ const scaleExamRule = 1.5;
 const $pdfCanvasExamRule = $("#pdf-canvas-exam-rule")[0];
 const ctxExamRule = $pdfCanvasExamRule.getContext("2d");
 
-// document.addEventListener('contextmenu', (e) => {
-//     e.preventDefault()
-// });
-//
-// document.onkeydown = (e) => {
-//     const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
-//
-//     if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
-//         e.preventDefault();
-//         return false;
-//     }
-// }
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+});
+
+document.onkeydown = (e) => {
+    const blockedKeys = ['F12', 'KeyI', 'KeyJ', 'KeyC', 'KeyU'];
+
+    if (blockedKeys.includes(e.code) && (e.ctrlKey && e.shiftKey) || (e.ctrlKey && e.code === 'KeyU')) {
+        e.preventDefault();
+        return false;
+    }
+}
 
 $(document).ready(function () {
 
-    // if (devtools.isOpen) {
-    //     while (true) {
-    //         console.log("Access denied")
-    //     }
-    // }
+    if (devtools.isOpen) {
+        while (true) {
+            console.log("Access denied")
+        }
+    }
 
     getExamShiftByCode();
 

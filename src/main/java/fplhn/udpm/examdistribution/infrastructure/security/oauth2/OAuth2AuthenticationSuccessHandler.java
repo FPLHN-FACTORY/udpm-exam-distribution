@@ -357,6 +357,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         int serverPort = request.getServerPort();
 
         String urlRedirect = scheme + "://" + serverName + ":" + serverPort + "/" + httpSession.getAttribute(SessionConstant.REDIRECT_LOGIN).toString();
+        log.info("Redirect to: {}", urlRedirect);
         new DefaultRedirectStrategy().sendRedirect(request, response, urlRedirect);
     }
 
