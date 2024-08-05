@@ -4,15 +4,15 @@ $(document).ready(function () {
 
     getStaffs();
 
-    handleAddEvent($('#pageSize'),'change',function () {
+    handleAddEvent($('#pageSize'), 'change', function () {
         getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
     })
 
-    handleAddEvent($('#staffStatus'),'change',function () {
+    handleAddEvent($('#staffStatus'), 'change', function () {
         getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
     })
 
-    handleAddEvent($('#searchQuery'),'keyup',function () {
+    handleAddEvent($('#searchQuery'), 'keyup', function () {
         getStaffs(1, $('#pageSize').val(), $('#searchQuery').val()?.trim(), $('#staffStatus').val());
     })
 
@@ -283,7 +283,7 @@ const createPagination = (totalPages, currentPage) => {
 }
 
 function changePage(newCurrentPage) {
-    getStaffs(newCurrentPage, $('#pageSize').val(),$('#searchQuery').val()?.trim());
+    getStaffs(newCurrentPage, $('#pageSize').val(), $('#searchQuery').val()?.trim());
 }
 
 function openModalAddStaff() {
@@ -452,3 +452,40 @@ function submitUpload() {
     });
 };
 
+
+const getHistoryAssignSubject = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_OFFICE_STAFF + "/history",
+        contentType: "application/json",
+        success: (responseBody) => {
+            if (responseBody?.data?.data?.length === 0) {
+                $('#historyTableBody').html(`
+                    <tr>
+                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
+                    </tr>
+                `);
+                return;
+            }
+            const historyAssignSubjects = responseBody?.data?.data?.map((history, index) => {
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${moment(history.createdDate).format("DD/MM/YYYY HH:mm")}</td>
+                        <td>${history.staff.accountFpt + " - " + history.message}</td>
+                        <td>${history.fileName}</td>
+                    </tr>
+                `;
+            });
+            $('#historyLogTableBody').html(historyAssignSubjects);
+        },
+        error: (error) => {
+            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
+        }
+    });
+};
+
+const handleShowModalHistory = () => {
+    getHistoryAssignSubject();
+    $('#viewHistoryLog').modal('show');
+};

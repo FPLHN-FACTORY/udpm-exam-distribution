@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TranferStaffRole {
+public class TransferStaffRole {
 
     private Staff staff;
 
