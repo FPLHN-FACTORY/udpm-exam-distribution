@@ -61,6 +61,7 @@ const fetchSearchSubject = (
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
+                                        onclick="handleAllowOnlineSubject('${subject.id}')"
                                         name="color"
                                         type="checkbox"
                                         class="colorinput-input"
@@ -104,6 +105,27 @@ const fetchSearchSubject = (
 };
 
 //------------------------------------------------------function--------------------------------------------------------
+
+const handleAllowOnlineSubject = (subjectId) => {
+    showLoading();
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_SUBJECT_RULE + "/allow-online-subject/" + subjectId,
+        contentType: "application/json",
+        success: function (responseBody) {
+            showToastSuccess(responseBody.message);
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
 
 const getGlobalParamsSearch = () => {
     return {

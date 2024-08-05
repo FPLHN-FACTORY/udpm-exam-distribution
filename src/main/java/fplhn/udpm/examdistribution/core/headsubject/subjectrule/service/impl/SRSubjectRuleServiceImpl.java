@@ -246,6 +246,7 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
             examTimeBySubject.setExam_time(request.getExamTime());
             examTimeBySubject.setSubject(subjectOptional.get());
             examTimeBySubject.setFacility(facilityOptional.get());
+            examTimeBySubject.setAllowOnline(true);
             examTimeBySubjectRepository.save(examTimeBySubject);
             return new ResponseObject<>(
                     null,
@@ -286,6 +287,42 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                             ),
                     HttpStatus.OK,
                     "Lấy thành công thời gian thi"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Cập nhật thời gian thi không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> allowOnlineSubject(String subjectId) {
+        try {
+            Optional<ExamTimeBySubject> examTimeBySubjectOptional = examTimeBySubjectRepository.findExamTimeBySubjectIdAndFacilityId(
+                    subjectId,
+                    sessionHelper.getCurrentUserFacilityId()
+            );
+            if (examTimeBySubjectOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
+                );
+            }
+
+            ExamTimeBySubject examTimeBySubject = examTimeBySubjectOptional.get();
+            examTimeBySubject.setAllowOnline(!examTimeBySubject.isAllowOnline());
+            examTimeBySubjectRepository.save(examTimeBySubject);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    examTimeBySubject.isAllowOnline() ?
+                            "Đã cập nhật môn học " + examTimeBySubject.getSubject().getName() + " là môn không được dùng mạng" :
+                            "Đã cập nhật môn học " + examTimeBySubject.getSubject().getName() + " là môn được dùng mạng"
             );
         } catch (Exception e) {
             log.error(e.getMessage());

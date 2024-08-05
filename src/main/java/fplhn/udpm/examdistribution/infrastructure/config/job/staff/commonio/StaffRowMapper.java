@@ -10,6 +10,7 @@ public class StaffRowMapper implements RowMapper<StaffExcelRequest> {
     public StaffExcelRequest mapRow(RowSet rowSet) {
         try {
             StaffExcelRequest importExcelRequest = new StaffExcelRequest();
+            importExcelRequest.setOrderNumber(rowSet.getCurrentRowIndex());
             importExcelRequest.setStaffCode(rowSet.getColumnValue(1));
             importExcelRequest.setName(rowSet.getColumnValue(2));
             importExcelRequest.setAccountFpt(rowSet.getColumnValue(3));

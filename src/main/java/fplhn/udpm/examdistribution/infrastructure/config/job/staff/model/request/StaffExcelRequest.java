@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StaffExcelRequest {
 
+    private int orderNumber;
+
     private String name;
 
     private String staffCode;

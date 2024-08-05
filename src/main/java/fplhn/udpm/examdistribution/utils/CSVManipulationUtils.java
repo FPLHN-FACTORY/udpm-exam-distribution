@@ -17,6 +17,9 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -173,11 +176,32 @@ public class CSVManipulationUtils {
         loggerObject.setPathFile(pathFile);
         loggerObject.setContent(content);
         loggerObject.setStatus(status);
-        loggerObject.setIP(httpServletRequest.getRemoteAddr());
-        loggerObject.setMail(session.getAttribute(SessionConstant.CURRENT_USER_EMAIL) == null ? "" : session.getAttribute(SessionConstant.CURRENT_USER_EMAIL).toString());
+        try {
+            loggerObject.setIP(httpServletRequest.getRemoteAddr());
+        } catch (Exception e) {
+            RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
+            if (attribs instanceof NativeWebRequest) {
+                HttpServletRequest request = (HttpServletRequest) ((NativeWebRequest) attribs).getNativeRequest();
+                loggerObject.setIP(request.getRemoteAddr());
+            }
+            loggerObject.setIP(ConfigurationsConstant.KHONG_CO_DU_LIEU);
+        }
+        try {
+            loggerObject.setMail(session.getAttribute(SessionConstant.CURRENT_USER_EMAIL) == null ? "" : session.getAttribute(SessionConstant.CURRENT_USER_EMAIL).toString());
+        } catch (Exception e) {
+            loggerObject.setMail(ConfigurationsConstant.KHONG_CO_DU_LIEU);
+        }
         loggerObject.setCreateDate(formattedDate);
-        loggerObject.setMethod(httpServletRequest.getMethod());
-        loggerObject.setAuthor(switchAuthor(httpServletRequest.getRequestURI()));
+        try {
+            loggerObject.setMethod(httpServletRequest.getMethod());
+        } catch (Exception e) {
+            loggerObject.setMethod(ConfigurationsConstant.KHONG_CO_DU_LIEU);
+        }
+        try {
+            loggerObject.setAuthor(switchAuthor(httpServletRequest.getRequestURI()));
+        } catch (Exception e) {
+            loggerObject.setAuthor(ConfigurationsConstant.KHONG_CO_DU_LIEU);
+        }
         return loggerObject;
     }
 
@@ -214,9 +238,19 @@ public class CSVManipulationUtils {
     public String getSwitchFacility() {
         List<SimpleEntityProjection> facilities = facilityRepository.findAllSimpleEntity();
         String facilityId = (String) session.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID);
-        if (facilityId == null) {
-            throw new IllegalStateException("Facility ID không tồn tại trong session");
-        }
+        if (facilityId == null) throw new IllegalStateException("Facility ID không tồn tại trong session");
+        String facility = facilities.stream()
+                .filter(el -> el.getId().equals(facilityId))
+                .map(SimpleEntityProjection::getName)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy cơ sở với ID: " + facilityId));
+
+        return getPropertiesRead(ConfigurationsConstant.PATH_FILE_TEMPLATE) + convertFileName(facility) + "/";
+    }
+
+    public String getSwitchFacility(String facilityId) {
+        List<SimpleEntityProjection> facilities = facilityRepository.findAllSimpleEntity();
+        if (facilityId == null) throw new IllegalStateException("Facility ID không tồn tại trong session");
         String facility = facilities.stream()
                 .filter(el -> el.getId().equals(facilityId))
                 .map(SimpleEntityProjection::getName)

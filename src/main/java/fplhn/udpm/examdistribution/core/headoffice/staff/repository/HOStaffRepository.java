@@ -19,25 +19,26 @@ public interface HOStaffRepository extends StaffRepository {
 
     @Query(
             value = """
-                    SELECT  s.id AS id,
-                            s.name AS name,
-                            s.staff_code AS staffCode,
-                            s.account_fe AS accountFE,
-                            s.account_fpt AS accountFpt,
-                            s.status AS status
-                    FROM staff s
-                    WHERE (:#{#req.searchQuery} IS NULL 
-                             OR :#{#req.searchQuery} LIKE ''
-                             OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
-                             OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
-                             OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
-                             OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
-                   AND (:#{#req.status} IS NULL OR :#{#req.status} LIKE '' OR s.status = :#{#req.status})
-                    """,
+                     SELECT  s.id AS id,
+                             s.name AS name,
+                             s.staff_code AS staffCode,
+                             s.account_fe AS accountFE,
+                             s.account_fpt AS accountFpt,
+                             s.status AS status
+                     FROM staff s
+                     WHERE (:#{#req.searchQuery} IS NULL
+                              OR :#{#req.searchQuery} LIKE ''
+                              OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                              OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                              OR s.account_fe LIKE CONCAT('%',:#{#req.searchQuery},'%')
+                              OR s.account_fpt LIKE CONCAT('%',:#{#req.searchQuery},'%'))
+                    AND (:#{#req.status} IS NULL OR :#{#req.status} LIKE '' OR s.status = :#{#req.status})
+                     ORDER BY s.created_date DESC
+                     """,
             countQuery = """
                     SELECT COUNT(*)
                     FROM staff s
-                    WHERE (:#{#req.searchQuery} IS NULL 
+                    WHERE (:#{#req.searchQuery} IS NULL
                              OR :#{#req.searchQuery} LIKE ''
                              OR s.name LIKE CONCAT('%',:#{#req.searchQuery},'%')
                              OR s.staff_code LIKE CONCAT('%',:#{#req.searchQuery},'%')

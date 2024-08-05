@@ -4,9 +4,9 @@ import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRChooseExamRuleRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRExamTimeRequest;
-import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRUpdateExamTimeRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRFindSubjectRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRUpdateExamTimeRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.service.SRSubjectRuleService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -33,6 +33,11 @@ public class SubjectRuleRestController {
     @GetMapping("/subjects")
     public ResponseEntity<?> getListSubject(SRFindSubjectRequest request) {
         return Helper.createResponseEntity(SRSubjectRuleService.getListSubject(request));
+    }
+
+    @PutMapping("/allow-online-subject/{subjectId}")
+    public ResponseEntity<?> allowOnlineSubject(@PathVariable String subjectId) {
+        return Helper.createResponseEntity(SRSubjectRuleService.allowOnlineSubject(subjectId));
     }
 
     @GetMapping("/exam-rules")
