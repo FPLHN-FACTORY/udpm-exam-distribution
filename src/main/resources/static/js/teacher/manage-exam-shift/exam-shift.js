@@ -2,14 +2,6 @@ $(document).ready(function () {
 
     getExamShifts();
 
-    // resetFormJoinExamShift();
-    //
-    // removeFormJoinError();
-
-    // $('#modifyExamShiftJoinButton').on('click', function () {
-    //     joinExamShift();
-    // });
-
 });
 
 const getExamShifts = () => {
@@ -69,8 +61,7 @@ const getExamShifts = () => {
 
 const joinExamShift = (examShiftCode) => {
     const examShift = {
-        examShiftCodeJoin: examShiftCode,
-        // passwordJoin: $('#modifyPasswordJoin').val()
+        examShiftCodeJoin: examShiftCode
     }
     $.ajax({
         type: "POST",
@@ -82,8 +73,6 @@ const joinExamShift = (examShiftCode) => {
                 $('#examShiftJoinModal').modal('hide');
                 localStorage.setItem('joinExamShiftSuccessMessage', responseBody?.message);
                 window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT + '/' + responseBody?.data;
-                // resetFormJoinExamShift();
-                // removeFormJoinError();
             }
         },
         error: function (error) {
@@ -117,18 +106,6 @@ const joinExamShiftSubmit = (examShiftCode) => {
         });
     }
 };
-
-// const resetFormJoinExamShift = () => {
-//     $('#modifyExamShiftCodeJoin').val('');
-//     $('#modifyPasswordJoin').val('');
-// }
-//
-// const removeFormJoinError = (id) => {
-//     $('#modifyExamShiftCodeJoin').removeClass('is-invalid');
-//     $('#examShiftCodeJoinError').text('');
-//     $('#modifyPasswordJoin').removeClass('is-invalid');
-//     $('#passwordJoinError').text('');
-// };
 
 
 

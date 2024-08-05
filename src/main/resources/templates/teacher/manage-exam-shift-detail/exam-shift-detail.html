@@ -20,6 +20,8 @@
             <div th:insert="~{fragment/header/common-header :: common-header}"></div>
         </div>
         <div class="container">
+            <span id="startTime" hidden></span>
+            <span id="endTime" hidden></span>
             <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="px-4">
@@ -144,6 +146,12 @@
                                                 style="background-color: var(--common-button-color); color: white;"
                                         >
                                             Phát đề thi
+                                        </button>
+                                        <button class="btn mb-3" data-bs-toggle="modal" id="examShiftStartTime"
+                                                style="background-color: var(--common-button-color); color: white;"
+                                                hidden
+                                        >
+                                            Bắt đầu tính giờ
                                         </button>
                                         <button class="btn mb-3" data-bs-toggle="modal" id="completeExamShift"
                                                 style="background-color: var(--common-button-color); color: white;"

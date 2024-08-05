@@ -70,6 +70,11 @@ public class TExamShiftRestController {
         return Helper.createResponseEntity(tExamShiftService.startExamShift(examShiftCode));
     }
 
+    @PutMapping(value = "/{examShiftCode}/start-time")
+    public ResponseEntity<?> startTime(@PathVariable String examShiftCode) {
+        return Helper.createResponseEntity(tExamShiftService.startTime(examShiftCode));
+    }
+
     @GetMapping("/path")
     public ResponseEntity<?> getPathByExamShiftCode(@RequestParam(name = "examShiftCode") String examShiftCode) {
         ResponseObject<?> responseObject = tExamShiftService.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode);

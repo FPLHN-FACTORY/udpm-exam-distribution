@@ -78,6 +78,12 @@ public class SExamShiftRestController {
         return Helper.createResponseEntity(responseObject);
     }
 
+    @GetMapping("/start-time-end-time")
+    public ResponseEntity<?> getStartTimeEndTimeExamPaperByExamShiftCode
+            (@RequestParam(name = "examShiftCode") String examShiftCode) {
+        return Helper.createResponseEntity(sExamShiftService.getStartTimeEndTimeExamPaperByExamShiftCode(examShiftCode));
+    }
+
     @PostMapping("/open")
     public ResponseEntity<?> openExamPaper(@RequestBody SOpenExamPaperRequest sOpenExamPaperRequest) {
         return Helper.createResponseEntity(sExamShiftService.openExamPaper(sOpenExamPaperRequest));
