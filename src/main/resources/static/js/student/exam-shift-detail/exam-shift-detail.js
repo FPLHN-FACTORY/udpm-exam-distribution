@@ -110,11 +110,12 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
+                const allowOnline = responseBody?.data?.allowOnline;
                 if (fileId !== null) {
                     fetchFilePDFExamPaper(fileId);
                 }
-                if (startTime !== null && endTime !== null) {
-                    startCountdown(startTime, endTime);
+                if (startTime !== null && endTime !== null && allowOnline !== null) {
+                    startCountdown(startTime, endTime, allowOnline);
                 }
             }
         },
@@ -186,8 +187,9 @@ const getStartTimeEndTimeExamPaper = (examShiftCode) => {
             if (responseBody?.data) {
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                if (startTime !== null && endTime !== null) {
-                    startCountdown(startTime, endTime);
+                const allowOnline = responseBody?.data?.allowOnline;
+                if (startTime !== null && endTime !== null && allowOnline !== null) {
+                    startCountdown(startTime, endTime, allowOnline);
                 }
             }
         },
@@ -299,7 +301,7 @@ const connect = () => {
 
 let checkInternetInterval;
 
-const startCountdown = (startTime, endTime) => {
+const startCountdown = (startTime, endTime, allowOnline) => {
     let endTimeDate = new Date(endTime).getTime();
     let checkTime = new Date(startTime).getTime() + 60 * 1000;
     let hasChecked = false;
@@ -310,7 +312,9 @@ const startCountdown = (startTime, endTime) => {
 
         if (now >= checkTime && !hasChecked) {
             hasChecked = true;
-            checkInternetInterval = setInterval(checkInternetConnection, 5000);
+            if (!allowOnline) {
+                checkInternetInterval = setInterval(checkInternetConnection, 1000);
+            }
         }
 
         if (distanceToEnd > 0) {

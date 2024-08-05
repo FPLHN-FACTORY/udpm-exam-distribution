@@ -8,4 +8,6 @@ public interface SExamPaperStartTimeEndTimeResponse extends IsIdentify {
 
     Long getEndTime();
 
+    Boolean getAllowOnline();
+
 }
