@@ -4,9 +4,6 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOSaveStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRequest;
 
-import java.io.ByteArrayInputStream;
-import java.util.Optional;
-
 public interface HOStaffService {
 
     ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest);
@@ -20,5 +17,7 @@ public interface HOStaffService {
     ResponseObject<?> updateStaff(HOSaveStaffRequest staffRequest);
 
     ResponseObject<?> deleteStaff(String idStaff);
+
+    ResponseObject<?> getLogsImportStaff(int page, int size);
 
 }

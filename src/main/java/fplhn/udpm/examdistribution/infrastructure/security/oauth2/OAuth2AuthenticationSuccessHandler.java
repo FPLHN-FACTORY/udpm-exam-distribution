@@ -6,6 +6,7 @@ import fplhn.udpm.examdistribution.entity.Facility;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffMajorFacility;
 import fplhn.udpm.examdistribution.entity.Student;
+import fplhn.udpm.examdistribution.infrastructure.config.global.GlobalVariables;
 import fplhn.udpm.examdistribution.infrastructure.constant.CookieConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Role;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
@@ -55,6 +56,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final AuthFacilityRepository facilityRepository;
 
     private final AuthStaffMajorFacilityRepository staffMajorFacilityRepository;
+
+    private final GlobalVariables globalVariables;
 
     private static final int COOKIE_EXPIRE = 7200; // 2 hours
 
@@ -135,12 +138,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         Optional<Staff> optionalStaff = authStaffRepository.getStaffByAccountFpt(userInfo.getEmail());
 
         String facilityId = httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString();
+        globalVariables.setGlobalVariable(SessionConstant.CURRENT_USER_FACILITY_ID, facilityId);
         Optional<Facility> facility = facilityRepository.findFacilityById(facilityId);
 
         if (optionalStaff.isEmpty() || facility.isEmpty()) {
             this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
         } else {
             Staff currentStaff = optionalStaff.get();
+            globalVariables.setGlobalVariable(SessionConstant.CURRENT_USER_ID, currentStaff.getId());
 
             Collection<? extends GrantedAuthority> role = authentication.getAuthorities();
             List<String> roleNames = authentication.getAuthorities().stream()

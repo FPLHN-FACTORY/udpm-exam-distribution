@@ -23,18 +23,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @Slf4j
 @NoArgsConstructor
-public class ExcelFileToDatabaseJobLauncher {
+public class StaffJobLauncher {
 
     private final AtomicBoolean enabled = new AtomicBoolean(false);
 
-    @Autowired
-    @Qualifier("excelFileToDatabaseJob")
+    @Setter(onMethod_ = @Autowired, onParam_ = @Qualifier("excelFileToDatabaseJob"))
     private Job job;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     private JobLauncher jobLauncher;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     private UploadStaffService storageService;
 
     @Setter
@@ -45,17 +44,14 @@ public class ExcelFileToDatabaseJobLauncher {
     void launchExcelToDatabaseJob() {
         if (enabled.get() && fullPathFileName != null) {
             try {
-                log.info("Launching excel to database job");
                 JobExecution jobExecution = jobLauncher.run(job, newExecution());
                 ExitStatus exitStatus = jobExecution.getExitStatus();
-                log.info("Exit status: {}", exitStatus);
-                if (exitStatus.getExitCode().equals(ExitStatus.FAILED.getExitCode())) {
+                if (exitStatus.getExitCode().equals(ExitStatus.COMPLETED.getExitCode())) {
                     storageService.deleteAll();
                     disable();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Error launching excel to database job", e);
+                e.printStackTrace(System.err);
             }
         }
     }

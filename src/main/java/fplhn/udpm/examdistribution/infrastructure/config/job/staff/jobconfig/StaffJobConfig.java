@@ -3,10 +3,11 @@ package fplhn.udpm.examdistribution.infrastructure.config.job.staff.jobconfig;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio.StaffProcessor;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio.StaffRowMapper;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio.StaffWriter;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.dto.TranferStaffRole;
+import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.dto.TransferStaffRole;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.request.StaffExcelRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -32,9 +33,8 @@ import java.io.File;
 
 @Configuration
 @Slf4j
-//@EnableBatchProcessing
 @EnableTransactionManagement
-public class ExcelFileToDatabaseJobConfig {
+public class StaffJobConfig {
 
     @Autowired
     @Qualifier("transactionManager")
@@ -48,11 +48,9 @@ public class ExcelFileToDatabaseJobConfig {
     ItemReader<StaffExcelRequest> excelStaffReader(@Value("#{jobParameters['fullPathFileName']}") String path) {
         try {
             PoiItemReader<StaffExcelRequest> reader = new PoiItemReader<>();
-            Resource resource = new FileSystemResource(new File(fullPath+"/" + path));
-            if (!resource.exists()) {
-                throw new RuntimeException("Could not read the file!");
-            }
-            log.info("RESOURCES: " + resource.getURI());
+            Resource resource = new FileSystemResource(new File(fullPath + "/" + path));
+            if (!resource.exists()) throw new RuntimeException("Could not read the file!");
+
             reader.setResource(resource);
             reader.setLinesToSkip(1);
             reader.open(new ExecutionContext());
@@ -60,7 +58,7 @@ public class ExcelFileToDatabaseJobConfig {
             reader.setLinesToSkip(1);
             return reader;
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             throw new RuntimeException(e);
         }
     }
@@ -73,13 +71,15 @@ public class ExcelFileToDatabaseJobConfig {
     @StepScope
     @Bean
     @Qualifier("staffProcessor")
-    ItemProcessor<StaffExcelRequest, TranferStaffRole> sstaffProcessor() {
-        return new StaffProcessor();
+    ItemProcessor<StaffExcelRequest, TransferStaffRole> staffProcessor() {
+        StaffProcessor staffProcessor = new StaffProcessor();
+        staffProcessor.setFileName(fullPath);
+        return staffProcessor;
     }
 
     @StepScope
     @Bean
-    ItemWriter<TranferStaffRole> excelNhanVienWriter() {
+    ItemWriter<TransferStaffRole> excelStaffWriter() {
         return new StaffWriter();
     }
 
@@ -87,32 +87,15 @@ public class ExcelFileToDatabaseJobConfig {
     Step step1(@Qualifier("excelStaffReader") ItemReader<StaffExcelRequest> excelRequestItemReader
             , JobRepository jobRepository) {
         return new StepBuilder("Excel-File-To-Database-Step", jobRepository)
-                .<StaffExcelRequest, TranferStaffRole>chunk(100, transactionManager)
+                .<StaffExcelRequest, TransferStaffRole>chunk(100, transactionManager)
                 .reader(excelRequestItemReader)
-                .processor(item -> sstaffProcessor().process(item))
-                .writer(chunk -> excelNhanVienWriter().write(chunk))
-                .listener(new StepExecutionListener() {
-                    @Override
-                    public ExitStatus afterStep(StepExecution stepExecution) {
-                        if (stepExecution.getExitStatus().equals(ExitStatus.COMPLETED)) {
-                            try {
-                                if (excelRequestItemReader.read() == null) {
-                                    log.info("No items found in excel file");
-                                    return ExitStatus.FAILED;
-                                }
-                                return ExitStatus.COMPLETED;
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        return stepExecution.getExitStatus();
-                    }
-                })
+                .processor(item -> staffProcessor().process(item))
+                .writer(chunk -> excelStaffWriter().write(chunk))
                 .build();
     }
 
     @Bean
-    Job excelFileToDatabaseJob(@Qualifier("step1") Step step1, JobRepository jobRepository ) {
+    Job excelFileToDatabaseJob(@Qualifier("step1") Step step1, JobRepository jobRepository) {
         return new JobBuilder("Excel-File-To-Database-Job", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1)
