@@ -45,14 +45,14 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
                    r.code AS roleCode,
                    f.name AS facilityName,
                    CASE
-                   WHEN r.id IN (SELECT sr.id_role FROM exam_distribution.staff_role sr 
+                   WHEN r.id IN (SELECT sr.id_role FROM staff_role sr 
                                                    WHERE sr.id_staff LIKE :#{#hoRoleRequest.staffId}
                                                    AND sr.status = 0)
                    THEN 'true'
                    ELSE 'false'
                    END as checked
-                  FROM exam_distribution.role r
-                  LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
+                  FROM role r
+                  LEFT JOIN facility f ON r.id_facility = f.id
                   WHERE r.status = 0
                   AND (:#{#hoRoleRequest.roleName} IS NULL 
                            OR :#{#hoRoleRequest.roleName} LIKE '' 
@@ -64,8 +64,8 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
                   ORDER BY r.last_modified_date desc
               """, countQuery = """
                       SELECT COUNT(*)
-                      FROM exam_distribution.role r
-                      LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
+                      FROM role r
+                      LEFT JOIN facility f ON r.id_facility = f.id
                       WHERE r.status = 0
                       AND (:#{#hoRoleRequest.roleName} IS NULL 
                                OR :#{#hoRoleRequest.roleName} LIKE '' 

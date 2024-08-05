@@ -13,7 +13,7 @@ public interface HOStaffFacilityRepository extends FacilityRepository {
     @Query(value = """ 
               SELECT  f.id AS idFacility,
                       f.name AS facilityName
-              FROM exam_distribution.facility f
+              FROM facility f
               WHERE f.status=0
             """, nativeQuery = true)
     List<HORoleFacilityResponse> getFacilities();
@@ -21,7 +21,7 @@ public interface HOStaffFacilityRepository extends FacilityRepository {
     @Query(value = """ 
             SELECT  f.id AS idFacility,
                     f.name AS facilityName
-            FROM exam_distribution.facility f
+            FROM facility f
             WHERE f.status=0
             AND f.id NOT IN (SELECT  f.id AS idFacility
                              FROM staff_major_facility smf

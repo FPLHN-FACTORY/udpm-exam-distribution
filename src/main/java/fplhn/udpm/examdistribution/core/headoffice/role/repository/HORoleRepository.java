@@ -20,8 +20,8 @@ public interface HORoleRepository extends RoleRepository {
                    r.id as idRole,
                    r.code as roleCode,
                    f.name as facilityName
-            FROM exam_distribution.role r
-            LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
+            FROM role r
+            LEFT JOIN facility f ON r.id_facility = f.id
             WHERE r.status = 0
             AND (:#{#hoRoleRequest.roleName} IS NULL 
                      OR :#{#hoRoleRequest.roleName} LIKE '' 
@@ -33,8 +33,8 @@ public interface HORoleRepository extends RoleRepository {
             """,
             countQuery = """
                     SELECT COUNT(*)
-                    FROM exam_distribution.role r
-                    LEFT JOIN exam_distribution.facility f ON r.id_facility = f.id
+                    FROM role r
+                    LEFT JOIN facility f ON r.id_facility = f.id
                     WHERE r.status = 0
                     AND (:#{#hoRoleRequest.roleName} IS NULL 
                              OR :#{#hoRoleRequest.roleName} LIKE '' 

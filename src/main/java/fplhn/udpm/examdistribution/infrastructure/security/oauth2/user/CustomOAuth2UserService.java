@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             Optional<Staff> isStaffExist = authStaffRepository.getStaffByAccountFptAndFacilityId(userInfo.getEmail(), facilityId, role);
             if (isStaffExist.isEmpty()) {
-                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_MESSAGE);
+                httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
             }
         }
 
@@ -71,7 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             putStudent.setStudentCode(userInfo.getEmail().split("@")[0]);
             authStudentRepository.save(putStudent);
         } else {
-            httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_MESSAGE);
+            httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
         }
     }
 

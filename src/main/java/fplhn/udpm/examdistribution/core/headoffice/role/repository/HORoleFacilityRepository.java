@@ -12,7 +12,7 @@ public interface HORoleFacilityRepository extends FacilityRepository {
     @Query(value = """ 
               SELECT  f.id AS idFacility,
                       f.name AS facilityName
-              FROM exam_distribution.facility f
+              FROM facility f
               WHERE f.status=0
             """, nativeQuery = true)
     List<HORoleFacilityResponse> getFacilities();
