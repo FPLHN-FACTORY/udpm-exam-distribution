@@ -10,34 +10,48 @@ import org.springframework.stereotype.Repository;
 public interface SExamPaperExtendRepository extends ExamPaperRepository {
 
     @Query(value = """
-            SELECT
-                eps.id as id,
+            select
+            	eps.id as id,
             	ep.`path` as path,
-             	eps.start_time as startTime,
-             	eps.end_time as endTime
-            FROM
+            	eps.start_time as startTime,
+            	eps.end_time as endTime,
+            	etbs.allow_online as allowOnline
+            from
             	exam_paper ep
-            JOIN exam_paper_shift eps ON
+            join exam_paper_shift eps on
             	ep.id = eps.id_exam_paper
-            JOIN exam_shift es ON
+            join exam_shift es on
             	eps.id_exam_shift = es.id
-            WHERE
+            join class_subject cs on
+            	es.id_subject_class = cs.id
+            join subject s on
+            	cs.id_subject = s.id
+            join exam_time_by_subject etbs on
+            	s.id = etbs.id_subject
+            where
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     SExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 
     @Query(value = """
-            SELECT
-                eps.id as id,
-             	eps.start_time as startTime,
-             	eps.end_time as endTime
-            FROM
+            select
+            	eps.id as id,
+            	eps.start_time as startTime,
+            	eps.end_time as endTime,
+            	etbs.allow_online as allowOnline
+            from
             	exam_paper ep
-            JOIN exam_paper_shift eps ON
+            join exam_paper_shift eps on
             	ep.id = eps.id_exam_paper
-            JOIN exam_shift es ON
+            join exam_shift es on
             	eps.id_exam_shift = es.id
-            WHERE
+            join class_subject cs on
+            	es.id_subject_class = cs.id
+            join subject s on
+            	cs.id_subject = s.id
+            join exam_time_by_subject etbs on
+            	s.id = etbs.id_subject
+            where
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     SExamPaperStartTimeEndTimeResponse getStartTimeEndTimeExamPaperByExamShiftCode(String examShiftCode);
