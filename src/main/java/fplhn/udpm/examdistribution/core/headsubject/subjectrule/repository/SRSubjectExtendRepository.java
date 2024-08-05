@@ -22,7 +22,19 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                 s.subject_type AS subjectType,
                 d.name AS departmentName,
                 s.created_date AS createdDate,
-                er.file_id AS fileId
+                er.file_id AS fileId,
+                (
+                    SELECT
+                        CASE
+                            WHEN setbs.is_red_screen = 0 THEN 1
+                            ELSE 0
+                        END
+                    FROM exam_time_by_subject setbs
+                    WHERE
+                        setbs.id_subject = s.id AND
+                        setbs.id_facility = :facilityId AND
+                        setbs.status = 0
+                ) AS isRedScreen
             FROM
                 head_subject_by_semester hsbs
             JOIN subject s ON
@@ -69,7 +81,7 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
             """, nativeQuery = true)
     Page<SRSubjectResponse> getListSubject(
             Pageable pageable, String userId, String departmentFacilityId, String semesterId,
-            SRFindSubjectRequest request
+            String facilityId, SRFindSubjectRequest request
     );
 
 }
