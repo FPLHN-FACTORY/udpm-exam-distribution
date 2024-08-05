@@ -21,6 +21,8 @@ public interface SExamShiftService {
 
     ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) throws IOException;
 
+    ResponseObject<?> getStartTimeEndTimeExamPaperByExamShiftCode(String examShiftCode);
+
     ResponseObject<?> openExamPaper(SOpenExamPaperRequest sOpenExamPaperRequest);
 
     ResponseObject<?> updateExamStudentStatus(String examShiftCode);

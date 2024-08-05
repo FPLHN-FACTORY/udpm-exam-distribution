@@ -69,6 +69,30 @@ const getExamShiftByCode = () => {
     })
 }
 
+const getStartTimeEndTimeExamPaper = (examShiftCode) => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_DEPARTMENT_MANAGE_JOIN_ROOM + "/start-time-end-time",
+        data: {
+            examShiftCode: examShiftCode
+        },
+        success: function (responseBody) {
+            if (responseBody?.data) {
+                const startTime = responseBody?.data?.startTime;
+                const endTime = responseBody?.data?.endTime;
+                if (startTime !== null && endTime !== null) {
+                    startCountdown(startTime, endTime);
+                }
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
+        }
+    });
+}
+
 
 const connect = () => {
     const socket = new SockJS("/ws");
@@ -99,6 +123,9 @@ const connect = () => {
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             getPathFilePDFExamPaper(examShiftCode);
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
+            getStartTimeEndTimeExamPaper(examShiftCode);
         });
         stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
             const responseBody = JSON.parse(response.body);
@@ -240,8 +267,12 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                fetchFilePDFExamPaper(fileId);
-                startCountdown(startTime, endTime);
+                if (fileId !== null) {
+                    fetchFilePDFExamPaper(fileId);
+                }
+                if (startTime !== null && endTime !== null) {
+                    startCountdown(startTime, endTime);
+                }
             }
         },
         error: function (error) {
@@ -470,10 +501,7 @@ const startCountdown = (startTime, endTime) => {
             $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
             clearInterval(countdown);
-            $('#examShiftStart').prop('hidden', true);
-            $('#completeExamShift').prop('hidden', false);
             $('#countdown').text("Đã kết thúc!");
-            showToastSuccess('Đã hết giờ làm bài thi!')
         }
     }, 1000);
 }

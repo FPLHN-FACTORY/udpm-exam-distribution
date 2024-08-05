@@ -26,6 +26,8 @@ public interface TExamShiftService {
 
     ResponseObject<?> startExamShift(String examShiftCode);
 
+    ResponseObject<?> startTime(String examShiftCode);
+
     ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
 
     ResponseObject<?> getFile(String file) throws IOException;

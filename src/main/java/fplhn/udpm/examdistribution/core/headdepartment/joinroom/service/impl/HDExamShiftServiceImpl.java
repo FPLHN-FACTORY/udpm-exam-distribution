@@ -102,9 +102,9 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
                         "Ca thi không hợp lệ!");
             }
 
-            if (validateShift(hdCreateExamShiftRequest.getShift()) != null) {
-                return validateShift(hdCreateExamShiftRequest.getShift());
-            }
+//            if (validateShift(hdCreateExamShiftRequest.getShift()) != null) {
+//                return validateShift(hdCreateExamShiftRequest.getShift());
+//            }
 
             Optional<ClassSubject> existingClassSubject = hdClassSubjectExtendRepository
                     .findById(hdCreateExamShiftRequest.getClassSubjectId());
@@ -255,6 +255,18 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
             log.error("Lỗi khi lấy thông tin ca thi: ", e);
             return new ResponseObject<>(hdExamShiftExtendRepository.getExamShiftByCode(examShiftCode),
                     HttpStatus.OK, "Lấy thông tin ca thi thành công!");
+        }
+    }
+
+    @Override
+    public ResponseObject<?> getStartTimeEndTimeExamPaperByExamShiftCode(String examShiftCode) {
+        try {
+            return new ResponseObject<>(hdExamPaperExtendRepository.getStartTimeEndTimeExamPaperByExamShiftCode(examShiftCode),
+                    HttpStatus.OK, "Lấy thời gian bắt đầu và kết thúc đề thi thành công!");
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thời gian bắt đầu và kết thúc đề thi: ", e);
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy thời gian bắt đầu và kết thúc đề thi!");
         }
     }
 

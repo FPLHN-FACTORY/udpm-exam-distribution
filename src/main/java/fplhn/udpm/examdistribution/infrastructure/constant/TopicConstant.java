@@ -18,6 +18,8 @@ public final class TopicConstant {
 
     public static final String TOPIC_EXAM_SHIFT_START = TOPIC + "/exam-shift-start";
 
+    public static final String TOPIC_EXAM_SHIFT_START_TIME = TOPIC + "/exam-shift-start-time";
+
     public static final String TOPIC_TRACK_STUDENT = TOPIC + "/track-student";
 
     public static final String TOPIC_STUDENT_REMOVE_TAB = TOPIC + "/student-remove-tab";

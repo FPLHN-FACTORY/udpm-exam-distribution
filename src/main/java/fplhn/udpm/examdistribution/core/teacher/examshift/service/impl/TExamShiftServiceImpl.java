@@ -7,6 +7,7 @@ import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamPa
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TStartExamShiftResponse;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TStartTimeExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperBySemesterExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
@@ -291,7 +292,6 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
             String password = PasswordUtils.generatePassword();
             long startTime = System.currentTimeMillis();
-            long endTime = startTime + (5 * 60 * 1000);
 
             Optional<TExamPaperShiftResponse> examPaperShiftOptional
                     = tExamPaperShiftExtendRepository.findExamPaperShiftByExamShiftCode(examShiftCode);
@@ -304,8 +304,6 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 ExamPaperShift examPaperShift
                         = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftOptional.get().getId());
                 examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
-                examPaperShift.setStartTime(startTime);
-                examPaperShift.setEndTime(endTime);
                 examPaperShift.setPassword(password);
                 tExamPaperShiftExtendRepository.save(examPaperShift);
 
@@ -337,9 +335,6 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             examPaperShift.setExamPaper(tExamPaperExtendRepository.getReferenceById(examPaperId));
             examPaperShift.setExamShiftStatus(ExamShiftStatus.IN_PROGRESS);
             examPaperShift.setStatus(EntityStatus.ACTIVE);
-
-            examPaperShift.setStartTime(startTime);
-            examPaperShift.setEndTime(endTime);
             examPaperShift.setPassword(password);
 
             tExamPaperShiftExtendRepository.save(examPaperShift);
@@ -376,13 +371,45 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT_START,
-                    new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã bắt đầu!"));
+                    new NotificationResponse("Ca thi " + examShift.get().getExamShiftCode() + " đã được phát đề!"));
 
             return new ResponseObject<>(
                     new TStartExamShiftResponse(
                             tExamPaperExtendRepository.getReferenceById(examPaperId).getPath(), password),
-                    HttpStatus.OK, "Bắt đầu ca thi thành công!");
+                    HttpStatus.OK, "Phát đề thi thành công!");
 
+        } catch (Exception e) {
+            log.error("Lỗi khi phát đề thi: ", e);
+            return new ResponseObject<>(
+                    null, HttpStatus.BAD_REQUEST, "Lỗi khi phát đề thi!");
+        }
+    }
+
+    @Override
+    public ResponseObject<?> startTime(String examShiftCode) {
+        try {
+            long startTime = System.currentTimeMillis();
+            Long examTime = tExamPaperShiftExtendRepository.findExamTimeByExamShiftCode(examShiftCode,
+                    sessionHelper.getCurrentUserFacilityId());
+            if (examTime == null) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thời gian thi của môn này chưa có!");
+            }
+            long endTime = startTime + (examTime * 60 * 1000);
+
+            Optional<TExamPaperShiftResponse> examPaperShiftOptional
+                    = tExamPaperShiftExtendRepository.findExamPaperShiftByExamShiftCode(examShiftCode);
+            if (examPaperShiftOptional.isPresent()) {
+                ExamPaperShift examPaperShift
+                        = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftOptional.get().getId());
+                examPaperShift.setStartTime(startTime);
+                examPaperShift.setEndTime(endTime);
+                tExamPaperShiftExtendRepository.save(examPaperShift);
+
+                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME,
+                        new NotificationResponse("Ca thi bắt đầu tính giờ!"));
+            }
+            return new ResponseObject<>(new TStartTimeExamShiftResponse(startTime, endTime),
+                    HttpStatus.OK, "Bắt đầu ca thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi bắt đầu ca thi: ", e);
             return new ResponseObject<>(

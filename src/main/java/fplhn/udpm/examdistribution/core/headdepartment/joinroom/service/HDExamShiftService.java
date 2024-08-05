@@ -19,6 +19,8 @@ public interface HDExamShiftService {
 
     ResponseObject<?> getExamShiftByCode(String examShiftCode);
 
+    ResponseObject<?> getStartTimeEndTimeExamPaperByExamShiftCode(String examShiftCode);
+
     ResponseObject<?> countStudentInExamShift(String examShiftCode);
 
     ResponseObject<?> getFileExamRule(String file) throws IOException;
