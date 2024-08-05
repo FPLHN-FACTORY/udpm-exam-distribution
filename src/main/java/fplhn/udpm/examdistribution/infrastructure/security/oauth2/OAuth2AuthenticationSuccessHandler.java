@@ -58,6 +58,10 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private static final int COOKIE_EXPIRE = 7200; // 2 hours
 
+    private String globalBlockId = "";
+
+    private String globalSemesterId = "";
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -95,8 +99,13 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             OAuth2UserInfo userInfo
     ) throws IOException {
         Optional<Student> optionalStudent = authStudentRepository.isStudentExist(userInfo.getEmail());
+        boolean isBlockAndSemesterId = this.checkBlockAndSemesterIdIsEmpty();
         if (optionalStudent.isEmpty()) {
-            this.errorAuthentication(request, response);
+            if (!isBlockAndSemesterId) {
+                this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_EMPTY_BLOCK_MESSAGE);
+            } else {
+                this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
+            }
         } else {
             Student currentStudent = optionalStudent.get();
             String role = authentication.getAuthorities().toString();
@@ -129,7 +138,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         Optional<Facility> facility = facilityRepository.findFacilityById(facilityId);
 
         if (optionalStaff.isEmpty() || facility.isEmpty()) {
-            this.errorAuthentication(request, response);
+            this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
         } else {
             Staff currentStaff = optionalStaff.get();
 
@@ -158,29 +167,34 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
                 this.successAuthentication(request, response);
             } else {
-                List<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
-
-                if (staffMajorFacilityOptional.isEmpty()) {
-                    this.errorAuthentication(request, response);
+                boolean isBlockAndSemesterId = this.checkBlockAndSemesterIdIsEmpty();
+                if (!isBlockAndSemesterId) {
+                    this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_EMPTY_BLOCK_MESSAGE);
                 } else {
-                    CustomUserCookie userCookie = buildStaffCookie(
-                            staffMajorFacilityOptional.get(0),
-                            currentStaff,
-                            role.toString(),
-                            userInfo
-                    );
-                    String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
+                    List<StaffMajorFacility> staffMajorFacilityOptional = staffMajorFacilityRepository.findByStaffIdAndFacilityId(currentStaff.getId(), facilityId);
 
-                    CookieUtils.addCookie(
-                            response,
-                            CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName(),
-                            base64Encoded,
-                            COOKIE_EXPIRE,
-                            false,
-                            false
-                    );
+                    if (staffMajorFacilityOptional.isEmpty()) {
+                        this.errorAuthentication(request, response, SessionConstant.ERROR_LOGIN_FORBIDDEN_MESSAGE);
+                    } else {
+                        CustomUserCookie userCookie = buildStaffCookie(
+                                staffMajorFacilityOptional.get(0),
+                                currentStaff,
+                                role.toString(),
+                                userInfo
+                        );
+                        String base64Encoded = CookieUtils.serializeAndEncode(userCookie);
 
-                    this.successAuthentication(request, response);
+                        CookieUtils.addCookie(
+                                response,
+                                CookieConstant.EXAM_DISTRIBUTION_INFORMATION.getName(),
+                                base64Encoded,
+                                COOKIE_EXPIRE,
+                                false,
+                                false
+                        );
+
+                        this.successAuthentication(request, response);
+                    }
                 }
             }
         }
@@ -307,24 +321,33 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     private BlockAndSemesterIdResponse setBlockAndSessionId() {
-        String blockId = "";
+        httpSession.setAttribute(SessionConstant.CURRENT_BLOCK_ID, globalBlockId);
+        httpSession.setAttribute(SessionConstant.CURRENT_SEMESTER_ID, globalSemesterId);
+
+        return new BlockAndSemesterIdResponse(globalBlockId, globalSemesterId);
+    }
+
+    private boolean checkBlockAndSemesterIdIsEmpty() {
         Long now = new Date().getTime();
         for (Block block : blockRepository.findAll()) {
             if (block.getStartTime() < now && now < block.getEndTime()) {
-                blockId = block.getId();
+                globalBlockId = block.getId();
                 break;
             }
         }
-        String semesterId = blockRepository.findById(blockId).get().getSemester().getId();
 
-        httpSession.setAttribute(SessionConstant.CURRENT_BLOCK_ID, blockId);
-        httpSession.setAttribute(SessionConstant.CURRENT_SEMESTER_ID, semesterId);
+        Optional<Block> blockOptional = blockRepository.findById(globalBlockId);
+        if (globalBlockId.isEmpty() || blockOptional.isEmpty()) {
+            return false;
+        }
 
-        return new BlockAndSemesterIdResponse(blockId, semesterId);
+        globalSemesterId = blockOptional.get().getSemester().getId();
+
+        return true;
     }
 
-    private void errorAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        httpSession.setAttribute(SessionConstant.ERROR_LOGIN, SessionConstant.ERROR_MESSAGE);
+    private void errorAuthentication(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws IOException {
+        httpSession.setAttribute(SessionConstant.ERROR_LOGIN, errorMessage);
         new DefaultRedirectStrategy().sendRedirect(request, response, "/");
     }
 
