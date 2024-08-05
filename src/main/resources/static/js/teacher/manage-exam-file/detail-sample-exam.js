@@ -145,12 +145,54 @@ const handleDownloadExamPaperById = (examPaperId) => {
                     // Tạo và nhấp vào liên kết để tải tệp
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'file.pdf'; // Đặt tên cho file tải về
+                    link.download = 'ExamPaper.pdf'; // Đặt tên cho file tải về
                     document.body.appendChild(link);
                     link.click();
 
                     // Xóa đối tượng URL sau khi tải
                     URL.revokeObjectURL(url);
+                    hideLoading();
+                },
+                error: function (error) {
+                    if (error?.responseJSON?.message) {
+                        showToastError(error?.responseJSON?.message);
+                    } else {
+                        showToastError('Có lỗi xảy ra');
+                    }
+                    hideLoading();
+                }
+            });
+        }
+    });
+};
+
+const handleDeleteExamPaperById = (examPaperId) => {
+    swal({
+        title: "Xác nhận xóa đề thi?",
+        text: "Bạn chắc chắn muốn xóa đề thi không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Xác nhận",
+                className: "btn btn-black",
+            },
+        },
+    }).then((ok) => {
+        if (ok) {
+            showLoading();
+            $.ajax({
+                type: "delete",
+                url: ApiConstant.API_TEACHER_EXAM_FILE + "/delete?examPaperId=" + examPaperId,
+                success: function (responseBody) {
+                    if (responseBody?.message) {
+                        showToastSuccess(responseBody?.message)
+                    }
+                    submitFetchExamPaper();
                     hideLoading();
                 },
                 error: function (error) {

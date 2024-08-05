@@ -36,7 +36,10 @@
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="subjectAndDepartment">Môn học/bộ môn</label>
-                                    <input type="text" id="subjectAndDepartment" class="form-control">
+                                    <input type="text"
+                                           id="subjectAndDepartment"
+                                           class="form-control"
+                                           placeholder="Nhập từ khóa tìm kiếm (Môn học / Bộ môn)">
                                 </div>
                                 <div class="col form-group">
                                     <label for="subjectType" class="form-label"> Loại môn học </label>
@@ -175,6 +178,80 @@
     </div>
     <!-- Modal Detail Mock Exam Paper -->
 
+    <!-- Modal List Student Join -->
+    <div class="modal modal-xl fade" id="listStudentModal" tabindex="-1" aria-labelledby="listStudentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="labelListStudent">Danh sách sinh viên tham gia phòng: <span id="practiceRoomCodeTitle"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-4">
+                        <!-- Filter -->
+                        <div class="shadow p-4 mb-4 bg-white rounded">
+                            <h3 class="m-portlet__head-text">
+                                <i class="fa-solid fa-filter"></i> Bộ lọc
+                            </h3>
+                            <form id="filterFormListStudent">
+                                <div class="row">
+                                    <div class="col form-group">
+                                        <label for="keyWordStudent">Sinh viên</label>
+                                        <input type="text"
+                                               id="keyWordStudent"
+                                               class="form-control"
+                                               placeholder="Nhập từ khóa tìm kiếm (Mã / Tên / Email)"
+                                        >
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Filter -->
+                        <div class="shadow p-4 bg-white rounded">
+                            <div class="mt-4">
+                                <h4>Danh sách sinh viên</h4>
+                            </div>
+                            <div class="table-responsive mt-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <td>STT</td>
+                                        <td>Mã</td>
+                                        <td>Tên</td>
+                                        <td>Email</td>
+                                        <td>Tham gia lúc</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody" class="table-group-divider">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <nav>
+                                            <ul class="pagination" id="paginationListStudent">
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <select class="form-select" id="pageSizeListStudent" style="width: 100px;">
+                                        <option value="5">5 bản ghi / Trang</option>
+                                        <option value="10">10 bản ghi / Trang</option>
+                                        <option value="20">20 bản ghi / Trang</option>
+                                        <option value="50">50 bản ghi / Trang</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal List Student Join -->
+
     <!-- Modal create practiceRoom -->
     <div class="modal fade" id="practiceRoomModal" tabindex="-1" aria-labelledby="procticeRoomModalLabel"
          aria-hidden="true">
@@ -236,7 +313,11 @@
                         <label for="practiceRoomPasswordDetail" class="form-label"> Mật khẩu </label>
                         <input type="text" class="form-control" id="practiceRoomPasswordDetail" readonly>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-between">
+                        <button type="button" class="btn"
+                                onclick="openModalListStudent()"
+                                style="background-color: var(--common-button-color); color: white;">Danh sách sinh viên
+                        </button>
                         <button type="button" class="btn" data-bs-dismiss="modal"
                                 style="background-color: var(--common-button-color); color: white;">Đóng
                         </button>

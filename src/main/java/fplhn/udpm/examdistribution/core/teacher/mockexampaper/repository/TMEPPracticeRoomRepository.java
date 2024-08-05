@@ -1,9 +1,13 @@
 package fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository;
 
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMEPStudentRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TMEPPracticeRoomResponse;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TMEPStudentResponse;
 import fplhn.udpm.examdistribution.entity.PracticeRoom;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.repository.PracticeRoomRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,5 +38,38 @@ public interface TMEPPracticeRoomRepository extends PracticeRoomRepository {
             AND pr.status = :status
             """)
     List<PracticeRoom> getAllByEndDate(@Param("endTime") Long endTime, @Param("status") EntityStatus status);
+
+    @Query(value = """
+            SELECT s.id AS studentId,
+            	   s.name AS studentName,
+            	   s.student_code AS studentCode,
+            	   s.email AS studentEmail,
+            	   pr.practice_room_code AS practiceRoomCode,
+            	   spr.joined_at AS joinedAt
+            FROM student_practice_room spr
+            JOIN practice_room pr ON pr.id = spr.id_practice_room
+            JOIN student s ON s.id = spr.id_student
+            WHERE spr.id_practice_room LIKE :#{#request.practiceRoomId}
+            AND pr.id_staff LIKE :currentTeacher
+            AND (:#{#request.keyWord} IS NULL 
+                     OR s.name LIKE :#{"%" +#request.keyWord+"%"}
+                     OR s.email LIKE :#{"%" +#request.keyWord+"%"}
+                     OR s.student_code LIKE :#{"%" +#request.keyWord+"%"})
+            ORDER BY spr.joined_at DESC
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM student_practice_room spr
+                    JOIN practice_room pr ON pr.id = spr.id_practice_room
+                    JOIN student s ON s.id = spr.id_student
+                    WHERE spr.id_practice_room LIKE :#{#request.practiceRoomId}
+                    AND pr.id_staff LIKE :currentTeacher
+                    AND (:#{#request.keyWord} IS NULL 
+                             OR s.name LIKE :#{"%" +#request.keyWord+"%"}
+                             OR s.email LIKE :#{"%" +#request.keyWord+"%"}
+                             OR s.student_code LIKE :#{"%" +#request.keyWord+"%"})
+                    ORDER BY spr.joined_at DESC
+                    """, nativeQuery = true)
+    Page<TMEPStudentResponse> getStudents(Pageable pageable, String currentTeacher, TMEPStudentRequest request);
 
 }
