@@ -57,6 +57,22 @@ const fetchSearchSubject = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
+                            <td>
+                                <div class="col-auto">
+                                  <label class="colorinput">
+                                    <input
+                                        name="color"
+                                        type="checkbox"
+                                        class="colorinput-input"
+                                        ${subject.allowOnline == true ? "checked" : ""}
+                                        id="input-choose-exam-rule"
+                                    />
+                                    <span
+                                      class="colorinput-color bg-secondary"
+                                    ></span>
+                                  </label>
+                                </div>
+                            </td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span
                                     onclick="handleOpenModalExamRule('${subject.id}')"

@@ -34,4 +34,7 @@ public class ExamTimeBySubject extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_facility")
     private Facility facility;
 
+    @Column(name = "allow_online")
+    private boolean allowOnline;
+
 }

@@ -17,4 +17,6 @@ public interface SRSubjectResponse extends IsIdentify, HasOrderNumber {
 
     String getFileId();
 
+    Integer getAllowOnline();
+
 }

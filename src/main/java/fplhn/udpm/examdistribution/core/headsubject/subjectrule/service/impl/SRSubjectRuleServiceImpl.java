@@ -118,6 +118,7 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                             sessionHelper.getCurrentUserId(),
                             sessionHelper.getCurrentUserDepartmentFacilityId(),
                             sessionHelper.getCurrentSemesterId(),
+                            sessionHelper.getCurrentUserFacilityId(),
                             request
                     )),
                     HttpStatus.OK,
