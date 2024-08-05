@@ -26,7 +26,7 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                 (
                     SELECT
                         CASE
-                            WHEN setbs.is_red_screen = 0 THEN 1
+                            WHEN setbs.allow_online = 1 THEN 1
                             ELSE 0
                         END
                     FROM exam_time_by_subject setbs
@@ -34,7 +34,7 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                         setbs.id_subject = s.id AND
                         setbs.id_facility = :facilityId AND
                         setbs.status = 0
-                ) AS isRedScreen
+                ) AS allowOnline
             FROM
                 head_subject_by_semester hsbs
             JOIN subject s ON
