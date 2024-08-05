@@ -32,6 +32,8 @@ public class SessionConstant {
 
     public static final String IS_STUDENT = "is_student";
 
-    public static final String ERROR_MESSAGE = "Tài khoản không được phép đăng nhập vào hệ thống!";
+    public static final String ERROR_LOGIN_FORBIDDEN_MESSAGE = "Tài khoản không được phép đăng nhập vào hệ thống!";
+
+    public static final String ERROR_LOGIN_EMPTY_BLOCK_MESSAGE = "Hệ thông chưa có thời gian học kỳ block!";
 
 }
