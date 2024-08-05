@@ -145,7 +145,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime > examPaperShift.getStartTime() + (60 * 1000)) {
+                    if (examPaperShift.getStartTime() == null || currentTime > examPaperShift.getStartTime() + (60 * 1000)) {
                         StudentExamShift studentExamShift = new StudentExamShift();
                         studentExamShift.setStudent(existingStudent.get());
                         studentExamShift.setExamShift(examShift);

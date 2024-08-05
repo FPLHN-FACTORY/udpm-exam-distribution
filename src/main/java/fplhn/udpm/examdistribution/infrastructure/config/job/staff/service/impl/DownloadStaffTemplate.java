@@ -3,24 +3,33 @@ package fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.impl
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigDepartmentFacilityCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigRoleCustomRepository;
-import fplhn.udpm.examdistribution.infrastructure.config.job.staff.service.ExcelFileStaffService;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+@Component
 @Slf4j
-public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
+public class DownloadStaffTemplate {
 
     private final ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
 
@@ -28,15 +37,16 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
 
     private final HttpSession httpSession;
 
-    public ExcelFileStaffServiceImpl(ConfigDepartmentFacilityCustomRepository departmentFacilityRepository,
-                                     ConfigRoleCustomRepository roleRepository,
-                                     HttpSession httpSession) {
+    public DownloadStaffTemplate(
+            ConfigDepartmentFacilityCustomRepository departmentFacilityRepository,
+            ConfigRoleCustomRepository roleRepository,
+            HttpSession httpSession
+    ) {
         this.departmentFacilityRepository = departmentFacilityRepository;
         this.roleRepository = roleRepository;
         this.httpSession = httpSession;
     }
 
-    @Override
     public ResponseObject<ByteArrayInputStream> downloadTemplate() {
 
         try (Workbook workbook = new XSSFWorkbook()) {
@@ -44,10 +54,14 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
 
             Row row = sheet.createRow(0);
 
+            Font font = workbook.createFont();
+            font.setColor(IndexedColors.WHITE.getIndex());
+
             CellStyle headerCellStyle = workbook.createCellStyle();
             headerCellStyle.setLocked(true);
-            headerCellStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
+            headerCellStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex());
             headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerCellStyle.setFont(font);
             headerCellStyle.setWrapText(true);
 
             Cell cell = row.createCell(0);
@@ -78,8 +92,8 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
             cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerCellStyle);
 
-            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility((String)httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID));
-            List<String> validRole = roleRepository.findAllByFacilityId((String)httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID));
+            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility((String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID));
+            List<String> validRole = roleRepository.findAllByFacilityId((String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID));
 
             CellRangeAddressList dataDepartmentFacility = new CellRangeAddressList(1, 1000, 5, 5);
             CellRangeAddressList dataRole = new CellRangeAddressList(1, 1000, 6, 6);

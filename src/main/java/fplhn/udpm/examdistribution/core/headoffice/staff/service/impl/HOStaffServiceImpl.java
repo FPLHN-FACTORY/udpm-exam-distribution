@@ -1,40 +1,28 @@
 package fplhn.udpm.examdistribution.core.headoffice.staff.service.impl;
 
+import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headoffice.department.departmentfacility.repository.DFFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOSaveStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.model.request.HOStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffDepartmentFacilityRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.repository.HOStaffRoleRepository;
 import fplhn.udpm.examdistribution.core.headoffice.staff.service.HOStaffService;
-import fplhn.udpm.examdistribution.entity.DepartmentFacility;
-import fplhn.udpm.examdistribution.entity.Facility;
+import fplhn.udpm.examdistribution.entity.HistoryImport;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.utils.Helper;
+import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataValidation;
-import org.apache.poi.ss.usermodel.DataValidationConstraint;
-import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.ss.usermodel.DataValidationHelper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +36,10 @@ public class HOStaffServiceImpl implements HOStaffService {
     private final HOStaffDepartmentFacilityRepository departmentFacilityRepo;
 
     private final HOStaffRoleRepository staffRoleRepo;
+
+    private final SessionHelper sessionHelper;
+
+    private final HistoryLogUtils historyLogUtils;
 
     @Override
     public ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest) {
@@ -103,7 +95,7 @@ public class HOStaffServiceImpl implements HOStaffService {
 
         if (!checkStaff.isEmpty() &&
             !checkStaff.get(0).getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
-            checkStaff.get(0).getStatus() == EntityStatus.ACTIVE ){
+            checkStaff.get(0).getStatus() == EntityStatus.ACTIVE) {
             if (!staff.getId().equals(checkStaff.get(0).getId())) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã nhân viên đã tồn tại");
             }
@@ -138,6 +130,23 @@ public class HOStaffServiceImpl implements HOStaffService {
 
         String message = newStatus == EntityStatus.INACTIVE ? "Staff deactivated successfully" : "Staff activated successfully";
         return new ResponseObject<>(null, HttpStatus.OK, message);
+    }
+
+    @Override
+    public ResponseObject<?> getLogsImportStaff(int page, int size) {
+        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffId(
+                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId()
+        );
+        List<HistoryImport> loggerObjects = listLogRaw.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+        return ResponseObject.successForward(
+                PageableObject.of(new PageImpl<>(
+                        loggerObjects, PageRequest.of(page, size), loggerObjects.size()
+                )),
+                "Lấy lịch sử thay đổi thành công"
+        );
     }
 
 }

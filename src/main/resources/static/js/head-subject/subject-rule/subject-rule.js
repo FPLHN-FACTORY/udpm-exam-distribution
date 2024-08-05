@@ -57,6 +57,23 @@ const fetchSearchSubject = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
+                            <td>
+                                <div class="col-auto">
+                                  <label class="colorinput">
+                                    <input
+                                        onclick="handleAllowOnlineSubject('${subject.id}')"
+                                        name="color"
+                                        type="checkbox"
+                                        class="colorinput-input"
+                                        ${subject.allowOnline == true ? "checked" : ""}
+                                        id="input-choose-exam-rule"
+                                    />
+                                    <span
+                                      class="colorinput-color bg-secondary"
+                                    ></span>
+                                  </label>
+                                </div>
+                            </td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span
                                     onclick="handleOpenModalExamRule('${subject.id}')"
@@ -88,6 +105,27 @@ const fetchSearchSubject = (
 };
 
 //------------------------------------------------------function--------------------------------------------------------
+
+const handleAllowOnlineSubject = (subjectId) => {
+    showLoading();
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_HEAD_SUBJECT_MANAGE_SUBJECT_RULE + "/allow-online-subject/" + subjectId,
+        contentType: "application/json",
+        success: function (responseBody) {
+            showToastSuccess(responseBody.message);
+            hideLoading();
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error?.responseJSON?.message);
+            } else {
+                showToastError('Có lỗi xảy ra');
+            }
+            hideLoading();
+        }
+    });
+};
 
 const getGlobalParamsSearch = () => {
     return {

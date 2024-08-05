@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -20,21 +21,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "exam_time_by_subject")
-public class ExamTimeBySubject extends PrimaryEntity implements Serializable {
+@Table(name = "resource_exam_paper")
+public class ResourceExamPaper extends PrimaryEntity implements Serializable {
 
-    @Column(name = "exam_time")
-    private Long exam_time;
-
-    @ManyToOne
-    @JoinColumn(name = "id_subject")
-    private Subject subject;
+    @Column(name = "resource", length = EntityProperties.LENGTH_URL)
+    private String resource;
 
     @ManyToOne
-    @JoinColumn(name = "id_facility")
-    private Facility facility;
-
-    @Column(name = "allow_online")
-    private boolean allowOnline;
+    @JoinColumn(name = "id_exam_paper")
+    private ExamPaper examPaper;
 
 }

@@ -639,8 +639,6 @@ const fetchFilePDFExamPaper = (fileId) => {
             fileId: fileId
         },
         success: function (responseBody) {
-            $('#examShiftStart').prop('hidden', true);
-            $('#examShiftStartTime').prop('hidden', false);
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
             pdfjsLib
                 .getDocument({data: pdfData})
@@ -650,6 +648,9 @@ const fetchFilePDFExamPaper = (fileId) => {
 
                 renderPage(pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
                 showViewAndPagingPdf(pdfDoc.numPages, '#pdf-viewer', '#paging-pdf');
+
+                $('#examShiftStart').prop('hidden', true);
+                $('#examShiftStartTime').prop('hidden', false);
 
                 hideLoading();
             });
@@ -751,6 +752,7 @@ const examShiftStartTimeSubmit = () => {
     }).then((willApprove) => {
         if (willApprove) {
             examShiftStartTime();
+            $('#examShiftStartTime').prop('hidden', true);
         }
     });
 };
@@ -829,8 +831,6 @@ const startCountdown = (startTime, endTime) => {
             $('#completeExamShift').prop('hidden', false);
             $('#countdown').text("Đã kết thúc!");
             showToastSuccess('Đã hết giờ làm bài thi!')
-            updateExamPaperShiftStatus();
-            updateExamShiftStatus();
         }
     }, 1000);
 }
@@ -845,6 +845,8 @@ const completeExamShift = () => {
     }).then((willComplete) => {
         if (willComplete) {
             window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_SHIFT;
+            updateExamPaperShiftStatus();
+            updateExamShiftStatus();
         }
     });
 };

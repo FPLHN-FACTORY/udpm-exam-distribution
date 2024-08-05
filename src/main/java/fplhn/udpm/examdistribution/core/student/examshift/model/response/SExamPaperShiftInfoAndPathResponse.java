@@ -10,4 +10,6 @@ public interface SExamPaperShiftInfoAndPathResponse extends IsIdentify {
 
     Long getEndTime();
 
+    Boolean getAllowOnline();
+
 }

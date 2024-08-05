@@ -21,5 +21,7 @@ public interface SRSubjectRuleService {
 
     ResponseObject<?> getExamTime(SRExamTimeRequest request);
 
+    ResponseObject<?> allowOnlineSubject(String subjectId);
+
 }
 
