@@ -6,6 +6,7 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
@@ -14,6 +15,7 @@ import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampa
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPClassSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPFacilityExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPMajorFacilityExtendRepository;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPResourceExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSharePermissionExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPSubjectExtendRepository;
@@ -74,6 +76,8 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     private final UEPFacilityExtendRepository facilityRepository;
 
     private final UEPClassSubjectExtendRepository classSubjectRepository;
+
+    private final UEPResourceExamPaperExtendRepository resourceExamPaperRepository;
 
     private final GoogleDriveFileService googleDriveFileService;
 
@@ -604,6 +608,24 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                     null,
                     HttpStatus.BAD_REQUEST,
                     "Chia sẻ quyền truy cập không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> getListResource(ListResourceExamPaperRequest request) {
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            return new ResponseObject<>(
+                    PageableObject.of(resourceExamPaperRepository.getListResourceExamPaper(pageable, request)),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách đề thi"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy thành công danh sách resource"
             );
         }
     }

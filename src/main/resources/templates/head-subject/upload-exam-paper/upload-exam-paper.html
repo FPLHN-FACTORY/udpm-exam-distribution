@@ -514,6 +514,57 @@
         </div>
     </div>
     <!-- Modal Detail ExamPaper -->
+
+    <!-- Modal Resource -->
+    <div class="modal modal-xl fade" id="resourceTableModal" tabindex="-1" aria-labelledby="resourceTableModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quản lý tài nguyên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shadow p-4 bg-white rounded">
+                        <div class="mt-4">
+                            <h4>Danh sách tài nguyên</h4>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>STT</td>
+                                    <td>Link tài nguyên</td>
+                                </tr>
+                                </thead>
+                                <tbody id="resourceTableBody" class="table-group-divider">
+                                <tr>
+                                    <td colspan="2" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                <div class="d-flex align-items-center">
+                                    <nav>
+                                        <ul class="pagination" id="paginationResource">
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <select class="form-select" id="pageSizeResource" style="width: 100px;">
+                                    <option value="5">5 bản ghi / Trang</option>
+                                    <option value="10">10 bản ghi / Trang</option>
+                                    <option value="20">20 bản ghi / Trang</option>
+                                    <option value="50">50 bản ghi / Trang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Resource -->
+
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
 
@@ -541,6 +592,7 @@
         <script th:src="@{/js/head-subject/upload-exam-paper/manipulate-exam-paper.js}"></script>
         <script th:src="@{/js/head-subject/assign-uploader/upload-sample-exam-paper.js}"></script>
         <script th:src="@{/js/head-subject/upload-exam-paper/share-permission.js}"></script>
+        <script th:src="@{/js/head-subject/upload-exam-paper/resource.js}"></script>
     </div>
     <div th:case="false">
         <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -565,6 +617,7 @@
         <script th:src="@{/js/minified/head-subject/upload-exam-paper/manipulate-exam-paper.js}"></script>
         <script th:src="@{/js/minified/head-subject/assign-uploader/upload-sample-exam-paper.js}"></script>
         <script th:src="@{/js/minified/head-subject/upload-exam-paper/share-permission.js}"></script>
+        <script th:src="@{/js/minified/head-subject/upload-exam-paper/resource.js}"></script>
     </div>
 </div>
 </body>

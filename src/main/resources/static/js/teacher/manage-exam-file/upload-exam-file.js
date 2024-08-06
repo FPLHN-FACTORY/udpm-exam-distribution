@@ -297,7 +297,19 @@ const fetchExamPapers = async (page,
                                  <i class="fas fas fa-eye"
                                     style="cursor: pointer; margin-left: 10px;"></i>
                                  </span>
-                                  <span onClick="handleDownloadExamPaperById('${examPaper.id}')"
+                                 <span
+                                    onclick="handleModalModalResource('${examPaper.id}')"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Danh sách tài nguyên"
+                                    style="margin: 0 3px"
+                                    class="fs-4"
+                                 >
+                                    <i 
+                                        class="fa-solid fa-link"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                 </span>
+                                 <span onClick="handleDownloadExamPaperById('${examPaper.id}')"
                                         data-bs-toggle="tooltip"
                                         data-bs-title="Tải xuống"
                                         class="fs-4">

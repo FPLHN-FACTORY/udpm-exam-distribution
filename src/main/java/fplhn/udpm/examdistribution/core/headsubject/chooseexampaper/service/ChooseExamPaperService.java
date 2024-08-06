@@ -2,9 +2,12 @@ package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateResourceExamPaperRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +40,12 @@ public interface ChooseExamPaperService {
 
     ResponseEntity<?> convertPdfToDocx(MultipartFile file);
 
-    ResponseObject<?> getListResource(String examPaperId);
+    ResponseObject<?> getListResource(CEPListResourceExamPaperRequest request);
+
+    ResponseObject<?> createResource(@Valid CEPCreateResourceExamPaperRequest request);
+
+    ResponseObject<?> updateResource(@Valid CEPUpdateResourceExamPaperRequest request);
+
+    ResponseObject<?> detailResource(String resourceExamPaperId);
 
 }

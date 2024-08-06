@@ -1,9 +1,12 @@
 package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPCreateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPGetFileRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPUpdateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.service.ChooseExamPaperService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,9 +98,24 @@ public class ChooseExamPaperRestController {
         return chooseExamPaperService.convertPdfToDocx(file);
     }
 
-    @GetMapping("/resources/{examPaperId}")
-    public ResponseEntity<?> getListResource(@PathVariable String examPaperId) {
-        return Helper.createResponseEntity(null);
+    @GetMapping("/resources")
+    public ResponseEntity<?> getListResource(CEPListResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(chooseExamPaperService.getListResource(request));
+    }
+
+    @PostMapping("/resources")
+    public ResponseEntity<?> createResource(@RequestBody CEPCreateResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(chooseExamPaperService.createResource(request));
+    }
+
+    @PutMapping("/resources")
+    public ResponseEntity<?> updateResource(@RequestBody CEPUpdateResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(chooseExamPaperService.updateResource(request));
+    }
+
+    @GetMapping("/detail-resource/{resourceExamPaperId}")
+    public ResponseEntity<?> detailResource(@PathVariable String resourceExamPaperId) {
+        return Helper.createResponseEntity(chooseExamPaperService.detailResource(resourceExamPaperId));
     }
 
 }

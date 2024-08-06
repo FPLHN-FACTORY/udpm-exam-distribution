@@ -114,6 +114,7 @@ public class GoogleDriveManagerServiceImpl implements GoogleDriveManagerService 
             Permission createdPermission = googleDriveConfig.getDrive()
                     .permissions()
                     .create(id, permission)
+                    .setSendNotificationEmail(false)
                     .execute();
             return createdPermission;
         } catch (IOException e) {

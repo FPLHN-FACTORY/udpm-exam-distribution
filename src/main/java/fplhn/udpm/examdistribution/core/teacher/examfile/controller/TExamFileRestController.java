@@ -2,6 +2,9 @@ package fplhn.udpm.examdistribution.core.teacher.examfile.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TECreateResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEUpdateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -12,7 +15,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(MappingConstants.API_TEACHER_EXAM_FILE)
@@ -70,9 +81,30 @@ public class TExamFileRestController {
         return Helper.createResponseEntity(examFileService.getExamPaper(examPaperId));
     }
 
+
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteExamPaper(@RequestParam(value = "examPaperId", defaultValue = "0") String examPaperId) {
         return Helper.createResponseEntity(examFileService.deleteExamPaper(examPaperId));
+    }
+
+    @GetMapping("/resources")
+    public ResponseEntity<?> getListResource(TEListResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(examFileService.getListResource(request));
+    }
+
+    @PostMapping("/resources")
+    public ResponseEntity<?> createResource(@RequestBody TECreateResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(examFileService.createResource(request));
+    }
+
+    @PutMapping("/resources")
+    public ResponseEntity<?> updateResource(@RequestBody TEUpdateResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(examFileService.updateResource(request));
+    }
+
+    @GetMapping("/detail-resource/{resourceExamPaperId}")
+    public ResponseEntity<?> detailResource(@PathVariable String resourceExamPaperId) {
+        return Helper.createResponseEntity(examFileService.detailResource(resourceExamPaperId));
     }
 
 }
