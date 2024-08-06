@@ -146,8 +146,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             String accountFe = existingStaff.get().getAccountFe().split("@fe.edu.vn")[0];
-//            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
-//                    new NotificationResponse("Giám thị " + accountFe + " đã tham gia ca thi!"));
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_EXAM_SHIFT,
+                    new NotificationResponse("Giám thị " + accountFe + " đã tham gia ca thi!"));
 
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.OK, "Tham gia ca thi thành công!");
@@ -194,8 +194,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
             studentExamShift.get().setReason(reason);
 
-//            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
-//                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi ca thi!"));
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi ca thi! - " + studentId));
 
             return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
         } catch (Exception e) {
@@ -228,8 +228,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
             tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
-//            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
-//                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào ca thi!"));
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào ca thi!"));
 
             return new ResponseObject<>(examShift.get().getExamShiftCode(), HttpStatus.OK,
                     "Phê duyệt sinh viên " + student.get().getName() + " thành công!");
@@ -263,8 +263,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
             tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
-//            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
-//                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
+            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị từ chối!"));
 
             return new ResponseObject<>(null, HttpStatus.OK,
                     "Từ chối sinh viên " + student.get().getName() + " thành công!");

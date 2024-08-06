@@ -38,7 +38,7 @@ $(document).ready(function () {
         localStorage.removeItem('joinExamShiftSuccessMessage');
     }
 
-    // connect();
+    connect();
 
     removeStudentSubmit();
 
@@ -143,12 +143,6 @@ const removeStudent = (studentId) => {
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/remove-student/' + studentId,
         data: JSON.stringify(reason),
         contentType: 'application/json',
-        success: function (responseBody) {
-            if (responseBody?.message) {
-                const message = responseBody?.message;
-                showToastSuccess(message);
-            }
-        },
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message);
@@ -491,36 +485,36 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        // stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
-        //     showToastSuccess(JSON.parse(response.body).message);
-        //     getSecondSupervisorId();
-        // });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-        //     showToastSuccess(JSON.parse(response.body).message);
-        //     countStudentInExamShift();
-        //     getStudents();
-        //     getStudentRejoin();
-        // });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-        //     showToastSuccess(JSON.parse(response.body).message);
-        //     countStudentInExamShift();
-        //     getStudents();
-        //     getStudentRejoin();
-        // });
+        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getSecondSupervisorId();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            countStudentInExamShift();
+            getStudents();
+            getStudentRejoin();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
+            showToastSuccess(JSON.parse(response.body).message.split(' - ')[0]);
+            countStudentInExamShift();
+            getStudents();
+            getStudentRejoin();
+        });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
             showToastSuccess(JSON.parse(response.body).message);
             getStudentRejoin();
         });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
-        //     showToastSuccess(JSON.parse(response.body).message);
-        //     getStudentRejoin();
-        //     getStudents();
-        //     countStudentInExamShift();
-        // });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
-        //     showToastError(JSON.parse(response.body).message);
-        //     getStudentRejoin();
-        // });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
+            showToastSuccess(JSON.parse(response.body).message);
+            getStudentRejoin();
+            getStudents();
+            countStudentInExamShift();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
+            showToastError(JSON.parse(response.body).message);
+            getStudentRejoin();
+        });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
@@ -530,16 +524,16 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
         });
-        // stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
-        //     const responseBody = JSON.parse(response.body);
-        //     showToastError(responseBody.message);
-        //     getStudents();
-        // });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
-        //     const responseBody = JSON.parse(response.body);
-        //     showToastError(responseBody.message);
-        //     getStudents();
-        // });
+        stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastError(responseBody.message);
+            getStudents();
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
+            const responseBody = JSON.parse(response.body);
+            showToastError(responseBody.message);
+            getStudents();
+        });
     });
 }
 

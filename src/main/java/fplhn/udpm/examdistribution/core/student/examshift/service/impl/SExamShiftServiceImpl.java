@@ -23,7 +23,6 @@ import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
-import fplhn.udpm.examdistribution.utils.PasswordUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -171,11 +170,11 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 studentExamShift.setStatus(EntityStatus.ACTIVE);
                 sStudentExamShiftExtendRepository.save(studentExamShift);
 
-//                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
-//                        new NotificationResponse(
-//                                "Sinh viên "
-//                                        + existingStudent.get().getStudentCode()
-//                                        + " đã tham gia ca thi!"));
+                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
+                        new NotificationResponse(
+                                "Sinh viên "
+                                        + existingStudent.get().getStudentCode()
+                                        + " đã tham gia ca thi!"));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
