@@ -1,3 +1,5 @@
+const userInfo = getExamDistributionInfo();
+
 const pdfjsLib = window["pdfjs-dist/build/pdf"];
 let pdfDoc = null;
 let pageNum = 1;
@@ -279,12 +281,16 @@ const connect = () => {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
-            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
+            const responseBody = JSON.parse(response.body);
+            const studentId = responseBody.message.split(' - ')[1];
+            console.log(studentId)
+            console.log(userInfo.userId)
+            if (studentId === userInfo.userId) {
+                localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi ca thi!');
+                window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             const responseBody = JSON.parse(response.body);

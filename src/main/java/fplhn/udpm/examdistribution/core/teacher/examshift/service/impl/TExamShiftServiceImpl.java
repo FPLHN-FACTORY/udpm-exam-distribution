@@ -195,7 +195,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             studentExamShift.get().setReason(reason);
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
-                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi ca thi!"));
+                    new NotificationResponse("Sinh viên " + student.get().getName() + " đã bị kick ra khỏi ca thi! - " + studentId));
 
             return new ResponseObject<>(null, HttpStatus.OK, "Xoá sinh viên thành công!");
         } catch (Exception e) {

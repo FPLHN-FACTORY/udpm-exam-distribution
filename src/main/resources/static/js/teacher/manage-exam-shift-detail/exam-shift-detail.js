@@ -143,12 +143,6 @@ const removeStudent = (studentId) => {
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/remove-student/' + studentId,
         data: JSON.stringify(reason),
         contentType: 'application/json',
-        success: function (responseBody) {
-            if (responseBody?.message) {
-                const message = responseBody?.message;
-                showToastSuccess(message);
-            }
-        },
         error: function (error) {
             if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message);
@@ -502,7 +496,7 @@ const connect = () => {
             getStudentRejoin();
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
+            showToastSuccess(JSON.parse(response.body).message.split(' - ')[0]);
             countStudentInExamShift();
             getStudents();
             getStudentRejoin();
