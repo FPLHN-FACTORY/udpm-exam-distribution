@@ -3,6 +3,9 @@ package fplhn.udpm.examdistribution.core.teacher.examfile.service.impl;
 import fplhn.udpm.examdistribution.core.common.base.FileResponse;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TECreateResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEUpdateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -12,6 +15,7 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSampleE
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.response.TSubjectResponse;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TAssignUploaderRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TBlockRepository;
+import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TEResourceExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TExamPaperRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TMajorFacilityRepository;
 import fplhn.udpm.examdistribution.core.teacher.examfile.repository.TStaffRepository;
@@ -20,6 +24,7 @@ import fplhn.udpm.examdistribution.core.teacher.examfile.service.TExamFileServic
 import fplhn.udpm.examdistribution.entity.AssignUploader;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.MajorFacility;
+import fplhn.udpm.examdistribution.entity.ResourceExamPaper;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.dto.GoogleDriveFileDTO;
@@ -56,6 +61,9 @@ public class TExamFileImpl implements TExamFileService {
     private final TMajorFacilityRepository majorFacilityRepository;
 
     private final TAssignUploaderRepository assignUploaderRepository;
+
+    private final TEResourceExamPaperExtendRepository resourceExamPaperRepository;
+
 
     private final TStaffRepository tStaffRepository;
 
@@ -318,6 +326,117 @@ public class TExamFileImpl implements TExamFileService {
                 googleDriveFileService.deleteById(examPaper.getPath());
             } catch (Exception e) {
             }
+        }
+    }
+
+    @Override
+    public ResponseObject<?> getListResource(TEListResourceExamPaperRequest request) {
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            return new ResponseObject<>(
+                    PageableObject.of(resourceExamPaperRepository.getListResourceExamPaper(pageable, request)),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách đề thi"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy thành công danh sách resource"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> createResource(TECreateResourceExamPaperRequest request) {
+        try {
+            Optional<ExamPaper> examPaperOptional = tExamPaperRepository.findById(request.getExamPaperId());
+            if (examPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy đề thi này"
+                );
+            }
+
+            ResourceExamPaper resourceExamPaper = new ResourceExamPaper();
+            resourceExamPaper.setExamPaper(examPaperOptional.get());
+            resourceExamPaper.setResource(request.getResource());
+            resourceExamPaper.setStatus(EntityStatus.ACTIVE);
+            resourceExamPaperRepository.save(resourceExamPaper);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Thêm mới tài nguyên thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Thêm mới tài nguyên không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> updateResource(TEUpdateResourceExamPaperRequest request) {
+        try {
+            Optional<ResourceExamPaper> resourceExamPaperOptional = resourceExamPaperRepository.findById(
+                    request.getResourceExamPaperId()
+            );
+            if (resourceExamPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy tài nguyên này"
+                );
+            }
+
+            ResourceExamPaper resourceExamPaper = resourceExamPaperOptional.get();
+            resourceExamPaper.setResource(request.getResource());
+            resourceExamPaper.setStatus(EntityStatus.ACTIVE);
+            resourceExamPaperRepository.save(resourceExamPaper);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Cập nhật tài nguyên thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Cập nhật tài nguyên không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> detailResource(String resourceExamPaperId) {
+        try {
+            Optional<ResourceExamPaper> resourceExamPaperOptional = resourceExamPaperRepository.findById(
+                    resourceExamPaperId
+            );
+            if (resourceExamPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy tài nguyên này"
+                );
+            }
+
+            return new ResponseObject<>(
+                    resourceExamPaperOptional.get().getResource(),
+                    HttpStatus.OK,
+                    "Cập nhật tài nguyên thành công"
+            );
+        } catch (Exception e) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Cập nhật tài nguyên không thành công"
+            );
         }
     }
 

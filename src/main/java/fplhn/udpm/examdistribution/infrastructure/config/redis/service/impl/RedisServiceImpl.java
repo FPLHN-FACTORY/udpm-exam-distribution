@@ -21,7 +21,7 @@ public class RedisServiceImpl implements RedisService {
 
     private HashOperations<String, String, Object> hashOperations;
 
-    private final static long redisTimeToLive = 10;
+    private final static long redisTimeToLive = 3;
 
     @PostConstruct
     private void init() {
@@ -30,7 +30,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void set(String key, String value) {
-        redisTemplate.opsForValue().set(key, value, redisTimeToLive, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(key, value, redisTimeToLive, TimeUnit.DAYS);
     }
 
     @Override

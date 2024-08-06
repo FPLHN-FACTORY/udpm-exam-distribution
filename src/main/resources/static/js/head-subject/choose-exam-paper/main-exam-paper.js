@@ -353,6 +353,17 @@ const fetchListExamPaper = (
                                     ></i>
                                 </span>
                                 <span
+                                    onclick="handleModalModalResource('${item.id}')"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Danh sách tài nguyên"
+                                    style="margin: 0 3px"
+                                >
+                                    <i 
+                                        class="fa-solid fa-link"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span
                                     data-bs-toggle="tooltip"
                                     data-bs-title="Thay đổi trạng thái"
                                     onclick="handleDeleteExamPaper('${item.id}')" style="margin: 0 3px"

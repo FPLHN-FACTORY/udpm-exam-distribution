@@ -1,16 +1,14 @@
-package fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.repository;
+package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListResourceExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.response.CEPListResourceExamPaperResponse;
-import fplhn.udpm.examdistribution.entity.ResourceExamPaper;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.repository.ResourceExamPaperRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CEPResourceExamPaperExtendRepository extends JpaRepository<ResourceExamPaper, String> {
+public interface UEPResourceExamPaperExtendRepository extends ResourceExamPaperRepository {
 
     @Query(value = """
             SELECT
@@ -29,6 +27,6 @@ public interface CEPResourceExamPaperExtendRepository extends JpaRepository<Reso
                 erp.id_exam_paper = :#{#request.examPaperId} AND
                 erp.status = 0
             """, nativeQuery = true)
-    Page<CEPListResourceExamPaperResponse> getListResourceExamPaper(Pageable pageable, CEPListResourceExamPaperRequest request);
+    Page<Object> getListResourceExamPaper(Pageable pageable, ListResourceExamPaperRequest request);
 
 }

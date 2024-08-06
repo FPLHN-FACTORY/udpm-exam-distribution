@@ -1,6 +1,9 @@
 package fplhn.udpm.examdistribution.core.teacher.examfile.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TECreateResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TEUpdateResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TExamFileRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.teacher.examfile.model.request.TUploadExamFileRequest;
@@ -27,4 +30,11 @@ public interface TExamFileService {
 
     void cleanExamPaper();
 
+    ResponseObject<?> getListResource(TEListResourceExamPaperRequest request);
+
+    ResponseObject<?> createResource(TECreateResourceExamPaperRequest request);
+
+    ResponseObject<?> updateResource(TEUpdateResourceExamPaperRequest request);
+
+    ResponseObject<?> detailResource(String resourceExamPaperId);
 }

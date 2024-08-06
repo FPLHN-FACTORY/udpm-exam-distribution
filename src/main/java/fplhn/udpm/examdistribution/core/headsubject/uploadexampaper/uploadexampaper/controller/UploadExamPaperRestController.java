@@ -1,9 +1,11 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
@@ -97,6 +99,11 @@ public class UploadExamPaperRestController {
     @PostMapping("/share-permission-exam-paper")
     public ResponseEntity<?> sharePermissionExamPaper(@RequestBody SharePermissionExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.sharePermissionExamPaper(request));
+    }
+
+    @GetMapping("/resources")
+    public ResponseEntity<?> getListResource(ListResourceExamPaperRequest request) {
+        return Helper.createResponseEntity(uploadExamPaperService.getListResource(request));
     }
 
 }
