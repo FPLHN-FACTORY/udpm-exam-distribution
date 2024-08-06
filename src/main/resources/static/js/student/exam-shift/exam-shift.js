@@ -62,19 +62,19 @@ const connect = () => {
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
             messageType = 'rejoin';
         });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
-        //     showToastError('Bạn đã bị từ chối tham gia ca thi!');
-        // });
-        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
-        //     let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
-        //     if (examShiftCodeRejoin) {
-        //         window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
-        //         localStorage.removeItem('rejoinExamShiftCode');
-        //
-        //         setEnableExtLocalStorage("true");
-        //         handleSendMessageStartToExt();
-        //     }
-        // });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
+            showToastError('Bạn đã bị từ chối tham gia ca thi!');
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
+            let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
+            if (examShiftCodeRejoin) {
+                window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
+                localStorage.removeItem('rejoinExamShiftCode');
+
+                setEnableExtLocalStorage("true");
+                handleSendMessageStartToExt();
+            }
+        });
     });
 }
 
