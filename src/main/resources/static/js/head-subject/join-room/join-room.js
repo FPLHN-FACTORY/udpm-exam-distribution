@@ -58,6 +58,11 @@ $(document).ready(function () {
             getClassSubjectIdByRequest();
         }
     });
+
+    viewSelectForFirstSupervisor();
+
+    viewSelectForSecondSupervisor();
+
 });
 
 $(document).ready(function () {
@@ -224,6 +229,98 @@ const addExamShift = () => {
         }
     });
 }
+
+const viewSelectForFirstSupervisor = () => {
+    $("#modifyFirstSupervisorCode").select2({
+        width: '100%',
+        dropdownParent: $('#examShiftModal'),
+        closeOnSelect: true,
+        placeholder: 'Chọn giám thị 1',
+        allowClear: true,
+        ajax: {
+            url: `${ApiConstant.API_COMMON}/staff/search`,
+            type: "GET",
+            dataType: 'json',
+            contentType: "application/json",
+            delay: 250,
+            data: function (query) {
+                return {
+                    q: query.term
+                };
+            },
+            processResults: function (data) {
+                console.log(data);
+                let results = [];
+                data.data.forEach(e => {
+                    results.push({id: e.id, text: e.staffInfo});
+                });
+
+                return {
+                    results: results
+                };
+            }
+        },
+        templateResult: formatResult,
+        templateSelection: formatSelection
+    });
+
+    function formatResult(item) {
+        if (item.loading) {
+            return item.text;
+        }
+        return $('<span>').text(item.text);
+    }
+
+    function formatSelection(item) {
+        return item.text;
+    }
+};
+
+const viewSelectForSecondSupervisor = () => {
+    $("#modifySecondSupervisorCode").select2({
+        width: '100%',
+        dropdownParent: $('#examShiftModal'),
+        closeOnSelect: true,
+        placeholder: 'Chọn giám thị 2',
+        allowClear: true,
+        ajax: {
+            url: `${ApiConstant.API_COMMON}/staff/search`,
+            type: "GET",
+            dataType: 'json',
+            contentType: "application/json",
+            delay: 250,
+            data: function (query) {
+                return {
+                    q: query.term
+                };
+            },
+            processResults: function (data) {
+                console.log(data);
+                let results = [];
+                data.data.forEach(e => {
+                    results.push({id: e.id, text: e.staffInfo});
+                });
+
+                return {
+                    results: results
+                };
+            }
+        },
+        templateResult: formatResult,
+        templateSelection: formatSelection
+    });
+
+    function formatResult(item) {
+        if (item.loading) {
+            return item.text;
+        }
+        return $('<span>').text(item.text);
+    }
+
+    function formatSelection(item) {
+        return item.text;
+    }
+};
 
 const joinExamShift = (examShiftCode) => {
     const examShift = {

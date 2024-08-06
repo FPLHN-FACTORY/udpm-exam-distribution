@@ -4,13 +4,11 @@ import fplhn.udpm.examdistribution.entity.Role;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffMajorFacility;
 import fplhn.udpm.examdistribution.entity.StaffRole;
-import fplhn.udpm.examdistribution.infrastructure.config.global.GlobalVariables;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.dto.TransferStaffRole;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigStaffCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigStaffMajorFacilityRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigStaffRoleCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
-import fplhn.udpm.examdistribution.utils.CSVManipulationUtils;
 import jakarta.transaction.Transactional;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +17,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -36,12 +34,6 @@ public class StaffWriter implements ItemWriter<TransferStaffRole> {
     @Setter(onMethod_ = {@Autowired})
     private ConfigStaffMajorFacilityRepository staffMajorFacilityRepository;
 
-    @Setter(onMethod_ = {@Autowired})
-    private CSVManipulationUtils csvManipulationUtils;
-
-    @Setter(onMethod_ = {@Autowired})
-    private GlobalVariables globalVariables;
-
     @Override
     public void write(Chunk<? extends TransferStaffRole> chunk) throws Exception {
         if (chunk != null) {
@@ -51,13 +43,13 @@ public class StaffWriter implements ItemWriter<TransferStaffRole> {
                 try {
                     // Save staff first
                     Staff staff = transferStaffRole.getStaff();
-                    List<Staff> staffs = staffCustomRepository
-                            .findAllByStaffCodeAndStatus(
+                    Optional<Staff> staffs = staffCustomRepository
+                            .findByStaffCodeAndStatus(
                                     staff.getStaffCode(),
                                     EntityStatus.ACTIVE
                             );
-                    if (!staffs.isEmpty()) {
-                        staff = staffs.get(0);
+                    if (staffs.isPresent()) {
+                        staff = staffs.get();
                     }
                     Staff savedStaff = staffCustomRepository.save(staff);
                     // Save role second

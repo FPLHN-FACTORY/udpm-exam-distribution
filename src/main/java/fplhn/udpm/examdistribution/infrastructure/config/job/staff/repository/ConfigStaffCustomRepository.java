@@ -6,10 +6,15 @@ import fplhn.udpm.examdistribution.repository.StaffRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ConfigStaffCustomRepository extends StaffRepository {
 
-    List<Staff> findAllByStaffCodeAndStatus(String code, EntityStatus status);
+    Optional<Staff> findByStaffCodeAndStatus(String code, EntityStatus status);
+
+    Optional<Staff> findByAccountFe(String accountFe);
+
+    Optional<Staff> findByAccountFpt(String accountFpt);
 
 }

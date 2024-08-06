@@ -12,6 +12,7 @@ import fplhn.udpm.examdistribution.entity.HistoryImport;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
@@ -134,8 +135,8 @@ public class HOStaffServiceImpl implements HOStaffService {
 
     @Override
     public ResponseObject<?> getLogsImportStaff(int page, int size) {
-        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffId(
-                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId()
+        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffIdAndFileType(
+                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId(), LogFileType.STAFF
         );
         List<HistoryImport> loggerObjects = listLogRaw.stream()
                 .skip((long) page * size)

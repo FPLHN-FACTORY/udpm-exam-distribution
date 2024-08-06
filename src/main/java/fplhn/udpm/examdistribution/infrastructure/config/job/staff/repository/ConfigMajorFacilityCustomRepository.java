@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ConfigMajorFacilityCustomRepository extends MajorFacilityRepository {
@@ -17,6 +18,8 @@ public interface ConfigMajorFacilityCustomRepository extends MajorFacilityReposi
                     AND mf.departmentFacility.facility.code = :facilityCode
                     AND mf.major.name = :majorName
             """)
-    List<MajorFacility> getMajorFacilities(String departmentName,String majorName, String facilityCode);
+    List<MajorFacility> getMajorFacilities(String departmentName, String majorName, String facilityCode);
+
+    Optional<MajorFacility> findByDepartmentFacility_Facility_Code(String facilityCode);
 
 }

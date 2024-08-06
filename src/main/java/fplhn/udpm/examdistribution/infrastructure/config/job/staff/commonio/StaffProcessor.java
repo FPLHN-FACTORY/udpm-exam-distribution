@@ -11,6 +11,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.Co
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigRoleCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.repository.ConfigStaffCustomRepository;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -85,10 +87,14 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, Transfer
             } else if (
                     !item
                             .getAccountFe()
-                            .contains(item.getStaffCode()) ||
+                            .trim()
+                            .toLowerCase()
+                            .contains(item.getStaffCode().toLowerCase()) ||
                     !item
                             .getAccountFpt()
-                            .contains(item.getStaffCode())
+                            .trim()
+                            .toLowerCase()
+                            .contains(item.getStaffCode().toLowerCase())
             ) {
                 log.error("Account Nhân Viên Không Đúng Định Dạng{} {} {}", item.getStaffCode(), item.getAccountFe(), item.getAccountFpt());
                 logErrorRecordToCSV(
@@ -99,14 +105,32 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, Transfer
                 staffCode = item.getStaffCode();
             }
 
-            List<Staff> staffList = staffCustomRepository
-                    .findAllByStaffCodeAndStatus(staffCode, EntityStatus.ACTIVE);
-            if (!staffList.isEmpty()) {
-                log.error("Mã nhân viên đã tồn tại");
-                logErrorRecordToCSV(
-                        "Lỗi bản ghi số " + item.getOrderNumber() + ": Mã nhân viên đã tồn tại"
-                );
-                return null;
+            Optional<Staff> staffOptional = staffCustomRepository.findByStaffCodeAndStatus(staffCode, EntityStatus.ACTIVE);
+            if (staffOptional.isPresent()) {
+                Staff staff = staffOptional.get();
+                staff.setStatus(EntityStatus.ACTIVE);
+                staff.setName(item.getName());
+                staff.setAccountFpt(item.getAccountFpt());
+                staff.setAccountFe(item.getAccountFe());
+
+                Optional<StaffMajorFacility> staffMajorFacilityOptional = majorFacilityCustomRepository
+                        .findByDepartmentFacility_Facility_Code(facilityCode)
+                        .map(majorFacility -> {
+                            StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
+                            staffMajorFacility.setStatus(EntityStatus.ACTIVE);
+                            staffMajorFacility.setMajorFacility(majorFacility);
+                            return staffMajorFacility;
+                        });
+
+                if (staffMajorFacilityOptional.isPresent()) {
+                    return new TransferStaffRole(staff, roles.get(0), staffMajorFacilityOptional.get());
+                } else {
+                    log.error("Bộ môn - chuyên ngành không tồn tại");
+                    logErrorRecordToCSV(
+                            "Lỗi tại bản ghi số " + item.getOrderNumber() + ": Bộ môn - chuyên ngành không tồn tại"
+                    );
+                    return null;
+                }
             }
 
             Staff staffNew = new Staff();
@@ -135,7 +159,8 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, Transfer
                 content,
                 fileName,
                 (String) globalVariables.getGlobalVariable(SessionConstant.CURRENT_USER_ID),
-                (String) globalVariables.getGlobalVariable(SessionConstant.CURRENT_USER_FACILITY_ID)
+                (String) globalVariables.getGlobalVariable(SessionConstant.CURRENT_USER_FACILITY_ID),
+                LogFileType.STAFF
         );
     }
 
