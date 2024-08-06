@@ -171,11 +171,11 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 studentExamShift.setStatus(EntityStatus.ACTIVE);
                 sStudentExamShiftExtendRepository.save(studentExamShift);
 
-                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
-                        new NotificationResponse(
-                                "Sinh viên "
-                                        + existingStudent.get().getStudentCode()
-                                        + " đã tham gia ca thi!"));
+//                simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
+//                        new NotificationResponse(
+//                                "Sinh viên "
+//                                        + existingStudent.get().getStudentCode()
+//                                        + " đã tham gia ca thi!"));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),

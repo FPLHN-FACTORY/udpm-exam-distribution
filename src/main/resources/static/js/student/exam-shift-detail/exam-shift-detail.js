@@ -278,14 +278,14 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
-            window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
-        });
+        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
+        //     const responseBody = JSON.parse(response.body);
+        //     showToastSuccess(responseBody.message);
+        // });
+        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
+        //     localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi phòng thi!');
+        //     window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
+        // });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
