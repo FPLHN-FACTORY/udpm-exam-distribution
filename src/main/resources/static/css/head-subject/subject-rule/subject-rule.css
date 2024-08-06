@@ -29,3 +29,20 @@ canvas {
 #pdf-viewer-detail::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
 }
+
+.value-label {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    transform: translateX(-15%);
+    padding: 2px 5px;
+    border-radius: 3px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 15px;
+    border: 1px solid #007bff;
+}
+.range-container {
+    position: relative;
+    width: 100%;
+}

@@ -90,6 +90,12 @@ const fetchSearchSubject = (
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>
+                                <span onclick="handleOpenModalPercentRandom('${subject.id}')" data-bs-toggle="tooltip" data-bs-title="Phần trăm random" class="fs-6">
+                                    <i
+                                        class="fa-solid fa-bars-progress"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
                             </td>
                         </tr>`;
             });
