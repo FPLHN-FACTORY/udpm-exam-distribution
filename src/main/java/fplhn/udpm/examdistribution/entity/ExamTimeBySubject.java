@@ -37,4 +37,7 @@ public class ExamTimeBySubject extends PrimaryEntity implements Serializable {
     @Column(name = "allow_online")
     private boolean allowOnline;
 
+    @Column(name = "percent_random")
+    private Long percentRandom;
+
 }
