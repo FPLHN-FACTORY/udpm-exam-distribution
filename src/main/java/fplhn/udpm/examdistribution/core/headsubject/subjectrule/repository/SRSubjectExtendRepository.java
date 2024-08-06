@@ -25,6 +25,13 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                 er.file_id AS fileId,
                 (
                     SELECT
+                        setbs.exam_time
+                    FROM exam_time_by_subject setbs
+                    WHERE
+                        setbs.id_subject = s.id
+                ) AS examTime,
+                (
+                    SELECT
                         CASE
                             WHEN setbs.allow_online = 1 THEN 1
                             ELSE 0
