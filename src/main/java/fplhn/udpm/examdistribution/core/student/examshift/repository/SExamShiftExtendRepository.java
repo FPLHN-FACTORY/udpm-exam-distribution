@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.student.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamShiftResponse;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -41,5 +42,12 @@ public interface SExamShiftExtendRepository extends ExamShiftRepository {
                   es.classSubject.facilityChild.facility.id = :facilityId
             """)
     Optional<ExamShift> findExamShiftByCode(String examShiftCode,String semesterId,String facilityId);
+
+    @Query("""
+            SELECT ep
+            FROM ExamPaper ep
+            WHERE ep.path = :path
+            """)
+    Optional<ExamPaper> findExamPaperByPath(String path);
 
 }

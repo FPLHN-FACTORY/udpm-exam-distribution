@@ -12,15 +12,18 @@ import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExa
 import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import jakarta.servlet.http.HttpSession;
@@ -55,6 +58,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
 
     private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
 
+    private final RedisService redisService;
+
     private final HttpSession httpSession;
 
     private final GoogleDriveFileService googleDriveFileService;
@@ -74,8 +79,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
 
         if (studentExamShift.isEmpty()
-                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+            || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
             return false;
         }
 
@@ -115,14 +120,14 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             if (studentExamShiftExist.isPresent()) {
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
                 if (examStudentStatus.equals(ExamStudentStatus.KICKED)
-                        || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
+                    || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
                     studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                     sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                             new NotificationResponse(
                                     "Sinh viên "
-                                            + existingStudent.get().getStudentCode()
-                                            + " yêu cầu tham gia ca thi!"));
+                                    + existingStudent.get().getStudentCode()
+                                    + " yêu cầu tham gia ca thi!"));
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                 } else {
@@ -155,8 +160,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
                                         "Sinh viên "
-                                                + existingStudent.get().getStudentCode()
-                                                + " yêu cầu tham gia ca thi!"));
+                                        + existingStudent.get().getStudentCode()
+                                        + " yêu cầu tham gia ca thi!"));
                         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                                 HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                     }
@@ -173,8 +178,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                         new NotificationResponse(
                                 "Sinh viên "
-                                        + existingStudent.get().getStudentCode()
-                                        + " đã tham gia ca thi!"));
+                                + existingStudent.get().getStudentCode()
+                                + " đã tham gia ca thi!"));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
@@ -231,8 +236,30 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     @Override
     public ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) {
         try {
+            Optional<ExamPaper> examPaperOptional = sExamShiftExtendRepository.findExamPaperByPath(file);
+            if (examPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        "",
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy đề thi"
+                );
+            }
+
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + examPaperOptional.get().getId();
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new SFileResourceResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Lấy đề thi thành công!"
+                );
+            }
+
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+
+            redisService.set(redisKey, data);
+
             return new ResponseObject<>(
                     new SFileResourceResponse(data, fileResponse.getFilename()),
                     HttpStatus.OK, "Lấy đề thi thành công!");
