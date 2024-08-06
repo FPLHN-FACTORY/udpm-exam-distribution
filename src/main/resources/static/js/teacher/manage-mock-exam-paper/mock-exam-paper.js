@@ -121,7 +121,7 @@ const fetchSearchSubject = (
                     subject.isExistsPracticeRoom ? `
                         <span onclick="handleOpenModalPracticeRoomDetail('${subject.practiceRoomId}')" 
                            data-bs-toggle="tooltip"
-                            data-bs-title="Thông tin phòng luyện tập"
+                            data-bs-title="Thông tin phòng thi thử"
                             class="fs-4"> 
                             <i class="fas fas fa-eye"
                                style="cursor: pointer; margin-left: 10px;"
@@ -130,7 +130,7 @@ const fetchSearchSubject = (
                         :
                         `<span onclick="handleOpenModalPracticeRoom('${subject.id}')" 
                            data-bs-toggle="tooltip" 
-                            data-bs-title="Tạo phòng luyện tập"
+                            data-bs-title="Tạo phòng thi thử"
                             class="fs-4"> 
                             <i class="fa-solid fa-landmark"
                                style="cursor: pointer; margin-left: 10px;"
@@ -148,7 +148,9 @@ const fetchSearchSubject = (
         },
         error: function (error) {
             hideLoading();
-            showToastError('Có lỗi xảy ra khi lấy dữ liệu môn học');
+            let mess = error?.responseJSON?.message
+                ? error?.responseJSON?.message : 'Có lỗi xảy ra khi lấy dữ liệu môn học';
+            showToastError(mess);
         }
     });
 };

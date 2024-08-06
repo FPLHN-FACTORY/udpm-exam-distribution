@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.mockexampaper.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMEPStudentRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TPracticeRoomRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.response.TMEPPracticeRoomResponse;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.repository.*;
@@ -11,8 +12,10 @@ import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
+import fplhn.udpm.examdistribution.utils.Helper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -91,7 +94,7 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
         }
         practiceRoom.setSubject(subject.get());
         practiceRoom.setPassword(CodeGenerator.generateRandomCode().substring(0, 6).toUpperCase());
-        practiceRoom.setPracticeRoomCode(subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3).toUpperCase());
+        practiceRoom.setPracticeRoomCode((subject.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3)).toUpperCase());
 
         practiceRoomRepository.save(practiceRoom);
         return new ResponseObject<>(
@@ -128,6 +131,17 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
             studentPracticeRoomRepository.deleteByPracticeRoomId(practiceRoom.getId());
             practiceRoomRepository.deleteById(practiceRoom.getId());
         }
+    }
+
+    @Override
+    public ResponseObject<?> getListStudentJoin(TMEPStudentRequest studentRequest) {
+        String currentTeacherId = httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString();
+        Pageable pageable = Helper.createPageable(studentRequest,"joinedAt");
+        return new ResponseObject<>(
+                practiceRoomRepository.getStudents(pageable,currentTeacherId,studentRequest),
+                HttpStatus.OK,
+                "Lấy danh sách sinh viên tham gia thành công"
+        );
     }
 
 }

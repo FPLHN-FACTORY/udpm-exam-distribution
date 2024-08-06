@@ -1,15 +1,32 @@
 let stateSubjectId = '';
+let statePracticeRoomId = '';
 
 //start setter
 const setStateSubjectId = (value) => {
     stateSubjectId = value;
 }
+const setStatePracticeRoomId = (value) => {
+    statePracticeRoomId = value;
+}
 //end setter
 
 //start getter
 const getStateSubjectId = () => stateSubjectId;
+const getStatePracticeRoomId = () => statePracticeRoomId;
 
 //end getter
+
+$(document).ready(function() {
+    $('#listStudentModal').on('hidden.bs.modal', function () {
+        $('#practiceRoomDetailModal').modal('show');
+    });
+    $('#keyWordStudent').on('keyup', debounce(function () {
+        openModalListStudent();
+    }));
+    $('#pageSizeListStudent').on('change',function () {
+        openModalListStudent();
+    });
+});
 
 function handleOpenModalPracticeRoom(subjectId) {
     setStateSubjectId(subjectId);
@@ -104,6 +121,7 @@ const setupDatePracticeRoom = () => {
 };
 
 function handleOpenModalPracticeRoomDetail(practiceRoomId) {
+    setStatePracticeRoomId(practiceRoomId);
     let url = ApiConstant.API_TEACHER_PRACTICE_ROOM + "/" + practiceRoomId;
     showLoading();
     $.ajax({
@@ -115,6 +133,7 @@ function handleOpenModalPracticeRoomDetail(practiceRoomId) {
                 $('#subjectDetail').val(data.subjectName);
                 $('#openTimeDetail').val(formatDateTime(data.startDate) + ' -> ' + formatDateTime(data.endDate));
                 $('#practiceRoomCodeDetail').val(data.practiceRoomCode);
+                $('#practiceRoomCodeTitle').val(data.practiceRoomCode);
                 $('#practiceRoomPasswordDetail').val(data.password);
                 $('#practiceRoomDetailModal').modal('show');
             }
@@ -133,5 +152,109 @@ function handleOpenModalPracticeRoomDetail(practiceRoomId) {
             }
         }
     });
-
 }
+
+function openModalListStudent(page = 1) {
+    const params = {
+        page: page,
+        size: $('#pageSizeListStudent').val(),
+        keyWord: $('#keyWordStudent').val()?.trim(),
+        practiceRoomId:getStatePracticeRoomId()?.trim()
+    };
+
+    let url = ApiConstant.API_TEACHER_PRACTICE_ROOM + "/student?";
+
+    for (let [key, value] of Object.entries(params)) {
+        if (value) {
+            url += `${key}=${value}&`;
+        }
+    }
+
+    url = url.slice(0, -1);
+    showLoading();
+    $.ajax({
+        type: "GET",
+        url: url,
+        success: function (responseBody) {
+            const responseData = responseBody?.data?.content;
+            hideLoading();
+            if (responseData.length === 0) {
+                $('#studentTableBody').html(`
+                    <tr>
+                         <td colspan="8" style="text-align: center;">Không có dữ liệu</td>
+                    </tr>
+                `);
+                $('#pagination').empty();
+                return;
+            }
+            const students = responseData.map(function (student, index) {
+                return `<tr>
+                <td>${index + 1 + responseBody?.data?.pageable?.offset}</td>
+                <td>${student.studentCode}</td>
+                <td>${student.studentName}</td>
+                <td>${student.studentEmail}</td>
+                <td>${formatDateTime(student.joinedAt)}</td>
+            </tr>`;
+            });
+            $('#studentTableBody').html(students);
+            const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;
+            createPaginationStudent(totalPages, page);
+            $('#practiceRoomDetailModal').modal('hide');
+            $('#listStudentModal').modal('show');
+        },
+        error: function (error) {
+            hideLoading();
+            let mess = error?.responseJSON?.message
+                ? error?.responseJSON?.message : 'Có lỗi xảy ra khi lấy dữ liệu sinh viên';
+            showToastError(mess);
+        }
+    });
+}
+
+const createPaginationStudent = (totalPages, currentPage) => {
+    let paginationHtml = '';
+
+    if (currentPage > 1) {
+        paginationHtml += `
+                     <li class="page-item">
+                        <a class="page-link" href="#" onclick="openModalListStudent(${currentPage - 1})">
+                            Trước
+                        </a>
+                     </li>`;
+    } else {
+        paginationHtml += `
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">
+                        Trước
+                    </a>
+                </li>
+        `;
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            paginationHtml += `<li class="page-item active"><a class="page-link text-white" href="#">${i}</a></li>`;
+        } else {
+            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="openModalListStudent(${i})">${i}</a></li>`;
+        }
+    }
+
+    if (currentPage < totalPages) {
+        paginationHtml += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="openModalListStudent(${currentPage + 1})">
+                          Sau
+                    </a>
+                </li>
+`;
+    } else {
+        paginationHtml += `
+            <li class="page-item disabled">
+                <a class="page-link" href="#">
+                    Sau
+                </a>
+            </li>
+`;
+    }
+    $('#paginationListStudent').html(paginationHtml);
+};

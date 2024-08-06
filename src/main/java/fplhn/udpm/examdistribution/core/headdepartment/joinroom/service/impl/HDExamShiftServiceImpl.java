@@ -236,8 +236,8 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
                         "Ca thi đã kết thúc!");
             }
 
-            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT,
-                    "Chủ nhiệm bộ môn đã tham gia ca thi " + examShift.getExamShiftCode());
+//            simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT,
+//                    "Chủ nhiệm bộ môn đã tham gia ca thi " + examShift.getExamShiftCode());
 
             return new ResponseObject<>(examShift.getExamShiftCode(),
                     HttpStatus.OK, "Tham gia ca thi thành công!");

@@ -33,7 +33,7 @@ $(document).ready(function () {
 
     getPathFilePDFExamPaper(examShiftCode);
 
-    connect();
+    // connect();
 
     countStudentInExamShift();
 
@@ -94,51 +94,51 @@ const getStartTimeEndTimeExamPaper = (examShiftCode) => {
 }
 
 
-const connect = () => {
-    const socket = new SockJS("/ws");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
-            getSecondSupervisorId();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-            countStudentInExamShift();
-            getStudents();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            countStudentInExamShift();
-            getStudents();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT, function () {
-            countStudentInExamShift();
-            getStudents();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
-            getStudents();
-            countStudentInExamShift();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
-            getStudents();
-            countStudentInExamShift();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
-            getPathFilePDFExamPaper(examShiftCode);
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
-            getStartTimeEndTimeExamPaper(examShiftCode);
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastError(responseBody.message);
-            getStudents();
-        });
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastError(responseBody.message);
-            getStudents();
-        });
-    });
-}
+// const connect = () => {
+//     const socket = new SockJS("/ws");
+//     stompClient = Stomp.over(socket);
+//     stompClient.connect({}, function (frame) {
+//         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
+//             getSecondSupervisorId();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
+//             countStudentInExamShift();
+//             getStudents();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
+//             countStudentInExamShift();
+//             getStudents();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT, function () {
+//             countStudentInExamShift();
+//             getStudents();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
+//             getStudents();
+//             countStudentInExamShift();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
+//             getStudents();
+//             countStudentInExamShift();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
+//             getPathFilePDFExamPaper(examShiftCode);
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
+//             getStartTimeEndTimeExamPaper(examShiftCode);
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
+//             const responseBody = JSON.parse(response.body);
+//             showToastError(responseBody.message);
+//             getStudents();
+//         });
+//         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
+//             const responseBody = JSON.parse(response.body);
+//             showToastError(responseBody.message);
+//             getStudents();
+//         });
+//     });
+// }
 
 const getFirstSupervisorId = () => {
     $.ajax({

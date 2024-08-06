@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.teacher.mockexampaper.controller;
 
+import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TMEPStudentRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.model.request.TPracticeRoomRequest;
 import fplhn.udpm.examdistribution.core.teacher.mockexampaper.service.TMEPPracticeRoomService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
@@ -23,6 +24,11 @@ public class TPracticeRoomRestController {
     @GetMapping("/{practiceRoomId}")
     public ResponseEntity<?> getPracticeRoom(@PathVariable("practiceRoomId") String practiceRoomId) {
         return Helper.createResponseEntity(practiceRoomService.detailPracticeRoom(practiceRoomId));
+    }
+
+    @GetMapping("/student")
+    public ResponseEntity<?> getPracticeRoom(TMEPStudentRequest request) {
+        return Helper.createResponseEntity(practiceRoomService.getListStudentJoin(request));
     }
 
 }

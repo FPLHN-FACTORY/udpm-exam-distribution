@@ -296,15 +296,21 @@ const fetchExamPapers = async (page,
                                        class="fs-4">
                                  <i class="fas fas fa-eye"
                                     style="cursor: pointer; margin-left: 10px;"></i>
-
                                  </span>
                                   <span onClick="handleDownloadExamPaperById('${examPaper.id}')"
                                         data-bs-toggle="tooltip"
-                                        ata-bs-title="Tải xuống"
+                                        data-bs-title="Tải xuống"
                                         class="fs-4">
                                  <i class="fa-solid fa-download"
                                     style="cursor: pointer; margin-left: 10px;"></i>
                                  </span>
+                                 ${examPaper.examPaperStatus === 'REJECTED' ? `<span onClick="handleDeleteExamPaperById('${examPaper.id}')"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="Xoá"
+                                        class="fs-4">
+                                 <i class="fas fa-trash-alt"
+                                    style="cursor: pointer; margin-left: 10px;"></i>
+                                 </span>` : ''}
                             </td>
                         </tr>`;
             });
