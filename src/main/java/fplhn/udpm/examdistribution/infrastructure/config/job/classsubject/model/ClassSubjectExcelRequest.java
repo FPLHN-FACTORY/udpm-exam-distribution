@@ -11,6 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ClassSubjectExcelRequest {
 
+    private int orderNumber;
+
     private String facilityChildName;
 
     private String blockName;

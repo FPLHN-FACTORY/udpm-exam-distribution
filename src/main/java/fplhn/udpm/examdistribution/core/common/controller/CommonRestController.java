@@ -1,5 +1,6 @@
 package fplhn.udpm.examdistribution.core.common.controller;
 
+import fplhn.udpm.examdistribution.core.common.model.request.StaffSearchRequest;
 import fplhn.udpm.examdistribution.core.common.service.CommonServiceHelper;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -19,6 +20,11 @@ public class CommonRestController {
     @GetMapping("/semester")
     public ResponseEntity<?> getSemester() {
         return Helper.createResponseEntity(commonServiceHelper.getSemesterInfo());
+    }
+
+    @GetMapping("/staff/search")
+    public ResponseEntity<?> searchStaff(StaffSearchRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getStaffSearch(request));
     }
 
 }

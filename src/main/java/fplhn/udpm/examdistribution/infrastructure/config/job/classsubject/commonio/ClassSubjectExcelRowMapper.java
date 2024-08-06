@@ -10,6 +10,7 @@ public class ClassSubjectExcelRowMapper implements RowMapper<ClassSubjectExcelRe
     public ClassSubjectExcelRequest mapRow(RowSet rowSet) throws Exception {
         try {
             ClassSubjectExcelRequest lopMonExcelRequest = new ClassSubjectExcelRequest();
+            lopMonExcelRequest.setOrderNumber(rowSet.getCurrentRowIndex());
             lopMonExcelRequest.setBlockName(rowSet.getColumnValue(1));
             lopMonExcelRequest.setClassCode(rowSet.getColumnValue(2));
             lopMonExcelRequest.setSubjectCode(rowSet.getColumnValue(3));
@@ -18,7 +19,7 @@ public class ClassSubjectExcelRowMapper implements RowMapper<ClassSubjectExcelRe
             lopMonExcelRequest.setFacilityChildName(rowSet.getColumnValue(6));
             lopMonExcelRequest.setStaffCode(rowSet.getColumnValue(7));
             return lopMonExcelRequest;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }

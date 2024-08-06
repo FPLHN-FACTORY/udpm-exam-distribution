@@ -1,8 +1,10 @@
 package fplhn.udpm.examdistribution.core.common.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.common.model.SemesterInfoResponse;
+import fplhn.udpm.examdistribution.core.common.model.request.StaffSearchRequest;
+import fplhn.udpm.examdistribution.core.common.model.response.SemesterInfoResponse;
 import fplhn.udpm.examdistribution.core.common.repository.CMSemesterExtendRepository;
+import fplhn.udpm.examdistribution.core.common.repository.CMStaffExtendRepository;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import java.util.List;
 public class CommonServiceHelper {
 
     private final CMSemesterExtendRepository cMSemesterExtendRepository;
+
+    private final CMStaffExtendRepository cMStaffExtendRepository;
 
     private final SessionHelper sessionHelper;
 
@@ -38,6 +42,16 @@ public class CommonServiceHelper {
                 semesterInfos,
                 HttpStatus.OK,
                 "Lấy thông tin học kỳ thành công"
+        );
+    }
+
+    public ResponseObject<?> getStaffSearch(StaffSearchRequest request) {
+        request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
+        request.setCurrentUserId(sessionHelper.getCurrentUserId());
+        return new ResponseObject<>(
+                cMStaffExtendRepository.getStaffs(request),
+                HttpStatus.OK,
+                "Lấy thông tin nhân viên thành công"
         );
     }
 

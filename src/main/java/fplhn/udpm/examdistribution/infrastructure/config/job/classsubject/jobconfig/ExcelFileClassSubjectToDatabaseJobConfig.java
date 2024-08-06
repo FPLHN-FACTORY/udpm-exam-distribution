@@ -6,7 +6,8 @@ import fplhn.udpm.examdistribution.infrastructure.config.job.classsubject.common
 import fplhn.udpm.examdistribution.infrastructure.config.job.classsubject.commonio.ClassSubjectExcelWriter;
 import fplhn.udpm.examdistribution.infrastructure.config.job.classsubject.model.ClassSubjectExcelRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -44,7 +45,7 @@ public class ExcelFileClassSubjectToDatabaseJobConfig {
     @StepScope
     ItemReader<ClassSubjectExcelRequest> excelReader(@Value("#{jobParameters['filePath']}") String path) {
         PoiItemReader<ClassSubjectExcelRequest> reader = new PoiItemReader<>();
-        reader.setResource(new FileSystemResource(new File(fullPath+"/" + path)));
+        reader.setResource(new FileSystemResource(new File(fullPath + "/" + path)));
         reader.setLinesToSkip(1);
         reader.open(new ExecutionContext());
         reader.setRowMapper(excelRowMapper());
@@ -60,7 +61,9 @@ public class ExcelFileClassSubjectToDatabaseJobConfig {
     @Bean
     @StepScope
     ItemProcessor<ClassSubjectExcelRequest, ClassSubject> excelProcessor() {
-        return new ClassSubjectExcelProcessor();
+        ClassSubjectExcelProcessor processor = new ClassSubjectExcelProcessor();
+        processor.setFileName(fullPath);
+        return processor;
     }
 
     @Bean
@@ -70,31 +73,15 @@ public class ExcelFileClassSubjectToDatabaseJobConfig {
     }
 
     @Bean
-    Step step2(@Qualifier("excelReader") ItemReader<ClassSubjectExcelRequest> reader,
-               JobRepository jobRepository
+    Step step2(
+            @Qualifier("excelReader") ItemReader<ClassSubjectExcelRequest> reader,
+            JobRepository jobRepository
     ) {
         return new StepBuilder("Lop-mon-excel-step", jobRepository)
                 .<ClassSubjectExcelRequest, ClassSubject>chunk(100, transactionManager)
                 .reader(reader)
                 .processor(item -> excelProcessor().process(item))
                 .writer(chunk -> excelWriter().write(chunk))
-                .listener(new StepExecutionListener() {
-                    @Override
-                    public ExitStatus afterStep(StepExecution stepExecution) {
-                        if (stepExecution.getExitStatus().equals(ExitStatus.COMPLETED)) {
-                            try {
-                                if (reader.read() == null) {
-                                    log.info("No items found in excel file");
-                                    return ExitStatus.FAILED;
-                                }
-                                return ExitStatus.COMPLETED;
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        return stepExecution.getExitStatus();
-                    }
-                })
                 .build();
     }
 

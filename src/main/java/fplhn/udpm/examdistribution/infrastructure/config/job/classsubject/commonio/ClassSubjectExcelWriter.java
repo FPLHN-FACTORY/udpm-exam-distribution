@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.infrastructure.config.job.classsubject.commo
 import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.infrastructure.config.job.classsubject.repository.ClassSubjectExcelCustomRepository;
 import jakarta.transaction.Transactional;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Transactional
 public class ClassSubjectExcelWriter implements ItemWriter<ClassSubject> {
 
-    @Autowired
+    @Setter(onMethod_ = {@Autowired})
     private ClassSubjectExcelCustomRepository classSubjectExcelCustomRepository;
 
     @Override
@@ -23,8 +24,8 @@ public class ClassSubjectExcelWriter implements ItemWriter<ClassSubject> {
             if (chunk != null) {
                 log.info("Number of items in chunk: " + chunk.getItems().size());
                 for (ClassSubject classSubject : chunk.getItems()) {
-                   ClassSubject classSubjectSave =  classSubjectExcelCustomRepository.save(classSubject);
-                   log.info("Class subject save: " + classSubjectSave.getClassSubjectCode());
+                    ClassSubject classSubjectSave = classSubjectExcelCustomRepository.save(classSubject);
+                    log.info("Class subject save: " + classSubjectSave.getClassSubjectCode());
                 }
             } else {
                 log.info("Chunk or items in chunk is null");
