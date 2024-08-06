@@ -1,9 +1,12 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.repository;
 
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamPaperShiftInfoAndPathResponse;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface TExamPaperExtendRepository extends ExamPaperRepository {
@@ -24,5 +27,12 @@ public interface TExamPaperExtendRepository extends ExamPaperRepository {
             	es.exam_shift_code = :examShiftCode
             """, nativeQuery = true)
     TExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
+
+    @Query("""
+            SELECT ep
+            FROM ExamPaper ep
+            WHERE ep.path = :path
+            """)
+    Optional<ExamPaper> findExamPaperByPath(String path);
 
 }

@@ -16,16 +16,19 @@ import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStaffExten
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.service.TExamShiftService;
+import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
+import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
@@ -73,6 +76,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
+    private final RedisService redisService;
+
     @Override
     public boolean findUsersInExamShift(String examShiftCode) {
         Optional<ExamShift> examShift = tExamShiftExtendRepository.findByExamShiftCode(examShiftCode);
@@ -82,10 +87,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
         boolean isCurrentUserSupervisor
                 = examShift.get().getFirstSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId())
-                || (examShift.get().getSecondSupervisor() != null
-                && examShift.get().getSecondSupervisor().getId()
-                .equals(sessionHelper.getCurrentUserId()));
+                          .equals(sessionHelper.getCurrentUserId())
+                  || (examShift.get().getSecondSupervisor() != null
+                      && examShift.get().getSecondSupervisor().getId()
+                              .equals(sessionHelper.getCurrentUserId()));
 
         if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
             return false;
@@ -140,7 +145,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
-                    && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
                         HttpStatus.BAD_REQUEST, "Bạn không phải là giám thị trong ca thi này!");
             }
@@ -433,8 +438,28 @@ public class TExamShiftServiceImpl implements TExamShiftService {
     @Override
     public ResponseObject<?> getFile(String file) throws IOException {
         try {
+            Optional<ExamPaper> examPaperOptional = tExamPaperExtendRepository.findExamPaperByPath(file);
+            if (examPaperOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        "",
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy đề thi"
+                );
+            }
+
+            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + examPaperOptional.get().getId();
+            Object redisValue = redisService.get(redisKey);
+            if (redisValue != null) {
+                return new ResponseObject<>(
+                        new TFileResourceResponse(redisValue.toString(), "fileName"),
+                        HttpStatus.OK,
+                        "Lấy đề thi thành công!"
+                );
+            }
+
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
+            redisService.set(redisKey, data);
 
             return new ResponseObject<>(
                     new TFileResourceResponse(data, fileResponse.getFilename()),
