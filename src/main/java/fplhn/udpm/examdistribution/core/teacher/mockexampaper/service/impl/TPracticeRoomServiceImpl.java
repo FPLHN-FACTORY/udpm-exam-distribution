@@ -55,7 +55,7 @@ public class TPracticeRoomServiceImpl implements TMEPPracticeRoomService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Môn học này chưa có đề thi thử được public"
+                    "Môn học này chưa có đề thi thử được công khai"
             );
         }
 

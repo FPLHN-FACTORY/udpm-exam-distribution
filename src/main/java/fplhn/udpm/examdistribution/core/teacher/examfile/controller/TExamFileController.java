@@ -31,4 +31,9 @@ public class TExamFileController {
         return "teacher/manage-exam-file/upload-exam-file";
     }
 
+    @GetMapping("/create-exam-paper/{subjectId}")
+    public String viewCreateExamPaper() {
+        return "teacher/manage-exam-file/create-exam-paper";
+    }
+
 }

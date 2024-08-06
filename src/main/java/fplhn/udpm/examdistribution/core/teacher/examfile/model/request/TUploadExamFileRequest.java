@@ -11,7 +11,6 @@ public class TUploadExamFileRequest {
 
     private MultipartFile file;
 
-    @NotBlank(message = "Tên folder không được trống")
-    private String folderName;
+    private String contentFile;
 
 }

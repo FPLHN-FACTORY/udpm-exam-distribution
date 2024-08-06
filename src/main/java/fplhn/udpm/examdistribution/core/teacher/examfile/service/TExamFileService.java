@@ -14,7 +14,7 @@ public interface TExamFileService {
 
     ResponseObject<?> getSubjectById(String subjectId);
 
-    ResponseObject<?> uploadExamRule(String subjectId, TUploadExamFileRequest request);
+    ResponseObject<?> uploadExamPaper(String subjectId, TUploadExamFileRequest request);
 
     ResponseObject<?> getMajorFacilityByDepartmentFacility();
 
