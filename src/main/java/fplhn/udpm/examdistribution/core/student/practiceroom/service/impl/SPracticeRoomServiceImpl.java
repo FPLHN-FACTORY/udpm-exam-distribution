@@ -86,7 +86,7 @@ public class SPracticeRoomServiceImpl implements SPracticeRoomService {
                 studentPracticeRooms.get(0).setJoinedAt(new Date().getTime());
                 studentPracticeRoomRepository.save(studentPracticeRooms.get(0));
             }
-            if (request.getIsTakeNewMockExamPaper()) {
+//            if (request.getIsTakeNewMockExamPaper()) {
                 SPRMockExamPaperResponse mockExamPaper = getMockExamPaper(
                         practiceRooms.get(0).getSubject().getId(),
                         practiceRooms.get(0).getBlock().getId());
@@ -98,7 +98,7 @@ public class SPracticeRoomServiceImpl implements SPracticeRoomService {
                 Resource resource = googleDriveFileService.loadFile(mockExamPaper.getPath());
                 String data = Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
                 String key = mockExamPaper.getId();
-                redisService.set(key, data);
+//                redisService.set(key, data);
                 PracticeRoom res = practiceRooms.get(0);
                 return new ResponseObject<>(
                         new SPracticeRoomResponse(
@@ -112,28 +112,28 @@ public class SPracticeRoomServiceImpl implements SPracticeRoomService {
                         HttpStatus.OK,
                         "Tham gia thành công"
                 );
-            } else {
-                Object redisValue = redisService.get(request.getKey());
-                if (redisValue != null) {
-                    return new ResponseObject<>(
-                            new SPracticeRoomResponse(
-                                    practiceRooms.get(0).getId(),
-                                    request.getPracticeRoomCodeJoin(),
-                                    request.getPasswordJoin(),
-                                    false,
-                                    request.getKey(),
-                                    new FileResponse(redisValue.toString(), "fileName")
-                            ),
-                            HttpStatus.OK,
-                            "Lấy đề thi thử thành công"
-                    );
-                }
-                return new ResponseObject<>(
-                        null,
-                        HttpStatus.BAD_REQUEST,
-                        "Đề thi thử không tồn tại"
-                );
-            }
+//            } else {
+//                Object redisValue = redisService.get(request.getKey());
+//                if (redisValue != null) {
+//                    return new ResponseObject<>(
+//                            new SPracticeRoomResponse(
+//                                    practiceRooms.get(0).getId(),
+//                                    request.getPracticeRoomCodeJoin(),
+//                                    request.getPasswordJoin(),
+//                                    false,
+//                                    request.getKey(),
+//                                    new FileResponse(redisValue.toString(), "fileName")
+//                            ),
+//                            HttpStatus.OK,
+//                            "Lấy đề thi thử thành công"
+//                    );
+//                }
+//                return new ResponseObject<>(
+//                        null,
+//                        HttpStatus.BAD_REQUEST,
+//                        "Đề thi thử không tồn tại"
+//                );
+//            }
 
         } catch (Exception e) {
             return new ResponseObject<>(

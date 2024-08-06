@@ -116,7 +116,7 @@ public class TExamFileImpl implements TExamFileService {
     }
 
     @Override
-    public ResponseObject<?> uploadExamRule(String subjectId, TUploadExamFileRequest request) {
+    public ResponseObject<?> uploadExamPaper(String subjectId, TUploadExamFileRequest request) {
 
         if (request.getFile().isEmpty()) {
             return new ResponseObject<>(
@@ -161,13 +161,16 @@ public class TExamFileImpl implements TExamFileService {
             );
         }
 
-        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + subject.get().getName() + "/" + request.getFolderName();
+        String folderName = "Phân công/" + staffs.get().getStaffCode() + " - " + staffs.get().getName() + "/" + subject.get().getSubjectCode();
         GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
         String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
 
         String fileId = googleDriveFileDTO.getId();
 
         ExamPaper examPaper = new ExamPaper();
+        if(request.getContentFile()!=null && request.getContentFile().trim().length()>0){
+            examPaper.setContentFile(request.getContentFile());
+        }
         examPaper.setId(CodeGenerator.generateRandomCode());
         examPaper.setPath(fileId);
         examPaper.setExamPaperStatus(ExamPaperStatus.WAITING_APPROVAL);
@@ -246,12 +249,12 @@ public class TExamFileImpl implements TExamFileService {
     @Override
     public ResponseObject<?> deleteExamPaper(String examPaperId) {
         Optional<ExamPaper> examPaper = tExamPaperRepository.findById(examPaperId);
-        if (examPaper.isEmpty()){
+        if (examPaper.isEmpty()) {
             return new ResponseObject<>(
                     null, HttpStatus.NOT_FOUND, "Đề thi không tồn tại"
             );
         }
-        if (examPaper.get().getExamPaperStatus()==ExamPaperStatus.REJECTED){
+        if (examPaper.get().getExamPaperStatus() == ExamPaperStatus.REJECTED) {
             return new ResponseObject<>(
                     null, HttpStatus.BAD_REQUEST, "Chỉ được  xóa đề bị từ chối"
             );

@@ -114,6 +114,13 @@ $(document).ready(function () {
             $('#pageSize').val(),
             $('#staff-upload-find').val()?.trim());
     }));
+
+    let message = localStorage.getItem('messageCreateExamPaper');
+    if (message) {
+        showToastSuccess(message);
+        localStorage.removeItem('messageCreateExamPaper');
+    }
+
 });
 
 function handleSearchExamPaper(status) {
@@ -338,6 +345,10 @@ const fetchExamPapers = async (page,
     await handleGetCountExamPaper();
 }
 
+const handleRedirectCreateExamPaperTeacher = () => {
+    window.location.href = ApiConstant.REDIRECT_TEACHER_EXAM_FILE + "/create-exam-paper/" + getStateSubjectId();
+}
+
 function detailSubject() {
     let url = window.location.href;
 
@@ -444,7 +455,6 @@ const handleUploadExamFile = () => {
             if (ok) {
                 showLoading();
                 const data = new FormData();
-                data.append("folderName", getStateSubjectCode());
                 data.append("file", getValueFileInput());
 
                 $.ajax({

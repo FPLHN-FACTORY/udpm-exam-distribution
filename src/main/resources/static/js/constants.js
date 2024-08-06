@@ -102,6 +102,7 @@ const ApiConstant = {
     REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
 
     // Constants representing the redirect paths for various resources under teacher
+    REDIRECT_TEACHER_EXAM_FILE: "/teacher/exam-file",
     REDIRECT_TEACHER_EXAM_SHIFT: "/teacher/exam-shift",
 
     // Constants representing the full paths for various resources under teacher
