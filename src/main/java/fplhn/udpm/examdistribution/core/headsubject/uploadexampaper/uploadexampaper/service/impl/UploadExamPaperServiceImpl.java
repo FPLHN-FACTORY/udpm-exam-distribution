@@ -411,24 +411,24 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
                 );
             }
 
-            String blockId = sessionHelper.getCurrentBlockId();
-            String subjectId = optionalExamPaper.get().getSubject().getId();
-            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
-            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
-
-            if (listEmailStaff.length == 0) {
-                return new ResponseObject<>(
-                        null,
-                        HttpStatus.NOT_ACCEPTABLE,
-                        "Môn học này chưa được xếp lớp học"
-                );
-            }
+//            String blockId = sessionHelper.getCurrentBlockId();
+//            String subjectId = optionalExamPaper.get().getSubject().getId();
+//            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+//            String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(blockId, subjectId, departmentFacilityId);
+//
+//            if (listEmailStaff.length == 0) {
+//                return new ResponseObject<>(
+//                        null,
+//                        HttpStatus.NOT_ACCEPTABLE,
+//                        "Môn học này chưa được xếp lớp học"
+//                );
+//            }
 
             ExamPaper examPaper = optionalExamPaper.get();
             examPaper.setIsPublic(true);
             examPaperRepository.save(examPaper);
 
-            this.sendEmailPublicMockExamPaper(listEmailStaff, examPaper);
+//            this.sendEmailPublicMockExamPaper(listEmailStaff, examPaper);
 
             return new ResponseObject<>(
                     null,
@@ -448,18 +448,18 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     @Override
     public ResponseObject<?> sendEmailPublicMockExamPaper(PublicMockExamPaperRequest request) {
         try {
-            String blockId = sessionHelper.getCurrentBlockId();
-            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
+//            String blockId = sessionHelper.getCurrentBlockId();
+//            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
 
             Arrays.stream(request.getListExamPaperId()).forEach(examPaperId -> {
                 Optional<ExamPaper> optionalExamPaper = examPaperRepository.findById(examPaperId);
                 if (optionalExamPaper.isPresent()) {
-                    String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(
-                            blockId,
-                            optionalExamPaper.get().getSubject().getId(),
-                            departmentFacilityId
-                    );
-                    this.sendEmailPublicMockExamPaper(listEmailStaff, optionalExamPaper.get());
+//                    String[] listEmailStaff = classSubjectRepository.getEmailStaffByBlockId(
+//                            blockId,
+//                            optionalExamPaper.get().getSubject().getId(),
+//                            departmentFacilityId
+//                    );
+//                    this.sendEmailPublicMockExamPaper(listEmailStaff, optionalExamPaper.get());
 
                     ExamPaper examPaper = optionalExamPaper.get();
                     examPaper.setIsPublic(true);
