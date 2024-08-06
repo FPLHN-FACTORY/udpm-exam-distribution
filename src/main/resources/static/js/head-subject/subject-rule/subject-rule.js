@@ -74,6 +74,7 @@ const fetchSearchSubject = (
                                   </label>
                                 </div>
                             </td>
+                            <td>${subject.examTime}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span
                                     onclick="handleOpenModalExamRule('${subject.id}')"

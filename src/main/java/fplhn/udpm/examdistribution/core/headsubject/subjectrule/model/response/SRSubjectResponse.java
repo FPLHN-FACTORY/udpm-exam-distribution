@@ -19,4 +19,6 @@ public interface SRSubjectResponse extends IsIdentify, HasOrderNumber {
 
     Integer getAllowOnline();
 
+    Integer getExamTime();
+
 }
