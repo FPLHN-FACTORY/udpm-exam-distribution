@@ -41,7 +41,19 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                         setbs.id_subject = s.id AND
                         setbs.id_facility = :facilityId AND
                         setbs.status = 0
-                ) AS allowOnline
+                ) AS allowOnline,
+                (
+                    SELECT
+                        CASE
+                            WHEN setbs.percent_random IS NOT NULL THEN setbs.percent_random
+                            ELSE 0
+                        END
+                    FROM exam_time_by_subject setbs
+                    WHERE
+                        setbs.id_subject = s.id AND
+                        setbs.id_facility = :facilityId AND
+                        setbs.status = 0
+                ) AS percentRandom
             FROM
                 head_subject_by_semester hsbs
             JOIN subject s ON
