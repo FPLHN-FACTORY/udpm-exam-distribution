@@ -166,6 +166,7 @@ const handleChooseExamRule = (examRuleId) => {
         success: function (responseBody) {
             showToastSuccess(responseBody.message);
             fetchSearchExamRule();
+
             hideLoading();
         },
         error: function (error) {

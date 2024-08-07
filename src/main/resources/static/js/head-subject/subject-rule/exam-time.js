@@ -57,6 +57,7 @@ $("#button-update-exam-time").on("click", () => {
             showToastSuccess(responseBody?.message);
 
             $("#examTimeModal").modal("hide");
+            fetchSearchSubject();
 
             hideLoading();
         },

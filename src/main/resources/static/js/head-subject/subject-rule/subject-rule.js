@@ -57,7 +57,9 @@ const fetchSearchSubject = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
-                            <td>
+                            <td class="text-center">${subject.examTime === null ? 0 : subject.examTime} phút</td>
+                            <td class="text-center">${subject.percentRandom === null ? 0 : subject.percentRandom}%</td>
+                            <td class="text-center">
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
@@ -74,7 +76,6 @@ const fetchSearchSubject = (
                                   </label>
                                 </div>
                             </td>
-                            <td>${subject.examTime}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span
                                     onclick="handleOpenModalExamRule('${subject.id}')"

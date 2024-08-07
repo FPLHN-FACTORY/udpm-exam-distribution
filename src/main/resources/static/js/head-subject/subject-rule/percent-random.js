@@ -73,6 +73,8 @@ $("#button-save-percent-random").on("click", () => {
         success: function (responseBody) {
             showToastSuccess(responseBody?.message);
 
+            fetchSearchSubject();
+
             hideLoading();
         },
         error: function (error) {
