@@ -197,6 +197,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+            studentExamShift.get().setCheckLogin(false);
             studentExamShift.get().setReason(reason);
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK,
@@ -231,6 +232,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.REGISTERED);
+            studentExamShift.get().setCheckLogin(true);
             tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,

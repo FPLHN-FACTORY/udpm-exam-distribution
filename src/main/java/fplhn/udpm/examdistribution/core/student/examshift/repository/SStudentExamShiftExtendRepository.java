@@ -13,6 +13,15 @@ public interface SStudentExamShiftExtendRepository extends StudentExamShiftRepos
     @Query("""
             SELECT ses
             FROM StudentExamShift ses
+            WHERE
+                ses.examShift.examShiftCode = :examShiftCode AND
+                ses.student.id = :studentId
+            """)
+    Optional<StudentExamShift> findByExamShiftCodeAndStudentId(String examShiftCode, String studentId);
+
+    @Query("""
+            SELECT ses
+            FROM StudentExamShift ses
             WHERE ses.examShift.examShiftCode = :examShiftCode AND
                   ses.student.id = :studentId AND
                   ses.examShift.classSubject.facilityChild.facility.id = :facilityId AND

@@ -224,7 +224,7 @@ const getStudents = () => {
                 students.forEach((student, index) => {
                     const col = $(`
                         <div class="col-3">
-                            <div class="${student.isViolation === 0 ? "bg-warning" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
+                            <div class="${student.checkLogin === false ? "bg-secondary-subtle" : "bg-white"} p-4 shadow rounded min-vh-30 w-30 position-relative">
                                 <div class="user-box">
                                     <div class="avatar-lg">
                                         <img src="${student.picture}"
@@ -236,6 +236,11 @@ const getStudents = () => {
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
                                         Thời gian tham gia: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
+                                        ${student.checkLogin === false ?
+                                            `<p class="text-muted">
+                                                Thời gian thoát: ${formatFromUnixTimeToHoursMinutes(student.leaveTime)}</p>` :
+                                            ""
+                                        }
                                         <button class="btn position-absolute top-0 end-0 p-2 fs-3 lh-1" 
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
                                         ${student.isViolation === 0 ?
@@ -524,15 +529,27 @@ const connect = () => {
             const responseBody = JSON.parse(response.body);
             showToastSuccess(responseBody.message);
         });
-        stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastError(responseBody.message);
-            getStudents();
-        });
+        // stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
+        //     const responseBody = JSON.parse(response.body);
+        //     showToastError(responseBody.message);
+        //     getStudents();
+        // });
+        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
+        //     const responseBody = JSON.parse(response.body);
+        //     showToastError(responseBody.message);
+        //     getStudents();
+        // });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB, function (response) {
             const responseBody = JSON.parse(response.body);
-            showToastError(responseBody.message);
-            getStudents();
+            if (responseBody.message === examShiftCode) {
+                getStudents();
+            }
+        });
+        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_REMOVE_TAB_REJOIN, function (response) {
+            const responseBody = JSON.parse(response.body);
+            if (responseBody.message === examShiftCode) {
+                getStudents();
+            }
         });
     });
 }

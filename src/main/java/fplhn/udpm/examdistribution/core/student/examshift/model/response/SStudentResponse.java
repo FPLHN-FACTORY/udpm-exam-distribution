@@ -12,8 +12,12 @@ public interface SStudentResponse extends IsIdentify {
 
     Long getJoinTime();
 
+    Long getLeaveTime();
+
     String getPicture();
 
     Integer getIsViolation();
+
+    Boolean getCheckLogin();
 
 }

@@ -63,11 +63,17 @@ public class ExamShiftNotificationController {
         return new NotificationResponse(message);
     }
 
-    @MessageMapping("/track-student")
-    @SendTo(TopicConstant.TOPIC_TRACK_STUDENT)
-    public NotificationResponse notifyTrackStudent(String message) {
-        return new NotificationResponse(message);
-    }
+//    @MessageMapping("/track-student")
+//    @SendTo(TopicConstant.TOPIC_TRACK_STUDENT)
+//    public NotificationResponse notifyTrackStudent(String message) {
+//        return new NotificationResponse(message);
+//    }
+//
+//    @MessageMapping("/student-remove-tab")
+//    @SendTo(TopicConstant.TOPIC_STUDENT_REMOVE_TAB)
+//    public NotificationResponse notifyStudentRemoveTab(String message) {
+//        return new NotificationResponse(message);
+//    }
 
     @MessageMapping("/student-remove-tab")
     @SendTo(TopicConstant.TOPIC_STUDENT_REMOVE_TAB)

@@ -179,10 +179,9 @@ const viewSelectForFirstSupervisor = () => {
                 };
             },
             processResults: function (data) {
-                console.log(data);
                 let results = [];
                 data.data.forEach(e => {
-                    results.push({id: e.id, text: e.staffInfo});
+                    results.push({id: e.code, text: e.staffInfo});
                 });
 
                 return {
@@ -228,7 +227,7 @@ const viewSelectForSecondSupervisor = () => {
                 console.log(data);
                 let results = [];
                 data.data.forEach(e => {
-                    results.push({id: e.id, text: e.staffInfo});
+                    results.push({id: e.code, text: e.staffInfo});
                 });
 
                 return {
