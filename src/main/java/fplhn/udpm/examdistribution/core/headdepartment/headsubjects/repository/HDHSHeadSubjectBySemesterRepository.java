@@ -86,7 +86,7 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
     @Query(
             value = """
                     SELECT
-                        s.id as id,
+                        s.staff_code as code,
                         CONCAT(s.staff_code, ' - ', s.name) as staffInfo
                     FROM
                         staff s

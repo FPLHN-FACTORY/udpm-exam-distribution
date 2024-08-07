@@ -3,6 +3,7 @@ package fplhn.udpm.examdistribution.core.student.examshift.service;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.student.examshift.model.request.SOpenExamPaperRequest;
 import fplhn.udpm.examdistribution.core.student.examshift.model.request.SExamShiftRequest;
+import fplhn.udpm.examdistribution.core.student.examshift.model.request.SRefreshJoinRoomRequest;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
@@ -26,5 +27,7 @@ public interface SExamShiftService {
     ResponseObject<?> openExamPaper(SOpenExamPaperRequest sOpenExamPaperRequest);
 
     ResponseObject<?> updateExamStudentStatus(String examShiftCode);
+
+    ResponseObject<?> refreshJoinRoom(SRefreshJoinRoomRequest request);
 
 }
