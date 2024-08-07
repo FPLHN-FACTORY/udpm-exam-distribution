@@ -249,7 +249,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
     @Override
     public ResponseObject<?> createExamPaper(@Valid CEPCreateExamPaperRequest request) {
         try {
-            if (request.getFile().isEmpty()) {
+            if (request.getFile() == null) {
                 return new ResponseObject<>(
                         null,
                         HttpStatus.NOT_ACCEPTABLE,
@@ -257,12 +257,14 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            if (request.getFile().getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
-                return new ResponseObject<>(
-                        null,
-                        HttpStatus.NOT_ACCEPTABLE,
-                        GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
-                );
+            for (MultipartFile multipartFile : request.getFile()) {
+                if (multipartFile.getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
+                    return new ResponseObject<>(
+                            null,
+                            HttpStatus.NOT_ACCEPTABLE,
+                            GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE
+                    );
+                }
             }
 
             Optional<MajorFacility> isMajorFacilityExist = majorFacilityRepository.findById(sessionHelper.getCurrentUserMajorFacilityId());
@@ -283,8 +285,6 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
                 );
             }
 
-            ExamPaper putExamPaper = new ExamPaper();
-
             String blockId = sessionHelper.getCurrentBlockId();
             Optional<Block> isBlockExist = blockRepository.findById(blockId);
             if (isBlockExist.isEmpty()) {
@@ -297,22 +297,25 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
 
             String userId = sessionHelper.getCurrentUserId();
             String folderName = "Exam/" + isSubjectExist.get().getSubjectCode() + "/" + request.getExamPaperType();
-            GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(request.getFile(), folderName, true);
+            for (MultipartFile multipartFile : request.getFile()) {
+                ExamPaper putExamPaper = new ExamPaper();
+                GoogleDriveFileDTO googleDriveFileDTO = googleDriveFileService.upload(multipartFile, folderName, true);
 
-            putExamPaper.setBlock(isBlockExist.get());
-            putExamPaper.setPath(googleDriveFileDTO.getId());
-            putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
-            putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
-            putExamPaper.setMajorFacility(isMajorFacilityExist.get());
-            putExamPaper.setSubject(isSubjectExist.get());
-            putExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
-            putExamPaper.setExamPaperCreatedDate(new Date().getTime());
-            putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
-            putExamPaper.setStatus(EntityStatus.ACTIVE);
-            if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
-                putExamPaper.setIsPublic(false);
+                putExamPaper.setBlock(isBlockExist.get());
+                putExamPaper.setPath(googleDriveFileDTO.getId());
+                putExamPaper.setExamPaperType(ExamPaperType.valueOf(request.getExamPaperType()));
+                putExamPaper.setExamPaperStatus(ExamPaperStatus.IN_USE);
+                putExamPaper.setMajorFacility(isMajorFacilityExist.get());
+                putExamPaper.setSubject(isSubjectExist.get());
+                putExamPaper.setExamPaperCode(isSubjectExist.get().getSubjectCode() + "_" + CodeGenerator.generateRandomCode().substring(0, 3));
+                putExamPaper.setExamPaperCreatedDate(new Date().getTime());
+                putExamPaper.setStaffUpload(staffRepository.findById(userId).get());
+                putExamPaper.setStatus(EntityStatus.ACTIVE);
+                if (ExamPaperType.valueOf(request.getExamPaperType()).equals(ExamPaperType.MOCK_EXAM_PAPER)) {
+                    putExamPaper.setIsPublic(false);
+                }
+                examPaperRepository.save(putExamPaper);
             }
-            examPaperRepository.save(putExamPaper);
 
             return new ResponseObject<>(
                     null,
@@ -323,7 +326,7 @@ public class ChooseExamPaperServiceImpl implements ChooseExamPaperService {
             return new ResponseObject<>(
                     null,
                     HttpStatus.BAD_REQUEST,
-                    "Đã có 1 vài lỗi xảy ra"
+                    "Tải đề thi không thành công"
             );
         }
     }

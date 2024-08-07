@@ -57,9 +57,9 @@ const fetchSearchSubject = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
-                            <td>${subject.examTime === null ? 0 : subject.examTime} phút</td>
-                            <td>${subject.percentRandom === null ? 0 : subject.percentRandom}%</td>
-                            <td>
+                            <td class="text-center">${subject.examTime === null ? 0 : subject.examTime} phút</td>
+                            <td class="text-center">${subject.percentRandom === null ? 0 : subject.percentRandom}%</td>
+                            <td class="text-center">
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
