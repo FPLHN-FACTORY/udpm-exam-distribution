@@ -1,8 +1,8 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListStaffBySubjectIdResponse;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListStaffResponse;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.UEPListStaffBySubjectIdResponse;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.UEPListStaffResponse;
 import fplhn.udpm.examdistribution.repository.StaffRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +34,7 @@ public interface UEPStaffExtendRepository extends StaffRepository {
                 mf.id_department_facility = :departmentFacilityId AND
                 smf.status = 0
             """, nativeQuery = true)
-    List<ListStaffResponse> getListStaff(String departmentFacilityId);
+    List<UEPListStaffResponse> getListStaff(String departmentFacilityId);
 
     @Query(value = """
             SELECT
@@ -92,6 +92,6 @@ public interface UEPStaffExtendRepository extends StaffRepository {
                 ) AND
                 s.status = 0
             """, nativeQuery = true)
-    Page<ListStaffBySubjectIdResponse> getListStaffBySubjectId(Pageable pageable, String subjectId, String blockId, String facilityId, ListStaffBySubjectIdRequest request);
+    Page<UEPListStaffBySubjectIdResponse> getListStaffBySubjectId(Pageable pageable, String subjectId, String blockId, String facilityId, UEPListStaffBySubjectIdRequest request);
 
 }

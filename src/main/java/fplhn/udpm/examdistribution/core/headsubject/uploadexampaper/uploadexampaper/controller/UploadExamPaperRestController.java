@@ -1,15 +1,14 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headsubject.chooseexampaper.model.request.CEPListResourceExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPPublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPSharePermissionExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.service.UploadExamPaperService;
 import fplhn.udpm.examdistribution.infrastructure.constant.MappingConstants;
 import fplhn.udpm.examdistribution.utils.Helper;
@@ -67,17 +66,17 @@ public class UploadExamPaperRestController {
     }
 
     @GetMapping("/exam-paper")
-    public ResponseEntity<?> getListExamPaper(ListExamPaperRequest request) {
+    public ResponseEntity<?> getListExamPaper(UEPListExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.getAllExamPaper(request));
     }
 
     @PostMapping("/exam-paper")
-    public ResponseEntity<?> createExamPaper(@ModelAttribute CreateExamPaperRequest request) {
+    public ResponseEntity<?> createExamPaper(@ModelAttribute UEPCreateExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.createExamPaper(request));
     }
 
     @PutMapping("/exam-paper")
-    public ResponseEntity<?> updateExamPaper(@ModelAttribute UpdateExamPaperRequest request) {
+    public ResponseEntity<?> updateExamPaper(@ModelAttribute UEPUpdateExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.updateExamPaper(request));
     }
 
@@ -87,22 +86,22 @@ public class UploadExamPaperRestController {
     }
 
     @PostMapping("/public-mock-exam-paper")
-    public ResponseEntity<?> publicMockExamPaper(@RequestBody PublicMockExamPaperRequest request) {
+    public ResponseEntity<?> publicMockExamPaper(@RequestBody UEPPublicMockExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.sendEmailPublicMockExamPaper(request));
     }
 
     @GetMapping("/staffs/{subjectId}")
-    public ResponseEntity<?> getListStaffBySubjectId(@PathVariable String subjectId, ListStaffBySubjectIdRequest request) {
+    public ResponseEntity<?> getListStaffBySubjectId(@PathVariable String subjectId, UEPListStaffBySubjectIdRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.getListStaffBySubjectId(subjectId, request));
     }
 
     @PostMapping("/share-permission-exam-paper")
-    public ResponseEntity<?> sharePermissionExamPaper(@RequestBody SharePermissionExamPaperRequest request) {
+    public ResponseEntity<?> sharePermissionExamPaper(@RequestBody UEPSharePermissionExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.sharePermissionExamPaper(request));
     }
 
     @GetMapping("/resources")
-    public ResponseEntity<?> getListResource(ListResourceExamPaperRequest request) {
+    public ResponseEntity<?> getListResource(UEPListResourceExamPaperRequest request) {
         return Helper.createResponseEntity(uploadExamPaperService.getListResource(request));
     }
 

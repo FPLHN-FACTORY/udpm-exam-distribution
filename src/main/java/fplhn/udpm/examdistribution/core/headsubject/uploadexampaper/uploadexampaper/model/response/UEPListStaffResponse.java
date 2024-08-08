@@ -2,7 +2,7 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-public interface ListStaffResponse extends IsIdentify {
+public interface UEPListStaffResponse extends IsIdentify {
 
     String getName();
 

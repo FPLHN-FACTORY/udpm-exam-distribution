@@ -4,13 +4,13 @@ import com.google.api.services.drive.model.Permission;
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.assignuploader.model.response.FileResponse;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.CreateExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListStaffBySubjectIdRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.PublicMockExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.SharePermissionExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UpdateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPCreateExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListStaffBySubjectIdRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPPublicMockExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPSharePermissionExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPUpdateExamPaperRequest;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPBlockExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPClassSubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository.UEPFacilityExtendRepository;
@@ -131,7 +131,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> getAllExamPaper(ListExamPaperRequest request) {
+    public ResponseObject<?> getAllExamPaper(UEPListExamPaperRequest request) {
         try {
             Pageable pageable = Helper.createPageable(request, "createdDate");
             String userId = sessionHelper.getCurrentUserId();
@@ -231,7 +231,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> createExamPaper(@Valid CreateExamPaperRequest request) {
+    public ResponseObject<?> createExamPaper(@Valid UEPCreateExamPaperRequest request) {
         try {
             if (request.getFile().isEmpty()) {
                 return new ResponseObject<>(
@@ -321,7 +321,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> updateExamPaper(@Valid UpdateExamPaperRequest request) {
+    public ResponseObject<?> updateExamPaper(@Valid UEPUpdateExamPaperRequest request) {
         try {
             Optional<ExamPaper> isExamPaperExist = examPaperRepository.findById(request.getExamPaperId());
             if (isExamPaperExist.isEmpty()) {
@@ -446,7 +446,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> sendEmailPublicMockExamPaper(PublicMockExamPaperRequest request) {
+    public ResponseObject<?> sendEmailPublicMockExamPaper(UEPPublicMockExamPaperRequest request) {
         try {
 //            String blockId = sessionHelper.getCurrentBlockId();
 //            String departmentFacilityId = sessionHelper.getCurrentUserDepartmentFacilityId();
@@ -511,7 +511,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> getListStaffBySubjectId(String subjectId, ListStaffBySubjectIdRequest request) {
+    public ResponseObject<?> getListStaffBySubjectId(String subjectId, UEPListStaffBySubjectIdRequest request) {
         try {
             String blockId = sessionHelper.getCurrentBlockId();
             String facilityId = sessionHelper.getCurrentUserFacilityId();
@@ -534,7 +534,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> sharePermissionExamPaper(SharePermissionExamPaperRequest request) {
+    public ResponseObject<?> sharePermissionExamPaper(UEPSharePermissionExamPaperRequest request) {
         try {
             Optional<ExamPaper> examPaperOptional = examPaperRepository.findById(request.getExamPaperId());
             if (examPaperOptional.isEmpty()) {
@@ -613,7 +613,7 @@ public class UploadExamPaperServiceImpl implements UploadExamPaperService {
     }
 
     @Override
-    public ResponseObject<?> getListResource(ListResourceExamPaperRequest request) {
+    public ResponseObject<?> getListResource(UEPListResourceExamPaperRequest request) {
         try {
             Pageable pageable = Helper.createPageable(request, "createdDate");
             return new ResponseObject<>(

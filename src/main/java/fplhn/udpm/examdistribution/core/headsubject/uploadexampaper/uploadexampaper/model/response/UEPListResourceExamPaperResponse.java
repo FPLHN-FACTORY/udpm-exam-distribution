@@ -3,16 +3,8 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 import fplhn.udpm.examdistribution.core.common.base.HasOrderNumber;
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-public interface ListStaffBySubjectIdResponse extends HasOrderNumber, IsIdentify {
+public interface UEPListResourceExamPaperResponse extends HasOrderNumber, IsIdentify {
 
-    String getCode();
-
-    String getName();
-
-    String getEmailFpt();
-
-    String getEmailFe();
-
-    Integer getIsPublic();
+    String getResource();
 
 }
