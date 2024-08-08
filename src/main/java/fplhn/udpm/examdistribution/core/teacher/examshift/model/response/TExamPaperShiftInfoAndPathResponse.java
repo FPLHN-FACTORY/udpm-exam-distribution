@@ -10,4 +10,6 @@ public interface TExamPaperShiftInfoAndPathResponse extends IsIdentify {
 
     Long getEndTime();
 
+    Integer getExamShiftStatus();
+
 }

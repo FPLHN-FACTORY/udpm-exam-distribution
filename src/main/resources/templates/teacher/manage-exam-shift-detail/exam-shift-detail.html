@@ -24,10 +24,17 @@
             <span id="endTime" hidden></span>
             <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
-                <div class="px-4">
-                    <h2 id="examShift">Phòng thi: - Lớp: </h2>
-                    <h4 id="examShiftCodePassword">Mã phòng: - Mật khẩu: </h4>
-                    <h4 id="examPaperPassword" hidden>Mật khẩu mở đề: </h4>
+                <div class="row d-flex justify-content-between">
+                    <div class="col-9 px-4">
+                        <h2 id="examShift">Phòng thi: - Lớp: </h2>
+                        <h4 id="examShiftCodePassword">Mã phòng: - Mật khẩu: </h4>
+                        <h4 id="examPaperPassword" hidden>Mật khẩu mở đề: </h4>
+                    </div>
+                    <div id="displayCountdown" hidden
+                         class="col-2 btn-label-danger justify-content-center
+                         align-items-center p-2 me-5 shadow rounded min-vh-30">
+                        <h4 class="font-w fw-bold" id="countdown"></h4>
+                    </div>
                 </div>
                 <div class="p-4">
                     <ul class="nav nav-underline mb-3" id="exam-shift-tab" role="tablist">
@@ -160,7 +167,6 @@
                                             Hoàn thành
                                         </button>
                                     </div>
-                                    <div class="font-w fw-bold" id="countdown"></div>
                                 </div>
                                 <div id="examShiftPaper" class="mt-2">
                                     <div id="pdf-viewer" hidden>
@@ -245,6 +251,40 @@
         </div>
     </div>
     <!-- Modal Remove Student -->
+
+    <!-- Modal Exam Time -->
+    <div class="modal fade" id="examTimeModal" tabindex="-1" aria-labelledby="removeStudentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examTimeModalLabel">Set thời gian làm bài</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="studentIdSetExamTime" hidden=""></span>
+                    <form id="examTimeForm">
+                        <div class="mb-3">
+                            <label for="modifyExamTime" class="form-label">Thời gian làm bài</label>
+                            <input type="text" class="form-control" id="modifyExamTime" required>
+                            <div class="invalid-feedback" id="examTimeError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: var(--common-button-color); color: white;">Đóng
+                    </button>
+                    <button type="button" class="btn" id="modifyExamTimeButton"
+                            style="background-color: var(--common-button-color); color: white;"
+                    >
+                        Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Exam Time -->
 
     <!-- Modal List Violation Student -->
     <div class="modal modal-xl fade" id="violationModal" tabindex="-1" aria-labelledby="violationModalLabel"

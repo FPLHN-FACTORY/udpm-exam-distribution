@@ -67,7 +67,7 @@ public class HSExamShiftRestController {
             HSExamRuleResourceResponse fileResponse = (HSExamRuleResourceResponse) responseObject.getData();
             return ResponseEntity.ok()
                     .header("Content-Disposition",
-                            "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                            "inline; filename=\"" + fileResponse.getFileName() + "\"")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(fileResponse.getData());
         }

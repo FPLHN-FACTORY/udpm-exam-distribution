@@ -113,7 +113,8 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
                 const allowOnline = responseBody?.data?.allowOnline;
-                if (fileId !== null) {
+                const examShiftStatus = responseBody?.data?.examShiftStatus;
+                if (fileId !== null && examShiftStatus === 1) {
                     fetchFilePDFExamPaper(fileId);
                 }
                 if (startTime !== null && endTime !== null && allowOnline !== null) {
@@ -280,44 +281,54 @@ const connect = () => {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-        });
+        // stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
+        // });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
             const responseBody = JSON.parse(response.body);
             const studentId = responseBody.message.split(' - ')[1];
-            console.log(studentId)
-            console.log(userInfo.userId)
             if (studentId === userInfo.userId) {
                 localStorage.setItem('kickExamShiftStudentSuccessMessage', 'Bạn đã bị kick ra khỏi ca thi!');
                 window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
             }
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-            getPathFilePDFExamPaper(examShiftCode);
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getPathFilePDFExamPaper(examShiftCode);
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-            getStartTimeEndTimeExamPaper(examShiftCode);
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getStartTimeEndTimeExamPaper(examShiftCode);
+            }
         });
     });
 };
 
-let isTabClosing = false;
+document.addEventListener("keydown", function (e) {
+    const blockedKeys = ["F5"];
 
-document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") {
-        isTabClosing = true;
+    if (blockedKeys.includes(e.code)) {
+        e.preventDefault();
+        localStorage.setItem("isF5", "true");
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     }
 });
 
 window.addEventListener("beforeunload", function (event) {
-    if (isTabClosing) {
+    if (localStorage.getItem("isF5") !== "true") {
         refreshJoinRoom();
-        isTabClosing = false;
+        localStorage.setItem("isF5", "false");
     }
+});
+
+window.addEventListener("load", function () {
+    localStorage.setItem("isF5", "false");
 });
 
 const refreshJoinRoom = () => {
@@ -366,7 +377,6 @@ const startCountdown = (startTime, endTime, allowOnline) => {
             $('#openExamPaper').prop('hidden', false);
             $('#countdown').prop('hidden', true);
             $('#examShiftPaper').prop('hidden', true);
-            updateExamPaperShiftStatus();
         }
     }, 1000);
 }
@@ -408,6 +418,7 @@ const completeExamShift = () => {
         dangerMode: false,
     }).then((willComplete) => {
         if (willComplete) {
+            updateExamPaperShiftStatus();
             window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT;
         }
     });

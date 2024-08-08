@@ -23,10 +23,11 @@ public class HSClassSubjectServiceImpl implements HSClassSubjectService {
     private final SessionHelper sessionHelper;
 
     @Override
-    public ResponseObject<?> getClassSubject(String classSubjectCode) {
+    public ResponseObject<?> getClassSubject(String classSubjectCode, String subjectId) {
         try {
             Optional<HSClassSubjectResponse> existingClassSubject = hsClassSubjectExtendRepository.getClassSubject(
                     classSubjectCode,
+                    subjectId,
                     sessionHelper.getCurrentUserDepartmentFacilityId(),
                     sessionHelper.getCurrentBlockId(),
                     sessionHelper.getCurrentUserMajorFacilityId()

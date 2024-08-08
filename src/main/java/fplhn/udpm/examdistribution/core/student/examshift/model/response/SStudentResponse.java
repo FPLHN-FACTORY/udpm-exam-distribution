@@ -13,6 +13,13 @@ public interface SStudentResponse extends IsIdentify {
     Long getJoinTime();
 
     Long getLeaveTime();
+    Long getStartTime();
+
+    Long getEndTime();
+
+    Long getExamPaperShiftStartTime();
+
+    Long getExamPaperShiftEndTime();
 
     String getPicture();
 

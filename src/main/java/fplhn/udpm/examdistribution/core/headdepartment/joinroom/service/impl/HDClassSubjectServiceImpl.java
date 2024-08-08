@@ -24,10 +24,10 @@ public class HDClassSubjectServiceImpl implements HDClassSubjectService {
     private final SessionHelper sessionHelper;
 
     @Override
-    public ResponseObject<?> getClassSubject(String classSubjectCode) {
+    public ResponseObject<?> getClassSubject(String classSubjectCode, String subjectId) {
         try {
             Optional<HDClassSubjectResponse> existingClassSubject = hdClassSubjectExtendRepository.getClassSubject(
-                    classSubjectCode,
+                    classSubjectCode, subjectId,
                     sessionHelper.getCurrentUserDepartmentFacilityId(),
                     sessionHelper.getCurrentBlockId());
 

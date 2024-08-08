@@ -4,8 +4,6 @@ import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TExamShi
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TAllExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamShiftResponseStartExamResponse;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.THeadSubjectAndContentSendMailResponse;
-import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TSendMailToSupervisorWhenOpenExamPaperResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;

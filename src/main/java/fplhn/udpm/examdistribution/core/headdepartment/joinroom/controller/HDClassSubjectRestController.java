@@ -18,8 +18,8 @@ public class HDClassSubjectRestController {
     private final HDClassSubjectService hdClassSubjectService;
 
     @GetMapping("/get-class-subject")
-    public ResponseEntity<?> getClassSubject(String classSubjectCode) {
-        return Helper.createResponseEntity(hdClassSubjectService.getClassSubject(classSubjectCode));
+    public ResponseEntity<?> getClassSubject(String classSubjectCode, String subjectId) {
+        return Helper.createResponseEntity(hdClassSubjectService.getClassSubject(classSubjectCode, subjectId));
     }
 
     @GetMapping

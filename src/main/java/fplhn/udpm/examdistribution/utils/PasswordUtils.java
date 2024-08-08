@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -44,7 +45,7 @@ public class PasswordUtils {
     }
 
     public static String generatePassword() {
-        return RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+        return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 
 //    public static void main(String[] args) {

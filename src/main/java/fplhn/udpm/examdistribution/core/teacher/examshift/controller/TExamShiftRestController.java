@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.controller;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TApproveStudentWhenStartTime;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TExamRuleResourceResponse;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.response.TFileResourceResponse;
@@ -56,8 +57,15 @@ public class TExamShiftRestController {
     }
 
     @PutMapping("/{examShiftCode}/approve-student/{studentId}")
-    public ResponseEntity<?> approveStudent(@PathVariable String examShiftCode, @PathVariable String studentId) {
+    public ResponseEntity<?> approveStudent(
+            @PathVariable String examShiftCode, @PathVariable String studentId) {
         return Helper.createResponseEntity(tExamShiftService.approveStudent(examShiftCode, studentId));
+    }
+
+    @PutMapping("/{examShiftCode}/approve-student-when-start-time/{studentId}")
+    public ResponseEntity<?> approveStudentWhenStartTime(
+            @PathVariable String examShiftCode, @PathVariable String studentId, @RequestBody TApproveStudentWhenStartTime tApproveStudentWhenStartTime) {
+        return Helper.createResponseEntity(tExamShiftService.approveStudentWhenStartTime(examShiftCode, studentId, tApproveStudentWhenStartTime));
     }
 
     @PutMapping("/{examShiftCode}/refuse-student/{studentId}")
@@ -88,7 +96,7 @@ public class TExamShiftRestController {
             TFileResourceResponse fileResponse = (TFileResourceResponse) responseObject.getData();
             return ResponseEntity.ok()
                     .header("Content-Disposition",
-                            "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                            "inline; filename=\"" + fileResponse.getFileName() + "\"")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(fileResponse.getData());
         }
@@ -102,7 +110,7 @@ public class TExamShiftRestController {
             TExamRuleResourceResponse fileResponse = (TExamRuleResourceResponse) responseObject.getData();
             return ResponseEntity.ok()
                     .header("Content-Disposition",
-                            "attachment; filename=\"" + fileResponse.getFileName() + "\"")
+                            "inline; filename=\"" + fileResponse.getFileName() + "\"")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(fileResponse.getData());
         }

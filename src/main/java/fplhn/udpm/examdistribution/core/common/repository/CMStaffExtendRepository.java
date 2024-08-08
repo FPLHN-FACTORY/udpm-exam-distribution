@@ -22,8 +22,7 @@ public interface CMStaffExtendRepository extends StaffRepository {
                     LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
                     WHERE
-                        s.id != :#{#request.currentUserId}
-                        AND df.id = :#{#request.currentDepartmentFacilityId}
+                        df.id = :#{#request.currentDepartmentFacilityId}
                         AND (:#{#request.q} IS NULL OR (s.staff_code LIKE CONCAT('%',:#{#request.q},'%') OR s.name LIKE CONCAT('%',:#{#request.q},'%')))
                     GROUP BY s.id, s.staff_code, s.name, s.account_fpt, s.account_fe
                     LIMIT 5

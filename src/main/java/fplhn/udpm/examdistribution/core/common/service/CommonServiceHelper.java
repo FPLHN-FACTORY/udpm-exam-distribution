@@ -47,7 +47,6 @@ public class CommonServiceHelper {
 
     public ResponseObject<?> getStaffSearch(StaffSearchRequest request) {
         request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
-        request.setCurrentUserId(sessionHelper.getCurrentUserId());
         return new ResponseObject<>(
                 cMStaffExtendRepository.getStaffs(request),
                 HttpStatus.OK,
