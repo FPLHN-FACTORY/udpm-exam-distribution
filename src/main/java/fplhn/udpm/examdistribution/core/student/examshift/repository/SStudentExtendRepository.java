@@ -55,18 +55,24 @@ public interface SStudentExtendRepository extends StudentRepository {
 
     @Query(value = """
             SELECT
-                s.id as id,
-            	s.name as name,
-            	s.student_code as studentCode,
-            	s.email as email,
-            	ses.join_time as joinTime
+             s.id as id,
+             s.name as name,
+             s.student_code as studentCode,
+             s.email as email,
+             s.picture as picture,
+             ses.join_time as joinTime,
+             ses.start_time as startTime,
+             ses.end_time as endTime,
+             eps.start_time as examPaperShiftStartTime,
+             eps.end_time as examPaperShiftEndTime
             FROM
             	student s
-            JOIN student_exam_shift ses
-                ON
+            JOIN student_exam_shift ses ON
             	s.id = ses.id_student
-            JOIN exam_shift es ON
+            LEFT JOIN exam_shift es ON
             	ses.id_exam_shift = es.id
+            LEFT JOIN exam_paper_shift eps on
+             	es.id = ses.id_exam_shift
             WHERE
                 ses.exam_student_status = 4
             	AND es.exam_shift_code = :examShiftCode

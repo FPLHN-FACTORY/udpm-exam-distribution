@@ -163,9 +163,10 @@ const getClassSubjectIdByRequest = () => {
 
 const getClassSubject = () => {
     let subjectClassCodeVal = $('#modifySubjectClassCode').val();
+    let subjectIdVal = $('#modifySubjectId').val();
     $.ajax({
         type: "GET",
-        url: ApiConstant.API_HEAD_SUBJECT_CLASS_SUBJECT + '/get-class-subject' + classSubjectCodeUrl + subjectClassCodeVal,
+        url: ApiConstant.API_HEAD_SUBJECT_CLASS_SUBJECT + '/get-class-subject' + classSubjectCodeUrl + subjectClassCodeVal + subjectIdUrl + subjectIdVal,
         success: function (responseBody) {
             if (responseBody?.data) {
                 addExamShift();

@@ -5,7 +5,7 @@ import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HD
 
 public interface HDClassSubjectService {
 
-    ResponseObject<?> getClassSubject(String classSubjectCode);
+    ResponseObject<?> getClassSubject(String classSubjectCode, String subjectId);
 
     ResponseObject<?> getClassSubjectIdByRequest(HDClassSubjectRequest hdClassSubjectRequest);
 

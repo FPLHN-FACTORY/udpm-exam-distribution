@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.teacher.examshift.service;
 
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
+import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TApproveStudentWhenStartTime;
 import fplhn.udpm.examdistribution.core.teacher.examshift.model.request.TJoinExamShiftRequest;
 import jakarta.validation.Valid;
 
@@ -21,6 +22,9 @@ public interface TExamShiftService {
     ResponseObject<?> removeStudent(String examShiftCode, String studentId, String reason);
 
     ResponseObject<?> approveStudent(String examShiftCode, String studentId);
+
+    ResponseObject<?> approveStudentWhenStartTime(String examShiftCode, String studentId,
+                                                  TApproveStudentWhenStartTime tApproveStudentWhenStartTime);
 
     ResponseObject<?> refuseStudent(String examShiftCode, String studentId);
 
