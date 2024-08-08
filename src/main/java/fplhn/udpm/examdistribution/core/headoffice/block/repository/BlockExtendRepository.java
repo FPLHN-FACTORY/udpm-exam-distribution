@@ -33,6 +33,8 @@ public interface BlockExtendRepository extends BlockRepository {
 
     Optional<Block> findBlockByNameAndSemesterId(BlockName name, String semester_id);
 
+    Optional<Block> findByNameAndSemester_Id(BlockName name, String semesterId);
+
     List<Block> findAllBySemesterId(String semesterId);
 
     @Query(value = """

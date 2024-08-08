@@ -32,9 +32,9 @@ public class SemesterRestController {
         return Helper.createResponseEntity(semesterService.createSemester(createUpdateSemesterRequest));
     }
 
-    @PutMapping("/{semesterId}")
-    public ResponseEntity<?> update(@PathVariable String semesterId, @RequestBody CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-        return Helper.createResponseEntity(semesterService.updateSemester(semesterId, createUpdateSemesterRequest));
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody CreateUpdateSemesterRequest createUpdateSemesterRequest) {
+        return Helper.createResponseEntity(semesterService.updateSemester(createUpdateSemesterRequest));
     }
 
     @GetMapping("/{semesterId}")

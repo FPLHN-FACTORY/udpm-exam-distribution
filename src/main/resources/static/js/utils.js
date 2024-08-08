@@ -6,6 +6,16 @@ const formatFromUnixTimeToDate = (unixTime) => {
     return new Date(unixTime).toLocaleDateString();
 }
 
+function formatTimestampToDate(timestamp) {
+    const date = new Date(timestamp);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
 const formatFromUnixTimeToHoursMinutes = (unixTime) => {
     let date = new Date(unixTime);
     let timeString = date.toLocaleTimeString();

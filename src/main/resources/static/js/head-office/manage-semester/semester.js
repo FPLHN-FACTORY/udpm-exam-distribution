@@ -2,98 +2,62 @@ $(document).ready(function () {
 
     getSemesters();
 
-    handleAddEvent($('#semesterName'),'keyup',function () {
-        const semesterName = $('#semesterName').val();
-        const semesterYear = $('#semesterYear').val();
-        const startTime = $('#startDate').val();
-        getSemesters(1, 5, semesterName, semesterYear, startTime);
+    setupDate();
+
+    setupDateFormSearch();
+
+    handleAddEvent($('#semesterName'), 'keyup', function () {
+        getSemesters(1);
     })
 
-    handleAddEvent($('#semesterYear'),'keyup',function () {
-        const semesterName = $('#semesterName').val();
-        const semesterYear = $('#semesterYear').val();
-        const startTime = $('#startDate').val();
-        getSemesters(1, 5, semesterName, semesterYear, startTime);
+    handleAddEvent($('#startEndDateSemester'), 'change', function () {
+        getSemesters(1);
     })
 
-    handleAddEvent($('#startDate'),'change',function () {
-        const semesterName = $('#semesterName').val();
-        const semesterYear = $('#semesterYear').val();
-        const startTime = $('#startDate').val();
-        getSemesters(1, 5, semesterName, semesterYear, startTime);
+    handleAddEvent($('#startEndDateBlock'), 'change', function () {
+        getSemesters(1);
     })
 
     $('#modifySemesterButton').on('click', function () {
         submitSemesterForm();
     });
 
-    $('#modifySemesterButtonUpdate').on('click', function () {
-        submitUpdateSemesterForm();
-    });
-
-    $('#modifyBlockButton').on('click', function () {
-        submitBlockForm();
-    });
-
-    $('#closeBlockModal').on('click', function () {
-        getDetailSemester(currentSemesterId);
-    });
-
 });
 
 let currentSemesterId = null;
 
-const getAllBlockBySemesterId = (semesterId) => {
-    $.ajax({
-        type: 'GET',
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK + `/${semesterId}`,
-        success: function (response) {
-            const blocks = response?.data?.map((block, index) => {
-                return `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${block.blockName}</td>
-                        <td>${block.startTime ? formatFromUnixTimeToDate(block.startTime) : 'Chưa xác định'}</td>
-                        <td>${block.endTime ? formatFromUnixTimeToDate(block.endTime) : 'Chưa xác định'}</td>
-                        <td>${block.blockStatus === 0 ? 'Hoạt động' : 'Ngừng hoạt động'}</td>
-                        <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
-                            <span class="fs-4"
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-title="Cập nhật">
-                                <i onclick="getDetailBlock('${block.id}')"
-                                class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
-                            </span>
-                            <span class="fs-4" data-bs-toggle="tooltip" data-bs-title="Đổi trạng thái">
-                                <i onclick="confirmChangeStatusBlock('${block.id}')"
-                                class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
-                            </span>
-                        </td>
-                    </tr>
-                `;
-            });
-            $('#blockTableBody').html(blocks);
-            callToolTip();
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy dữ liệu block');
-        }
-    })
-}
-
 const getSemesters = (
-    page = 1,
-    size = $('#pageSize').val(),
-    semesterName = null,
-    semesterYear = null,
-    startDate = null
+    page = 1
 ) => {
+
+    const startEndDateSemester = $('#startEndDateSemester').val()?.trim();
+    let startDateStringSemester = startEndDateSemester.substring(0, 10);
+    let endDateStringSemester = startEndDateSemester.substring(12);
+    let startDateSemester = null;
+    let endDateSemester = null;
+    if (startEndDateSemester !== '') {
+        startDateSemester = moment(startDateStringSemester, "DD/MM/YYYY").toDate().getTime();
+        endDateSemester = moment(endDateStringSemester, "DD/MM/YYYY").toDate().getTime();
+    }
+
+    const startEndDateBlock = $('#startEndDateBlock').val()?.trim();
+    let startDateStringBlock = startEndDateSemester.substring(0, 10);
+    let endDateStringBlock = startEndDateSemester.substring(12);
+    let startDateBlock = null;
+    let endDateBlock = null;
+    if (startEndDateBlock !== '') {
+        startDateBlock = moment(startDateStringBlock, "DD/MM/YYYY").toDate().getTime();
+        endDateBlock = moment(endDateStringBlock, "DD/MM/YYYY").toDate().getTime();
+    }
 
     const params = {
         page: page,
-        size: size,
-        semesterName: semesterName,
-        semesterYear: semesterYear,
-        startDate: new Date(startDate).getTime()
+        size: $('#pageSize').val(),
+        semesterName: $('#semesterName').val(),
+        startDateSemester: startDateSemester,
+        endDateSemester: endDateSemester,
+        startDateBlock:startDateBlock,
+        endDateBlock: endDateBlock,
     };
 
     let url = ApiConstant.API_HEAD_OFFICE_SEMESTER + '?';
@@ -110,26 +74,21 @@ const getSemesters = (
         type: 'GET',
         url: url,
         success: function (response) {
-            const semesters = response?.data?.data?.map((semester, index) => {
+            const semesters = response?.data?.content?.map((semester, index) => {
                 return `
                     <tr>
-                        <td>${semester.orderNumber}</td>
+                        <td>${index + 1 + response?.data?.pageable?.offset}</td>
                         <td>${semester.semesterName}</td>
-                        <td>${semester.semesterYear}</td>
-                        <td>${semester.startTime ? formatFromUnixTimeToDate(semester.startTime) : 'Chưa xác định'}</td>
-                        <td>${semester.semesterStatus === 0 ? 'Hoạt động' : 'Ngừng hoạt động'}</td>
+                        <td>${formatTimestampToDate(semester.startTime)}</td>
+                        <td>${formatTimestampToDate(semester.endTime)}</td>
+                        <td>${formatTimestampToDate(semester.startTimeBlock1)} - ${formatTimestampToDate(semester.endTimeBlock1)}</td>
+                        <td>${formatTimestampToDate(semester.startTimeBlock2)} - ${formatTimestampToDate(semester.endTimeBlock2)}</td>
                         <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                             <span class="fs-4"
                                     data-bs-toggle="tooltip"
                                     data-bs-title="Cập nhật">
-                                <i onclick="getDetailSemester('${semester.id}')"
+                                <i onclick="getDetailSemester('${semester.semesterId}')"
                                 class="fa-solid fa-pen-to-square" style="cursor: pointer; margin-left: 10px;"></i>
-                            </span>
-                            <span class="fs-4"
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-title="Đổi trạng thái">
-                                <i onclick="confirmChangeStatusSemester('${semester.id}')"
-                                class="fa-solid fa-right-left" style="cursor: pointer; margin-left: 10px;"></i>
                             </span>
                         </td>
                     </tr>
@@ -147,7 +106,7 @@ const getSemesters = (
 };
 
 const changePage = (page) => {
-    getSemesters(page, $('#pageSize').val());
+    getSemesters(page);
 }
 
 const createPagination = (totalPages, currentPage) => {
@@ -199,19 +158,175 @@ const createPagination = (totalPages, currentPage) => {
     $('#pagination').html(paginationHtml);
 }
 
-const createSemester = () => {
-    const semesterName = $('#modifySemesterName').val();
-    const semesterYear = $('#modifySemesterYear').val();
-    const startTime = $('#modifyStartTime').val();
+const setupDate = () => {
+    const time = $('#startEndDate');
+    time.daterangepicker({
+        opens: 'center',
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        autoUpdateInput: false
+    });
 
+    time.on('apply.daterangepicker', (ev, picker) => {
+        // Kiểm tra khoảng cách giữa startDate và endDate
+        const startDate = picker.startDate;
+        const endDate = picker.endDate;
+
+        // Tính khoảng cách giữa hai ngày theo đơn vị tháng
+        const monthsDifference = endDate.diff(startDate, 'months');
+
+        if (monthsDifference < 3) {
+            // Nếu khoảng cách dưới 2 tháng, gán value trống cho time
+            time.val('');
+            showToastError("Học kỳ phải trên 3 tháng!");
+        } else {
+            // Nếu khoảng cách từ 2 tháng trở lên, gán giá trị bình thường
+            time.val(startDate.format('DD/MM/YYYY') + ' ⇀ ' + endDate.format('DD/MM/YYYY'));
+        }
+        $('#modifyStartTimeBlock1').val(picker.startDate.format('DD/MM/YYYY'));
+        $('#modifyEndTimeBlock2').val(picker.endDate.format('DD/MM/YYYY'));
+    });
+
+    time.on('cancel.daterangepicker', (ev, picker) => {
+        time.val('');
+        $('#modifyStartTimeBlock1').val('');
+        $('#modifyEndTimeBlock2').val('');
+    });
+
+    //setup thời gian cho end date block 1
+    const endTimeInput = $('#modifyEndTimeBlock1');
+
+    // Thiết lập daterangepicker cho input
+    endTimeInput.daterangepicker({
+        singleDatePicker: true, // Chỉ chọn một ngày
+        showDropdowns: true,
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        autoUpdateInput: false
+    });
+
+    endTimeInput.on('apply.daterangepicker', (ev, picker) => {
+        const startEndDate = $('#startEndDate').val()?.trim();
+        let startDateString = startEndDate.substring(0, 10);
+        let endDateString = startEndDate.substring(12);
+
+        let startDate = null;
+        let endDate = null;
+
+        if (startEndDate !== '') {
+            startDate = moment(startDateString, "DD/MM/YYYY").add(1, 'months');  // Tăng startDate lên 1 tháng
+            endDate = moment(endDateString, "DD/MM/YYYY").subtract(1, 'months');  // Giảm endDate đi 1 tháng
+        }
+
+        const selectedDate = picker.startDate;
+
+        // Kiểm tra xem selectedDate có nằm trong khoảng từ startDate đến endDate hay không
+        if (selectedDate.isBetween(startDate, endDate, null, '[]')) {
+            // Nếu có, gán giá trị cho endTimeInput
+            endTimeInput.val(selectedDate.format('DD/MM/YYYY'));
+
+            // Tăng ngày lên một ngày
+            const nextDay = selectedDate.add(1, 'days');
+            $('#modifyStartTimeBlock2').val(nextDay.format('DD/MM/YYYY'));
+        } else {
+            // Nếu không, gán giá trị trống cho endTimeInput
+            showToastError("Thời gian kết thúc block 1 phải nằm trong khoảng 1 đến 2 tháng giữa học kỳ")
+            endTimeInput.val('');
+            $('#modifyStartTimeBlock2').val('');
+        }
+    });
+
+
+    endTimeInput.on('cancel.daterangepicker', (ev, picker) => {
+        endTimeInput.val('');
+        $('#modifyStartTimeBlock2').val('');
+    });
+};
+
+const setupDateFormSearch = () => {
+    const timeSemester = $('#startEndDateSemester');
+    timeSemester.daterangepicker({
+        opens: 'center',
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        autoUpdateInput: false
+    });
+
+    timeSemester.on('apply.daterangepicker', (ev, picker) => {
+        timeSemester.val(picker.startDate.format('DD/MM/YYYY') + ' ⇀ ' + picker.endDate.format('DD/MM/YYYY'));
+        getSemesters(1);
+    });
+
+    timeSemester.on('cancel.daterangepicker', (ev, picker) => {
+        timeSemester.val('');
+        getSemesters(1);
+    });
+
+    timeSemester.on('change', function (e) {
+        e.preventDefault();
+        getSemesters(1);
+    });
+
+    const timeBlock = $('#startEndDateBlock');
+    timeBlock.daterangepicker({
+        opens: 'center',
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        autoUpdateInput: false
+    });
+
+    timeBlock.on('apply.daterangepicker', (ev, picker) => {
+        timeBlock.val(picker.startDate.format('DD/MM/YYYY') + ' ⇀ ' + picker.endDate.format('DD/MM/YYYY'));
+        getSemesters(1);
+    });
+
+    timeBlock.on('cancel.daterangepicker', (ev, picker) => {
+        timeBlock.val('');
+        getSemesters(1);
+    });
+    timeBlock.on('change', function (e) {
+        e.preventDefault();
+        getSemesters(1);
+    });
+};
+
+const createSemester = (semesterId = '') => {
+    const startEndDate = $('#startEndDate').val()?.trim();
+    let startDateString = startEndDate.substring(0, 10);
+    let endDateString = startEndDate.substring(12);
+    let startDate = null;
+    let endDate = null;
+    if (startEndDate !== '') {
+        startDate = moment(startDateString, "DD/MM/YYYY").toDate().getTime();
+        endDate = moment(endDateString, "DD/MM/YYYY").toDate().getTime();
+    }
+    const endDateBlock1 = $('#modifyEndTimeBlock1').val()?.trim();
+    let endTimeBlock1 = null;
+    if (endDateBlock1 !== '') {
+        endTimeBlock1 = moment(endDateBlock1, "DD/MM/YYYY").toDate().getTime();
+    }
+    const semesterName = $('#modifySemesterName').val();
+
+    let type = semesterId === '' ? 'post' : 'put';
+    let data = {
+        semesterName: semesterName,
+        startTime: startDate,
+        endTime: endDate,
+        endTimeBlock1: new Date(endTimeBlock1).getTime()
+    };
+
+    if (type === 'put') {
+        data.semesterId = semesterId;
+    }
+    showLoading();
     $.ajax({
-        type: 'POST',
+        type: type,
         url: ApiConstant.API_HEAD_OFFICE_SEMESTER,
-        data: JSON.stringify({
-            semesterName: semesterName,
-            semesterYear: semesterYear,
-            startTime: new Date(startTime).getTime()
-        }),
+        data: JSON.stringify(data),
         contentType: 'application/json',
         success: function (response) {
             if (response) {
@@ -219,24 +334,48 @@ const createSemester = () => {
                 getSemesters();
                 $('#semesterModal').modal('hide');
             }
+            hideLoading();
         },
         error: function (error) {
             $('.form-control').removeClass('is-invalid');
             if (error?.responseJSON?.length > 0) {
                 error.responseJSON.forEach(err => {
                     $(`#${err.fieldError}Error`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}`).addClass('is-invalid');
                 });
             } else if (error?.responseJSON?.message) {
                 showToastError(error.responseJSON?.message)
             } else {
                 showToastError('Có lỗi xảy ra khi thêm học kỳ');
             }
+            hideLoading();
         }
     })
 };
 
-const confirmCreateSemester = (id) => {
+const confirmUpdateSemester = (semesterId) => {
+    swal({
+        title: "Xác nhận sửa?",
+        text: "Bạn chắn muốn sửa học kì này không?",
+        type: "warning",
+        buttons: {
+            cancel: {
+                visible: true,
+                text: "Hủy",
+                className: "btn btn-black",
+            },
+            confirm: {
+                text: "Sửa",
+                className: "btn btn-black",
+            },
+        },
+    }).then((willCreate) => {
+        if (willCreate) {
+            createSemester(semesterId);
+        }
+    });
+}
+
+const confirmCreateSemester = () => {
     swal({
         title: "Xác nhận thêm?",
         text: "Bạn chắn muốn thêm học kì này không?",
@@ -261,20 +400,21 @@ const confirmCreateSemester = (id) => {
 
 const getDetailSemester = (semesterId) => {
     currentSemesterId = semesterId;
-    $('#semesterIdUpdate').val(semesterId);
-    console.log(semesterId);
+    $('#semesterId').val(semesterId);
     $.ajax({
         type: 'GET',
         url: ApiConstant.API_HEAD_OFFICE_SEMESTER + `/${semesterId}`,
         success: function (response) {
             if (response?.data) {
                 const semester = response?.data;
-                $('#modifySemesterNameUpdate').val(semester.semesterName);
-                $('#modifySemesterYearUpdate').val(semester.semesterYear);
-                $('#modifyStartTimeUpdate').val(getValueForInputDate(semester.startTime));
-                getAllBlockBySemesterId(semesterId);
+                $('#modifySemesterName').val(semester.semesterName);
+                $('#startEndDate').val(formatTimestampToDate(semester.startTime) + ' ⇀ ' + formatTimestampToDate(semester.endTime));
+                $('#modifyStartTimeBlock1').val(formatTimestampToDate(semester.startTimeBlock1));
+                $('#modifyEndTimeBlock1').val(formatTimestampToDate(semester.endTimeBlock1));
+                $('#modifyStartTimeBlock2').val(formatTimestampToDate(semester.startTimeBlock2));
+                $('#modifyEndTimeBlock2').val(formatTimestampToDate(semester.endTimeBlock2));
                 $('#semesterModalLabel').text('Chỉnh sửa học kỳ');
-                $('#semesterUpdateModal').modal('show');
+                $('#semesterModal').modal('show');
             }
         },
         error: function (error) {
@@ -283,306 +423,12 @@ const getDetailSemester = (semesterId) => {
     })
 }
 
-const updateSemester = () => {
-    const semesterId = $('#semesterIdUpdate').val();
-    const semesterName = $('#modifySemesterNameUpdate').val();
-    const semesterYear = $('#modifySemesterYearUpdate').val();
-    const startTime = $('#modifyStartTimeUpdate').val();
-
-    $.ajax({
-        type: 'PUT',
-        url: ApiConstant.API_HEAD_OFFICE_SEMESTER + `/${semesterId}`,
-        data: JSON.stringify({
-            semesterName: semesterName,
-            semesterYear: semesterYear,
-            startTime: new Date(startTime).getTime()
-        }),
-        contentType: 'application/json',
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                getSemesters();
-                $('#semesterUpdateModal').modal('hide');
-            }
-        },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}ErrorUpdate`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Update`).addClass('is-invalid');
-                });
-            } else if (error?.responseJSON?.message) {
-                showToastError(error.responseJSON?.message)
-            } else {
-                showToastError('Có lỗi xảy ra khi cập nhật học kỳ');
-            }
-        }
-    })
-};
-
-const confirmUpdateSemester = (id) => {
-    swal({
-        title: "Xác nhận sửa?",
-        text: "Bạn chắn muốn sửa học kì này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Lưu",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willCreate) => {
-        if (willCreate) {
-            updateSemester();
-        }
-    });
-}
-
-const changeStatusSemester = (semesterId) => {
-    $.ajax({
-        type: 'PUT',
-        url: ApiConstant.API_HEAD_OFFICE_SEMESTER + `/status/${semesterId}`,
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                getSemesters();
-            }
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi thay đổi trạng thái học kỳ');
-        }
-    })
-}
-
-const confirmChangeStatusSemester = (semesterId) => {
-    swal({
-        title: "Xác nhận thay đổi trạng thái?",
-        text: "Bạn chắn muốn thay đổi trạng thái học kỳ này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Thay đổi",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willDelete) => {
-        if (willDelete) {
-            changeStatusSemester(semesterId);
-        }
-    });
-}
-
-const confirmUpdateBlock = (id) => {
-    swal({
-        title: "Xác nhận Sửa?",
-        text: "Bạn chắn muốn thêm block này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Lưu",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willCreate) => {
-        if (willCreate) {
-            updateBlock();
-        }
-    });
-}
-
-const getDetailBlock = (blockId) => {
-    $.ajax({
-        type: "GET",
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK + `/get/${blockId}`,
-        success: function (response) {
-            if (response?.data) {
-                const block = response?.data;
-                resetFormErrorBlock();
-                $('#blockId').val(block.id);
-                $('#modifyBlockName').val(block.blockName);
-                $('#modifyStartTimeBlock').val(getValueForInputDate(block.startTime));
-                $('#modifyEndTimeBlock').val(getValueForInputDate(block.endTime));
-                $('#blockModalLabel').text('Cập nhật block');
-                $('#semesterUpdateModal').modal('hide');
-                $('#blockModal').modal('show');
-            }
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi lấy thông tin block');
-        }
-    });
-}
-
-const updateBlock = () => {
-    const blockId = $('#blockId').val();
-    const blockName = $('#modifyBlockName').val();
-    const startTime = $('#modifyStartTimeBlock').val();
-    const endTime = $('#modifyEndTimeBlock').val();
-
-    $.ajax({
-        type: 'PUT',
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK + `/${blockId}`,
-        data: JSON.stringify({
-            blockName: blockName,
-            startTime: new Date(startTime).getTime(),
-            endTime: new Date(endTime).getTime()
-        }),
-        contentType: 'application/json',
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                $('#blockModal').modal('hide');
-                getDetailSemester(currentSemesterId);
-            }
-        },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    $(`#${err.fieldError}BlockError`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Block`).addClass('is-invalid');
-                });
-            } else if (error?.responseJSON?.message) {
-                showToastError(error.responseJSON?.message)
-            } else {
-                showToastError('Có lỗi xảy ra khi cập nhật học kỳ');
-            }
-        }
-    })
-};
-
-const confirmCreateBlock = () => {
-    swal({
-        title: "Xác nhận Thêm?",
-        text: "Bạn chắn muốn thêm block này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Thêm",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willCreate) => {
-        if (willCreate) {
-            createBlock(currentSemesterId);
-        }
-    });
-}
-
-const createBlock = (semesterId) => {
-    const blockName = $('#modifyBlockName').val();
-    const startTimeBlock = $('#modifyStartTimeBlock').val();
-    const endTimeBlock = $('#modifyEndTimeBlock').val();
-
-    $.ajax({
-        type: 'POST',
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK,
-        data: JSON.stringify({
-            blockName: blockName,
-            semesterId: semesterId,
-            startTime: new Date(startTimeBlock).getTime(),
-            endTime: new Date(endTimeBlock).getTime()
-        }),
-        contentType: 'application/json',
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                getDetailSemester(semesterId);
-                $('#blockModal').modal('hide');
-            }
-        },
-        error: function (error) {
-            $('.form-control').removeClass('is-invalid');
-            if (error?.responseJSON?.length > 0) {
-                error.responseJSON.forEach(err => {
-                    console.log(err)
-                    $(`#${err.fieldError}BlockError`).text(err.message);
-                    $(`#modify${capitalizeFirstLetter(err.fieldError)}Block`).addClass('is-invalid');
-                });
-            } else if (error?.responseJSON?.message) {
-                showToastError(error.responseJSON?.message)
-            } else {
-                showToastError('Có lỗi xảy ra khi thêm học kỳ');
-            }
-        }
-    })
-};
-
-const changeStatusBlock = (blockId) => {
-    $.ajax({
-        type: 'PUT',
-        url: ApiConstant.API_HEAD_OFFICE_BLOCK + `/status/${blockId}`,
-        success: function (response) {
-            if (response) {
-                showToastSuccess(response?.message);
-                getDetailSemester(currentSemesterId);
-            }
-        },
-        error: function (error) {
-            showToastError('Có lỗi xảy ra khi thay đổi trạng thái block');
-        }
-    })
-}
-
-const confirmChangeStatusBlock = (blockId) => {
-    swal({
-        title: "Xác nhận thay đổi trạng thái?",
-        text: "Bạn chắn muốn thay đổi trạng thái block này không?",
-        type: "warning",
-        buttons: {
-            cancel: {
-                visible: true,
-                text: "Hủy",
-                className: "btn btn-black",
-            },
-            confirm: {
-                text: "Thay đổi",
-                className: "btn btn-black",
-            },
-        },
-    }).then((willDelete) => {
-        if (willDelete) {
-            changeStatusBlock(blockId);
-        }
-    });
-}
-
 const submitSemesterForm = () => {
-    if ($('#semesterId').val() === '') {
+    let semesterId = $('#semesterId').val();
+    if (semesterId === '') {
         confirmCreateSemester();
-    }
-}
-
-const submitUpdateSemesterForm = () => {
-    confirmUpdateSemester();
-}
-
-const submitBlockForm = () => {
-    if ($('#blockId').val() === '') {
-        confirmCreateBlock();
     } else {
-        confirmUpdateBlock();
+        confirmUpdateSemester(semesterId?.trim());
     }
 }
 
@@ -592,23 +438,21 @@ const openModalAddSemester = () => {
     resetFormSemester();
 };
 
-const openModalAddBlock = () => {
-    resetFormInputBlock();
-    resetFormErrorBlock();
-    resetFormBlock();
-}
-
 const resetFormInputSemester = () => {
     $('#semesterId').val('');
     $('#modifySemesterName').val('SPRING');
-    $('#modifySemesterYear').val('');
-    $('#modifyStartTime').val('');
+    $('#startEndDate').val('');
+    $('#modifyStartTimeBlock1').val('');
+    $('#modifyEndTimeBlock1').val('');
+    $('#modifyStartTimeBlock2').val('');
+    $('#modifyEndTimeBlock2').val('');
 };
 
 const resetFormErrorSemester = () => {
     $('#semesterNameError').text('');
-    $('#semesterYearError').text('');
+    $('#endTimeBlock1Error').text('');
     $('#startTimeError').text('');
+    $('#endTimeError').text('');
     $('.form-control').removeClass('is-invalid');
 };
 
@@ -616,23 +460,3 @@ const resetFormSemester = () => {
     $('#semesterModalLabel').text('Thêm học kỳ');
     $('#semesterModal').modal('show');
 }
-
-const resetFormInputBlock = () => {
-    $('#blockId').val('');
-    $('#modifyBlockName').val('BLOCK_1');
-    $('#modifyStartTimeBlock').val('');
-    $('#modifyEndTimeBlock').val('');
-}
-
-const resetFormErrorBlock = () => {
-    $('#blockNameError').text('');
-    $('#startTimeBlockError').text('');
-    $('#endTimeBlockError').text('');
-    $('.form-control').removeClass('is-invalid');
-}
-
-const resetFormBlock = () => {
-    $('#blockModalLabel').text('Thêm block');
-    $('#blockModal').modal('show');
-}
-
