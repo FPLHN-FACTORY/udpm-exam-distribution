@@ -25,10 +25,12 @@ public interface HDClassSubjectExtendRepository extends ClassSubjectRepository {
             	d.id = df.id_department
             WHERE
             	cs.class_subject_code = :classSubjectCode
+            	AND s.id = :subjectId
             	AND df.id = :departmentFacilityId
             	AND cs.id_block = :blockId
             """, nativeQuery = true)
-    Optional<HDClassSubjectResponse> getClassSubject(String classSubjectCode, String departmentFacilityId, String blockId);
+    Optional<HDClassSubjectResponse> getClassSubject(
+            String classSubjectCode, String subjectId, String departmentFacilityId, String blockId);
 
     @Query(value = """
             SELECT

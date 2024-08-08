@@ -13,15 +13,18 @@ public interface SExamPaperExtendRepository extends ExamPaperRepository {
             select
             	eps.id as id,
             	ep.`path` as path,
-            	eps.start_time as startTime,
-            	eps.end_time as endTime,
-            	etbs.allow_online as allowOnline
+            	ses.start_time as startTime,
+            	ses.end_time as endTime,
+            	etbs.allow_online as allowOnline,
+            	eps.exam_shift_status as examShiftStatus
             from
             	exam_paper ep
             join exam_paper_shift eps on
             	ep.id = eps.id_exam_paper
             join exam_shift es on
             	eps.id_exam_shift = es.id
+            join student_exam_shift ses on
+            	ses.id_exam_shift = es.id
             join class_subject cs on
             	es.id_subject_class = cs.id
             join subject s on
@@ -30,8 +33,9 @@ public interface SExamPaperExtendRepository extends ExamPaperRepository {
             	s.id = etbs.id_subject
             where
             	es.exam_shift_code = :examShiftCode
+            	and ses.id_student = :idStudent
             """, nativeQuery = true)
-    SExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode);
+    SExamPaperShiftInfoAndPathResponse getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode, String idStudent);
 
     @Query(value = """
             select

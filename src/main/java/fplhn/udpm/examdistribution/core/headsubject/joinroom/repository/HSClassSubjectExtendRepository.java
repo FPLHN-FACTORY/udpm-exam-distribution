@@ -27,12 +27,13 @@ public interface HSClassSubjectExtendRepository extends ClassSubjectRepository {
             	df.id = mf.id_department_facility
             WHERE
             	cs.class_subject_code = :classSubjectCode
+            	AND s.id = :subjectId
             	AND df.id = :departmentFacilityId
             	AND cs.id_block = :blockId
             	AND mf.id = :majorFacilityId
             """, nativeQuery = true)
     Optional<HSClassSubjectResponse> getClassSubject(
-            String classSubjectCode, String departmentFacilityId, String blockId, String majorFacilityId);
+            String classSubjectCode, String subjectId, String departmentFacilityId, String blockId, String majorFacilityId);
 
     @Query(value = """
             SELECT

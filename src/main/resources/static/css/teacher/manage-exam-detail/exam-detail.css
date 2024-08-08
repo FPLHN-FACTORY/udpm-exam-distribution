@@ -3,7 +3,6 @@ canvas {
     margin: 0 auto;
 }
 #pdf-viewer {
-    border: 1px solid #999;
     width: 100%;
     height: 1000px;
     overflow: auto;
@@ -17,7 +16,6 @@ canvas {
 }
 
 #pdf-viewer-exam-rule {
-    border: 1px solid #999;
     width: 100%;
     height: 1000px;
     overflow: auto;

@@ -13,6 +13,4 @@ public class StaffSearchRequest {
 
     private String currentDepartmentFacilityId;
 
-    private String currentUserId;
-
 }

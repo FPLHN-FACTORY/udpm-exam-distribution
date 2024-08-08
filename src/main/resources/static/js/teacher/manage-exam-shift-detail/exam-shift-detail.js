@@ -58,6 +58,10 @@ $(document).ready(function () {
         completeExamShift();
     });
 
+    $('#modifyExamTimeButton').click(function () {
+        approveStudentWhenStartTimeSubmit($('#studentIdSetExamTime').val());
+    });
+
     onChangePageSize();
 
 });
@@ -172,6 +176,28 @@ const approveStudent = (studentId) => {
     });
 }
 
+const approveStudentWhenStartTime = (studentId) => {
+    let examTime = $('#modifyExamTime').val();
+    $.ajax({
+        type: "PUT",
+        url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/approve-student-when-start-time/' + studentId,
+        data: JSON.stringify({examTime: examTime}),
+        contentType: 'application/json',
+        success: function (responseBody) {
+            if (responseBody?.message) {
+                const message = responseBody?.message;
+                showToastSuccess(message);
+                $('#examTimeModal').modal('hide');
+            }
+        },
+        error: function (error) {
+            if (error?.responseJSON?.message) {
+                showToastError(error.responseJSON?.message);
+            }
+        }
+    });
+}
+
 const refuseStudent = (studentId) => {
     let reason = $('#modifyReason').val();
     $.ajax({
@@ -231,7 +257,7 @@ const getStudents = () => {
                                          alt="image profile"
                                          class="avatar-img rounded"/>
                                     </div>
-                                    <div class="u-text">
+                                    <div class="u-text" style="max-height: 76px; overflow-y: scroll; scrollbar-width: none;">
                                         <h4>${student.name}</h4>
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
@@ -241,7 +267,8 @@ const getStudents = () => {
                                                 Thời gian thoát: ${formatFromUnixTimeToHoursMinutes(student.leaveTime)}</p>` :
                                             ""
                                         }
-                                        <button class="btn position-absolute top-0 end-0 p-2 fs-3 lh-1" 
+                                        <button class="btn-label-danger position-absolute top-0 end-0 p-1 fs-3 lh-1" 
+                                        style="border-bottom-left-radius: 5px; border-top-right-radius: 5px;"
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
                                         ${student.isViolation === 0 ?
                         `<button onclick="handleOpenModalStudentViolation('${student.id}')" class="btn position-absolute bottom-0 end-0 p-2 fs-3">
@@ -408,20 +435,25 @@ const getStudentRejoin = () => {
                             <div class="bg-white p-2 shadow rounded min-vh-30">
                                 <div class="user-box">
                                     <div class="avatar-lg">
-                                        <img src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9193.jpg"
+                                        <img src="${student.picture}"
                                          alt="image profile"
                                          class="avatar-img rounded"/>
                                     </div>
-                                    <div class="u-text">
+                                    <div class="u-text" style="max-height: 76px; overflow-y: scroll; scrollbar-width: none;">
                                         <h4>${student.name}</h4>
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
                                         Join time: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
-                                        <button class="btn-label-warning" 
-                                                onclick="approveStudentSubmit('${student.id}')">
+                                        <button style="border-radius: 5px;"
+                                                class="btn-label-warning" 
+                                                onclick="${student.startTime == null && student.endTime == null
+                    && student.examPaperShiftStartTime != null && student.examPaperShiftEndTime != null
+                        ? 'openModalSetExamTime'
+                        : 'approveStudentSubmit'}('${student.id}')">
                                                 Phê duyệt
                                         </button>
-                                        <button class="btn-label-danger" 
+                                        <button style="border-radius: 5px;"
+                                                class="btn-label-danger" 
                                                 onclick="refuseStudentSubmit('${student.id}')">
                                                 Từ chối
                                         </button>
@@ -476,6 +508,8 @@ const examShiftStartTime = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start-time',
         success: function (responseBody) {
+            $('#displayCountdown').prop('hidden', false);
+            $('#displayCountdown').addClass('d-flex');
             startCountdown(responseBody?.data?.startTime, responseBody?.data?.endTime);
         },
         error: function (error) {
@@ -491,43 +525,65 @@ const connect = () => {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT, function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getSecondSupervisorId();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getSecondSupervisorId();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT, function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            countStudentInExamShift();
-            getStudents();
-            getStudentRejoin();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                countStudentInExamShift();
+                getStudents();
+                getStudentRejoin();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_KICK, function (response) {
-            showToastSuccess(JSON.parse(response.body).message.split(' - ')[0]);
-            countStudentInExamShift();
-            getStudents();
-            getStudentRejoin();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[2] === examShiftCode) {
+                showToastSuccess(JSON.parse(response.body).message.split(' - ')[0]);
+                countStudentInExamShift();
+                getStudents();
+                getStudentRejoin();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getStudentRejoin();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getStudentRejoin();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
-            showToastSuccess(JSON.parse(response.body).message);
-            getStudentRejoin();
-            getStudents();
-            countStudentInExamShift();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[2] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getStudentRejoin();
+                getStudents();
+                countStudentInExamShift();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
-            showToastError(JSON.parse(response.body).message);
-            getStudentRejoin();
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[2] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getStudentRejoin();
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
-            getPathFilePDFExamPaper(examShiftCode);
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+                getPathFilePDFExamPaper(examShiftCode);
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_EXAM_SHIFT_START_TIME, function (response) {
-            const responseBody = JSON.parse(response.body);
-            showToastSuccess(responseBody.message);
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split(' - ')[1] === examShiftCode) {
+                showToastSuccess(responseMessage.split(' - ')[0]);
+            }
         });
         // stompClient.subscribe(TopicConstant.TOPIC_TRACK_STUDENT, function (response) {
         //     const responseBody = JSON.parse(response.body);
@@ -594,7 +650,8 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const fileId = responseBody?.data?.path;
                 const startTime = responseBody?.data?.startTime;
                 const endTime = responseBody?.data?.endTime;
-                if (fileId !== null) {
+                const examShiftStatus = responseBody?.data?.examShiftStatus;
+                if (fileId !== null && examShiftStatus === 1) {
                     fetchFilePDFExamPaper(fileId);
                 }
                 if (startTime !== null && endTime !== null) {
@@ -768,6 +825,14 @@ const examShiftStartTimeSubmit = () => {
     });
 };
 
+const openModalSetExamTime = (studentId) => {
+    $('#studentIdSetExamTime').val(studentId);
+    $('#modifyExamTime').val('');
+    $(`#examTimeError`).text('');
+    $(`#modifyExamTime`).removeClass('is-invalid');
+    $('#examTimeModal').modal('show');
+}
+
 
 const openModalRemoveStudent = (studentId) => {
     $('#studentIdRemove').val(studentId);
@@ -801,6 +866,22 @@ const approveStudentSubmit = (studentId) => {
         }).then((willApprove) => {
             if (willApprove) {
                 approveStudent(studentId);
+            }
+        });
+    }
+};
+
+const approveStudentWhenStartTimeSubmit = (studentId) => {
+    if (studentId !== null) {
+        swal({
+            title: "Xác nhận phê duyệt sinh viên",
+            text: "Phê duyệt sinh viên vào phòng thi?",
+            icon: "info",
+            buttons: true,
+            dangerMode: false,
+        }).then((willApprove) => {
+            if (willApprove) {
+                approveStudentWhenStartTime(studentId);
             }
         });
     }

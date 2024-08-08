@@ -16,7 +16,8 @@ public interface TExamPaperExtendRepository extends ExamPaperRepository {
                 eps.id as id,
             	ep.`path` as path,
              	eps.start_time as startTime,
-             	eps.end_time as endTime
+             	eps.end_time as endTime,
+             	eps.exam_shift_status as examShiftStatus
             FROM
             	exam_paper ep
             JOIN exam_paper_shift eps ON

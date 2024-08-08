@@ -13,20 +13,18 @@ import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExa
 import fplhn.udpm.examdistribution.core.student.examshift.repository.SStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.student.examshift.service.SExamShiftService;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
-import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.entity.ExamPaperShift;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.entity.Student;
 import fplhn.udpm.examdistribution.entity.StudentExamShift;
 import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDriveFileService;
-import fplhn.udpm.examdistribution.infrastructure.config.redis.service.RedisService;
 import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.NotificationResponse;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,13 +58,13 @@ public class SExamShiftServiceImpl implements SExamShiftService {
 
     private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
 
-    private final RedisService redisService;
-
     private final HttpSession httpSession;
 
     private final GoogleDriveFileService googleDriveFileService;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    private final SessionHelper sessionHelper;
 
     @Override
     public boolean findStudentInExamShift(String examShiftCode) {
@@ -79,11 +77,10 @@ public class SExamShiftServiceImpl implements SExamShiftService {
         Optional<StudentExamShift> studentExamShift = sStudentExamShiftExtendRepository
                 .findByExamShiftIdAndStudentId(existingExamShift.get().getId(),
                         httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
+
         if (studentExamShift.isEmpty()
-            || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")
-                || !studentExamShift.get().isCheckLogin()
-        ) {
+                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
             return false;
         }
 
@@ -128,19 +125,24 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                             "Bạn đang trong phòng thi không được phép vào"
                     );
                 }
-
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
-                if (examStudentStatus.equals(ExamStudentStatus.KICKED)
-                    || examStudentStatus.equals(ExamStudentStatus.REJOINED)) {
+                if ((examShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)
+                        || examShift.getExamShiftStatus().equals(ExamShiftStatus.NOT_STARTED))
+                        && (examStudentStatus.equals(ExamStudentStatus.KICKED)
+                        || examStudentStatus.equals(ExamStudentStatus.REJOINED))) {
                     studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                     sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                             new NotificationResponse(
                                     "Sinh viên "
-                                    + existingStudent.get().getStudentCode()
-                                    + " yêu cầu tham gia ca thi!"));
+                                            + existingStudent.get().getStudentCode()
+                                            + " yêu cầu tham gia ca thi! - "
+                                            + existingExamShift.get().getExamShiftCode()
+                                            + " - " + sExamShiftRequest.getStudentId()
+                            ));
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
+
                 } else {
                     StudentExamShift studentExamShift = studentExamShiftExist.get();
                     studentExamShift.setId(studentExamShiftExist.get().getId());
@@ -151,23 +153,22 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                     studentExamShift.setStatus(EntityStatus.ACTIVE);
                     studentExamShift.setCheckLogin(true);
                     sStudentExamShiftExtendRepository.save(studentExamShift);
-
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_REMOVE_TAB_REJOIN,
                             new NotificationResponse(
                                     studentExamShiftExist.get().getExamShift().getExamShiftCode()
                             )
                     );
-
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Tham gia ca thi thành công!");
                 }
+
             } else {
                 String examPaperShiftId = tExamPaperShiftExtendRepository
                         .findExamPaperShiftIdByExamShiftCode(examShift.getExamShiftCode());
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
-                    long currentTime = System.currentTimeMillis();
-                    if (examPaperShift.getStartTime() == null || currentTime > examPaperShift.getStartTime() + (60 * 1000)) {
+                    if (examPaperShift.getStartTime() == null
+                            && examPaperShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)) {
                         StudentExamShift studentExamShift = new StudentExamShift();
                         studentExamShift.setStudent(existingStudent.get());
                         studentExamShift.setExamShift(examShift);
@@ -179,8 +180,31 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
                                         "Sinh viên "
-                                        + existingStudent.get().getStudentCode()
-                                        + " yêu cầu tham gia ca thi!"));
+                                                + existingStudent.get().getStudentCode()
+                                                + " yêu cầu tham gia ca thi! - "
+                                                + existingExamShift.get().getExamShiftCode()
+                                                + " - " + sExamShiftRequest.getStudentId()
+                                ));
+                        return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
+                                HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
+                    }
+                    if (examPaperShift.getStartTime() != null && examPaperShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)) {
+                        StudentExamShift studentExamShift = new StudentExamShift();
+                        studentExamShift.setStudent(existingStudent.get());
+                        studentExamShift.setExamShift(examShift);
+                        studentExamShift.setJoinTime(sExamShiftRequest.getJoinTime());
+                        studentExamShift.setExamStudentStatus(ExamStudentStatus.REJOINED);
+                        studentExamShift.setStatus(EntityStatus.ACTIVE);
+                        studentExamShift.setCheckLogin(true);
+                        sStudentExamShiftExtendRepository.save(studentExamShift);
+                        simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
+                                new NotificationResponse(
+                                        "Sinh viên "
+                                                + existingStudent.get().getStudentCode()
+                                                + " yêu cầu tham gia ca thi! - "
+                                                + existingExamShift.get().getExamShiftCode()
+                                                + " - " + sExamShiftRequest.getStudentId()
+                                ));
                         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                                 HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
                     }
@@ -198,8 +222,9 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                         new NotificationResponse(
                                 "Sinh viên "
-                                + existingStudent.get().getStudentCode()
-                                + " đã tham gia ca thi!"));
+                                        + existingStudent.get().getStudentCode()
+                                        + " đã tham gia ca thi! - "
+                                        + existingExamShift.get().getExamShiftCode()));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
@@ -244,7 +269,9 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     @Override
     public ResponseObject<?> getExamPaperShiftInfoAndPathByExamShiftCode(String examShiftCode) {
         try {
-            return new ResponseObject<>(sExamPaperExtendRepository.getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode),
+            System.out.println(sessionHelper.getCurrentUserId());
+            return new ResponseObject<>(sExamPaperExtendRepository
+                    .getExamPaperShiftInfoAndPathByExamShiftCode(examShiftCode, sessionHelper.getCurrentUserId()),
                     HttpStatus.OK, "Lấy path đề thi thành công!");
         } catch (Exception e) {
             log.error("Lỗi khi lấy path đề thi: ", e);
@@ -256,30 +283,8 @@ public class SExamShiftServiceImpl implements SExamShiftService {
     @Override
     public ResponseObject<?> getExamShiftPaperByExamShiftCode(String file) {
         try {
-            Optional<ExamPaper> examPaperOptional = sExamShiftExtendRepository.findExamPaperByPath(file);
-            if (examPaperOptional.isEmpty()) {
-                return new ResponseObject<>(
-                        "",
-                        HttpStatus.NOT_FOUND,
-                        "Không tìm thấy đề thi"
-                );
-            }
-
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + examPaperOptional.get().getId();
-            Object redisValue = redisService.get(redisKey);
-            if (redisValue != null) {
-                return new ResponseObject<>(
-                        new SFileResourceResponse(redisValue.toString(), "fileName"),
-                        HttpStatus.OK,
-                        "Lấy đề thi thành công!"
-                );
-            }
-
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
-
-            redisService.set(redisKey, data);
-
             return new ResponseObject<>(
                     new SFileResourceResponse(data, fileResponse.getFilename()),
                     HttpStatus.OK, "Lấy đề thi thành công!");

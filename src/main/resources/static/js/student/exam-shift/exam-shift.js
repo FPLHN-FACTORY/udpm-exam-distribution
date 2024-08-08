@@ -60,19 +60,28 @@ const connect = () => {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
-            messageType = 'rejoin';
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split[2] === examDistributionInfo.userId) {
+                messageType = 'rejoin';
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
-            showToastError('Bạn đã bị từ chối tham gia ca thi!');
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split[1] === examDistributionInfo.userId) {
+                showToastError('Bạn đã bị từ chối tham gia ca thi!');
+            }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
-            let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
-            if (examShiftCodeRejoin) {
-                window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
-                localStorage.removeItem('rejoinExamShiftCode');
+            const responseMessage = JSON.parse(response.body).message;
+            if (responseMessage.split[1] === examDistributionInfo.userId) {
+                let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
+                if (examShiftCodeRejoin) {
+                    window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
+                    localStorage.removeItem('rejoinExamShiftCode');
 
-                setEnableExtLocalStorage("true");
-                handleSendMessageStartToExt();
+                    setEnableExtLocalStorage("true");
+                    handleSendMessageStartToExt();
+                }
             }
         });
     });

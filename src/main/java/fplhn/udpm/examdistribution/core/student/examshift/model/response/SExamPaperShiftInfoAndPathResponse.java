@@ -12,4 +12,6 @@ public interface SExamPaperShiftInfoAndPathResponse extends IsIdentify {
 
     Boolean getAllowOnline();
 
+    Integer getExamShiftStatus();
+
 }
