@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ImportShiftRequest {
 
+    private int orderNumber;
+
     private String buildingLetter;
 
     private String startDate;

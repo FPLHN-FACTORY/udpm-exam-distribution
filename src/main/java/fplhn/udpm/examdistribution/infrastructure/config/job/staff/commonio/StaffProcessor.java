@@ -49,109 +49,90 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, Transfer
     @Override
     public TransferStaffRole process(StaffExcelRequest item) throws Exception {
         try {
-            String staffCode = "";
-            String departmentFacility = item.getDepartmentFacilityName();
-            String departmentName = departmentFacility.split(" - ")[0];
-            String majorName = departmentFacility.split(" - ")[1];
-            String facilityCode = departmentFacility.split(" - ")[2];
-            String roleFacility = item.getRoleFacilityName();
-            String roleName = roleFacility.split(" - ")[0];
-            String rFacilityName = roleFacility.split(" - ")[1];
-            List<MajorFacility> majorFacilities = majorFacilityCustomRepository
-                    .getMajorFacilities(departmentName, majorName, facilityCode);
-            List<Role> roles = roleCustomRepository
-                    .findAllByRoleNameAndFacilityName(roleName, rFacilityName);
+            String[] departmentParts = item.getDepartmentFacilityName().split(" - ");
+            String[] roleParts = item.getRoleFacilityName().split(" - ");
 
-            if (majorFacilities.isEmpty()) {
-                log.error("Chuyên ngành theo cơ sở không tồn tại");
-                logErrorRecordToCSV(
-                        "Lỗi bản ghi số " + item.getOrderNumber() + ": Chuyên ngành theo cơ sở không tồn tại"
-                );
-                return null;
+            if (departmentParts.length != 3 || roleParts.length != 2) {
+                return handleError("Department or role information is incomplete.", item);
             }
 
-            if (roles.isEmpty()) {
-                log.error("Chức Vụ Không Tồn Tại");
-                logErrorRecordToCSV(
-                        "Lỗi bản ghi số " + item.getOrderNumber() + ": Chức vụ không tồn tại"
-                );
-                return null;
+            String departmentName = departmentParts[0];
+            String majorName = departmentParts[1];
+            String facilityCode = departmentParts[2];
+            String roleName = roleParts[0];
+            String rFacilityName = roleParts[1];
+
+            Optional<MajorFacility> majorFacility = fetchMajorFacility(departmentName, majorName, facilityCode);
+            Optional<Role> role = fetchRole(roleName, rFacilityName);
+
+            if (majorFacility.isEmpty() || role.isEmpty()) {
+                return handleError("Major facility or role not found.", item);
             }
 
-            if (item.getStaffCode() == null || item.getStaffCode().isEmpty()) {
-                log.error("Mã Nhân Viên Không Được Để Trống");
-                logErrorRecordToCSV(
-                        "Lỗi bản ghi số " + item.getOrderNumber() + ": Mã nhân viên không được để trống"
-                );
-                return null;
-            } else if (
-                    !item
-                            .getAccountFe()
-                            .trim()
-                            .toLowerCase()
-                            .contains(item.getStaffCode().toLowerCase()) ||
-                    !item
-                            .getAccountFpt()
-                            .trim()
-                            .toLowerCase()
-                            .contains(item.getStaffCode().toLowerCase())
-            ) {
-                log.error("Account Nhân Viên Không Đúng Định Dạng{} {} {}", item.getStaffCode(), item.getAccountFe(), item.getAccountFpt());
-                logErrorRecordToCSV(
-                        "Lỗi bản ghi số " + item.getOrderNumber() + ": Account nhân viên không đúng định dạng"
-                );
-                return null;
-            } else {
-                staffCode = item.getStaffCode();
+            if (!isValidStaffCode(item)) {
+                return handleError("Invalid or missing staff code.", item);
             }
 
-            Optional<Staff> staffOptional = staffCustomRepository.findByStaffCodeAndStatus(staffCode, EntityStatus.ACTIVE);
-            if (staffOptional.isPresent()) {
-                Staff staff = staffOptional.get();
-                staff.setStatus(EntityStatus.ACTIVE);
-                staff.setName(item.getName());
-                staff.setAccountFpt(item.getAccountFpt());
-                staff.setAccountFe(item.getAccountFe());
-
-                Optional<StaffMajorFacility> staffMajorFacilityOptional = majorFacilityCustomRepository
-                        .findByDepartmentFacility_Facility_Code(facilityCode)
-                        .map(majorFacility -> {
-                            StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
-                            staffMajorFacility.setStatus(EntityStatus.ACTIVE);
-                            staffMajorFacility.setMajorFacility(majorFacility);
-                            return staffMajorFacility;
-                        });
-
-                if (staffMajorFacilityOptional.isPresent()) {
-                    return new TransferStaffRole(staff, roles.get(0), staffMajorFacilityOptional.get());
-                } else {
-                    log.error("Bộ môn - chuyên ngành không tồn tại");
-                    logErrorRecordToCSV(
-                            "Lỗi tại bản ghi số " + item.getOrderNumber() + ": Bộ môn - chuyên ngành không tồn tại"
-                    );
-                    return null;
-                }
-            }
-
-            Staff staffNew = new Staff();
-            staffNew.setId(UUID.randomUUID().toString());
-            staffNew.setStaffCode(staffCode);
-            staffNew.setName(item.getName());
-            staffNew.setAccountFpt(item.getAccountFpt());
-            staffNew.setAccountFe(item.getAccountFe());
-            staffNew.setStatus(EntityStatus.ACTIVE);
-
-            StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
-            staffMajorFacility.setStatus(EntityStatus.ACTIVE);
-            staffMajorFacility.setMajorFacility(majorFacilities.get(0));
-            return new TransferStaffRole(staffNew, roles.get(0), staffMajorFacility);
+            return createTransferStaffRole(item, majorFacility.get(), role.get());
         } catch (Exception e) {
-            log.error("Error processing excel row : {}", item, e);
-            logErrorRecordToCSV(
-                    "Lỗi tại bản ghi số " + item.getOrderNumber() + ": " + e.getMessage()
-            );
-            return null;
+            return handleError("Processing error: " + e.getMessage(), item);
         }
+    }
+
+    private Optional<MajorFacility> fetchMajorFacility(String departmentName, String majorName, String facilityCode) {
+        List<MajorFacility> majorFacilities = majorFacilityCustomRepository.getMajorFacilities(departmentName, majorName, facilityCode);
+        return majorFacilities.isEmpty() ? Optional.empty() : Optional.of(majorFacilities.get(0));
+    }
+
+    private Optional<Role> fetchRole(String roleName, String facilityName) {
+        List<Role> roles = roleCustomRepository.findAllByRoleNameAndFacilityName(roleName, facilityName);
+        return roles.isEmpty() ? Optional.empty() : Optional.of(roles.get(0));
+    }
+
+    private boolean isValidStaffCode(StaffExcelRequest item) {
+        String staffCode = item.getStaffCode();
+        if (staffCode == null || staffCode.isEmpty()) {
+            return false;
+        }
+        return item.getAccountFe().toLowerCase().contains(staffCode.toLowerCase()) &&
+               item.getAccountFpt().toLowerCase().contains(staffCode.toLowerCase());
+    }
+
+    private TransferStaffRole createTransferStaffRole(StaffExcelRequest item, MajorFacility majorFacility, Role role) {
+        Staff staff = staffCustomRepository
+                .findByStaffCodeAndStatus(item.getStaffCode(), EntityStatus.ACTIVE)
+                .map(existingStaff -> updateExistingStaff(existingStaff, item))
+                .orElseGet(() -> createNewStaff(item));
+
+        StaffMajorFacility staffMajorFacility = new StaffMajorFacility();
+        staffMajorFacility.setStatus(EntityStatus.ACTIVE);
+        staffMajorFacility.setMajorFacility(majorFacility);
+
+        return new TransferStaffRole(staff, role, staffMajorFacility);
+    }
+
+    private Staff updateExistingStaff(Staff staff, StaffExcelRequest item) {
+        staff.setName(item.getName());
+        staff.setAccountFpt(item.getAccountFpt());
+        staff.setAccountFe(item.getAccountFe());
+        return staff;
+    }
+
+    private Staff createNewStaff(StaffExcelRequest item) {
+        Staff newStaff = new Staff();
+        newStaff.setId(UUID.randomUUID().toString());
+        newStaff.setStaffCode(item.getStaffCode());
+        newStaff.setName(item.getName());
+        newStaff.setAccountFpt(item.getAccountFpt());
+        newStaff.setAccountFe(item.getAccountFe());
+        newStaff.setStatus(EntityStatus.ACTIVE);
+        return newStaff;
+    }
+
+    private TransferStaffRole handleError(String errorMessage, StaffExcelRequest item) {
+        log.error("{} Record: {}", errorMessage, item);
+        logErrorRecordToCSV("Lỗi bản ghi số " + item.getOrderNumber() + ": " + errorMessage);
+        return null;
     }
 
     private void logErrorRecordToCSV(String content) {
@@ -163,5 +144,4 @@ public class StaffProcessor implements ItemProcessor<StaffExcelRequest, Transfer
                 LogFileType.STAFF
         );
     }
-
 }

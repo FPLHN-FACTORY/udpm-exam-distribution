@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@DynamicUpdate
 @Table(name = "facility_child")
 public class FacilityChild extends PrimaryEntity implements Serializable {
 

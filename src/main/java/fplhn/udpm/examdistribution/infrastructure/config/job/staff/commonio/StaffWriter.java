@@ -17,7 +17,6 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -36,50 +35,41 @@ public class StaffWriter implements ItemWriter<TransferStaffRole> {
 
     @Override
     public void write(Chunk<? extends TransferStaffRole> chunk) throws Exception {
-        if (chunk != null) {
-            int recordNumber = 0;
-            for (TransferStaffRole transferStaffRole : chunk) {
-                recordNumber++;
-                try {
-                    // Save staff first
-                    Staff staff = transferStaffRole.getStaff();
-                    Optional<Staff> staffs = staffCustomRepository
-                            .findByStaffCodeAndStatus(
-                                    staff.getStaffCode(),
-                                    EntityStatus.ACTIVE
-                            );
-                    if (staffs.isPresent()) {
-                        staff = staffs.get();
-                    }
-                    Staff savedStaff = staffCustomRepository.save(staff);
-                    // Save role second
-                    Role role = transferStaffRole.getRole();
-                    StaffRole staffRole = new StaffRole();
-                    staffRole.setStaff(savedStaff);
-                    staffRole.setRole(role);
-                    staffRole.setId(UUID.randomUUID().toString());
-                    staffRole.setStatus(EntityStatus.ACTIVE);
-                    StaffRole savedStaffRole = staffRoleCustomRepository.save(staffRole);
-                    // Save staff major facility third
-                    StaffMajorFacility staffMajorFacility = transferStaffRole.getStaffMajorFacility();
-                    staffMajorFacility.setStaff(savedStaff);
-                    StaffMajorFacility saveStaffMajorFacility = staffMajorFacilityRepository.save(staffMajorFacility);
-                    log.info(
-                            """
-                                    Saved staff role: %s
-                                    Saved staff major facility: %s
-                                    """.formatted(
-                                    savedStaffRole,
-                                    saveStaffMajorFacility
-                            )
-                    );
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
-                    log.error("Error processing record number {}: {}", recordNumber, transferStaffRole, e);
-                    // Continue with the next record
-                }
+        int recordNumber = 0;
+
+        for (TransferStaffRole transferStaffRole : chunk) {
+            recordNumber++;
+            try {
+                Staff savedStaff = saveOrUpdateStaff(transferStaffRole.getStaff());
+                StaffRole savedStaffRole = saveStaffRole(savedStaff, transferStaffRole.getRole());
+                StaffMajorFacility savedStaffMajorFacility = saveStaffMajorFacility(savedStaff, transferStaffRole.getStaffMajorFacility());
+                log.info(
+                        "Successfully processed record number {}: Saved Staff Role - {}, Saved Staff Major Facility - {}",
+                        recordNumber, savedStaffRole, savedStaffMajorFacility
+                );
+            } catch (Exception e) {
+                log.error("Error processing record number {}: {}", recordNumber, transferStaffRole, e);
             }
         }
     }
 
+    private Staff saveOrUpdateStaff(Staff staff) {
+        return staffCustomRepository
+                .findByStaffCodeAndStatus(staff.getStaffCode(), EntityStatus.ACTIVE)
+                .orElseGet(() -> staffCustomRepository.save(staff));
+    }
+
+    private StaffRole saveStaffRole(Staff staff, Role role) {
+        StaffRole staffRole = new StaffRole();
+        staffRole.setStaff(staff);
+        staffRole.setRole(role);
+        staffRole.setId(UUID.randomUUID().toString());
+        staffRole.setStatus(EntityStatus.ACTIVE);
+        return staffRoleCustomRepository.save(staffRole);
+    }
+
+    private StaffMajorFacility saveStaffMajorFacility(Staff staff, StaffMajorFacility staffMajorFacility) {
+        staffMajorFacility.setStaff(staff);
+        return staffMajorFacilityRepository.save(staffMajorFacility);
+    }
 }
