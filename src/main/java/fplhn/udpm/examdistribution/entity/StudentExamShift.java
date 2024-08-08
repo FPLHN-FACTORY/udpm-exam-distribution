@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
@@ -21,6 +22,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@DynamicUpdate
 @Table(name = "student_exam_shift")
 public class StudentExamShift extends PrimaryEntity implements Serializable {
 
@@ -40,5 +42,11 @@ public class StudentExamShift extends PrimaryEntity implements Serializable {
 
     @Column(name = "reason")
     private String reason;
+
+    @Column(name = "check_login")
+    private boolean checkLogin;
+
+    @Column(name = "leave_time")
+    private Long leaveTime;
 
 }

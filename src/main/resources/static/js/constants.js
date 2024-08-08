@@ -102,6 +102,7 @@ const ApiConstant = {
     REDIRECT_AUTHENTICATION_AUTHOR_SWITCH: "/authentication/author-switch",
 
     // Constants representing the redirect paths for various resources under teacher
+    REDIRECT_TEACHER_EXAM_FILE: "/teacher/exam-file",
     REDIRECT_TEACHER_EXAM_SHIFT: "/teacher/exam-shift",
 
     // Constants representing the full paths for various resources under teacher
@@ -139,6 +140,7 @@ const TopicConstant = {
     TOPIC_EXAM_SHIFT_START_TIME: "/topic/exam-shift-start-time",
     TOPIC_TRACK_STUDENT: "/topic/track-student",
     TOPIC_STUDENT_REMOVE_TAB: "/topic/student-remove-tab",
+    TOPIC_STUDENT_REMOVE_TAB_REJOIN: "/topic/student-remove-tab-rejoin",
     TOPIC_HEAD_SUBJECT_JOIN_EXAM_SHIFT: "/topic/head-subject-exam-shift-join",
     TOPIC_HEAD_DEPARTMENT_JOIN_EXAM_SHIFT: "/topic/head-department-exam-shift-join",
 }

@@ -20,4 +20,6 @@ public interface ClassSubjectService {
 
     ResponseObject<?> getClassSubjectById(String classSubjectId);
 
+    ResponseObject<?> getLogsImportClassSubject(int page, int size);
+
 }

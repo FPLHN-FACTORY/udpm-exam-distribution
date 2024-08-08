@@ -305,6 +305,35 @@ const connect = () => {
     });
 };
 
+let isTabClosing = false;
+
+document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") {
+        isTabClosing = true;
+    }
+});
+
+window.addEventListener("beforeunload", function (event) {
+    if (isTabClosing) {
+        refreshJoinRoom();
+        isTabClosing = false;
+    }
+});
+
+const refreshJoinRoom = () => {
+    $.ajax({
+        type: "PUT",
+        contentType: "application/json",
+        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/refresh-join-room",
+        data: JSON.stringify({
+            studentId: userInfo.userId,
+            examShiftCode: examShiftCode
+        }),
+        success: function (responseBody) {},
+        error: function (error) {}
+    });
+}
+
 let checkInternetInterval;
 
 const startCountdown = (startTime, endTime, allowOnline) => {

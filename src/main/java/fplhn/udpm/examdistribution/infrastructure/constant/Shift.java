@@ -48,4 +48,18 @@ public enum Shift {
         return shift.name();
     }
 
+    public static String[] getValidShift() {
+        String[] shift = new String[Shift.values().length - 4];
+        for (int i = 0; i < Shift.values().length; i++) {
+            if (Shift.values()[i] != Shift.CA7
+                && Shift.values()[i] != Shift.CA8
+                && Shift.values()[i] != Shift.CA9
+                && Shift.values()[i] != Shift.CA10
+            ) {
+                shift[i] = Shift.values()[i].name();
+            }
+        }
+        return shift;
+    }
+
 }

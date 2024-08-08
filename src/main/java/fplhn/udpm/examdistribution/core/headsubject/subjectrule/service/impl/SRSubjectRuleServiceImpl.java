@@ -7,8 +7,10 @@ import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SR
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRExamTimeRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRFindSubjectRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRFindSubjectRuleRequest;
+import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRPercentRandomRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.request.SRUpdateExamTimeRequest;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.response.SRExamTimeResponse;
+import fplhn.udpm.examdistribution.core.headsubject.subjectrule.model.response.SRPercentRandomResponse;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.repository.SRExamRuleExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.repository.SRExamTimeBySubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.subjectrule.repository.SRFacilityExtendRepository;
@@ -248,6 +250,9 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
             examTimeBySubject.setSubject(subjectOptional.get());
             examTimeBySubject.setFacility(facilityOptional.get());
             examTimeBySubject.setAllowOnline(false);
+            examTimeBySubject.setExam_time(0L);
+            examTimeBySubject.setPercentRandom(0L);
+
             examTimeBySubjectRepository.save(examTimeBySubject);
             return new ResponseObject<>(
                     null,
@@ -331,6 +336,7 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                 postExamTimeBySubject.setStatus(EntityStatus.ACTIVE);
                 postExamTimeBySubject.setAllowOnline(true);
                 postExamTimeBySubject.setExam_time(0L);
+                postExamTimeBySubject.setPercentRandom(0L);
 
                 examTimeBySubjectRepository.save(postExamTimeBySubject);
                 return new ResponseObject<>(
@@ -359,6 +365,102 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                     null,
                     HttpStatus.BAD_REQUEST,
                     "Cập nhật thời gian thi không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> createPercentRandom(SRPercentRandomRequest request) {
+        try {
+            Optional<Subject> subjectOptional = subjectRepository.findById(request.getSubjectId());
+            if (subjectOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
+                );
+            }
+
+            Optional<Facility> facilityOptional = facilityRepository.findById(sessionHelper.getCurrentUserFacilityId());
+            if (facilityOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy cơ sở hiện tại"
+                );
+            }
+
+            Optional<ExamTimeBySubject> examTimeBySubjectOptional = examTimeBySubjectRepository.findExamTimeBySubjectIdAndFacilityId(
+                    request.getSubjectId(),
+                    sessionHelper.getCurrentUserFacilityId()
+            );
+            if (examTimeBySubjectOptional.isEmpty()) {
+                ExamTimeBySubject postExamTimeBySubject = new ExamTimeBySubject();
+                postExamTimeBySubject.setFacility(facilityOptional.get());
+                postExamTimeBySubject.setSubject(subjectOptional.get());
+                postExamTimeBySubject.setStatus(EntityStatus.ACTIVE);
+                postExamTimeBySubject.setAllowOnline(true);
+                postExamTimeBySubject.setExam_time(0L);
+                postExamTimeBySubject.setPercentRandom(request.getPercentRandom());
+
+                examTimeBySubjectRepository.save(postExamTimeBySubject);
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.OK,
+                        "Lưu phần trăm random đề thành công"
+                );
+            }
+
+            ExamTimeBySubject examTimeBySubject = examTimeBySubjectOptional.get();
+            examTimeBySubject.setPercentRandom(request.getPercentRandom());
+            examTimeBySubjectRepository.save(examTimeBySubject);
+
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.OK,
+                    "Lưu phần trăm random đề thành công"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Cập nhật thời gian thi không thành công"
+            );
+        }
+    }
+
+    @Override
+    public ResponseObject<?> detailPercentRandom(String subjectId) {
+        try {
+            Optional<Subject> subjectOptional = subjectRepository.findById(subjectId);
+            if (subjectOptional.isEmpty()) {
+                return new ResponseObject<>(
+                        null,
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
+                );
+            }
+
+            Optional<ExamTimeBySubject> examTimeBySubjectOptional = examTimeBySubjectRepository.findExamTimeBySubjectIdAndFacilityId(
+                    subjectOptional.get().getId(),
+                    sessionHelper.getCurrentUserFacilityId()
+            );
+            return new ResponseObject<>(
+                    examTimeBySubjectOptional
+                            .map(examTimeBySubject ->
+                                    new SRPercentRandomResponse(examTimeBySubject.getPercentRandom())).orElseGet(
+                                    () -> new SRPercentRandomResponse(0L)
+                            ),
+                    HttpStatus.OK,
+                    "Lấy thành công phần trăm random đề"
+            );
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Lấy không thành công phần trăm random đề"
             );
         }
     }

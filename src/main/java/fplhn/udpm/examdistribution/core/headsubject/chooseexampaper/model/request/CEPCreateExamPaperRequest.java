@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class CEPCreateExamPaperRequest {
@@ -15,6 +17,6 @@ public class CEPCreateExamPaperRequest {
     @NotBlank(message = "Môn học chưa được chọn")
     private String subjectId;
 
-    private MultipartFile file;
+    private List<MultipartFile> file;
 
 }

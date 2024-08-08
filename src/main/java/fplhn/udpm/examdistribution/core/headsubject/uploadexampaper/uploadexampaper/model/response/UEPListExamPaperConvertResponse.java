@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ListExamPaperConvertResponse {
+public class UEPListExamPaperConvertResponse {
 
     private String id;
 

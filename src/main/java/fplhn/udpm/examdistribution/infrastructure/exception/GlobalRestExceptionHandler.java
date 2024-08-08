@@ -54,7 +54,7 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ModelAndView handleNoResourceFoundException(NoResourceFoundException ex) {
-        ex.printStackTrace(System.out);
+//        ex.printStackTrace(System.out);
         log.warn(ex.getMessage());
         return new ModelAndView("error/404");
     }

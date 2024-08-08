@@ -57,7 +57,9 @@ const fetchSearchSubject = (
                             <td>${subject.subjectName}</td>
                             <td>${subject.departmentName}</td>
                             <td>${convertSubjectType(subject.subjectType)}</td>
-                            <td>
+                            <td class="text-center">${subject.examTime === null ? 0 : subject.examTime} phút</td>
+                            <td class="text-center">${subject.percentRandom === null ? 0 : subject.percentRandom}%</td>
+                            <td class="text-center">
                                 <div class="col-auto">
                                   <label class="colorinput">
                                     <input
@@ -74,7 +76,6 @@ const fetchSearchSubject = (
                                   </label>
                                 </div>
                             </td>
-                            <td>${subject.examTime}</td>
                             <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
                                 <span
                                     onclick="handleOpenModalExamRule('${subject.id}')"
@@ -87,6 +88,12 @@ const fetchSearchSubject = (
                                 <span onclick="handleOpenModalExamTime('${subject.id}')" data-bs-toggle="tooltip" data-bs-title="Cập nhật thời gian thi" class="fs-6">
                                     <i 
                                         class="fa-solid fa-pen-to-square"
+                                        style="cursor: pointer; margin-left: 10px;"
+                                    ></i>
+                                </span>
+                                <span onclick="handleOpenModalPercentRandom('${subject.id}')" data-bs-toggle="tooltip" data-bs-title="Phần trăm random" class="fs-6">
+                                    <i
+                                        class="fa-solid fa-bars-progress"
                                         style="cursor: pointer; margin-left: 10px;"
                                     ></i>
                                 </span>

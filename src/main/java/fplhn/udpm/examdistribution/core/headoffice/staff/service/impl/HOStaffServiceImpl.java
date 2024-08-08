@@ -12,6 +12,7 @@ import fplhn.udpm.examdistribution.entity.HistoryImport;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.StaffRole;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.utils.Helper;
 import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
@@ -60,22 +61,27 @@ public class HOStaffServiceImpl implements HOStaffService {
     @Override
     public ResponseObject<?> createStaff(HOSaveStaffRequest staffRequest) {
 
-        Staff staff = new Staff();
+        Staff staffExist = isStaffExist(
+                staffRequest.getStaffCode(),
+                staffRequest.getAccountFe(),
+                staffRequest.getAccountFpt()
+        );
 
-        staff.setName(staffRequest.getName());
-
-        List<Staff> staffList = staffRepo.findByStaffCode(staffRequest.getStaffCode());
-
-        if (!staffList.isEmpty() && staffList.get(0).getStatus() == EntityStatus.ACTIVE) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Mã nhân viên đã tồn tại");
+        if (staffExist != null) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.BAD_REQUEST,
+                    "Nhân viên đã tồn tại"
+            );
         }
 
-        staff.setStatus(EntityStatus.ACTIVE);
+        Staff staff = new Staff();
+        staff.setName(staffRequest.getName());
         staff.setStaffCode(staffRequest.getStaffCode());
         staff.setAccountFe(staffRequest.getAccountFe());
         staff.setAccountFpt(staffRequest.getAccountFpt());
+        staff.setStatus(EntityStatus.ACTIVE);
         staffRepo.save(staff);
-
         return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm nhân viên thành công");
     }
 
@@ -91,12 +97,12 @@ public class HOStaffServiceImpl implements HOStaffService {
         Staff staff = staffOptional.get();
         staff.setId(staffRequest.getId());
         staff.setName(staffRequest.getName());
-        List<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
+        Optional<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
 
-        if (!checkStaff.isEmpty() &&
-            !checkStaff.get(0).getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
-            checkStaff.get(0).getStatus() == EntityStatus.ACTIVE) {
-            if (!staff.getId().equals(checkStaff.get(0).getId())) {
+        if (checkStaff.isPresent() &&
+            !checkStaff.get().getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
+            checkStaff.get().getStatus() == EntityStatus.ACTIVE) {
+            if (!staff.getId().equals(checkStaff.get().getId())) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã nhân viên đã tồn tại");
             }
         }
@@ -121,7 +127,7 @@ public class HOStaffServiceImpl implements HOStaffService {
 
         // Change status in staff_role
         List<StaffRole> staffRoles = staffRoleRepo.findAllByStaff_Id(idStaff);
-        staffRoles.stream().forEach(staffRole -> staffRole.setStatus(newStatus));
+        staffRoles.forEach(staffRole -> staffRole.setStatus(newStatus));
         staffRoleRepo.saveAll(staffRoles);
 
         // Change status in staff
@@ -134,8 +140,8 @@ public class HOStaffServiceImpl implements HOStaffService {
 
     @Override
     public ResponseObject<?> getLogsImportStaff(int page, int size) {
-        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffId(
-                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId()
+        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffIdAndFileType(
+                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId(), LogFileType.STAFF
         );
         List<HistoryImport> loggerObjects = listLogRaw.stream()
                 .skip((long) page * size)
@@ -147,6 +153,25 @@ public class HOStaffServiceImpl implements HOStaffService {
                 )),
                 "Lấy lịch sử thay đổi thành công"
         );
+    }
+
+    private Staff isStaffExist(
+            String staffCode,
+            String accountFe,
+            String accountFpt
+    ) {
+        Optional<Staff> staffs = staffRepo.findByStaffCode(staffCode);
+        if (staffs.isPresent()) {
+            return staffs.get();
+        }
+
+        Optional<Staff> staffFe = staffRepo.findByAccountFe(accountFe);
+        if (staffFe.isPresent()) {
+            return staffFe.get();
+        }
+
+        Optional<Staff> staffFpt = staffRepo.findByAccountFpt(accountFpt);
+        return staffFpt.orElse(null);
     }
 
 }

@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.infrastructure.constant.LogType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
@@ -23,6 +25,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@DynamicUpdate
 @Table(name = "history_import")
 public class HistoryImport extends PrimaryEntity implements Serializable {
 
@@ -43,5 +46,9 @@ public class HistoryImport extends PrimaryEntity implements Serializable {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private LogType type;
+
+    @Column(name = "log_file_type")
+    @Enumerated(EnumType.STRING)
+    private LogFileType logFileType;
 
 }

@@ -21,4 +21,6 @@ public interface SRSubjectResponse extends IsIdentify, HasOrderNumber {
 
     Integer getExamTime();
 
+    Long getPercentRandom();
+
 }

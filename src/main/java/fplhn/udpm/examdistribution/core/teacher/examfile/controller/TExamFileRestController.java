@@ -43,8 +43,8 @@ public class TExamFileRestController {
     }
 
     @PostMapping("/upload/{subjectId}")
-    public ResponseEntity<?> uploadExamRule(@PathVariable String subjectId, TUploadExamFileRequest request) {
-        return Helper.createResponseEntity(examFileService.uploadExamRule(subjectId, request));
+    public ResponseEntity<?> uploadExamPaper(@PathVariable String subjectId, TUploadExamFileRequest request) {
+        return Helper.createResponseEntity(examFileService.uploadExamPaper(subjectId, request));
     }
 
     @GetMapping("/major-facility")

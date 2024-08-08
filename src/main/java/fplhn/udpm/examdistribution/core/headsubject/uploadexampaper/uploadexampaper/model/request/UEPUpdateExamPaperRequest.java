@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @ToString
-public class UpdateExamPaperRequest {
+public class UEPUpdateExamPaperRequest {
 
     private String examPaperId;
 

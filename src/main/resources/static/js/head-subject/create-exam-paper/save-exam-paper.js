@@ -29,9 +29,12 @@ $("#save-exam_paper").on("click", () => {
 });
 
 const handleSaveExamPaperConfirm = async () => {
+    if (getTinyContentTeacher() && (getTinyContentTeacher()+'').trim().length === 0){
+        showToastError("Đề không được trống");
+    }
     swal({
         title: "Xác nhận",
-        text: "Bạn có chắc muốn lưu đề thi thi này không?",
+        text: "Bạn có chắc muốn lưu đề thi này không?",
         type: "warning",
         buttons: {
             cancel: {

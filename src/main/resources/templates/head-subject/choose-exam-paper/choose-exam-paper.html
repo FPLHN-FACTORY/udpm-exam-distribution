@@ -132,19 +132,28 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <div class="d-flex justify-content-end align-items-center gap-3">
-                                    <div class="d-flex align-items-center">
-                                        <nav>
-                                            <ul class="pagination" id="paginationFirstPage">
-                                            </ul>
-                                        </nav>
+                                <div class="d-flex justify-content-between align-items-center gap-3">
+                                    <div>
+                                        <h4 class="float-start">
+                                            <i class="text-danger font-weight-bold">*** Chú ý:
+                                                Chỉ được upload đề pdf
+                                                ***</i>
+                                        </h4>
                                     </div>
-                                    <select class="form-select" id="pageSizeFirstPage" style="width: 100px;">
-                                        <option value="5">5 bản ghi / Trang</option>
-                                        <option value="10">10 bản ghi / Trang</option>
-                                        <option value="20">20 bản ghi / Trang</option>
-                                        <option value="50">50 bản ghi / Trang</option>
-                                    </select>
+                                    <div class="d-flex justify-content-end align-items-center gap-3">
+                                        <div class="d-flex align-items-center">
+                                            <nav>
+                                                <ul class="pagination" id="paginationFirstPage">
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                        <select class="form-select" id="pageSizeFirstPage" style="width: 100px;">
+                                            <option value="5">5 bản ghi / Trang</option>
+                                            <option value="10">10 bản ghi / Trang</option>
+                                            <option value="20">20 bản ghi / Trang</option>
+                                            <option value="50">50 bản ghi / Trang</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -192,7 +201,8 @@
                                 <button onclick="handleOpenChooseFilePdf()" class="btn btn-black">
                                     <i class="fas fa-file-excel"></i> Chọn đề thi
                                 </button>
-                                <input type="file" id="file-pdf-input" hidden accept="application/pdf"/>
+                                <input type="file" id="file-pdf-input" hidden accept="application/pdf" multiple/>
+                                <div id="fileNames"></div>
                             </div>
                         </div>
                     </div>

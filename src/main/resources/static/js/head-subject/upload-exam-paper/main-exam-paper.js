@@ -135,14 +135,34 @@ const fetchListExamPaper = (
                 return;
             }
             const examPapers = responseData.map(item => {
-                return `<tr>
-                            <td class="d-flex justify-content-between align-items-center">
-                                ${item.orderNumber}
-                                ${
-                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
-                        `<input type="checkbox" onclick="handlePushInListPublic('${item.id}')"/>`
-                        : ""
+                const condition = item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false;
+                if (condition) {
+                    $("#column-choose-public").attr("hidden", false);
                 }
+                return `<tr>
+                            ${
+                                condition ?
+                                    `
+                                                    <td>
+                                                        <div class="col-auto text-center">
+                                                              <label class="colorinput">
+                                                                   <input
+                                                                        name="color"
+                                                                        type="checkbox"
+                                                                        class="colorinput-input"
+                                                                        onclick="handlePushInListPublic('${item.id}')"
+                                                                   />
+                                                                   <span
+                                                                        class="colorinput-color bg-black"
+                                                                   ></span>
+                                                              </label>
+                                                         </div>
+                                                    </td>
+                                                `
+                                    : ""
+                            }
+                            <td>
+                                ${item.orderNumber}
                             </td>
                             <td>
                                 <a target="_blank" href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
@@ -174,14 +194,14 @@ const fetchListExamPaper = (
                                     ></i>
                                 </span>
                                 ${
-                                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
-                                        `<span
+                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                        `<span
                                             data-bs-toggle="tooltip" data-bs-title="Công khai đề thi"
                                             onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
                                             <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
                                         </span>`
-                                        : ""
-                                }
+                        : ""
+                }
                                 <span
                                     onclick="handleModalModalResource('${item.id}')"
                                     data-bs-toggle="tooltip"

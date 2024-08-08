@@ -6,10 +6,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ListStaffBySubjectIdRequest extends PageableRequest {
+public class UEPListExamPaperRequest extends PageableRequest {
 
-    private String searchValue;
+    private String subjectId;
 
-    private String examPaperId;
+    private String staffId;
+
+    private String examPaperType;
 
 }

@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.utils;
 
 import fplhn.udpm.examdistribution.entity.HistoryImport;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.infrastructure.constant.LogType;
 import fplhn.udpm.examdistribution.repository.FacilityRepository;
 import fplhn.udpm.examdistribution.repository.HistoryImportRepository;
@@ -35,13 +36,20 @@ public class HistoryLogUtils {
         historyImport.setType(LogType.ERROR);
     }
 
-    public void logErrorRecord(String message, String fileName, String staffId, String facilityId) {
+    public void logErrorRecord(
+            String message,
+            String fileName,
+            String staffId,
+            String facilityId,
+            LogFileType logFileType
+    ) {
         HistoryImport historyImport = new HistoryImport();
         historyImport.setFileName(fileName);
         historyImport.setFacility(facilityRepository.getReferenceById(facilityId));
         historyImport.setMessage(message);
         historyImport.setStaff(staffRepository.getReferenceById(staffId));
         historyImport.setType(LogType.ERROR);
+        historyImport.setLogFileType(logFileType);
         historyImportRepository.save(historyImport);
     }
 
@@ -59,8 +67,16 @@ public class HistoryLogUtils {
         return historyImportRepository.findAll();
     }
 
-    public List<HistoryImport> getHistoryImportByFacilityIdAndStaffId(String facilityId, String staffId) {
-        return historyImportRepository.findAllByFacility_IdAndStaff_Id(facilityId, staffId);
+    public List<HistoryImport> getHistoryImportByFacilityIdAndStaffIdAndFileType(
+            String facilityId,
+            String staffId,
+            LogFileType logFileType
+    ) {
+        return historyImportRepository.findAllByFacility_IdAndStaff_IdAndLogFileType(
+                facilityId,
+                staffId,
+                logFileType
+        );
     }
 
 

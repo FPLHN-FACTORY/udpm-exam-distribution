@@ -1,4 +1,4 @@
-package fplhn.udpm.examdistribution.core.common.model;
+package fplhn.udpm.examdistribution.core.common.model.response;
 
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 

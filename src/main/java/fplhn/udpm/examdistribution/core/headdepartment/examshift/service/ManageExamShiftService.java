@@ -14,4 +14,6 @@ public interface ManageExamShiftService {
 
     ResponseObject<?> editExamShift(String examShiftId, ModifyExamShiftRequest request);
 
+    ResponseObject<?> getLogsImportStaff(int page, int size);
+
 }

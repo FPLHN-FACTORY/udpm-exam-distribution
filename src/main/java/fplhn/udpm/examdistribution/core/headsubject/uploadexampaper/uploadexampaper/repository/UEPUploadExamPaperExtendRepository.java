@@ -1,7 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListExamPaperRequest;
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.ListExamPaperResponse;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.UEPListExamPaperResponse;
 import fplhn.udpm.examdistribution.entity.ExamPaper;
 import fplhn.udpm.examdistribution.repository.ExamPaperRepository;
 import org.springframework.data.domain.Page;
@@ -100,9 +100,9 @@ public interface UEPUploadExamPaperExtendRepository extends ExamPaperRepository 
                    (:#{#request.staffId} IS NULL OR ep.id_staff_upload LIKE CONCAT('%', TRIM(:#{#request.staffId}) ,'%')) AND
                    (:#{#request.examPaperType} IS NULL OR ep.exam_paper_type LIKE CONCAT('%', TRIM(:#{#request.examPaperType}) ,'%'))
             """, nativeQuery = true)
-    Page<ListExamPaperResponse> getListExamPaper(
+    Page<UEPListExamPaperResponse> getListExamPaper(
             Pageable pageable,
-            ListExamPaperRequest request,
+            UEPListExamPaperRequest request,
             String userId,
             String departmentFacilityId,
             String semesterId,

@@ -11,19 +11,19 @@ $(document).ready(() => {
     change();
 
     //add event
-    handleAddEvent($('#facilityChildId'),'change', function () {
+    handleAddEvent($('#facilityChildId'), 'change', function () {
         submitFormFilter();
     });
-    handleAddEvent($('#subjectName'),'keyup', function () {
+    handleAddEvent($('#subjectName'), 'keyup', function () {
         submitFormFilter();
     });
-    handleAddEvent($('#staffName'),'keyup', function () {
+    handleAddEvent($('#staffName'), 'keyup', function () {
         submitFormFilter();
     });
-    handleAddEvent($('#shift'),'change', function () {
+    handleAddEvent($('#shift'), 'change', function () {
         submitFormFilter();
     });
-    handleAddEvent($('#classSubjectCode'),'keyup', function () {
+    handleAddEvent($('#classSubjectCode'), 'keyup', function () {
         submitFormFilter();
     });
 
@@ -690,3 +690,40 @@ function handleChangeFile(input) {
 
     submitUpload(file)
 }
+
+const getHistoryAssignSubject = () => {
+    $.ajax({
+        type: "GET",
+        url: ApiConstant.API_HEAD_OFFICE_CLASS_SUBJECT + "/history",
+        contentType: "application/json",
+        success: (responseBody) => {
+            if (responseBody?.data?.data?.length === 0) {
+                $('#historyTableBody').html(`
+                    <tr>
+                         <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
+                    </tr>
+                `);
+                return;
+            }
+            const historyAssignSubjects = responseBody?.data?.data?.map((history, index) => {
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${moment(history.createdDate).format("DD/MM/YYYY HH:mm")}</td>
+                        <td>${history.staff.accountFpt + " - " + history.message}</td>
+                        <td>${history.fileName}</td>
+                    </tr>
+                `;
+            });
+            $('#historyLogTableBody').html(historyAssignSubjects);
+        },
+        error: (error) => {
+            showToastError(error?.responseJSON?.message || "Có lỗi xảy ra, vui lòng thử lại sau");
+        }
+    });
+};
+
+const handleShowModalHistory = () => {
+    getHistoryAssignSubject();
+    $('#viewHistoryLog').modal('show');
+};

@@ -5,6 +5,7 @@ import fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio.Staf
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.commonio.StaffWriter;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.dto.TransferStaffRole;
 import fplhn.udpm.examdistribution.infrastructure.config.job.staff.model.request.StaffExcelRequest;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -36,8 +37,7 @@ import java.io.File;
 @EnableTransactionManagement
 public class StaffJobConfig {
 
-    @Autowired
-    @Qualifier("transactionManager")
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Qualifier("transactionManager")})
     private PlatformTransactionManager transactionManager;
 
     @Value("${file.upload.staff.path}")

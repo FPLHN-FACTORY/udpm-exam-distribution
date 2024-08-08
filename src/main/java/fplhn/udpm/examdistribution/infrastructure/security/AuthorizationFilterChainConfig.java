@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -46,7 +47,11 @@ public class AuthorizationFilterChainConfig {
     @Value("${allowed.origin}")
     public String ALLOWED_ORIGIN;
 
-    public List<String> GOOGLE_DRIVE_API_ORIGINS = List.of("https://www.googleapis.com", "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file");
+    public List<String> GOOGLE_DRIVE_API_ORIGINS = List.of(
+            "https://www.googleapis.com",
+            "https://www.googleapis.com/auth/drive",
+            "https://www.googleapis.com/auth/drive.file"
+    );
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -72,6 +77,9 @@ public class AuthorizationFilterChainConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(httpSecurityCorsConfigurer -> {
             httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
+        });
+        httpSecurity.sessionManagement(sessionManagement -> {
+            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
         });
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(authorization -> {

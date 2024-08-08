@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -60,8 +59,12 @@ public interface HOStaffRepository extends StaffRepository {
             """, nativeQuery = true)
     Optional<HOStaffDetailResponse> getStaff(String id);
 
-    List<Staff> findByStaffCode(String staffCode);
+    Optional<Staff> findByStaffCode(String staffCode);
 
     Optional<Staff> findByIdAndStatus(String id, EntityStatus status);
+
+    Optional<Staff> findByAccountFe(String accountFe);
+
+    Optional<Staff> findByAccountFpt(String accountFpt);
 
 }

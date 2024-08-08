@@ -11,17 +11,23 @@ import fplhn.udpm.examdistribution.core.headdepartment.examshift.repository.HDSt
 import fplhn.udpm.examdistribution.core.headdepartment.examshift.service.ManageExamShiftService;
 import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.ExamShift;
+import fplhn.udpm.examdistribution.entity.HistoryImport;
 import fplhn.udpm.examdistribution.entity.Staff;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.Helper;
+import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +43,8 @@ public class ManageExamShiftServiceImpl implements ManageExamShiftService {
     private final HDBlockRepository hdBlockRepository;
 
     private final HDStaffExamShiftRepository hdStaffExamShiftRepository;
+
+    private final HistoryLogUtils historyLogUtils;
 
     @Override
     public ResponseObject<?> getAllExamShifts(ExamShiftRequest request) {
@@ -149,6 +157,23 @@ public class ManageExamShiftServiceImpl implements ManageExamShiftService {
                 null,
                 HttpStatus.OK,
                 "Chỉnh sửa ca thi thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getLogsImportStaff(int page, int size) {
+        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffIdAndFileType(
+                sessionHelper.getCurrentUserFacilityId(), sessionHelper.getCurrentUserId(), LogFileType.EXAM_SHIFT
+        );
+        List<HistoryImport> loggerObjects = listLogRaw.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+        return ResponseObject.successForward(
+                PageableObject.of(new PageImpl<>(
+                        loggerObjects, PageRequest.of(page, size), loggerObjects.size()
+                )),
+                "Lấy lịch sử thay đổi thành công"
         );
     }
 

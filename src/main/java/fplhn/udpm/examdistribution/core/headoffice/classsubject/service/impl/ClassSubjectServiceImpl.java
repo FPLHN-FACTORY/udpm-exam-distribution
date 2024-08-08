@@ -2,7 +2,6 @@ package fplhn.udpm.examdistribution.core.headoffice.classsubject.service.impl;
 
 import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
-import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectByStaffRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectKeywordRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.ClassSubjectRequest;
 import fplhn.udpm.examdistribution.core.headoffice.classsubject.model.request.CreateUpdateClassSubjectRequest;
@@ -15,19 +14,26 @@ import fplhn.udpm.examdistribution.core.headoffice.classsubject.service.ClassSub
 import fplhn.udpm.examdistribution.entity.Block;
 import fplhn.udpm.examdistribution.entity.ClassSubject;
 import fplhn.udpm.examdistribution.entity.FacilityChild;
+import fplhn.udpm.examdistribution.entity.HistoryImport;
 import fplhn.udpm.examdistribution.entity.Semester;
 import fplhn.udpm.examdistribution.entity.Staff;
 import fplhn.udpm.examdistribution.entity.Subject;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
+import fplhn.udpm.examdistribution.infrastructure.constant.LogFileType;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.utils.Helper;
+import fplhn.udpm.examdistribution.utils.HistoryLogUtils;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +50,10 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
     private final StaffClassSubjectRepository staffClassSubjectRepository;
 
     private final SubjectClassSubjectRepository subjectClassSubjectRepository;
+
+    private final HistoryLogUtils historyLogUtils;
+
+    private final SessionHelper sessionHelper;
 
 
     @Override
@@ -75,7 +85,7 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
         // Kiểm tra xem ngày có nằm trong khoảng thời gian không
         Block block = blockOptional.get();
         if (request.getDay() < block.getStartTime() || request.getDay() > block.getEndTime()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,"Ngày phải nằm trong khoảng thời gian của block");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ngày phải nằm trong khoảng thời gian của block");
         }
 
         Optional<FacilityChild> facilityChildOptional = facilityChildClassSubjectRepository.findById(request.getFacilityChildId());
@@ -140,7 +150,7 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
         // Kiểm tra xem ngày có nằm trong khoảng thời gian không
         Block block = blockOptional.get();
         if (request.getDay() < block.getStartTime() || request.getDay() > block.getEndTime()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND,"Ngày phải nằm trong khoảng thời gian của block");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Ngày phải nằm trong khoảng thời gian của block");
         }
 
         Optional<FacilityChild> facilityChildOptional = facilityChildClassSubjectRepository.findById(request.getFacilityChildId());
@@ -148,7 +158,7 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility child not found");
         }
 
-        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCodeAndStatus(request.getStaffCode(),EntityStatus.ACTIVE);
+        Optional<Staff> staffOptional = staffClassSubjectRepository.findByStaffCodeAndStatus(request.getStaffCode(), EntityStatus.ACTIVE);
         if (staffOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Staff not found");
         }
@@ -201,4 +211,24 @@ public class ClassSubjectServiceImpl implements ClassSubjectService {
                 .map(classSubject -> new ResponseObject<>(classSubject, HttpStatus.OK, "Get class subject successfully"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Class subject not found"));
     }
+
+    @Override
+    public ResponseObject<?> getLogsImportClassSubject(int page, int size) {
+        List<HistoryImport> listLogRaw = historyLogUtils.getHistoryImportByFacilityIdAndStaffIdAndFileType(
+                sessionHelper.getCurrentUserFacilityId(),
+                sessionHelper.getCurrentUserId(),
+                LogFileType.CLASS_SUBJECT
+        );
+        List<HistoryImport> loggerObjects = listLogRaw.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+        return ResponseObject.successForward(
+                PageableObject.of(new PageImpl<>(
+                        loggerObjects, PageRequest.of(page, size), loggerObjects.size()
+                )),
+                "Lấy lịch sử thay đổi thành công"
+        );
+    }
+
 }

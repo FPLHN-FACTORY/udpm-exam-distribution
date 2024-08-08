@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
@@ -28,6 +29,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 @Table(name = "exam_paper")
+@DynamicUpdate
 @EntityListeners(ExamPaperListener.class)
 public class ExamPaper extends PrimaryEntity implements Serializable {
 

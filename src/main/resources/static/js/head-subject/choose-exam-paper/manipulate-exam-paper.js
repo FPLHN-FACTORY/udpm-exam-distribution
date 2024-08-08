@@ -10,7 +10,7 @@ const ctx = $pdfCanvas.getContext("2d");
 // END: state
 
 //START: getter,setter
-let examPaperFile = new File([], "");
+let examPaperFile = [];
 let stateExamPaperId = "";
 let statePostOrPutExamPaper = true; //true -> post, false -> put
 
@@ -43,8 +43,7 @@ const clearFieldsChoose = () => {
 };
 
 const handleOpenChooseFilePdf = () => {
-    const pdfFile = $("#file-pdf-input");
-    pdfFile.click();
+    $("#file-pdf-input").click();
 };
 
 const handlePostOrPutExamPaperConfirm = () => {
@@ -77,7 +76,9 @@ const handlePostOrPutExamPaper = () => {
     }
     data.append("examPaperType", getValueExamPaperType());
     data.append("subjectId", getValueExamPaperSubjectId())
-    data.append("file", getExamPaperFile());
+    for (let i = 0; i < getExamPaperFile().length; i++) {
+        data.append('file', getExamPaperFile()[i]);
+    }
 
     handleResetFieldsError();
 
@@ -133,6 +134,8 @@ const handleOpenModalExamPaper = (fileId, status, examPaperType, majorFacilityId
     showViewByStatus(status);
     handleResetFieldsError();
 
+    $("#fileNames").empty();
+
     if (status !== 3) {
         handleFetchExamPaperPDF(fileId);
         if (status === 2) {
@@ -187,30 +190,61 @@ const convertAndShowPdf = (data) => {
 
     const blob = new Blob([pdfData], {type: 'application/pdf'});
     const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
-    setExamPaperFile(file);
+    setExamPaperFile([
+        ...getExamPaperFile(),
+        file
+    ]);
 
     renderPdfInView(pdfData);
 };
 
 
 const onChangeChoosePDFFile = () => {
-    $("#file-pdf-input").on("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setExamPaperFile(file);
-            showLoading();
-            const fileType = file.type;
-            if (fileType === "application/pdf") {
-                const fileReader = new FileReader();
-                fileReader.onload = function () {
-                    const pdfData = new Uint8Array(this.result);
-                    renderPdfInView(pdfData);
-                };
-                fileReader.readAsArrayBuffer(file);
+    $("#file-pdf-input").on("change", function (e) {
+        let files = this.files;
+
+        if (files.length === 0) {
+            return;
+        }
+
+        let fileNames = $("#fileNames");
+        fileNames.empty();
+
+        setExamPaperFile(files);
+
+        if (files.length > 3) {
+            showToastError("Chỉ có thể chọn tối đa 3 file PDF.");
+            this.value = "";
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            if (file.type === "application/pdf") {
+                let fileSize = (file.size / 1024 / 1024).toFixed(2);
+                let fileElement = $(
+                    "<p style='margin-top: 10px; margin-bottom: 10px;cursor: pointer; text-decoration-line: underline'>" + file.name + " (" + fileSize + " MB)" + "</p>"
+                );
+
+                fileElement.on("click", function () {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function () {
+                        const pdfData = new Uint8Array(this.result);
+                        renderPdfInView(pdfData);
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                });
+
+                fileNames.append(fileElement);
             } else {
                 showToastError("Vui lòng chọn file định dạng PDF");
+                this.value = ""; // Reset file input
+                fileNames.empty();
+                setExamPaperFile([]);
+                $("#pdf-viewer").attr("hidden", true);
+                $("#paging-pdf").attr("hidden", true);
+                break;
             }
-            hideLoading();
         }
     });
 };
@@ -354,7 +388,7 @@ const showViewByStatus = (status) => {
     $("#file-pdf-input").val("");
     //reset lai page 1
     pageNum = 1;
-    setExamPaperFile(new File([], ""));
+    setExamPaperFile([]);
 };
 
 

@@ -2,7 +2,6 @@ package fplhn.udpm.examdistribution.entity;
 
 import fplhn.udpm.examdistribution.entity.base.PrimaryEntity;
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityProperties;
-import fplhn.udpm.examdistribution.infrastructure.constant.SubjectStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.SubjectType;
 import fplhn.udpm.examdistribution.infrastructure.listener.SubjectListener;
 import jakarta.persistence.Column;
@@ -18,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
@@ -29,6 +29,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 @Table(name = "subject")
+@DynamicUpdate
 @EntityListeners(SubjectListener.class)
 public class Subject extends PrimaryEntity implements Serializable {
 
