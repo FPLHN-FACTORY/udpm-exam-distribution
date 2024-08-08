@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
@@ -20,14 +21,18 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicUpdate
 @Table(name = "staff")
 public class Staff extends PrimaryEntity implements Serializable {
+
+    @Column(name = "staff_code_number", length = EntityProperties.LENGTH_NAME)
+    private Long staffCodeNumber;
 
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;
 
-    @Column(name = "staff_code", length = EntityProperties.LENGTH_NAME)
+    @Column(name = "staff_code", length = EntityProperties.LENGTH_NAME, unique = true)
     private String staffCode;
 
     @Column(name = "account_fe", length = EntityProperties.LENGTH_NAME)
