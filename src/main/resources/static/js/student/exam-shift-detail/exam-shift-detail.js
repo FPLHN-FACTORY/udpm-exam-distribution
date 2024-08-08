@@ -308,19 +308,27 @@ const connect = () => {
     });
 };
 
-let isTabClosing = false;
+document.addEventListener("keydown", function (e) {
+    const blockedKeys = ["F5"];
 
-document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") {
-        isTabClosing = true;
+    if (blockedKeys.includes(e.code)) {
+        e.preventDefault();
+        localStorage.setItem("isF5", "true");
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     }
 });
 
 window.addEventListener("beforeunload", function (event) {
-    if (isTabClosing) {
+    if (localStorage.getItem("isF5") !== "true") {
         refreshJoinRoom();
-        isTabClosing = false;
+        localStorage.setItem("isF5", "false");
     }
+});
+
+window.addEventListener("load", function () {
+    localStorage.setItem("isF5", "false");
 });
 
 const refreshJoinRoom = () => {
