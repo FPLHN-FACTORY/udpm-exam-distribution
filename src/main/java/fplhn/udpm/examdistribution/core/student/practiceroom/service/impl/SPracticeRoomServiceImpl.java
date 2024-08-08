@@ -59,8 +59,8 @@ public class SPracticeRoomServiceImpl implements SPracticeRoomService {
                 );
             }
             List<PracticeRoom> practiceRooms = practiceRoomRepository.findAllByPracticeRoomCodeAndPasswordAndStatusAndFacility_Id(
-                    request.getPracticeRoomCodeJoin(),
-                    request.getPasswordJoin(),
+                    request.getPracticeRoomCodeJoin().trim(),
+                    request.getPasswordJoin().trim(),
                     EntityStatus.ACTIVE
                     , session.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID).toString()
             );
