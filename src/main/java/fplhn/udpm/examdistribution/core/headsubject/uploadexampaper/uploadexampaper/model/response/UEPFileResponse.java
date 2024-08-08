@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FileResponse {
+public class UEPFileResponse {
 
     private String data;
 

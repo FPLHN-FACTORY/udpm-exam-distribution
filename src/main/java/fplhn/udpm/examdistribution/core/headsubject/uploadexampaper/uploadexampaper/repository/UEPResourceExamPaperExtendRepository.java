@@ -1,6 +1,7 @@
 package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.repository;
 
-import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.ListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.request.UEPListResourceExamPaperRequest;
+import fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexampaper.model.response.UEPListResourceExamPaperResponse;
 import fplhn.udpm.examdistribution.repository.ResourceExamPaperRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,6 @@ public interface UEPResourceExamPaperExtendRepository extends ResourceExamPaperR
                 erp.id_exam_paper = :#{#request.examPaperId} AND
                 erp.status = 0
             """, nativeQuery = true)
-    Page<Object> getListResourceExamPaper(Pageable pageable, ListResourceExamPaperRequest request);
+    Page<UEPListResourceExamPaperResponse> getListResourceExamPaper(Pageable pageable, UEPListResourceExamPaperRequest request);
 
 }

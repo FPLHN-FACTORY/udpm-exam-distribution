@@ -3,7 +3,7 @@ package fplhn.udpm.examdistribution.core.headsubject.uploadexampaper.uploadexamp
 import fplhn.udpm.examdistribution.core.common.base.HasOrderNumber;
 import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
 
-public interface ListExamPaperResponse extends IsIdentify, HasOrderNumber {
+public interface UEPListExamPaperResponse extends IsIdentify, HasOrderNumber {
 
     String getFileId();
 

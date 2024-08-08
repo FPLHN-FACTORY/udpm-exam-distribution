@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PublicMockExamPaperRequest {
+public class UEPPublicMockExamPaperRequest {
 
     private String[] listExamPaperId;
 

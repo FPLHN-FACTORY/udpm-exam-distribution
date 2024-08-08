@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SharePermissionExamPaperRequest {
+public class UEPSharePermissionExamPaperRequest {
 
     private String examPaperId;
 
