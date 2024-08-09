@@ -134,15 +134,23 @@ const fetchListExamPaper = (
                 $('#pagination').empty();
                 return;
             }
+
+            let firstCondition = false;
+            responseData.map(item => {
+                if(item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false){
+                    $("#column-choose-public").attr("hidden", false);
+                    firstCondition = true;
+                }else{
+                    $("#column-choose-public").attr("hidden", true);
+                }
+            });
             const examPapers = responseData.map(item => {
                 const condition = item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false;
-                if (condition) {
-                    $("#column-choose-public").attr("hidden", false);
-                }
-                return `<tr>
+                if (firstCondition) {
+                    return `<tr>
                             ${
-                                condition ?
-                                    `
+                        condition ?
+                            `
                                                     <td>
                                                         <div class="col-auto text-center">
                                                               <label class="colorinput">
@@ -159,8 +167,8 @@ const fetchListExamPaper = (
                                                          </div>
                                                     </td>
                                                 `
-                                    : ""
-                            }
+                            : `<td>Đã công khai</td>`
+                    }
                             <td>
                                 ${item.orderNumber}
                             </td>
@@ -194,14 +202,14 @@ const fetchListExamPaper = (
                                     ></i>
                                 </span>
                                 ${
-                    item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
-                        `<span
+                        item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                            `<span
                                             data-bs-toggle="tooltip" data-bs-title="Công khai đề thi"
                                             onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
                                             <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
                                         </span>`
-                        : ""
-                }
+                            : ""
+                    }
                                 <span
                                     onclick="handleModalModalResource('${item.id}')"
                                     data-bs-toggle="tooltip"
@@ -223,6 +231,71 @@ const fetchListExamPaper = (
                                 </span>
                             </td>
                         </tr>`;
+                } else {
+                    return `<tr>
+                            <td>
+                                ${item.orderNumber}
+                            </td>
+                            <td>
+                                <a target="_blank" href='https://drive.google.com/file/d/${item.fileId}/view'>${item.examPaperCode}</a>
+                            </td>
+                            <td>${item.subjectName}</td>
+                            <td>${item.majorName}</td>
+                            <td>${convertExamPaperType(item.examPaperType, item.isPublic)}</td>
+                            <td>${item.staffName}</td>
+                            <td>${formatDateTime(item.createdDate)}</td>
+                            <td>${item.totalUsed}</td>
+                            <td>${convertExamPaperStatus(item.status)}</td>
+                            <td>${item.facilityName}</td>
+                            <td style="width: 1px; text-wrap: nowrap; padding: 0 10px;">
+                                <span 
+                                    data-bs-toggle="tooltip" data-bs-title="Chi tiết đề thi"
+                                    onclick="handleOpenModalExamPaper('${item.fileId}')" style="margin: 0 3px;"
+                                >
+                                    <i class="fa-solid fa-eye"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Tải đề thi"
+                                    onclick="handleDownloadExamPaper('${item.fileId}')" style="margin: 0 3px;"
+                                >
+                                    <i 
+                                        class="fa-solid fa-file-arrow-down"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                ${
+                        item.examPaperType === "MOCK_EXAM_PAPER" && item.isPublic === false ?
+                            `<span
+                                            data-bs-toggle="tooltip" data-bs-title="Công khai đề thi"
+                                            onclick="handleSendEmailPublicExamPaper('${item.id}')" style="margin: 0 3px;">
+                                            <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
+                                        </span>`
+                            : ""
+                    }
+                                <span
+                                    onclick="handleModalModalResource('${item.id}')"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Danh sách tài nguyên"
+                                    style="margin: 0 3px"
+                                >
+                                    <i 
+                                        class="fa-solid fa-link"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                                <span
+                                    data-bs-toggle="tooltip" data-bs-title="Chia sẻ quyền truy cập"
+                                    onclick="handleOpenModalSharePermission('${item.subjectId}','${item.examPaperId}')" style="margin: 0 3px;"
+                                >
+                                    <i class="fa-solid fa-share-nodes"
+                                        style="cursor: pointer;"
+                                    ></i>
+                                </span>
+                            </td>
+                        </tr>`;
+                }
             });
             $('#examPaperTableBody').html(examPapers);
             const totalPages = responseBody?.data?.totalPages ? responseBody?.data?.totalPages : 1;

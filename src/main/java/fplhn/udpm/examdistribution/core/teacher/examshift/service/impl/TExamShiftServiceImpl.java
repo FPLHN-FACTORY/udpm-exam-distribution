@@ -13,6 +13,7 @@ import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperB
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamPaperShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamShiftExtendRepository;
+import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TExamTimeBySubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStaffExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExamShiftExtendRepository;
 import fplhn.udpm.examdistribution.core.teacher.examshift.repository.TStudentExtendRepository;
@@ -29,7 +30,6 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.RedisPrefixConstant;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
@@ -72,6 +72,8 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
     private final TExamPaperBySemesterExtendRepository tExamPaperBySemesterExtendRepository;
 
+    private final TExamTimeBySubjectExtendRepository tExamTimeBySubjectExtendRepository;
+
     private final GoogleDriveFileService googleDriveFileService;
 
     private final SessionHelper sessionHelper;
@@ -88,13 +90,19 @@ public class TExamShiftServiceImpl implements TExamShiftService {
         }
 
         boolean isCurrentUserSupervisor
-                = examShift.get().getFirstSupervisor().getId()
-                          .equals(sessionHelper.getCurrentUserId())
-                  || (examShift.get().getSecondSupervisor() != null
-                      && examShift.get().getSecondSupervisor().getId()
-                              .equals(sessionHelper.getCurrentUserId()));
+                = examShift.get().getFirstSupervisor().getId().equals(sessionHelper.getCurrentUserId())
+                || (examShift.get().getSecondSupervisor().getId().equals(sessionHelper.getCurrentUserId()));
 
-        if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("GIANG_VIEN")) {
+        if (!isCurrentUserSupervisor && sessionHelper.getCurrentUserRole().equals("[GIANG_VIEN]")) {
+            return false;
+        }
+
+        if (examShift.get().getExamShiftStatus().equals(ExamShiftStatus.FINISHED)) {
+            return false;
+        }
+
+        if (!(Objects.equals(examShift.get().getExamDate(), DateTimeUtil.getCurrentDateWithoutTime()))
+                || !(examShift.get().getShift().equals(Shift.getCurrentShift()))) {
             return false;
         }
 
@@ -147,7 +155,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             Optional<Staff> existingStaff = tStaffExtendRepository.findById(sessionHelper.getCurrentUserId());
 
             if (!sessionHelper.getCurrentUserId().equals(examShift.getFirstSupervisor().getId())
-                && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
+                    && !sessionHelper.getCurrentUserId().equals(examShift.getSecondSupervisor().getId())) {
                 return new ResponseObject<>(null,
                         HttpStatus.BAD_REQUEST, "Bạn không phải là giám thị trong ca thi này!");
             }
@@ -295,6 +303,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                     studentExamShift.get().setStartTime(startTime);
                     studentExamShift.get().setEndTime(endTime);
                     studentExamShift.get().setExamStudentStatus(ExamStudentStatus.IN_EXAM);
+                    studentExamShift.get().setCheckLogin(true);
                     tStudentExamShiftExtendRepository.save(studentExamShift.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE,
                             new NotificationResponse("Sinh viên " + student.get().getName() + " đã được phê duyệt vào ca thi! - "
@@ -342,6 +351,7 @@ public class TExamShiftServiceImpl implements TExamShiftService {
             }
 
             studentExamShift.get().setExamStudentStatus(ExamStudentStatus.KICKED);
+            studentExamShift.get().setCheckLogin(false);
             tStudentExamShiftExtendRepository.save(studentExamShift.get());
 
             simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE,
@@ -396,8 +406,9 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 return new ResponseObject<>(
                         new TStartExamShiftResponse(
                                 tExamPaperExtendRepository.getReferenceById(
-                                        examPaperShiftOptional.get().getExamPaperId()).getPath(), password
-                        ),
+                                        examPaperShiftOptional.get().getExamPaperId()).getPath(),
+                                tExamPaperExtendRepository.getReferenceById(
+                                        examPaperShiftOptional.get().getExamPaperId()).getExamPaperCode(), password),
                         HttpStatus.OK, "Bắt đầu ca thi thành công!");
             }
 
@@ -452,7 +463,10 @@ public class TExamShiftServiceImpl implements TExamShiftService {
 
             return new ResponseObject<>(
                     new TStartExamShiftResponse(
-                            tExamPaperExtendRepository.getReferenceById(examPaperId).getPath(), password),
+                            tExamPaperExtendRepository.getReferenceById(
+                                    examPaperId).getPath(),
+                            tExamPaperExtendRepository.getReferenceById(
+                                    examPaperId).getExamPaperCode(), password),
                     HttpStatus.OK, "Phát đề thi thành công!");
 
         } catch (Exception e) {
@@ -534,19 +548,19 @@ public class TExamShiftServiceImpl implements TExamShiftService {
                 );
             }
 
-            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + examPaperOptional.get().getId();
-            Object redisValue = redisService.get(redisKey);
-            if (redisValue != null) {
-                return new ResponseObject<>(
-                        new TFileResourceResponse(redisValue.toString(), "fileName"),
-                        HttpStatus.OK,
-                        "Lấy đề thi thành công!"
-                );
-            }
+//            String redisKey = RedisPrefixConstant.REDIS_PREFIX_EXAM_RULE + examPaperOptional.get().getId();
+//            Object redisValue = redisService.get(redisKey);
+//            if (redisValue != null) {
+//                return new ResponseObject<>(
+//                        new TFileResourceResponse(redisValue.toString(), "fileName"),
+//                        HttpStatus.OK,
+//                        "Lấy đề thi thành công!"
+//                );
+//            }
 
             Resource fileResponse = googleDriveFileService.loadFile(file);
             String data = Base64.getEncoder().encodeToString(fileResponse.getContentAsByteArray());
-            redisService.set(redisKey, data);
+//            redisService.set(redisKey, data);
 
             return new ResponseObject<>(
                     new TFileResourceResponse(data, fileResponse.getFilename()),

@@ -10,8 +10,12 @@ public class SemesterRequest extends PageableRequest {
 
     private String semesterName;
 
-    private Long semesterYear;
+    private Long startDateSemester;
 
-    private Long startDate;
+    private Long endDateSemester;
+
+    private Long startDateBlock;
+
+    private Long endDateBlock;
 
 }

@@ -39,4 +39,7 @@ public class Semester extends PrimaryEntity implements Serializable {
     @Column(name = "start_time")
     private Long startTime;
 
+    @Column(name = "end_time")
+    private Long endTime;
+
 }

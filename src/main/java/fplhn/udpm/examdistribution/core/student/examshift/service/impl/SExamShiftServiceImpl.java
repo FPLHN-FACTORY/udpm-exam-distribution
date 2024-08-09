@@ -22,10 +22,10 @@ import fplhn.udpm.examdistribution.infrastructure.config.websocket.response.Noti
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamStudentStatus;
-import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
 import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
+import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.SessionHelper;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +38,7 @@ import org.springframework.validation.annotation.Validated;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -58,8 +59,6 @@ public class SExamShiftServiceImpl implements SExamShiftService {
 
     private final TExamPaperShiftExtendRepository tExamPaperShiftExtendRepository;
 
-    private final HttpSession httpSession;
-
     private final GoogleDriveFileService googleDriveFileService;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -75,12 +74,13 @@ public class SExamShiftServiceImpl implements SExamShiftService {
         }
 
         Optional<StudentExamShift> studentExamShift = sStudentExamShiftExtendRepository
-                .findByExamShiftIdAndStudentId(existingExamShift.get().getId(),
-                        httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
+                .findByExamShiftIdAndStudentId(existingExamShift.get().getId(), sessionHelper.getCurrentUserId());
 
         if (studentExamShift.isEmpty()
-                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+                || (studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+                && existingExamShift.get().getExamShiftStatus() == ExamShiftStatus.FINISHED)
+                || !studentExamShift.get().isCheckLogin()
+        ) {
             return false;
         }
 
@@ -115,6 +115,12 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         "Ca thi đã kết thúc!");
             }
 
+            if (!(examShift.getShift().equals(Shift.getCurrentShift()))
+                    || !(Objects.equals(examShift.getExamDate(), DateTimeUtil.getCurrentDateWithoutTime()))) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST,
+                        "Ca thi không tồn tại hoặc mật khẩu không đúng!");
+            }
+
             Optional<StudentExamShift> studentExamShiftExist = sStudentExamShiftExtendRepository
                     .findByExamShiftIdAndStudentId(examShift.getId(), sExamShiftRequest.getStudentId());
             if (studentExamShiftExist.isPresent()) {
@@ -122,7 +128,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                     return new ResponseObject<>(
                             null,
                             HttpStatus.NOT_ACCEPTABLE,
-                            "Bạn đang trong phòng thi không được phép vào"
+                            "Bạn đang trong phòng thi không được phép vào!"
                     );
                 }
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
@@ -175,7 +181,6 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         studentExamShift.setJoinTime(sExamShiftRequest.getJoinTime());
                         studentExamShift.setExamStudentStatus(ExamStudentStatus.REJOINED);
                         studentExamShift.setStatus(EntityStatus.ACTIVE);
-                        studentExamShift.setCheckLogin(true);
                         sStudentExamShiftExtendRepository.save(studentExamShift);
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
@@ -195,7 +200,6 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         studentExamShift.setJoinTime(sExamShiftRequest.getJoinTime());
                         studentExamShift.setExamStudentStatus(ExamStudentStatus.REJOINED);
                         studentExamShift.setStatus(EntityStatus.ACTIVE);
-                        studentExamShift.setCheckLogin(true);
                         sStudentExamShiftExtendRepository.save(studentExamShift);
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
@@ -337,8 +341,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
             }
 
             Optional<StudentExamShift> studentExamShift = sStudentExamShiftExtendRepository
-                    .findByExamShiftIdAndStudentId(existingExamShift.get().getId(),
-                            httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
+                    .findByExamShiftIdAndStudentId(existingExamShift.get().getId(), sessionHelper.getCurrentUserId());
             if (studentExamShift.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND,
                         "Sinh viên không tồn tại trong ca thi!");

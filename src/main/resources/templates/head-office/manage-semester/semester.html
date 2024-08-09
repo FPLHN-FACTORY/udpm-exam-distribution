@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/webjars/toastify-js/src/toastify.css}">
     <link rel="icon" th:href="@{/assets/image/favicon.ico}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <link rel="stylesheet" th:href="@{/css/custom-toggle-theme/demo.css}">
     <title>HO - Quản lý học kỳ</title>
 </head>
@@ -36,12 +37,20 @@
                                     <input type="text" id="semesterName" name="semesterName" class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="semesterYear">Năm học</label>
-                                    <input type="number" id="semesterYear" name="semesterYear" class="form-control">
+                                    <label for="startEndDateSemester">Thời gian</label>
+                                    <input type="text"
+                                           id="startEndDateSemester"
+                                           placeholder="Bắt đầu ⇀ Kết thúc học kỳ"
+                                           name="startEndDateSemester"
+                                           class="form-control">
                                 </div>
                                 <div class="col form-group">
-                                    <label for="startDate">Ngày bắt đầu</label>
-                                    <input type="date" id="startDate" name="startTime" class="form-control">
+                                    <label for="startEndDateBlock">Thời gian Block</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="startEndDateBlock"
+                                           placeholder="Bắt đầu ⇀ Kết thúc (Block 1 / Block 2)"
+                                           style="height: 60%;">
                                 </div>
                             </div>
                         </div>
@@ -64,9 +73,10 @@
                                 <tr>
                                     <td>STT</td>
                                     <td>Tên học kỳ</td>
-                                    <td>Năm học</td>
                                     <td>Ngày bắt đầu</td>
-                                    <td>Trạng thái</td>
+                                    <td>Ngày kết thúc</td>
+                                    <td>Block 1</td>
+                                    <td>Block 2</td>
                                     <td
                                             style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
                                     </td>
@@ -117,17 +127,42 @@
                                 <option value="SUMMER">SUMMER</option>
                                 <option value="FALL">FALL</option>
                             </select>
-                            <div class="invalid-feedback" id="semesterNameError"></div>
+                            <div class="text-danger" id="semesterNameError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifySemesterYear" class="form-label">Năm học</label>
-                            <input type="number" class="form-control" id="modifySemesterYear" required>
-                            <div class="invalid-feedback" id="semesterYearError"></div>
+                            <label for="startEndDate">Thời gian</label>
+                            <input type="text" class="form-control" id="startEndDate"
+                                   placeholder="Bắt đầu ⇀ Kết thúc" style="height: 60%;">
+                            <div class="text-danger" id="startTimeError"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="modifyStartTime" class="form-label">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="modifyStartTime" required>
-                            <div class="invalid-feedback" id="startTimeError"></div>
+                            <label for="modifyStartTimeBlock1" class="form-label">Thời gian block 1</label>
+                            <div class="d-flex gap-3 align-items-center">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY"
+                                       id="modifyStartTimeBlock1" disabled>
+                                <span style="width: 50px"> ⇀ </span>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY"
+                                       id="modifyEndTimeBlock1">
+                            </div>
+                            <div class="text-danger" id="endTimeBlock1Error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modifyStartTimeBlock2" class="form-label">Thời gian block 2</label>
+                            <div class="d-flex gap-3 align-items-center">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY"
+                                       id="modifyStartTimeBlock2" disabled>
+                                <span style="width: 50px"> ⇀ </span>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY"
+                                       id="modifyEndTimeBlock2" disabled>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -141,125 +176,6 @@
         </div>
     </div>
     <!--Modal Create Semester -->
-
-    <!--Modal Update Semester-->
-    <div class="modal fade" id="semesterUpdateModal" tabindex="-1" aria-labelledby="addSemesterModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="semesterUpdateModalLabel">Cập nhật học kỳ</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updateSemesterForm">
-                        <input type="hidden" id="semesterIdUpdate">
-                        <div class="mb-3">
-                            <label for="modifySemesterName" class="form-label">Tên học kỳ</label>
-                            <select class="form-select" id="modifySemesterNameUpdate" required>
-                                <option value="SPRING">SPRING</option>
-                                <option value="SUMMER">SUMMER</option>
-                                <option value="FALL">FALL</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifySemesterYear" class="form-label">Năm học</label>
-                            <input type="number" class="form-control" id="modifySemesterYearUpdate" required>
-                            <div class="invalid-feedback" id="semesterYearErrorUpdate"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyStartTime" class="form-label">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="modifyStartTimeUpdate" required>
-                            <div class="invalid-feedback" id="startTimeErrorUpdate"></div>
-                        </div>
-                    </form>
-                    <div class="shadow p-4 bg-white rounded">
-                        <div class="d-flex justify-content-between mt-4">
-                            <h4>Danh sách block</h4>
-                            <button
-                                    class="btn btn-black"
-                                    data-bs-toggle="modal"
-                                    onclick="openModalAddBlock()"
-                            >
-                                Thêm Block
-                            </button>
-                        </div>
-                        <div class="table-responsive mt-4">
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <td>STT</td>
-                                    <td>Tên block</td>
-                                    <td>Ngày bắt đầu</td>
-                                    <td>Ngày kết thúc</td>
-                                    <td>Trạng thái</td>
-                                    <td
-                                            style="width: 1px; text-wrap: nowrap; padding: 0 10px;">Hành động
-                                    </td>
-                                </tr>
-                                </thead>
-                                <tbody id="blockTableBody" class="table-group-divider">
-                                <tr>
-                                    <td colspan="6" class="text-center">Không có dữ liệu</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
-                    </button>
-                    <button type="button" class="btn btn-black" id="modifySemesterButtonUpdate">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Modal Update Semester-->
-
-    <!--     Modal Modify Block -->
-    <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="addBlockModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="blockModalLabel">Thêm block</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addBlockForm">
-                        <input type="hidden" id="blockId">
-                        <div class="mb-3">
-                            <label for="modifyBlockName" class="form-label">Tên block</label>
-                            <select class="form-select" id="modifyBlockName" required>
-                                <option value="BLOCK_1">BLOCK 1</option>
-                                <option value="BLOCK_2">BLOCK 2</option>
-                            </select>
-                            <div class="invalid-feedback" id="blockNameError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyStartTimeBlock" class="form-label">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="modifyStartTimeBlock" required>
-                            <div class="invalid-feedback" id="startTimeBlockError"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modifyEndTimeBlock" class="form-label">Ngày kết thúc</label>
-                            <input type="date" class="form-control" id="modifyEndTimeBlock" required>
-                            <div class="invalid-feedback" id="endTimeBlockError"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal" id="closeBlockModal"
-                            style="background-color: var(--common-button-color); color: white;">Đóng
-                    </button>
-                    <button type="button" class="btn btn-black" id="modifyBlockButton">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Modal Modify Block-->
 
     <div th:insert="~{fragment/custom-toggle-theme/toggle-theme :: toggle-theme}"></div>
 </div>
@@ -275,9 +191,13 @@
 <script th:src="@{/webjars/toastify-js/src/toastify.js}"></script>
 <script th:src="@{/js/utils.js}"></script>
 <script th:src="@{/js/toast-custom.js}"></script>
+<script th:src="@{/js/loading.js}"></script>
 <script th:src="@{/js/custom-toggle-theme/setting-demo.js}"></script>
 <script th:src="@{/js/user-info-handler.js}"></script>
 <script th:src="@{/plugins/js/sweetalert/sweetalert.min.js}"></script>
+<!--datepicker-->
+<script th:src="@{/webjars/momentjs/min/moment.min.js}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script th:src="@{/js/head-office/manage-semester/semester.js}"></script>
 </body>
 </html>

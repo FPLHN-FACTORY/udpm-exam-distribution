@@ -6,6 +6,16 @@ const formatFromUnixTimeToDate = (unixTime) => {
     return new Date(unixTime).toLocaleDateString();
 }
 
+function formatTimestampToDate(timestamp) {
+    const date = new Date(timestamp);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
 const formatFromUnixTimeToHoursMinutes = (unixTime) => {
     let date = new Date(unixTime);
     let timeString = date.toLocaleTimeString();
@@ -38,8 +48,8 @@ const getUrlParameters = (apiURL, params) => {
     return url;
 }
 
-function handleAddEvent(dom,eventType,func){
-    dom.on(eventType,debounce(func,500));
+function handleAddEvent(dom, eventType, func) {
+    dom.on(eventType, debounce(func, 500));
 }
 
 const callToolTip = () => {
@@ -55,4 +65,67 @@ function formatDateTime(date) {
     const hours = String(d.getHours()).padStart(2, "0");
     const minutes = String(d.getMinutes()).padStart(2, "0");
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+const showUIFilePDF = (file, pdfjsLib, pdfViewerId) => {
+    const fileReader = new FileReader();
+
+    const pdfViewer = document.getElementById(pdfViewerId);
+
+    fileReader.onload = function () {
+        const typedarray = new Uint8Array(this.result);
+
+        pdfjsLib
+            .getDocument(typedarray)
+            .promise.then((pdf) => {
+            pdfViewer.innerHTML = "";
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                pdf
+                    .getPage(pageNum)
+                    .then((page) => {
+                        const viewport = page.getViewport({scale: 1.5});
+
+                        const canvas = document.createElement("canvas");
+                        canvas.classList.add("pdf-page");
+                        const context = canvas.getContext("2d");
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        pdfViewer.appendChild(canvas);
+
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport,
+                        };
+
+                        page
+                            .render(renderContext)
+                            .promise.then(() => {
+                            context.font = "12px Arial";
+                            context.fillStyle = "rgba(0, 0, 0, 0.7)";
+                            context.fillText(
+                                `Page ${pageNum}`,
+                                canvas.width - 70,
+                                canvas.height - 10
+                            );
+                        })
+                            .catch((error) => {
+                                console.error("Error rendering page:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Error getting page:", error);
+                    });
+            }
+        })
+            .catch((error) => {
+                console.error("Error getting document:", error);
+            });
+    };
+
+    fileReader.onerror = function (error) {
+        console.error("Error reading file:", error);
+    };
+
+    fileReader.readAsArrayBuffer(file);
 }

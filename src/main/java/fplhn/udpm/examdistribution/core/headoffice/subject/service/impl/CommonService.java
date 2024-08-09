@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CommonService {
 
-    private final DepartmentSubjectRepository departmentSubjectRepository;
+    private final DepartmentSubjectRepository DepartmentSubjectRepository;
 
     public ResponseObject<?> getAllDepartmentSubject() {
         return new ResponseObject<>(
-                departmentSubjectRepository.getAllDepartment(),
+                DepartmentSubjectRepository.getAllDepartment(),
                 HttpStatus.OK,
                 "Lấy danh sách bộ môn thành công"
         );

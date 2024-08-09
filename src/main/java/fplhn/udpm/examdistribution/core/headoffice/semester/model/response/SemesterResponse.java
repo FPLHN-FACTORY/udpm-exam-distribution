@@ -1,16 +1,20 @@
 package fplhn.udpm.examdistribution.core.headoffice.semester.model.response;
 
-import fplhn.udpm.examdistribution.core.common.base.HasOrderNumber;
-import fplhn.udpm.examdistribution.core.common.base.IsIdentify;
+public interface SemesterResponse {
 
-public interface SemesterResponse extends IsIdentify, HasOrderNumber {
+    String getSemesterId();
 
     String getSemesterName();
 
-    Integer getSemesterYear();
-
     Long getStartTime();
 
-    Integer getSemesterStatus();
+    Long getEndTime();
 
+    Long getStartTimeBlock1();
+
+    Long getEndTimeBlock1();
+
+    Long getStartTimeBlock2();
+
+    Long getEndTimeBlock2();
 }

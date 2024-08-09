@@ -2,9 +2,7 @@ package fplhn.udpm.examdistribution.core.headdepartment.joinroom.repository;
 
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.request.HDExamShiftRequest;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDAllExamShiftResponse;
-import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamPaperStartTimeEndTimeResponse;
 import fplhn.udpm.examdistribution.core.headdepartment.joinroom.model.response.HDExamShiftResponse;
-import fplhn.udpm.examdistribution.core.student.examshift.model.response.SExamPaperStartTimeEndTimeResponse;
 import fplhn.udpm.examdistribution.entity.ExamShift;
 import fplhn.udpm.examdistribution.repository.ExamShiftRepository;
 import org.springframework.data.jpa.repository.Query;
