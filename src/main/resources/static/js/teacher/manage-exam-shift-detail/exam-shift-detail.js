@@ -263,10 +263,10 @@ const getStudents = () => {
                                         <p class="text-muted">
                                         Thời gian tham gia: ${formatFromUnixTimeToHoursMinutes(student.joinTime)}</p>
                                         ${student.checkLogin === false ?
-                                            `<p class="text-muted">
+                        `<p class="text-muted">
                                                 Thời gian thoát: ${formatFromUnixTimeToHoursMinutes(student.leaveTime)}</p>` :
-                                            ""
-                                        }
+                        ""
+                    }
                                         <button class="btn-label-danger position-absolute top-0 end-0 p-1 fs-3 lh-1" 
                                         style="border-bottom-left-radius: 5px; border-top-right-radius: 5px;"
                                         onclick="openModalRemoveStudent('${student.id}')">&times;</button>
@@ -439,7 +439,7 @@ const getStudentRejoin = () => {
                                          alt="image profile"
                                          class="avatar-img rounded"/>
                                     </div>
-                                    <div class="u-text" style="max-height: 76px; overflow-y: scroll; scrollbar-width: none;">
+                                    <div class="u-text" style="max-height: 105px; overflow-y: scroll; scrollbar-width: none;">
                                         <h4>${student.name}</h4>
                                         <p class="text-muted">${student.email}</p>
                                         <p class="text-muted">
@@ -492,7 +492,7 @@ const examShiftStart = () => {
             if (examPaper.password !== null) {
                 $('#examPaperPassword').text('Mật khẩu mở đề: ' + examPaper.password);
                 $('#examPaperPassword').prop('hidden', false);
-                downloadExamPaper(examPaper.fileId);
+                downloadExamPaper(examPaper.fileId, examPaper.examPaperCode);
             }
         },
         error: function (error) {
@@ -508,8 +508,6 @@ const examShiftStartTime = () => {
         type: "PUT",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + '/' + examShiftCode + '/start-time',
         success: function (responseBody) {
-            $('#displayCountdown').prop('hidden', false);
-            $('#displayCountdown').addClass('d-flex');
             startCountdown(responseBody?.data?.startTime, responseBody?.data?.endTime);
         },
         error: function (error) {
@@ -653,6 +651,9 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const examShiftStatus = responseBody?.data?.examShiftStatus;
                 if (fileId !== null && examShiftStatus === 1) {
                     fetchFilePDFExamPaper(fileId);
+                    if (startTime == null && endTime == null) {
+                        $('#examShiftStartTime').prop('hidden', false);
+                    }
                 }
                 if (startTime !== null && endTime !== null) {
                     startCountdown(startTime, endTime);
@@ -667,7 +668,7 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
     });
 }
 
-const downloadExamPaper = (fileId) => {
+const downloadExamPaper = (fileId, examPaperCode) => {
     $.ajax({
         type: "GET",
         url: ApiConstant.API_TEACHER_EXAM_SHIFT + "/file",
@@ -680,7 +681,7 @@ const downloadExamPaper = (fileId) => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'exam-paper.pdf';
+            link.download = `${examPaperCode}.pdf`;
             link.style.display = 'none';
 
             document.body.appendChild(link);
@@ -717,10 +718,9 @@ const fetchFilePDFExamPaper = (fileId) => {
                 renderPage(pdfDoc, pageNum, '#page-num', pageRendering, pageNumPending, scale, $pdfCanvas, ctx);
                 showViewAndPagingPdf(pdfDoc.numPages, '#pdf-viewer', '#paging-pdf');
 
-                $('#examShiftStart').prop('hidden', true);
-                $('#examShiftStartTime').prop('hidden', false);
-
                 hideLoading();
+
+                $('#examShiftStart').prop('hidden', true);
             });
         },
         error: function (error) {
@@ -805,6 +805,7 @@ const examShiftStartSubmit = () => {
     }).then((willApprove) => {
         if (willApprove) {
             examShiftStart();
+            $('#examShiftStartTime').prop('hidden', false);
             $('#examShiftStart').prop('hidden', true);
         }
     });
@@ -821,6 +822,7 @@ const examShiftStartTimeSubmit = () => {
         if (willApprove) {
             examShiftStartTime();
             $('#examShiftStartTime').prop('hidden', true);
+            $('#examShiftStart').prop('hidden', true);
         }
     });
 };
@@ -913,15 +915,17 @@ const startCountdown = (startTime, endTime) => {
         if (distanceToEnd > 0) {
             let minutesToEnd = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
             let secondsToEnd = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
-            $('#examShiftStart').prop('hidden', true);
             $('#examShiftStartTime').prop('hidden', true);
+            $('#examShiftStart').prop('hidden', true);
+            $('#displayCountdown').prop('hidden', false).addClass('d-flex');
             $('#countdown').text(minutesToEnd + " phút " + secondsToEnd + " giây");
         } else {
             clearInterval(countdown);
-            $('#examShiftStart').prop('hidden', true);
             $('#examShiftStartTime').prop('hidden', true);
-            $('#completeExamShift').prop('hidden', false);
+            $('#examShiftStart').prop('hidden', true);
+            $('#displayCountdown').prop('hidden', false).addClass('d-flex');
             $('#countdown').text("Đã kết thúc!");
+            $('#completeExamShift').prop('hidden', false);
             showToastSuccess('Đã hết giờ làm bài thi!')
         }
     }, 1000);

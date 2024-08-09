@@ -25,7 +25,7 @@
             <span th:text="${examShiftCodeCtl}" hidden id="examShiftCodeCtl"></span>
             <div class="bg-white p-4 m-4 shadow rounded min-vh-100">
                 <div class="row d-flex justify-content-between">
-                    <div class="col-9 px-4">
+                    <div class="col-9 px-5">
                         <h2 id="examShift">Phòng thi: - Lớp: </h2>
                         <h4 id="examShiftCodePassword">Mã phòng: - Mật khẩu: </h4>
                         <h4 id="examPaperPassword" hidden>Mật khẩu mở đề: </h4>
@@ -46,6 +46,8 @@
                                     style="color: var(--common-button-color);"
                             >
                                 <i class="fas fa-user-group"></i> Số người trong phòng thi
+                                <!--                                <span class="btn-warning p-2" style="border-radius: 50%; font-size: 0.8em;"-->
+                                <!--                                      id="people-count">0</span>-->
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -160,6 +162,8 @@
                                         >
                                             Bắt đầu tính giờ
                                         </button>
+                                    </div>
+                                    <div>
                                         <button class="btn mb-3" data-bs-toggle="modal" id="completeExamShift"
                                                 style="background-color: var(--common-button-color); color: white;"
                                                 hidden

@@ -445,11 +445,11 @@ const getExamShifts = () => {
                 }
             }
         },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error.responseJSON?.message);
-            }
-        }
+        // error: function (error) {
+        //     if (error?.responseJSON?.message) {
+        //         showToastError(error.responseJSON?.message);
+        //     }
+        // }
     });
 }
 

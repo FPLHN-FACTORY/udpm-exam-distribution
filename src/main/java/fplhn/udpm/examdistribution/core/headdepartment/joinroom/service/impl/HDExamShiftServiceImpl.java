@@ -18,7 +18,6 @@ import fplhn.udpm.examdistribution.infrastructure.config.drive.service.GoogleDri
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
-import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
@@ -69,13 +68,11 @@ public class HDExamShiftServiceImpl implements HDExamShiftService {
     @Override
     public ResponseObject<?> getAllExamShift() {
         try {
-            Long currentDateWithoutTime = DateTimeUtil.getCurrentDateWithoutTime();
-            String currentShiftString = Shift.getCurrentShift().toString();
             HDExamShiftRequest hdExamShiftRequest = new HDExamShiftRequest();
             hdExamShiftRequest.setDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
             hdExamShiftRequest.setSemesterId(sessionHelper.getCurrentSemesterId());
-            hdExamShiftRequest.setCurrentDate(currentDateWithoutTime);
-            hdExamShiftRequest.setCurrentShift(currentShiftString);
+            hdExamShiftRequest.setCurrentDate(DateTimeUtil.getCurrentDateWithoutTime());
+            hdExamShiftRequest.setCurrentShift(String.valueOf(Shift.getCurrentShift()));
             return new ResponseObject<>(hdExamShiftExtendRepository
                     .getAllExamShift(hdExamShiftRequest),
                     HttpStatus.OK, "Lấy danh sách ca thi thành công!");

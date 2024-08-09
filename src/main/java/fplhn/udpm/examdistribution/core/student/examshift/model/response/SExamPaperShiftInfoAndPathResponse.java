@@ -14,4 +14,6 @@ public interface SExamPaperShiftInfoAndPathResponse extends IsIdentify {
 
     Integer getExamShiftStatus();
 
+    String getPassword();
+
 }

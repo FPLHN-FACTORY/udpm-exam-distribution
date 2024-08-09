@@ -16,7 +16,8 @@ public interface SExamPaperExtendRepository extends ExamPaperRepository {
             	ses.start_time as startTime,
             	ses.end_time as endTime,
             	etbs.allow_online as allowOnline,
-            	eps.exam_shift_status as examShiftStatus
+            	eps.exam_shift_status as examShiftStatus,
+            	eps.password as password
             from
             	exam_paper ep
             join exam_paper_shift eps on
