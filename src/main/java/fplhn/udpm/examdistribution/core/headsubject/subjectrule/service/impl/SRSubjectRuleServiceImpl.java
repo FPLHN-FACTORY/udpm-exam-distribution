@@ -233,27 +233,18 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                     subjectOptional.get().getId(),
                     sessionHelper.getCurrentUserFacilityId()
             );
-            if (examTimeBySubjectOptional.isPresent()) {
-                ExamTimeBySubject examTimeBySubject = examTimeBySubjectOptional.get();
-                examTimeBySubject.setExam_time(request.getExamTime());
-                examTimeBySubjectRepository.save(examTimeBySubject);
-
+            if (examTimeBySubjectOptional.isEmpty()) {
                 return new ResponseObject<>(
                         null,
-                        HttpStatus.OK,
-                        "Cập nhật thời gian thi thành công cho môn học " + subjectOptional.get().getName()
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
                 );
             }
 
-            ExamTimeBySubject examTimeBySubject = new ExamTimeBySubject();
-            examTimeBySubject.setExam_time(request.getExamTime());
-            examTimeBySubject.setSubject(subjectOptional.get());
-            examTimeBySubject.setFacility(facilityOptional.get());
-            examTimeBySubject.setAllowOnline(false);
-            examTimeBySubject.setExam_time(0L);
-            examTimeBySubject.setPercentRandom(0L);
-
+            ExamTimeBySubject examTimeBySubject = examTimeBySubjectOptional.get();
+            examTimeBySubject.setExamTime(request.getExamTime());
             examTimeBySubjectRepository.save(examTimeBySubject);
+
             return new ResponseObject<>(
                     null,
                     HttpStatus.OK,
@@ -288,7 +279,7 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
             return new ResponseObject<>(
                     examTimeBySubjectOptional
                             .map(examTimeBySubject ->
-                                    new SRExamTimeResponse(examTimeBySubject.getExam_time())).orElseGet(
+                                    new SRExamTimeResponse(examTimeBySubject.getExamTime())).orElseGet(
                                     () -> new SRExamTimeResponse(0L)
                             ),
                     HttpStatus.OK,
@@ -330,21 +321,10 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                     sessionHelper.getCurrentUserFacilityId()
             );
             if (examTimeBySubjectOptional.isEmpty()) {
-                ExamTimeBySubject postExamTimeBySubject = new ExamTimeBySubject();
-                postExamTimeBySubject.setFacility(facilityOptional.get());
-                postExamTimeBySubject.setSubject(subjectOptional.get());
-                postExamTimeBySubject.setStatus(EntityStatus.ACTIVE);
-                postExamTimeBySubject.setAllowOnline(true);
-                postExamTimeBySubject.setExam_time(0L);
-                postExamTimeBySubject.setPercentRandom(0L);
-
-                examTimeBySubjectRepository.save(postExamTimeBySubject);
                 return new ResponseObject<>(
                         null,
-                        HttpStatus.OK,
-                        postExamTimeBySubject.isAllowOnline() ?
-                                "Đã cập nhật môn học " + postExamTimeBySubject.getSubject().getName() + " là môn được dùng mạng" :
-                                "Đã cập nhật môn học " + postExamTimeBySubject.getSubject().getName() + " là môn không được dùng mạng"
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy môn học này"
                 );
             }
 
@@ -395,19 +375,10 @@ public class SRSubjectRuleServiceImpl implements SRSubjectRuleService {
                     sessionHelper.getCurrentUserFacilityId()
             );
             if (examTimeBySubjectOptional.isEmpty()) {
-                ExamTimeBySubject postExamTimeBySubject = new ExamTimeBySubject();
-                postExamTimeBySubject.setFacility(facilityOptional.get());
-                postExamTimeBySubject.setSubject(subjectOptional.get());
-                postExamTimeBySubject.setStatus(EntityStatus.ACTIVE);
-                postExamTimeBySubject.setAllowOnline(true);
-                postExamTimeBySubject.setExam_time(0L);
-                postExamTimeBySubject.setPercentRandom(request.getPercentRandom());
-
-                examTimeBySubjectRepository.save(postExamTimeBySubject);
                 return new ResponseObject<>(
                         null,
                         HttpStatus.OK,
-                        "Lưu phần trăm random đề thành công"
+                        "Không tìm thấy môn học này"
                 );
             }
 
