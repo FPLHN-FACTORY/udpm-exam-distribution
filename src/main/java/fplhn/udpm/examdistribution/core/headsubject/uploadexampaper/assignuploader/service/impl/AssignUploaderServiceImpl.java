@@ -145,7 +145,17 @@ public class AssignUploaderServiceImpl implements AssignUploaderService {
             );
         }
 
-        if (request.getMaxUpload().compareTo(new BigInteger("100")) > 0) {
+        if (request.getMaxUpload().compareTo(new BigInteger("1")) < 0
+        ) {
+            return new ResponseObject<>(
+                    null,
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Số lượng đề phân công phải lớn hơn 0"
+            );
+        }
+
+        if (request.getMaxUpload().compareTo(new BigInteger("100")) > 0
+        ) {
             return new ResponseObject<>(
                     null,
                     HttpStatus.NOT_ACCEPTABLE,
