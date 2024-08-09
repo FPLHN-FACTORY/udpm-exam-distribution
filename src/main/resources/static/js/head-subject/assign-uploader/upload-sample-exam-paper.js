@@ -41,11 +41,13 @@ const handleOpenModalSampleExamPaper = (status, subjectId, fileId) => { // 1 -> 
             }
 
             showViewSEPByStatus(status);
+            $("#sampleExamPaperFooter").attr("hidden", true);
             $("#sampleExamPaperModal").modal("show");
         } else {
             showToastError("Môn học này chưa có đề thi mẫu");
         }
     } else {
+        $("#sampleExamPaperFooter").attr("hidden", false);
         showViewSEPByStatus(status);
         $("#sampleExamPaperModal").modal("show");
     }
