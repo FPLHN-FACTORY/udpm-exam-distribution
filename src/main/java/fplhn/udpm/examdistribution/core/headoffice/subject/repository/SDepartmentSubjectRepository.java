@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DepartmentSubjectRepository extends DepartmentRepository {
+public interface SDepartmentSubjectRepository extends DepartmentRepository {
 
     @Query(
             value = """

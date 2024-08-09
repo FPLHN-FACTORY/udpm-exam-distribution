@@ -28,7 +28,9 @@ public interface SRSubjectExtendRepository extends SubjectRepository {
                         setbs.exam_time
                     FROM exam_time_by_subject setbs
                     WHERE
-                        setbs.id_subject = s.id
+                        setbs.id_subject = s.id AND
+                        setbs.id_facility = :facilityId AND
+                        setbs.status = 0
                 ) AS examTime,
                 (
                     SELECT

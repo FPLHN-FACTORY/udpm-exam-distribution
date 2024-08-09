@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SubjectExtendRepository extends SubjectRepository {
+public interface SSubjectExtendRepository extends SubjectRepository {
 
     @Query(
             value = """

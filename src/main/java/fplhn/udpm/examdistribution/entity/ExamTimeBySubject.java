@@ -26,7 +26,7 @@ import java.io.Serializable;
 public class ExamTimeBySubject extends PrimaryEntity implements Serializable {
 
     @Column(name = "exam_time")
-    private Long exam_time;
+    private Long examTime;
 
     @ManyToOne
     @JoinColumn(name = "id_subject")
