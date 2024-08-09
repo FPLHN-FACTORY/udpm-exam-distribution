@@ -79,8 +79,10 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         httpSession.getAttribute(SessionConstant.CURRENT_USER_ID).toString());
 
         if (studentExamShift.isEmpty()
-                || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
-                && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")) {
+            || studentExamShift.get().getExamStudentStatus().toString().matches("DONE_EXAM|KICKED|REJOINED")
+               && httpSession.getAttribute(SessionConstant.ROLE_LOGIN).toString().equals("SINH_VIEN")
+            || !studentExamShift.get().isCheckLogin()
+        ) {
             return false;
         }
 
@@ -127,18 +129,18 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 }
                 ExamStudentStatus examStudentStatus = studentExamShiftExist.get().getExamStudentStatus();
                 if ((examShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)
-                        || examShift.getExamShiftStatus().equals(ExamShiftStatus.NOT_STARTED))
-                        && (examStudentStatus.equals(ExamStudentStatus.KICKED)
+                     || examShift.getExamShiftStatus().equals(ExamShiftStatus.NOT_STARTED))
+                    && (examStudentStatus.equals(ExamStudentStatus.KICKED)
                         || examStudentStatus.equals(ExamStudentStatus.REJOINED))) {
                     studentExamShiftExist.get().setExamStudentStatus(ExamStudentStatus.REJOINED);
                     sStudentExamShiftExtendRepository.save(studentExamShiftExist.get());
                     simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                             new NotificationResponse(
                                     "Sinh viên "
-                                            + existingStudent.get().getStudentCode()
-                                            + " yêu cầu tham gia ca thi! - "
-                                            + existingExamShift.get().getExamShiftCode()
-                                            + " - " + sExamShiftRequest.getStudentId()
+                                    + existingStudent.get().getStudentCode()
+                                    + " yêu cầu tham gia ca thi! - "
+                                    + existingExamShift.get().getExamShiftCode()
+                                    + " - " + sExamShiftRequest.getStudentId()
                             ));
                     return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                             HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
@@ -168,7 +170,7 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 if (examPaperShiftId != null) {
                     ExamPaperShift examPaperShift = tExamPaperShiftExtendRepository.getReferenceById(examPaperShiftId);
                     if (examPaperShift.getStartTime() == null
-                            && examPaperShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)) {
+                        && examPaperShift.getExamShiftStatus().equals(ExamShiftStatus.IN_PROGRESS)) {
                         StudentExamShift studentExamShift = new StudentExamShift();
                         studentExamShift.setStudent(existingStudent.get());
                         studentExamShift.setExamShift(examShift);
@@ -180,10 +182,10 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
                                         "Sinh viên "
-                                                + existingStudent.get().getStudentCode()
-                                                + " yêu cầu tham gia ca thi! - "
-                                                + existingExamShift.get().getExamShiftCode()
-                                                + " - " + sExamShiftRequest.getStudentId()
+                                        + existingStudent.get().getStudentCode()
+                                        + " yêu cầu tham gia ca thi! - "
+                                        + existingExamShift.get().getExamShiftCode()
+                                        + " - " + sExamShiftRequest.getStudentId()
                                 ));
                         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                                 HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
@@ -200,10 +202,10 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                         simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN,
                                 new NotificationResponse(
                                         "Sinh viên "
-                                                + existingStudent.get().getStudentCode()
-                                                + " yêu cầu tham gia ca thi! - "
-                                                + existingExamShift.get().getExamShiftCode()
-                                                + " - " + sExamShiftRequest.getStudentId()
+                                        + existingStudent.get().getStudentCode()
+                                        + " yêu cầu tham gia ca thi! - "
+                                        + existingExamShift.get().getExamShiftCode()
+                                        + " - " + sExamShiftRequest.getStudentId()
                                 ));
                         return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
                                 HttpStatus.OK, "Vui lòng chờ giám thị phê duyệt!");
@@ -222,9 +224,9 @@ public class SExamShiftServiceImpl implements SExamShiftService {
                 simpMessagingTemplate.convertAndSend(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT,
                         new NotificationResponse(
                                 "Sinh viên "
-                                        + existingStudent.get().getStudentCode()
-                                        + " đã tham gia ca thi! - "
-                                        + existingExamShift.get().getExamShiftCode()));
+                                + existingStudent.get().getStudentCode()
+                                + " đã tham gia ca thi! - "
+                                + existingExamShift.get().getExamShiftCode()));
             }
 
             return new ResponseObject<>(existingExamShift.get().getExamShiftCode(),
