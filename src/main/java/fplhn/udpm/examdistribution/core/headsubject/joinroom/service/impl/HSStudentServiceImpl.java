@@ -4,6 +4,7 @@ import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.repository.HSStudentExtendRepository;
 import fplhn.udpm.examdistribution.core.headsubject.joinroom.service.HSStudentService;
 import fplhn.udpm.examdistribution.infrastructure.constant.SessionConstant;
+import fplhn.udpm.examdistribution.utils.SessionHelper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +18,13 @@ public class HSStudentServiceImpl implements HSStudentService {
 
     private final HSStudentExtendRepository hsStudentExtendRepository;
 
-    private final HttpSession httpSession;
+    private final SessionHelper sessionHelper;
 
     @Override
     public ResponseObject<?> findAllStudentByExamShiftCode(String examShiftCode) {
         try {
-            String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
             return new ResponseObject<>(
-                    hsStudentExtendRepository.findAllStudentByExamShiftCode(examShiftCode, blockId),
+                    hsStudentExtendRepository.findAllStudentByExamShiftCode(examShiftCode, sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy thông tin danh sách sinh viên thành công!"
             );

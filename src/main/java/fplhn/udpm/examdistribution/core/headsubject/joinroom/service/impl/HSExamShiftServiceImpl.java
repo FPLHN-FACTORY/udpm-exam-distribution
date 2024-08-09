@@ -19,7 +19,6 @@ import fplhn.udpm.examdistribution.infrastructure.config.email.service.EmailServ
 import fplhn.udpm.examdistribution.infrastructure.constant.EntityStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.ExamShiftStatus;
 import fplhn.udpm.examdistribution.infrastructure.constant.Shift;
-import fplhn.udpm.examdistribution.infrastructure.constant.TopicConstant;
 import fplhn.udpm.examdistribution.utils.CodeGenerator;
 import fplhn.udpm.examdistribution.utils.DateTimeUtil;
 import fplhn.udpm.examdistribution.utils.PasswordUtils;
@@ -72,14 +71,12 @@ public class HSExamShiftServiceImpl implements HSExamShiftService {
     @Override
     public ResponseObject<?> getAllExamShift() {
         try {
-            Long currentDateWithoutTime = DateTimeUtil.getCurrentDateWithoutTime();
-            String currentShiftString = Shift.getCurrentShift().toString();
             HSExamShiftRequest hsExamShiftRequest = new HSExamShiftRequest();
             hsExamShiftRequest.setDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
             hsExamShiftRequest.setSemesterId(sessionHelper.getCurrentSemesterId());
             hsExamShiftRequest.setStaffId(sessionHelper.getCurrentUserId());
-            hsExamShiftRequest.setCurrentDate(currentDateWithoutTime);
-            hsExamShiftRequest.setCurrentShift(currentShiftString);
+            hsExamShiftRequest.setCurrentDate(DateTimeUtil.getCurrentDateWithoutTime());
+            hsExamShiftRequest.setCurrentShift(String.valueOf(Shift.getCurrentShift()));
             return new ResponseObject<>(hsExamShiftExtendRepository
                     .getAllExamShift(hsExamShiftRequest), HttpStatus.OK, "Lấy danh sách ca thi thành công!");
         } catch (Exception e) {

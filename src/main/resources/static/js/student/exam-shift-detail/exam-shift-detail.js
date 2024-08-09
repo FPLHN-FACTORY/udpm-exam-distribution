@@ -62,15 +62,7 @@ $(document).ready(function () {
         completeExamShift();
     });
 
-    $('#examRuleOpen').click(function () {
-        openModalExamRule();
-    });
-
 });
-
-const openModalExamRule = () => {
-    $('#examRuleOpenModal').modal('show');
-}
 
 let examShiftCode = $('#examShiftCodeCtl').text();
 let examPaperId = $('#examPaperId').text();
@@ -114,8 +106,10 @@ const getPathFilePDFExamPaper = (examShiftCode) => {
                 const endTime = responseBody?.data?.endTime;
                 const allowOnline = responseBody?.data?.allowOnline;
                 const examShiftStatus = responseBody?.data?.examShiftStatus;
+                const password = responseBody?.data?.password;
                 if (fileId !== null && examShiftStatus === 1) {
                     fetchFilePDFExamPaper(fileId);
+                    localStorage.setItem("passwordOpenExamPaper", password);
                 }
                 if (startTime !== null && endTime !== null && allowOnline !== null) {
                     startCountdown(startTime, endTime, allowOnline);
@@ -204,30 +198,42 @@ const getStartTimeEndTimeExamPaper = (examShiftCode) => {
     });
 }
 
+// const openExamPaper = () => {
+//     const openExamPaper = {
+//         examPaperShiftId: examPaperId,
+//         passwordOpen: $('#modifyPasswordOpen').val()
+//     };
+//     $.ajax({
+//         type: "POST",
+//         url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/open",
+//         contentType: "application/json",
+//         data: JSON.stringify(openExamPaper),
+//         success: function (responseBody) {
+//             if (responseBody?.status === "OK") {
+//                 $('#examPaperOpenModal').modal('hide');
+//                 $('#examShiftPaper').prop('hidden', false);
+//                 $('#openExamPaper').prop('hidden', true);
+//                 $('#completeExamShift').prop('hidden', false);
+//             }
+//         },
+//         error: function (error) {
+//             if (error?.responseJSON?.message) {
+//                 showToastError(error?.responseJSON?.message);
+//             }
+//         }
+//     });
+// };
+
 const openExamPaper = () => {
-    const openExamPaper = {
-        examPaperShiftId: examPaperId,
-        passwordOpen: $('#modifyPasswordOpen').val()
-    };
-    $.ajax({
-        type: "POST",
-        url: ApiConstant.API_STUDENT_EXAM_SHIFT + "/open",
-        contentType: "application/json",
-        data: JSON.stringify(openExamPaper),
-        success: function (responseBody) {
-            if (responseBody?.status === "OK") {
-                $('#examPaperOpenModal').modal('hide');
-                $('#examShiftPaper').prop('hidden', false);
-                $('#openExamPaper').prop('hidden', true);
-                $('#completeExamShift').prop('hidden', false);
-            }
-        },
-        error: function (error) {
-            if (error?.responseJSON?.message) {
-                showToastError(error?.responseJSON?.message);
-            }
-        }
-    });
+    const passwordOpen = $('#modifyPasswordOpen').val();
+    if (passwordOpen === localStorage.getItem("passwordOpenExamPaper")) {
+        $('#examPaperOpenModal').modal('hide');
+        $('#examShiftPaper').prop('hidden', false);
+        $('#openExamPaper').prop('hidden', true);
+        $('#completeExamShift').prop('hidden', false);
+    } else {
+        showToastError("Mật khẩu mở lại đề không đúng!");
+    }
 };
 
 //Exam rule
@@ -340,8 +346,10 @@ const refreshJoinRoom = () => {
             studentId: userInfo.userId,
             examShiftCode: examShiftCode
         }),
-        success: function (responseBody) {},
-        error: function (error) {}
+        success: function (responseBody) {
+        },
+        error: function (error) {
+        }
     });
 }
 

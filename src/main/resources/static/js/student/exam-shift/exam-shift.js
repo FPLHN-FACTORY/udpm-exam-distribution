@@ -13,15 +13,6 @@ document.onkeydown = (e) => {
     }
 }
 
-window.addEventListener('offline', function () {
-    showLoading();
-    showToastDisConnectNetwork('Mất kết nối mạng!');
-})
-
-window.addEventListener('online', function () {
-    hideLoading();
-})
-
 $(document).ready(function () {
 
     if (devtools.isOpen) {
@@ -61,19 +52,19 @@ const connect = () => {
     stompClient.connect({}, function (frame) {
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REJOIN, function (response) {
             const responseMessage = JSON.parse(response.body).message;
-            if (responseMessage.split[2] === examDistributionInfo.userId) {
+            if (responseMessage.split(" - ")[2] === examDistributionInfo.userId) {
                 messageType = 'rejoin';
             }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_REFUSE, function (response) {
             const responseMessage = JSON.parse(response.body).message;
-            if (responseMessage.split[1] === examDistributionInfo.userId) {
+            if (responseMessage.split(" - ")[1] === examDistributionInfo.userId) {
                 showToastError('Bạn đã bị từ chối tham gia ca thi!');
             }
         });
         stompClient.subscribe(TopicConstant.TOPIC_STUDENT_EXAM_SHIFT_APPROVE, function (response) {
             const responseMessage = JSON.parse(response.body).message;
-            if (responseMessage.split[1] === examDistributionInfo.userId) {
+            if (responseMessage.split(" - ")[1] === examDistributionInfo.userId) {
                 let examShiftCodeRejoin = localStorage.getItem('rejoinExamShiftCode');
                 if (examShiftCodeRejoin) {
                     window.location.href = ApiConstant.REDIRECT_STUDENT_EXAM_SHIFT + '/' + examShiftCodeRejoin;
@@ -88,11 +79,6 @@ const connect = () => {
 }
 
 const joinExamShift = async () => {
-    const installed = await checkExtensionInstalled();
-    if (!installed) {
-        showToastError("Bạn chưa cài đặt Extension Tab-Tracker");
-        return;
-    }
     const examShift = {
         studentId: examDistributionInfo.userId,
         examShiftCodeJoin: $('#modifyExamShiftCodeJoin').val(),
@@ -108,7 +94,7 @@ const joinExamShift = async () => {
         success: function (responseBody) {
             if (responseBody?.data) {
                 $('#examShiftJoinModal').modal('hide');
-                setEnableExtLocalStorage("true");
+                console.log('messageType: ' + messageType);
                 if (messageType === 'rejoin') {
                     showToastSuccess(responseBody?.message);
                 } else {

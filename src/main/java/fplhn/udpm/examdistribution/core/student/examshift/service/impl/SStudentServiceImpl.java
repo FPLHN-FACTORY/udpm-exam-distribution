@@ -35,16 +35,14 @@ public class SStudentServiceImpl implements SStudentService {
 
     private final SStudentExamShiftTrackExtendRepository sStudentExamShiftTrackExtendRepository;
 
-    private final HttpSession httpSession;
-
     private final SessionHelper sessionHelper;
 
     @Override
     public ResponseObject<?> findAllStudentByExamShiftCode(String examShiftCode) {
         try {
-            String blockId = httpSession.getAttribute(SessionConstant.CURRENT_BLOCK_ID).toString();
             return new ResponseObject<>(
-                    sStudentExtendRepository.findAllStudentByExamShiftCode(examShiftCode, blockId),
+                    sStudentExtendRepository
+                            .findAllStudentByExamShiftCode(examShiftCode, sessionHelper.getCurrentBlockId()),
                     HttpStatus.OK,
                     "Lấy thông tin danh sách sinh viên thành công!"
             );
