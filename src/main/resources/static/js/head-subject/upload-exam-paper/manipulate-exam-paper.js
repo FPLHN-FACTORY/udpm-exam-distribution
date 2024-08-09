@@ -1,12 +1,5 @@
 // START: state
 const pdfjsLib = window["pdfjs-dist/build/pdf"];
-let pdfDoc = null;
-let pageNum = 1;
-let pageRendering = false;
-let pageNumPending = null;
-const scale = 1.5;
-const $pdfCanvas = $("#pdf-canvas")[0];
-const ctx = $pdfCanvas.getContext("2d");
 // END: state
 
 //START: getter,setter
@@ -38,9 +31,10 @@ const handleFetchExamPaperPDF = (fileId) => {
             const pdfData = Uint8Array.from(atob(responseBody), c => c.charCodeAt(0));
 
             const blob = new Blob([pdfData], {type: 'application/pdf'});
-            const file = new File([blob], "exam_rule.pdf", {type: 'application/pdf'});
 
-            renderPdfInView(pdfData);
+            showUIFilePDF(blob, pdfjsLib, "pdf-viewer");
+
+            $("#pdf-viewer").attr("hidden", false);
 
             hideLoading();
         },
@@ -58,17 +52,13 @@ const handleFetchExamPaperPDF = (fileId) => {
 const onChangeChoosePDFFile = () => {
     $("#file-pdf-input").on("change", (e) => {
         const file = e.target.files[0];
+        $("#pdf-viewer").attr("hidden", false);
         if (file) {
             setExamPaperFile(file);
             showLoading();
             const fileType = file.type;
             if (fileType === "application/pdf") {
-                const fileReader = new FileReader();
-                fileReader.onload = function () {
-                    const pdfData = new Uint8Array(this.result);
-                    renderPdfInView(pdfData);
-                };
-                fileReader.readAsArrayBuffer(file);
+                showUIFilePDF(file, pdfjsLib, "pdf-viewer");
             } else {
                 showToastError("Vui lòng chọn file định dạng PDF");
             }
@@ -173,87 +163,14 @@ const handleSendEmailPublicExamPaper = (examPaperId) => {
     });
 };
 
-// Render the page
-const renderPdfInView = (data) => {
-    pdfjsLib
-        .getDocument({data: data})
-        .promise.then(function (pdfDoc_) {
-        pdfDoc = pdfDoc_;
-        $("#total-page").text(pdfDoc.numPages);
-
-        renderPageC(pageNum);
-        showViewAndPagingPdfC(pdfDoc.numPages);
-    });
-}
-
-const showViewAndPagingPdfC = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    $("#show-pdf").prop("hidden", false);
-
-    $("#pdf-viewer").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf").prop("hidden", false);
-    }
-};
-
-const renderPageC = (num) => {
-    pageRendering = true;
-    pdfDoc.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scale});
-        $pdfCanvas.height = viewport.height;
-        $pdfCanvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRendering = false;
-            if (pageNumPending !== null) {
-                renderPageDetail(pageNumPending);
-                pageNumPending = null;
-            }
-        });
-    });
-
-    $("#page-num").text(num);
-}
-
-const queueRenderPageC = (num) => {
-    if (pageRendering) {
-        pageNumPending = num;
-    } else {
-        renderPageC(num);
-    }
-}
-
-$("#prev-page").on("click", function () {
-    if (pageNum <= 1) {
-        return;
-    }
-    pageNum--;
-    queueRenderPageC(pageNum);
-});
-
-$("#next-page").on("click", function () {
-    if (pageNum >= pdfDoc.numPages) {
-        return;
-    }
-    pageNum++;
-    queueRenderPageC(pageNum);
-});
-
 const showViewByStatus = () => {
     $("#examPaperTitle").text("Chi tiết đề thi");
 
-    $("#paging-pdf").prop("hidden", true);
-
     $("#modal-footer").prop("hidden", true);
 
-    $("#show-pdf").prop("hidden", true);
-
     $("#file-pdf-input").val("");
+
+    $("#pdf-viewer").attr("hidden", true);
 
     pageNum = 1;
 };

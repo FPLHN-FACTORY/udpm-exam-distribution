@@ -1,12 +1,5 @@
 // START: state
 const pdfjsLib = window["pdfjs-dist/build/pdf"];
-let pdfDoc = null;
-let pageNum = 1;
-let pageRendering = false;
-let pageNumPending = null;
-const scale = 1.5;
-const $pdfCanvas = $("#pdf-canvas")[0];
-const ctx = $pdfCanvas.getContext("2d");
 // END: state
 
 //START: getter,setter
@@ -195,7 +188,9 @@ const convertAndShowPdf = (data) => {
         file
     ]);
 
-    renderPdfInView(pdfData);
+    showUIFilePDF(file, pdfjsLib, "pdf-viewer");
+
+    $("#pdf-viewer").attr("hidden", false);
 };
 
 
@@ -218,6 +213,9 @@ const onChangeChoosePDFFile = () => {
             return;
         }
 
+        $("#pdf-viewer").attr("hidden", false);
+        showUIFilePDF(files[0], pdfjsLib, "pdf-viewer");
+
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             if (file.type === "application/pdf") {
@@ -227,12 +225,7 @@ const onChangeChoosePDFFile = () => {
                 );
 
                 fileElement.on("click", function () {
-                    const fileReader = new FileReader();
-                    fileReader.onload = function () {
-                        const pdfData = new Uint8Array(this.result);
-                        renderPdfInView(pdfData);
-                    };
-                    fileReader.readAsArrayBuffer(file);
+                    showUIFilePDF(file, pdfjsLib, "pdf-viewer");
                 });
 
                 fileNames.append(fileElement);
@@ -304,90 +297,18 @@ const handleDownloadExamPaper = (fileId) => {
     });
 };
 
-const showViewAndPagingPdfC = (totalPage) => { // hiển thị view và paging khi đã chọn xong file
-    $("#show-pdf").prop("hidden", false);
-
-    $("#pdf-viewer").prop("hidden", false);
-    if (totalPage > 1) {
-        $("#paging-pdf").prop("hidden", false);
-    }
-};
-
-// Render the page
-const renderPdfInView = (data) => {
-    pdfjsLib
-        .getDocument({data: data})
-        .promise.then(function (pdfDoc_) {
-        pdfDoc = pdfDoc_;
-        $("#total-page").text(pdfDoc.numPages);
-
-        renderPageC(pageNum);
-        showViewAndPagingPdfC(pdfDoc.numPages);
-    });
-}
-
-const renderPageC = (num) => {
-    pageRendering = true;
-    pdfDoc.getPage(num).then(function (page) {
-        const viewport = page.getViewport({scale: scale});
-        $pdfCanvas.height = viewport.height;
-        $pdfCanvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport,
-        };
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(function () {
-            pageRendering = false;
-            if (pageNumPending !== null) {
-                renderPageDetail(pageNumPending);
-                pageNumPending = null;
-            }
-        });
-    });
-
-    $("#page-num").text(num);
-}
-
-const queueRenderPageC = (num) => {
-    if (pageRendering) {
-        pageNumPending = num;
-    } else {
-        renderPageC(num);
-    }
-}
-
-$("#prev-page").on("click", function () {
-    if (pageNum <= 1) {
-        return;
-    }
-    pageNum--;
-    queueRenderPageC(pageNum);
-});
-
-$("#next-page").on("click", function () {
-    if (pageNum >= pdfDoc.numPages) {
-        return;
-    }
-    pageNum++;
-    queueRenderPageC(pageNum);
-});
-
 const showViewByStatus = (status) => {
     $("#examPaperTitle").text(status === 1 ? "Chi tiết đề thi" : status === 2 ? "Cập nhật đề thi" : status === 3 ? "Thêm đề thi" : "")
-
-    $("#paging-pdf").prop("hidden", true);
 
     $("#view-add-edit").prop("hidden", !(status === 2 || status === 3));
     $("#modal-footer").prop("hidden", !(status === 2 || status === 3));
 
-    $("#show-pdf").prop("hidden", true);
-
     $("#file-pdf-input").val("");
-    //reset lai page 1
-    pageNum = 1;
+
+    $("#pdf-viewer").attr("hidden", true);
+
+    $("#file-pdf-input").attr("multiple", status !== 2);
+
     setExamPaperFile([]);
 };
 
