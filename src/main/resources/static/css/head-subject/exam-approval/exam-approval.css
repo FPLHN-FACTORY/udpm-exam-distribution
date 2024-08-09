@@ -1,18 +1,19 @@
-canvas {
-    display: block;
-    margin: 0 auto;
+#pdf-viewer::-webkit-scrollbar {
+    display: none;
 }
 
-#pdf-viewer-detail {
-    border: 1px solid #999;
-    width: 100%;
-    height: 700px;
-    overflow: auto;
-    border-radius: 10px;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+#pdf-viewer {
+    border: 1px solid #ccc;
+    overflow-y: scroll;
+    margin-top: 20px;
+    text-align: center;
+    -ms-overflow-style: none;
+    height: 800px;
+    scrollbar-width: none;
+    padding: 10px 0;
 }
 
-#pdf-viewer-detail::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
+.pdf-page {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
 }
