@@ -4,10 +4,10 @@ import fplhn.udpm.examdistribution.core.common.base.PageableObject;
 import fplhn.udpm.examdistribution.core.common.base.ResponseObject;
 import fplhn.udpm.examdistribution.core.headoffice.subject.model.request.CreateUpdateSubjectRequest;
 import fplhn.udpm.examdistribution.core.headoffice.subject.model.request.SubjectRequest;
-import fplhn.udpm.examdistribution.core.headoffice.subject.repository.SDepartmentSubjectRepository;
-import fplhn.udpm.examdistribution.core.headoffice.subject.repository.SExamTimeBySubjectExtendRepository;
+import fplhn.udpm.examdistribution.core.headoffice.subject.repository.DepartmentSubjectRepository;
+import fplhn.udpm.examdistribution.core.headoffice.subject.repository.ExamTimeBySubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headoffice.subject.repository.SFacilityExtendRepository;
-import fplhn.udpm.examdistribution.core.headoffice.subject.repository.SSubjectExtendRepository;
+import fplhn.udpm.examdistribution.core.headoffice.subject.repository.SubjectExtendRepository;
 import fplhn.udpm.examdistribution.core.headoffice.subject.service.SubjectService;
 import fplhn.udpm.examdistribution.entity.Department;
 import fplhn.udpm.examdistribution.entity.ExamTimeBySubject;
@@ -30,11 +30,11 @@ import java.util.Optional;
 @Validated
 public class SubjectServiceImpl implements SubjectService {
 
-    private final SSubjectExtendRepository SSubjectExtendRepository;
+    private final SubjectExtendRepository SubjectExtendRepository;
 
-    private final SDepartmentSubjectRepository SDepartmentSubjectRepository;
+    private final DepartmentSubjectRepository DepartmentSubjectRepository;
 
-    private final SExamTimeBySubjectExtendRepository examTimeBySubjectRepository;
+    private final ExamTimeBySubjectExtendRepository examTimeBySubjectRepository;
 
     private final SFacilityExtendRepository facilityRepository;
 
@@ -42,7 +42,7 @@ public class SubjectServiceImpl implements SubjectService {
     public ResponseObject<?> getAllSubject(SubjectRequest request) {
         Pageable pageable = Helper.createPageable(request, "id");
         return new ResponseObject<>(
-                PageableObject.of(SSubjectExtendRepository.getAllSubject(pageable, request)),
+                PageableObject.of(SubjectExtendRepository.getAllSubject(pageable, request)),
                 HttpStatus.OK,
                 "Lấy danh sách môn học thành công"
         );
@@ -51,12 +51,12 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseObject<?> createSubject(@Valid CreateUpdateSubjectRequest request) {
 
-        Optional<Subject> subjectOptional = SSubjectExtendRepository.findBySubjectCode(request.getSubjectCode());
+        Optional<Subject> subjectOptional = SubjectExtendRepository.findBySubjectCode(request.getSubjectCode());
         if (subjectOptional.isPresent()) {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã môn học đã tồn tại");
         }
 
-        Optional<Department> department = SDepartmentSubjectRepository.findById(request.getDepartmentId());
+        Optional<Department> department = DepartmentSubjectRepository.findById(request.getDepartmentId());
         if (department.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Bộ môn không tồn tại");
         }
@@ -70,7 +70,7 @@ public class SubjectServiceImpl implements SubjectService {
         subject.setCreatedTime(System.currentTimeMillis());
 //        subject.setSubjectStatus(SubjectStatus.MO);
         subject.setStatus(EntityStatus.ACTIVE);
-        Subject subjectSaved = SSubjectExtendRepository.save(subject);
+        Subject subjectSaved = SubjectExtendRepository.save(subject);
 
         for (Facility facility : facilityRepository.getListFacility()) {
             ExamTimeBySubject examTimeBySubject = new ExamTimeBySubject();
@@ -88,13 +88,13 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseObject<?> updateSubject(String subjectId, @Valid CreateUpdateSubjectRequest request) {
 
-        Department department = SDepartmentSubjectRepository.findById(request.getDepartmentId()).orElse(null);
+        Department department = DepartmentSubjectRepository.findById(request.getDepartmentId()).orElse(null);
         if (department == null) {
             return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Bộ môn không tồn tại");
         }
 
 
-        Optional<Subject> subjectOptional = SSubjectExtendRepository.findById(subjectId)
+        Optional<Subject> subjectOptional = SubjectExtendRepository.findById(subjectId)
                 .map(subject -> {
                     subject.setName(request.getSubjectName());
                     subject.setSubjectCode(request.getSubjectCode());
@@ -103,7 +103,7 @@ public class SubjectServiceImpl implements SubjectService {
                     subject.setDepartment(department);
                     subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));
                     subject.setStatus(EntityStatus.ACTIVE);
-                    return SSubjectExtendRepository.save(subject);
+                    return SubjectExtendRepository.save(subject);
                 });
 
         return subjectOptional
@@ -118,7 +118,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseObject<?> getSubjectById(String subjectId) {
-        return SSubjectExtendRepository.getDetailSubjectById(subjectId)
+        return SubjectExtendRepository.getDetailSubjectById(subjectId)
                 .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Lấy thông tin môn học thành công"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Môn học không tồn tại"));
     }
